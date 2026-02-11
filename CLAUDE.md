@@ -1,9 +1,54 @@
 # CLAUDE.md — Cohortix Development Context
 
-**Project:** Cohortix  
+**Mission:** Cohortix  
 **Version:** 1.0.0  
-**Last Updated:** 2026-02-10  
+**Last Updated:** 2026-02-11  
 **Axon Codex Compliance:** v1.1 §2.2.1
+
+---
+
+## 🚦 BUILD PROGRESS (Resume From Here)
+
+### Current Status: Dashboard Wired + Terminology Alignment In Progress
+
+### What's Done ✅
+1. **UI Mockups** — 8 screens designed (v1 + v3) in `/Users/alimai/clawd/cohortix-mockups/v3/`
+2. **Mission Control Dashboard** — Built with sidebar, header, KPI cards, sparklines, engagement chart, activity feed, alerts
+3. **Auth Screens** — Sign-in, sign-up, forgot-password with Supabase Auth (email/password + GitHub/Google OAuth)
+4. **Database Schema** — 16 tables, 14 enums, RLS policies pushed to Supabase
+5. **Data Seeding** — Axon HQ org, 4 AI allies (Devi, Lubna, Zara, Khalid), missions, actions
+6. **Dashboard Wiring** — Real Supabase data flowing to all dashboard components
+7. **Terminology Alignment** — IN PROGRESS (subagent running)
+
+### What's Next 🔜
+1. Complete terminology alignment (Missions→Missions, Actions→Actions across all files)
+2. Mobile responsive fixes for dashboard
+3. Fix Next.js warnings (bottom-left corner)
+4. Build Cohort Grid screen
+5. Build Cohort Detail screen
+6. Build Ally Profile screen
+7. Build Goal Builder screen (may rename/rethink given terminology changes)
+8. Replace hand-rolled SVG chart with Recharts/Tremor
+9. Add cohort performance table (missing from dashboard mockup)
+
+### Key Decisions Made
+- **Supabase** for auth AND database (NOT Clerk/Neon)
+- **Tailwind v3** (codebase uses v3 syntax, was accidentally installed as v4)
+- **Terminology hierarchy:** Pillars → Aspirations → Goals → Missions → Actions (based on PPV from August Bradley)
+- **"Goal" dropped** — Goals cover that role in the hierarchy
+- **Supabase server client** lives in `apps/web/src/lib/supabase/` (NOT in shared packages — Next.js `cookies()` can't run from packages)
+
+### Credentials
+- **Supabase:** `rfwscvklcokzuofyzqwx.supabase.co`
+- **Test account:** ahmadashfq@gmail.com / Test1234!
+- **Auth user ID:** b73baf11-1eee-44e8-8925-8e1277daa0ee
+- **Env files:** `apps/web/.env.local` (real keys), root `.env.local` (also has keys)
+
+### Known Issues
+- Port 3000 often occupied by orphaned processes — kill before starting dev server
+- Dashboard queries had `status` column filter that doesn't exist in schema — removed
+- Activity feed empty until audit logs are seeded
+- Mobile layout not responsive yet
 
 ---
 
@@ -11,7 +56,7 @@
 
 Cohortix is an **Allies-as-a-Service (AaaS)** platform that enables humans to manage a high-performing organization of AI allies. It's a multi-tenant SaaS built with Next.js 15, React 19, and PostgreSQL, designed to bridge the gap between human strategic direction and autonomous AI execution.
 
-**Core Concept:** While traditional project management tools (ClickUp, Linear) focus on human-to-human collaboration, Cohortix is built from the ground up for human-to-AI team orchestration through a unified interface called **Mission Control**.
+**Core Concept:** While traditional mission management tools (ClickUp, Linear) focus on human-to-human collaboration, Cohortix is built from the ground up for human-to-AI team orchestration through a unified interface called **Mission Control**.
 
 **Domain:** cohortix.ai  
 **Tagline:** "Your AI crew, ready for action."
@@ -147,29 +192,29 @@ vercel rollback <deployment-url>
 
 **Unit Tests (Vitest):**
 ```typescript
-// tests/unit/services/project-service.test.ts
+// tests/unit/services/mission-service.test.ts
 import { describe, it, expect, beforeEach } from 'vitest';
-import { projectService } from '@/lib/services/project-service';
+import { projectService } from '@/lib/services/mission-service';
 
 describe('ProjectService', () => {
   beforeEach(() => {
     // Setup mock database
   });
 
-  it('should create project with valid data', async () => {
-    const project = await projectService.create({
-      name: 'Test Project',
+  it('should create mission with valid data', async () => {
+    const mission = await projectService.create({
+      name: 'Test Mission',
       organizationId: 'org_123',
     });
     
-    expect(project.id).toBeDefined();
-    expect(project.name).toBe('Test Project');
+    expect(mission.id).toBeDefined();
+    expect(mission.name).toBe('Test Mission');
   });
 
   it('should enforce tenant isolation', async () => {
     await expect(
       projectService.getById('proj_from_other_org', 'org_123')
-    ).rejects.toThrow('Project not found');
+    ).rejects.toThrow('Mission not found');
   });
 });
 ```
@@ -203,8 +248,8 @@ tests/
 │   └── api/
 └── e2e/                        # End-to-end tests
     ├── auth.spec.ts
-    ├── projects.spec.ts
-    └── tasks.spec.ts
+    ├── missions.spec.ts
+    └── actions.spec.ts
 ```
 
 ### Running Tests
@@ -214,7 +259,7 @@ tests/
 pnpm test
 
 # Specific test file
-pnpm test project-service
+pnpm test mission-service
 
 # Watch mode (re-run on changes)
 pnpm test:watch
@@ -240,7 +285,7 @@ pnpm test:e2e:ui
 
 ---
 
-## 3. Project Structure
+## 3. Mission Structure
 
 ### Monorepo Architecture (Turborepo)
 
@@ -262,7 +307,7 @@ cohortix/
 │   ├── typescript/             # TypeScript configurations
 │   └── tailwind/               # Tailwind configurations
 │
-├── docs/                       # Project documentation
+├── docs/                       # Mission documentation
 │   ├── PRD.md
 │   ├── ARCHITECTURE.md
 │   ├── TECH_STACK.md
@@ -301,7 +346,7 @@ apps/web/
 │   │   ├── (auth)/             # Auth routes (sign-in, sign-up)
 │   │   ├── (marketing)/        # Public pages (landing, pricing)
 │   │   ├── (dashboard)/        # Protected routes (main app)
-│   │   │   ├── projects/
+│   │   │   ├── missions/
 │   │   │   ├── agents/
 │   │   │   ├── knowledge/
 │   │   │   ├── goals/
@@ -310,8 +355,8 @@ apps/web/
 │   │   │
 │   │   ├── api/                # API Route Handlers
 │   │   │   └── v1/
-│   │   │       ├── projects/
-│   │   │       ├── tasks/
+│   │   │       ├── missions/
+│   │   │       ├── actions/
 │   │   │       ├── agents/
 │   │   │       ├── knowledge/
 │   │   │       └── webhooks/
@@ -324,8 +369,8 @@ apps/web/
 │   ├── components/             # React components
 │   │   ├── ui/                 # shadcn/ui primitives
 │   │   ├── features/           # Feature-specific components
-│   │   │   ├── projects/
-│   │   │   ├── tasks/
+│   │   │   ├── missions/
+│   │   │   ├── actions/
 │   │   │   ├── agents/
 │   │   │   └── knowledge/
 │   │   ├── layouts/            # Layout components
@@ -374,8 +419,8 @@ packages/database/
 │   ├── schema/                 # Drizzle schema definitions
 │   │   ├── organizations.ts
 │   │   ├── users.ts
-│   │   ├── projects.ts
-│   │   ├── tasks.ts
+│   │   ├── missions.ts
+│   │   ├── actions.ts
 │   │   ├── agents.ts
 │   │   ├── knowledge.ts
 │   │   ├── comments.ts
@@ -402,13 +447,13 @@ packages/database/
 
 // App-level
 import { Button } from '@/components/ui/button';          // apps/web/src/components/ui/button
-import { useProjects } from '@/lib/hooks/use-projects';   // apps/web/src/lib/hooks/use-projects
-import { projectService } from '@/lib/services/project-service';
-import { ProjectCard } from '@/components/features/projects/project-card';
+import { useProjects } from '@/lib/hooks/use-missions';   // apps/web/src/lib/hooks/use-missions
+import { projectService } from '@/lib/services/mission-service';
+import { ProjectCard } from '@/components/features/missions/mission-card';
 
 // Package-level
 import { db } from '@repo/database';                      // packages/database/src
-import type { Project } from '@repo/types';               // packages/types/src
+import type { Mission } from '@repo/types';               // packages/types/src
 import { Button } from '@repo/ui/button';                 // packages/ui/src/button
 import { formatDate } from '@repo/utils/dates';           // packages/utils/src/dates
 ```
@@ -438,9 +483,9 @@ import { formatDate } from '@repo/utils/dates';           // packages/utils/src/
 
 ```typescript
 // ✅ GOOD: Explicit types for function parameters and return
-export async function getProject(id: string): Promise<Project | null> {
+export async function getProject(id: string): Promise<Mission | null> {
   return await db.query.projects.findFirst({
-    where: eq(projects.id, id),
+    where: eq(missions.id, id),
   });
 }
 
@@ -462,13 +507,13 @@ function createProject(data: any) {
 }
 
 // ✅ GOOD: Handle array access safely
-const firstProject = projects[0];  // Type: Project | undefined
+const firstProject = missions[0];  // Type: Mission | undefined
 if (firstProject) {
   console.log(firstProject.name);  // Safe access
 }
 
 // ❌ BAD: Assume array has items
-const firstProject = projects[0];  // With noUncheckedIndexedAccess: false
+const firstProject = missions[0];  // With noUncheckedIndexedAccess: false
 console.log(firstProject.name);    // Runtime error if array is empty
 ```
 
@@ -478,7 +523,7 @@ console.log(firstProject.name);    // Runtime error if array is empty
 
 ```typescript
 // ✅ GOOD: Server Component (default)
-// app/(dashboard)/projects/page.tsx
+// app/(dashboard)/missions/page.tsx
 import { db } from '@repo/database';
 
 export default async function ProjectsPage() {
@@ -486,15 +531,15 @@ export default async function ProjectsPage() {
   
   return (
     <div>
-      {projects.map(project => (
-        <ProjectCard key={project.id} project={project} />
+      {missions.map(mission => (
+        <ProjectCard key={mission.id} mission={mission} />
       ))}
     </div>
   );
 }
 
 // ✅ GOOD: Client Component (when needed)
-// components/features/projects/project-form.tsx
+// components/features/missions/mission-form.tsx
 'use client';
 
 import { useState } from 'react';
@@ -554,7 +599,7 @@ export default function UserCard({ user, onEdit }: { user: any; onEdit: any }) {
 ```typescript
 // ✅ GOOD: Clear, descriptive names
 function getUserById(id: string): Promise<User | null> { }
-async function createProject(data: ProjectInput): Promise<Project> { }
+async function createProject(data: ProjectInput): Promise<Mission> { }
 function isValidEmail(email: string): boolean { }
 
 // ❌ BAD: Vague, abbreviated names
@@ -578,26 +623,26 @@ function check(e: string) { }
 // ✅ GOOD: Separate concerns cleanly
 
 // Route Handler (API layer)
-// app/api/v1/projects/route.ts
-import { projectService } from '@/lib/services/project-service';
+// app/api/v1/missions/route.ts
+import { projectService } from '@/lib/services/mission-service';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const organizationId = searchParams.get('organizationId');
   
-  const projects = await projectService.list(organizationId);
+  const missions = await projectService.list(organizationId);
   
-  return Response.json({ data: projects });
+  return Response.json({ data: missions });
 }
 
 // Service Layer (business logic)
-// lib/services/project-service.ts
+// lib/services/mission-service.ts
 import { db } from '@repo/database';
 
 export const projectService = {
   async list(organizationId: string) {
     return await db.query.projects.findMany({
-      where: eq(projects.organizationId, organizationId),
+      where: eq(missions.organizationId, organizationId),
     });
   },
   
@@ -609,7 +654,7 @@ export const projectService = {
 // ❌ BAD: Business logic in route handler
 export async function GET(request: Request) {
   const projects = await db.query.projects.findMany(); // Direct DB access in route
-  return Response.json({ data: projects });
+  return Response.json({ data: missions });
 }
 ```
 
@@ -657,7 +702,7 @@ main (production)
         └── dev (development)
               ↑
               ├── feature/ACC-123-user-auth
-              ├── feature/ACC-124-task-kanban
+              ├── feature/ACC-124-action-kanban
               ├── bugfix/ACC-200-login-redirect
               └── hotfix/ACC-300-security-patch
 ```
@@ -712,9 +757,9 @@ docs/api-documentation
 
 ```bash
 # Feature
-feat(tasks): add subtask support
+feat(actions): add subtask support
 
-Implement subtask creation and display within task cards.
+Implement subtask creation and display within action cards.
 
 Closes ACC-123
 
@@ -726,7 +771,7 @@ Users were not being redirected to login on session expiry.
 Fixes ACC-200
 
 # Breaking change
-feat(api)!: change project response structure
+feat(api)!: change mission response structure
 
 BREAKING CHANGE: The `owner` field is now an object instead of string ID.
 
@@ -843,7 +888,7 @@ git push origin dev
 - Run tests (`pnpm test`)
 - Run linting (`pnpm lint`)
 - Type checking (`pnpm type-check`)
-- Build project (`pnpm build`)
+- Build mission (`pnpm build`)
 - Start dev server (`pnpm dev`)
 - View database schema (`pnpm db:studio`)
 
@@ -975,7 +1020,7 @@ Cohortix uses a **Backend-for-Frontend (BFF) monolithic pattern** within Next.js
 │                                                              │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │  PostgreSQL 16 + pgvector (Neon/Supabase)           │   │
-│  │  • Relational data (users, orgs, projects, tasks)   │   │
+│  │  • Relational data (users, orgs, missions, actions)   │   │
 │  │  • Vector embeddings (knowledge base)               │   │
 │  │  • Row-Level Security (multi-tenant isolation)      │   │
 │  │  • Full-text search (pg_trgm)                       │   │
@@ -993,14 +1038,14 @@ Every table containing tenant data includes an `organization_id` column. Postgre
 
 ```sql
 -- Example: RLS policy for tenant isolation
-CREATE POLICY tenant_isolation ON projects
+CREATE POLICY tenant_isolation ON missions
   USING (organization_id = current_setting('app.current_org_id')::uuid);
 
 -- Application sets tenant context per request
 SET app.current_org_id = 'org_xyz123';
 
 -- All queries automatically filtered
-SELECT * FROM projects; -- Only returns current org's projects
+SELECT * FROM missions; -- Only returns current org's missions
 ```
 
 **Tenant Hierarchy:**
@@ -1009,8 +1054,8 @@ SELECT * FROM projects; -- Only returns current org's projects
 Platform
   └── Organization (Tenant) — Billing unit, isolated data
         └── Workspace (Optional) — Team-level grouping
-              └── Project — Contains tasks, milestones
-                    ├── Tasks
+              └── Mission — Contains actions, milestones
+                    ├── Actions
                     └── Agents (assigned)
 ```
 
@@ -1026,8 +1071,8 @@ interface AgentRuntime {
   startAgent(agentId: string): Promise<void>;
   stopAgent(agentId: string): Promise<void>;
   
-  // Task execution
-  assignTask(agentId: string, task: Task): Promise<TaskExecution>;
+  // Action execution
+  assignTask(agentId: string, action: Action): Promise<TaskExecution>;
   getTaskStatus(executionId: string): Promise<TaskStatus>;
   
   // Communication
@@ -1053,7 +1098,7 @@ class CustomRuntime implements AgentRuntime {
 ### BFF Pattern Benefits
 
 1. **Full-stack type safety:** Share types between frontend and backend
-2. **Simplified deployment:** Single Vercel project
+2. **Simplified deployment:** Single Vercel mission
 3. **Fast iteration:** No API versioning headaches
 4. **Optimized data fetching:** Server Components fetch exactly what UI needs
 5. **Future extraction:** Can extract microservices later if needed
@@ -1067,10 +1112,10 @@ class CustomRuntime implements AgentRuntime {
 **Schema Definition:**
 
 ```typescript
-// packages/database/src/schema/projects.ts
+// packages/database/src/schema/missions.ts
 import { pgTable, uuid, varchar, timestamp } from 'drizzle-orm/pg-core';
 
-export const projects = pgTable('projects', {
+export const missions = pgTable('missions', {
   id: uuid('id').primaryKey().defaultRandom(),
   organizationId: uuid('organization_id').notNull().references(() => organizations.id),
   name: varchar('name', { length: 255 }).notNull(),
@@ -1082,8 +1127,8 @@ export const projects = pgTable('projects', {
 });
 
 // Inferred TypeScript type
-export type Project = typeof projects.$inferSelect;
-export type ProjectInsert = typeof projects.$inferInsert;
+export type Mission = typeof missions.$inferSelect;
+export type ProjectInsert = typeof missions.$inferInsert;
 ```
 
 **Querying:**
@@ -1094,179 +1139,281 @@ import { eq, and, desc } from 'drizzle-orm';
 
 // Select with relations
 const projects = await db.query.projects.findMany({
-  where: eq(projects.organizationId, orgId),
-  orderBy: desc(projects.createdAt),
+  where: eq(missions.organizationId, orgId),
+  orderBy: desc(missions.createdAt),
   with: {
-    tasks: true,
+    actions: true,
     agents: true,
   },
 });
 
 // Insert
-const newProject = await db.insert(projects).values({
-  name: 'New Project',
+const newProject = await db.insert(missions).values({
+  name: 'New Mission',
   organizationId: orgId,
 }).returning();
 
 // Update
-await db.update(projects)
+await db.update(missions)
   .set({ name: 'Updated Name' })
-  .where(eq(projects.id, projectId));
+  .where(eq(missions.id, projectId));
 
 // Delete
-await db.delete(projects).where(eq(projects.id, projectId));
+await db.delete(missions).where(eq(missions.id, projectId));
 ```
 
 **Transactions:**
 
 ```typescript
 await db.transaction(async (tx) => {
-  const project = await tx.insert(projects).values({
-    name: 'New Project',
+  const mission = await tx.insert(missions).values({
+    name: 'New Mission',
     organizationId: orgId,
   }).returning();
   
-  await tx.insert(tasks).values({
-    projectId: project[0].id,
-    title: 'First Task',
+  await tx.insert(actions).values({
+    projectId: mission[0].id,
+    title: 'First Action',
   });
 });
 ```
 
-### Clerk Authentication Integration
+### Supabase Authentication Integration
 
 **Middleware Setup:**
 
 ```typescript
 // middleware.ts
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/webhooks/(.*)',
-]);
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next();
 
-export default clerkMiddleware((auth, request) => {
-  if (!isPublicRoute(request)) {
-    auth().protect();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) {
+          return request.cookies.get(name)?.value;
+        },
+        set(name, value, options) {
+          response.cookies.set({ name, value, ...options });
+        },
+        remove(name, options) {
+          response.cookies.set({ name, value: '', ...options });
+        },
+      },
+    }
+  );
+
+  const { data: { session } } = await supabase.auth.getSession();
+
+  // Protect dashboard routes
+  if (request.nextUrl.pathname.startsWith('/dashboard') && !session) {
+    return NextResponse.redirect(new URL('/sign-in', request.url));
   }
-});
+
+  return response;
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+};
 ```
 
 **Getting Current User:**
 
 ```typescript
 // Server Component
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 export default async function DashboardPage() {
-  const { userId, orgId } = auth();
-  const user = await currentUser();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) {
+          return cookies().get(name)?.value;
+        },
+      },
+    }
+  );
+
+  const { data: { user } } = await supabase.auth.getUser();
   
-  // Fetch data scoped to organization
-  const projects = await db.query.projects.findMany({
-    where: eq(projects.organizationId, orgId),
-  });
+  // Fetch data (RLS automatically filters by user's org)
+  const { data: missions } = await supabase
+    .from('missions')
+    .select('*');
   
-  return <div>Welcome, {user?.firstName}</div>;
+  return <div>Welcome, {user?.email}</div>;
 }
 
 // API Route Handler
-import { auth } from '@clerk/nextjs/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 export async function GET(request: Request) {
-  const { userId, orgId } = auth();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) {
+          return cookies().get(name)?.value;
+        },
+      },
+    }
+  );
+
+  const { data: { user }, error } = await supabase.auth.getUser();
   
-  if (!userId) {
+  if (error || !user) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   
-  // ... fetch data for orgId
+  // RLS automatically filters data by user's org
+  const { data: missions } = await supabase.from('missions').select('*');
+  return Response.json({ data: missions });
 }
 ```
 
 **Organization Context:**
 
 ```typescript
-// Get current organization
-const { orgId, orgRole } = auth();
+// Get user's organization membership
+const { data: membership } = await supabase
+  .from('organization_memberships')
+  .select('organization_id, role')
+  .eq('user_id', user.id)
+  .single();
 
 // Check permissions
-if (orgRole !== 'admin') {
+if (membership.role !== 'admin' && membership.role !== 'owner') {
   throw new Error('Insufficient permissions');
 }
 ```
 
-### Server-Sent Events (SSE) for Real-Time
+### Supabase Realtime for Live Updates
 
-**Server Side (API Route):**
-
-```typescript
-// app/api/v1/events/subscribe/route.ts
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const projectId = searchParams.get('projectId');
-  
-  const stream = new ReadableStream({
-    start(controller) {
-      // Send initial connection event
-      controller.enqueue(`data: ${JSON.stringify({ type: 'connected' })}\n\n`);
-      
-      // Subscribe to Redis pub/sub or database changes
-      const subscription = redis.subscribe(`project:${projectId}:events`);
-      
-      subscription.on('message', (channel, message) => {
-        controller.enqueue(`data: ${message}\n\n`);
-      });
-      
-      // Cleanup on close
-      request.signal.addEventListener('abort', () => {
-        subscription.unsubscribe();
-        controller.close();
-      });
-    },
-  });
-  
-  return new Response(stream, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-    },
-  });
-}
-```
-
-**Client Side:**
+**Client-Side Real-Time Subscriptions:**
 
 ```typescript
 'use client';
 
 import { useEffect } from 'react';
+import { createBrowserClient } from '@supabase/ssr';
 
-export function useProjectEvents(projectId: string) {
+export function useProjectRealtime(projectId: string) {
   useEffect(() => {
-    const eventSource = new EventSource(`/api/v1/events/subscribe?projectId=${projectId}`);
-    
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('Event:', data);
-      
-      // Update UI based on event type
-      if (data.type === 'task.updated') {
-        // Refetch tasks or update state
-      }
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    // Subscribe to action changes in this mission
+    const channel = supabase
+      .channel(`project:${projectId}:tasks`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'actions',
+          filter: `project_id=eq.${projectId}`,
+        },
+        (payload) => {
+          console.log('Action changed:', payload);
+          // payload.eventType: INSERT | UPDATE | DELETE
+          // payload.new: new row data
+          // payload.old: old row data (for UPDATE/DELETE)
+          
+          // Optimistically update UI or refetch
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
     };
-    
-    eventSource.onerror = () => {
-      eventSource.close();
-      // Reconnect logic
-    };
-    
-    return () => eventSource.close();
   }, [projectId]);
+}
+
+// Subscribe to comments
+export function useCommentRealtime(taskId: string) {
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    const channel = supabase
+      .channel(`task:${taskId}:comments`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'comments',
+          filter: `task_id=eq.${taskId}`,
+        },
+        (payload) => {
+          console.log('New comment:', payload.new);
+          // Add to comments list
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [taskId]);
+}
+```
+
+**Presence (Who's Online):**
+
+```typescript
+export function usePresence(roomId: string) {
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    const channel = supabase.channel(`room:${roomId}`, {
+      config: { presence: { key: userId } },
+    });
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        setOnlineUsers(Object.keys(state));
+      })
+      .on('presence', { event: 'join' }, ({ key }) => {
+        console.log(`User ${key} joined`);
+      })
+      .on('presence', { event: 'leave' }, ({ key }) => {
+        console.log(`User ${key} left`);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({ online_at: new Date().toISOString() });
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [roomId]);
+
+  return onlineUsers;
 }
 ```
 
@@ -1275,7 +1422,7 @@ export function useProjectEvents(projectId: string) {
 **Define Schema Once, Use Everywhere:**
 
 ```typescript
-// lib/validations/project.ts
+// lib/validations/mission.ts
 import { z } from 'zod';
 
 export const createProjectSchema = z.object({
@@ -1293,8 +1440,8 @@ export type CreateProjectInput = z.infer<typeof createProjectSchema>;
 **API Route Validation:**
 
 ```typescript
-// app/api/v1/projects/route.ts
-import { createProjectSchema } from '@/lib/validations/project';
+// app/api/v1/missions/route.ts
+import { createProjectSchema } from '@/lib/validations/mission';
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -1311,9 +1458,9 @@ export async function POST(request: Request) {
   }
   
   // Use validated.data (typed and sanitized)
-  const project = await projectService.create(validated.data);
+  const mission = await projectService.create(validated.data);
   
-  return Response.json({ data: project }, { status: 201 });
+  return Response.json({ data: mission }, { status: 201 });
 }
 ```
 
@@ -1324,7 +1471,7 @@ export async function POST(request: Request) {
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createProjectSchema } from '@/lib/validations/project';
+import { createProjectSchema } from '@/lib/validations/mission';
 
 export function ProjectForm() {
   const form = useForm({
@@ -1337,7 +1484,7 @@ export function ProjectForm() {
   
   const onSubmit = async (data) => {
     // data is already validated and typed!
-    await fetch('/api/v1/projects', {
+    await fetch('/api/v1/missions', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -1356,12 +1503,12 @@ export function ProjectForm() {
 ### TanStack Query for Server State
 
 ```typescript
-// lib/hooks/use-projects.ts
+// lib/hooks/use-missions.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export function useProjects(organizationId: string) {
   return useQuery({
-    queryKey: ['projects', organizationId],
+    queryKey: ['missions', organizationId],
     queryFn: async () => {
       const res = await fetch(`/api/v1/projects?organizationId=${organizationId}`);
       return res.json();
@@ -1374,15 +1521,15 @@ export function useCreateProject() {
   
   return useMutation({
     mutationFn: async (data: CreateProjectInput) => {
-      const res = await fetch('/api/v1/projects', {
+      const res = await fetch('/api/v1/missions', {
         method: 'POST',
         body: JSON.stringify(data),
       });
       return res.json();
     },
     onSuccess: (data, variables) => {
-      // Invalidate projects cache
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      // Invalidate missions cache
+      queryClient.invalidateQueries({ queryKey: ['missions'] });
     },
   });
 }
@@ -1393,22 +1540,22 @@ export function useCreateProject() {
 ```typescript
 'use client';
 
-import { useProjects, useCreateProject } from '@/lib/hooks/use-projects';
+import { useProjects, useCreateProject } from '@/lib/hooks/use-missions';
 
 export function ProjectList({ organizationId }) {
-  const { data: projects, isLoading } = useProjects(organizationId);
+  const { data: missions, isLoading } = useProjects(organizationId);
   const createProject = useCreateProject();
   
   if (isLoading) return <div>Loading...</div>;
   
   return (
     <div>
-      {projects?.data.map(project => (
-        <div key={project.id}>{project.name}</div>
+      {missions?.data.map(mission => (
+        <div key={mission.id}>{mission.name}</div>
       ))}
       
-      <button onClick={() => createProject.mutate({ name: 'New Project' })}>
-        Create Project
+      <button onClick={() => createProject.mutate({ name: 'New Mission' })}>
+        Create Mission
       </button>
     </div>
   );
@@ -1424,23 +1571,15 @@ export function ProjectList({ organizationId }) {
 Create `.env.local` with these variables (see `.env.example` for template):
 
 ```bash
-# Database (Neon or Supabase)
-DATABASE_URL="postgresql://user:password@host:5432/cohortix"
-
-# Authentication (Clerk)
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_xxx"
-CLERK_SECRET_KEY="sk_test_xxx"
-NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
-NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/dashboard"
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/dashboard"
+# Database & Auth & Realtime (Supabase)
+NEXT_PUBLIC_SUPABASE_URL="https://xxx.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." # Server-only
+DATABASE_URL="postgresql://postgres:[password]@db.[mission].supabase.co:5432/postgres"
 
 # Redis (Upstash)
 UPSTASH_REDIS_REST_URL="https://xxx.upstash.io"
 UPSTASH_REDIS_REST_TOKEN="xxx"
-
-# File Storage (Vercel Blob or S3)
-BLOB_READ_WRITE_TOKEN="vercel_blob_xxx"
 
 # AI/Embeddings (OpenAI)
 OPENAI_API_KEY="sk-xxx"
@@ -1465,32 +1604,37 @@ SENTRY_DSN="xxx"
 
 ### Setting Up External Services
 
-#### 1. Database (Neon - Recommended for Development)
+#### 1. Database + Auth + Realtime (Supabase)
 
 ```bash
-# 1. Create account at neon.tech
-# 2. Create new project: "cohortix"
-# 3. Copy connection string to DATABASE_URL
-# 4. Enable pgvector extension (in Neon console)
+# 1. Create account at supabase.com
+# 2. Create new mission: "cohortix"
+# 3. Wait for mission to provision (~2 minutes)
+# 4. Copy connection strings from mission settings:
+#    - NEXT_PUBLIC_SUPABASE_URL (API URL)
+#    - NEXT_PUBLIC_SUPABASE_ANON_KEY (anon/public key)
+#    - SUPABASE_SERVICE_ROLE_KEY (service role - keep secret!)
+#    - DATABASE_URL (direct connection for migrations)
 
-# 5. Push schema
+# 5. Enable required database extensions (SQL Editor in Supabase dashboard):
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "vector";  -- pgvector for embeddings
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";  -- For full-text search
+
+# 6. Configure authentication providers (in Supabase dashboard):
+#    - Email provider: Enable email/password + magic links
+#    - Google OAuth: Add client ID and secret
+#    - Configure redirect URLs: http://localhost:3000/auth/callback
+
+# 7. Push schema
 pnpm db:push
 
-# 6. Seed database (optional)
+# 8. Seed database (optional)
 pnpm db:seed
 ```
 
-#### 2. Authentication (Clerk)
-
-```bash
-# 1. Create account at clerk.com
-# 2. Create new application: "Cohortix"
-# 3. Copy keys to .env.local
-# 4. Configure paths (sign-in, sign-up, after-sign-in)
-# 5. Enable organizations in Clerk dashboard
-```
-
-#### 3. Redis (Upstash)
+#### 2. Redis (Upstash)
 
 ```bash
 # 1. Create account at upstash.com
@@ -1498,27 +1642,21 @@ pnpm db:seed
 # 3. Copy REST URL and token to .env.local
 ```
 
-#### 4. File Storage (Vercel Blob)
-
-```bash
-# 1. Deploy to Vercel (or connect project)
-# 2. Create Blob store in Vercel dashboard
-# 3. Copy token to .env.local
-```
-
 ### Development Setup Checklist
 
 - [ ] Clone repository
 - [ ] Install dependencies (`pnpm install`)
 - [ ] Copy `.env.example` to `.env.local`
-- [ ] Set up Neon database + get connection string
-- [ ] Set up Clerk + get API keys
+- [ ] Set up Supabase mission + get credentials
+- [ ] Enable database extensions (uuid-ossp, pgcrypto, vector, pg_trgm)
+- [ ] Configure auth providers (email, Google OAuth)
 - [ ] Set up Upstash Redis + get credentials
 - [ ] Set up OpenAI API key
 - [ ] Push database schema (`pnpm db:push`)
 - [ ] Seed database (`pnpm db:seed`)
 - [ ] Start dev server (`pnpm dev`)
 - [ ] Verify app loads at `localhost:3000`
+- [ ] Test sign-in flow
 
 ---
 
@@ -1536,14 +1674,16 @@ pnpm db:seed
 |----------|--------|---------|
 | Agent | **Ally** | AI team member |
 | Agents (group) | **Cohort** | Group of allies |
-| Task | **Mission** | Work unit |
-| Workflow | **Campaign** | Series of missions |
+| Mission | **Mission** | Focused deliverable |
+| Action | **Action** | Individual step an Ally executes |
 | Dashboard | **Mission Control** | Main UI |
 | Intel Base | **Knowledge Base** | Organizational knowledge repository |
 | Create agent | **Recruit** | Add new ally |
 | Run/Execute | **Deploy** | Start work |
-| Workspace | **HQ** or **Base** | User workspace |
-| Training | **Evolution** | Ally learning/improvement |
+| Workspace | **Base** | User workspace |
+| Training | **Growth** | Ally learning/improvement |
+
+**Full Hierarchy:** Pillars → Aspirations → Goals → Missions → Actions
 
 ### Colors
 
@@ -1643,14 +1783,14 @@ pnpm dlx shadcn@latest add badge
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({ mission }: { mission: Mission }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{project.name}</CardTitle>
+        <CardTitle>{mission.name}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p>{project.description}</p>
+        <p>{mission.description}</p>
         <Button variant="outline">View Details</Button>
       </CardContent>
     </Card>
@@ -1675,7 +1815,7 @@ export function ProjectCard({ project }: { project: Project }) {
 
 // ❌ BAD: Corporate, jargon-heavy
 "Initialize your agent orchestration environment."
-"Task execution completed successfully. Insights logged."
+"Action execution completed successfully. Insights logged."
 ```
 
 ### UI Patterns
@@ -1730,18 +1870,18 @@ export function LoadingSpinner({ text = "Loading..." }) {
 **Resource Naming:**
 
 ```
-GET    /api/v1/projects           # List projects
-POST   /api/v1/projects           # Create project
-GET    /api/v1/projects/:id       # Get project
-PATCH  /api/v1/projects/:id       # Update project
-DELETE /api/v1/projects/:id       # Delete project
+GET    /api/v1/missions           # List missions
+POST   /api/v1/missions           # Create mission
+GET    /api/v1/missions/:id       # Get mission
+PATCH  /api/v1/missions/:id       # Update mission
+DELETE /api/v1/missions/:id       # Delete mission
 
 # Nested resources
-GET    /api/v1/projects/:id/tasks         # List project tasks
-POST   /api/v1/projects/:id/tasks         # Create task in project
+GET    /api/v1/missions/:id/actions         # List mission actions
+POST   /api/v1/missions/:id/actions         # Create action in mission
 
 # Actions (non-CRUD)
-POST   /api/v1/tasks/:id/reorder          # Reorder task
+POST   /api/v1/actions/:id/reorder          # Reorder action
 POST   /api/v1/agents/:id/deploy          # Deploy agent
 ```
 
@@ -1753,7 +1893,7 @@ POST   /api/v1/agents/:id/deploy          # Deploy agent
 {
   "data": {
     "id": "proj_abc123",
-    "name": "My Project",
+    "name": "My Mission",
     "status": "active",
     "createdAt": "2026-02-05T10:00:00.000Z"
   },
@@ -1769,8 +1909,8 @@ POST   /api/v1/agents/:id/deploy          # Deploy agent
 ```json
 {
   "data": [
-    { "id": "proj_1", "name": "Project 1" },
-    { "id": "proj_2", "name": "Project 2" }
+    { "id": "proj_1", "name": "Mission 1" },
+    { "id": "proj_2", "name": "Mission 2" }
   ],
   "meta": {
     "requestId": "req_xyz789",
@@ -1829,7 +1969,7 @@ POST   /api/v1/agents/:id/deploy          # Deploy agent
 **Query Parameters:**
 
 ```
-GET /api/v1/projects?page=2&pageSize=20&sortBy=createdAt&sortOrder=desc
+GET /api/v1/missions?page=2&pageSize=20&sortBy=createdAt&sortOrder=desc
 ```
 
 **Implementation:**
@@ -1845,17 +1985,17 @@ export async function GET(request: Request) {
   
   const offset = (page - 1) * pageSize;
   
-  const [projects, totalCount] = await Promise.all([
+  const [missions, totalCount] = await Promise.all([
     db.query.projects.findMany({
       limit: pageSize,
       offset,
-      orderBy: sortOrder === 'desc' ? desc(projects[sortBy]) : asc(projects[sortBy]),
+      orderBy: sortOrder === 'desc' ? desc(missions[sortBy]) : asc(missions[sortBy]),
     }),
-    db.select({ count: sql`count(*)` }).from(projects),
+    db.select({ count: sql`count(*)` }).from(missions),
   ]);
   
   return Response.json({
-    data: projects,
+    data: missions,
     pagination: {
       page,
       pageSize,
@@ -1871,7 +2011,7 @@ export async function GET(request: Request) {
 ### Filtering
 
 ```
-GET /api/v1/projects?status=active&workspaceId=ws_123&search=campaign
+GET /api/v1/missions?status=active&workspaceId=ws_123&search=goal
 ```
 
 **Implementation:**
@@ -1880,18 +2020,18 @@ GET /api/v1/projects?status=active&workspaceId=ws_123&search=campaign
 const filters = [];
 
 if (status) {
-  filters.push(eq(projects.status, status));
+  filters.push(eq(missions.status, status));
 }
 
 if (workspaceId) {
-  filters.push(eq(projects.workspaceId, workspaceId));
+  filters.push(eq(missions.workspaceId, workspaceId));
 }
 
 if (search) {
   filters.push(
     or(
-      ilike(projects.name, `%${search}%`),
-      ilike(projects.description, `%${search}%`)
+      ilike(missions.name, `%${search}%`),
+      ilike(missions.description, `%${search}%`)
     )
   );
 }
@@ -1921,7 +2061,7 @@ const projects = await db.query.projects.findMany({
 **Every table must have:**
 
 ```sql
-CREATE TABLE projects (
+CREATE TABLE missions (
   -- Primary key
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   
@@ -1950,15 +2090,15 @@ CREATE TABLE projects (
 
 ```sql
 -- Enable RLS
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE missions ENABLE ROW LEVEL SECURITY;
 
 -- Create isolation policy
-CREATE POLICY tenant_isolation ON projects
+CREATE POLICY tenant_isolation ON missions
   USING (organization_id = current_setting('app.current_org_id')::uuid)
   WITH CHECK (organization_id = current_setting('app.current_org_id')::uuid);
 
 -- Create indexes
-CREATE INDEX idx_projects_org ON projects(organization_id);
+CREATE INDEX idx_missions_org ON missions(organization_id);
 ```
 
 ### UUID Primary Keys
@@ -1999,7 +2139,7 @@ CREATE TYPE task_status AS ENUM (
   'cancelled'
 );
 
-CREATE TABLE tasks (
+CREATE TABLE actions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   status task_status DEFAULT 'backlog' NOT NULL
 );
@@ -2035,10 +2175,10 @@ CREATE INDEX idx_tasks_project ON tasks(project_id);
 CREATE INDEX idx_tasks_project_status ON tasks(project_id, status);
 
 -- Unique constraint
-CREATE UNIQUE INDEX idx_projects_org_slug ON projects(organization_id, slug);
+CREATE UNIQUE INDEX idx_missions_org_slug ON missions(organization_id, slug);
 
 -- Partial index (for specific queries)
-CREATE INDEX idx_tasks_overdue ON tasks(due_date) WHERE status != 'done' AND due_date < NOW();
+CREATE INDEX idx_actions_overdue ON actions(due_date) WHERE status != 'done' AND due_date < NOW();
 ```
 
 ### Migrations
@@ -2053,17 +2193,17 @@ CREATE INDEX idx_tasks_overdue ON tasks(due_date) WHERE status != 'done' AND due
 **Migration Template:**
 
 ```sql
--- Migration: Add priority to tasks
+-- Migration: Add priority to actions
 -- Date: 2026-02-10
 -- Author: Developer Name
 
 -- Up Migration
-ALTER TABLE tasks ADD COLUMN priority task_priority DEFAULT 'medium';
-CREATE INDEX idx_tasks_priority ON tasks(priority);
+ALTER TABLE actions ADD COLUMN priority task_priority DEFAULT 'medium';
+CREATE INDEX idx_actions_priority ON actions(priority);
 
 -- Down Migration (add to separate file if needed)
--- ALTER TABLE tasks DROP COLUMN priority;
--- DROP INDEX idx_tasks_priority;
+-- ALTER TABLE actions DROP COLUMN priority;
+-- DROP INDEX idx_actions_priority;
 ```
 
 ### Vector Storage (pgvector)
@@ -2095,7 +2235,7 @@ CREATE INDEX idx_knowledge_embedding_hnsw ON knowledge_embeddings
  COHORTIX QUICK REFERENCE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-PROJECT:     Cohortix
+MISSION:     Cohortix
 DOMAIN:      cohortix.ai
 TAGLINE:     "Your AI crew, ready for action."
 
@@ -2104,12 +2244,12 @@ TAGLINE:     "Your AI crew, ready for action."
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Frontend:    Next.js 15 (App Router) + React 19
-Styling:     Tailwind CSS 4 + shadcn/ui
+Styling:     Tailwind CSS 3 + shadcn/ui
 State:       Zustand + TanStack Query
 Backend:     Next.js API Routes (BFF pattern)
-Database:    PostgreSQL 16 + pgvector (Neon)
-ORM:         Drizzle ORM
-Auth:        Clerk
+Database:    PostgreSQL 16 + pgvector (Supabase)
+ORM:         Supabase Client (RLS-based)
+Auth:        Supabase Auth
 Cache:       Redis (Upstash)
 Jobs:        Inngest
 Hosting:     Vercel
@@ -2131,14 +2271,17 @@ pnpm db:studio       # Open database GUI
  TERMINOLOGY (USE CONSISTENTLY)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+HIERARCHY: Pillars → Aspirations → Goals → Missions → Actions
+
 ❌ Agent       → ✅ Ally
 ❌ Agents      → ✅ Cohort
-❌ Task        → ✅ Mission
-❌ Workflow    → ✅ Campaign
+❌ Mission     → ✅ Mission
+❌ Action        → ✅ Action
 ❌ Dashboard   → ✅ Mission Control
 ❌ Create      → ✅ Recruit
 ❌ Run/Execute → ✅ Deploy
-❌ Workspace   → ✅ HQ / Base
+❌ Workspace   → ✅ Base
+❌ Goal    → DROPPED (Goals cover this)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  COMMIT MESSAGE FORMAT
@@ -2147,10 +2290,10 @@ pnpm db:studio       # Open database GUI
 feat(scope): add new feature
 fix(scope): resolve bug
 docs(scope): update documentation
-chore(scope): maintenance task
+chore(scope): maintenance action
 
 Examples:
-feat(tasks): add subtask support
+feat(actions): add subtask support
 fix(auth): resolve session expiry
 docs(api): update endpoint docs
 
@@ -2185,6 +2328,6 @@ Database Schema:     packages/database/src/schema/
 
 ---
 
-*This is a living document. Update as the project evolves.*
+*This is a living document. Update as the mission evolves.*
 
 *For additional documentation, see `/docs/` directory.*

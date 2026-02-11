@@ -37,8 +37,8 @@ We use friendly, mission-based language instead of cold enterprise jargon. This 
 |---------------------|------------------|---------------|
 | Agent | **Ally** | "Add a new ally to your cohort" |
 | Agents (group) | **Cohort** | "Your cohort is ready for deployment" |
-| Task | **Mission** | "Assign this mission to your ally" |
-| Workflow / Series of tasks | **Campaign** | "This campaign includes 5 missions" |
+| Action | **Mission** | "Assign this mission to your ally" |
+| Workflow / Series of actions | **Goal** | "This goal includes 5 missions" |
 | Dashboard / UI | **Mission Control** | "View progress in Mission Control" |
 | Create agent | **Recruit** | "Recruit a new ally" |
 | Run / Start / Execute | **Deploy** | "Deploy your cohort" |
@@ -46,11 +46,11 @@ We use friendly, mission-based language instead of cold enterprise jargon. This 
 | Agent status: running | **On mission** | "3 allies currently on mission" |
 | Agent status: idle | **Standing by** | "Ally standing by, ready for deployment" |
 | Agent status: offline | **Off duty** | "This ally is currently off duty" |
-| Assign task | **Brief** | "Brief your ally on this mission" |
-| Complete task | **Mission accomplished** | "Mission accomplished! Learnings captured." |
-| Task queue | **Mission roster** | "5 missions in the roster" |
+| Assign action | **Brief** | "Brief your ally on this mission" |
+| Complete action | **Mission accomplished** | "Mission accomplished! Learnings captured." |
+| Action queue | **Mission roster** | "5 missions in the roster" |
 | Organization | **HQ** | "Invite teammates to your HQ" |
-| Project | **Campaign** | "Start a new campaign" |
+| Mission | **Goal** | "Start a new goal" |
 | Knowledge base | **Intel** | "Search past intel" |
 
 ---
@@ -112,7 +112,7 @@ We use friendly, mission-based language instead of cold enterprise jargon. This 
 
 **Mission Status:**
 > Active Missions
-> 5 missions in progress across 2 campaigns
+> 5 missions in progress across 2 goals
 
 **Intel Section:**
 > Recent Intel
@@ -123,7 +123,7 @@ We use friendly, mission-based language instead of cold enterprise jargon. This 
 **Mission Complete:**
 > ✅ Mission accomplished!
 > 
-> Your ally finished the research campaign and added 3 new insights to your intel.
+> Your ally finished the research goal and added 3 new insights to your intel.
 
 **Ally Recruited:**
 > 🎉 Welcome to the cohort!
@@ -162,7 +162,7 @@ We use friendly, mission-based language instead of cold enterprise jargon. This 
 > 
 > Ready to start something new?
 > 
-> [Start a Campaign]
+> [Start a Goal]
 
 **No Intel:**
 > Your intel is empty for now.
@@ -194,7 +194,7 @@ Before publishing any copy, check:
 | Utilize | Use |
 | Optimize | Improve |
 | Synergy | Teamwork |
-| Workflow automation | Automated campaigns |
+| Workflow automation | Automated goals |
 | Agent orchestration | Cohort coordination |
 | Multi-tenant | Teams / Organizations |
 | SaaS platform | Cohortix |
@@ -232,8 +232,8 @@ TAGLINE:     "Your AI crew, ready for action."
 TERMINOLOGY:
   Agent       → Ally
   Agents      → Cohort
-  Task        → Mission
-  Workflow    → Campaign
+  Action        → Mission
+  Workflow    → Goal
   Dashboard   → Mission Control
   Create      → Recruit
   Run/Start   → Deploy
