@@ -54,7 +54,7 @@ The database schema is designed for:
                    │                      │                      │
           ┌────────▼────────┐             │                      │
           │ ORG_MEMBERSHIPS │             │             ┌────────▼────────┐
-          │─────────────────│             │             │    PROJECTS     │
+          │─────────────────│             │             │    MISSIONS     │
           │ id (PK)         │             │             │─────────────────│
           │ org_id (FK)     │◀────────────┼─────────────│ id (PK)         │
           │ user_id (FK)    │             │             │ org_id (FK)     │───┐
@@ -72,7 +72,7 @@ The database schema is designed for:
                     │                                           ││            │
                     ▼                                           ▼│            │
           ┌─────────────────┐                         ┌─────────────────┐     │
-          │ AGENT_ASSIGN-   │                         │     TASKS       │     │
+          │ AGENT_ASSIGN-   │                         │     ACTIONS       │     │
           │    MENTS        │                         │─────────────────│     │
           │─────────────────│                         │ id (PK)         │     │
           │ id (PK)         │                         │ org_id (FK)     │─────┘
@@ -167,37 +167,84 @@ The database schema is designed for:
 
 ### Strategy: Shared Database with Row-Level Security (RLS)
 
-Every table containing tenant data includes an `organization_id` column. PostgreSQL RLS policies enforce isolation.
+Every table containing tenant data includes an `organization_id` column. PostgreSQL RLS policies enforce isolation using Supabase's `auth.uid()` function.
 
 ```sql
 -- Enable RLS on all tenant tables
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE missions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE actions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE agents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE knowledge_entries ENABLE ROW LEVEL SECURITY;
 -- ... (all tenant tables)
 
--- Create isolation policy
-CREATE POLICY tenant_isolation_policy ON projects
-  USING (organization_id = current_setting('app.current_org_id')::uuid);
+-- Create isolation policy using auth.uid()
+CREATE POLICY "Users can only access their org's missions" ON missions
+  FOR ALL USING (
+    organization_id IN (
+      SELECT organization_id FROM organization_memberships
+      WHERE user_id = auth.uid()
+    )
+  );
 
--- Set context per request (done by application)
-SET app.current_org_id = 'org_uuid_here';
+-- Supabase automatically provides auth context
+-- The auth.uid() function returns the authenticated user's ID from JWT
+-- No manual context setting required!
 
 -- All queries now automatically filtered
-SELECT * FROM projects; -- Only returns current org's projects
+SELECT * FROM missions; -- Only returns user's org's missions
 ```
 
-### Context Setting in Application
+### RLS Helper Functions
+
+```sql
+-- Helper function to check if user is admin or owner
+CREATE OR REPLACE FUNCTION is_org_admin(org_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM organization_memberships
+    WHERE organization_id = org_id
+      AND user_id = auth.uid()
+      AND role IN ('owner', 'admin')
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Usage in RLS policies
+CREATE POLICY "Admins can delete missions" ON missions
+  FOR DELETE USING (is_org_admin(organization_id));
+```
+
+### Supabase Client Configuration
 
 ```typescript
-// middleware.ts or API route handler
-import { db } from '@repo/database';
+// lib/supabase/server.ts
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
-async function setTenantContext(organizationId: string) {
-  await db.execute(sql`SET app.current_org_id = ${organizationId}`);
+export function createClient() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookies().get(name)?.value;
+        },
+      },
+    }
+  );
 }
 
-// Every request sets the context based on authenticated user
+// Usage in API routes or Server Components
+const supabase = createClient();
+
+// Supabase automatically passes auth context to RLS
+// All queries respect RLS policies based on auth.uid()
+const { data: missions } = await supabase
+  .from('missions')
+  .select('*');
+// Returns only missions user has access to
 ```
 
 ---
@@ -209,7 +256,6 @@ async function setTenantContext(organizationId: string) {
 ```sql
 CREATE TABLE organizations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  clerk_organization_id VARCHAR(255) UNIQUE, -- Clerk's org ID
   name VARCHAR(255) NOT NULL,
   slug VARCHAR(100) UNIQUE NOT NULL,
   logo_url TEXT,
@@ -220,15 +266,87 @@ CREATE TABLE organizations (
 );
 
 CREATE INDEX idx_organizations_slug ON organizations(slug);
-CREATE INDEX idx_organizations_clerk_id ON organizations(clerk_organization_id);
+
+-- RLS Policy: Organization members can view their organization
+ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their organization" ON organizations
+  FOR SELECT USING (
+    id IN (
+      SELECT organization_id FROM organization_memberships
+      WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Organization owners can update" ON organizations
+  FOR UPDATE USING (
+    id IN (
+      SELECT organization_id FROM organization_memberships
+      WHERE user_id = auth.uid() AND role = 'owner'
+    )
+  );
+```
+
+### Clients
+
+```sql
+CREATE TABLE clients (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(100) NOT NULL,
+  description TEXT,
+  
+  -- Client metadata
+  industry VARCHAR(100), -- e.g., 'fintech', 'healthcare', 'e-commerce'
+  contact_name VARCHAR(255),
+  contact_email VARCHAR(255),
+  contact_phone VARCHAR(50),
+  
+  -- Extensible metadata (custom fields, notes, etc.)
+  metadata JSONB DEFAULT '{}',
+  
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  
+  UNIQUE(organization_id, slug)
+);
+
+CREATE INDEX idx_clients_org ON clients(organization_id);
+CREATE INDEX idx_clients_slug ON clients(organization_id, slug);
+CREATE INDEX idx_clients_industry ON clients(industry) WHERE industry IS NOT NULL;
+
+-- RLS Policy: Users can view clients in their organization
+ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their org's clients" ON clients
+  FOR SELECT USING (
+    organization_id IN (
+      SELECT organization_id FROM organization_memberships
+      WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Admins can manage clients" ON clients
+  FOR ALL USING (
+    organization_id IN (
+      SELECT organization_id FROM organization_memberships
+      WHERE user_id = auth.uid() AND role IN ('owner', 'admin')
+    )
+  );
 ```
 
 ### Users
 
+**Note:** User authentication is handled by Supabase Auth. The `auth.users` table is managed by Supabase and referenced via foreign keys.
+
 ```sql
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  clerk_user_id VARCHAR(255) UNIQUE NOT NULL, -- Clerk's user ID
+-- Users table managed by Supabase Auth (auth.users)
+-- Our application extends it with a profiles table
+
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email VARCHAR(255) NOT NULL,
   name VARCHAR(255),
   avatar_url TEXT,
@@ -238,8 +356,16 @@ CREATE TABLE users (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_clerk_id ON users(clerk_user_id);
+CREATE INDEX idx_profiles_email ON profiles(email);
+
+-- RLS Policy: Users can only read/update their own profile
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own profile" ON profiles
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON profiles
+  FOR UPDATE USING (auth.uid() = id);
 ```
 
 ### Organization Memberships
@@ -250,10 +376,10 @@ CREATE TYPE org_role AS ENUM ('owner', 'admin', 'member', 'viewer');
 CREATE TABLE organization_memberships (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   role org_role NOT NULL DEFAULT 'member',
   permissions JSONB DEFAULT '{}', -- Granular permissions override
-  invited_by UUID REFERENCES users(id),
+  invited_by UUID REFERENCES auth.users(id),
   invited_at TIMESTAMPTZ,
   accepted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -264,6 +390,25 @@ CREATE TABLE organization_memberships (
 
 CREATE INDEX idx_org_memberships_org ON organization_memberships(organization_id);
 CREATE INDEX idx_org_memberships_user ON organization_memberships(user_id);
+
+-- RLS Policies
+ALTER TABLE organization_memberships ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view memberships in their orgs" ON organization_memberships
+  FOR SELECT USING (
+    organization_id IN (
+      SELECT organization_id FROM organization_memberships
+      WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Admins can manage memberships" ON organization_memberships
+  FOR ALL USING (
+    organization_id IN (
+      SELECT organization_id FROM organization_memberships
+      WHERE user_id = auth.uid() AND role IN ('owner', 'admin')
+    )
+  );
 ```
 
 ### Workspaces (Optional Team Grouping)
@@ -311,7 +456,7 @@ CREATE TABLE agents (
   runtime_config JSONB DEFAULT '{}',
   
   -- Metrics
-  total_tasks_completed INTEGER DEFAULT 0,
+  total_actions_completed INTEGER DEFAULT 0,
   total_time_worked_ms BIGINT DEFAULT 0,
   last_active_at TIMESTAMPTZ,
   
@@ -331,16 +476,17 @@ CREATE INDEX idx_agents_status ON agents(organization_id, status);
 CREATE INDEX idx_agents_external_id ON agents(external_id);
 ```
 
-### Projects
+### Missions
 
 ```sql
 CREATE TYPE project_status AS ENUM ('planning', 'active', 'on_hold', 'completed', 'archived');
 CREATE TYPE owner_type AS ENUM ('user', 'agent');
 
-CREATE TABLE projects (
+CREATE TABLE missions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   workspace_id UUID REFERENCES workspaces(id) ON DELETE SET NULL,
+  client_id UUID REFERENCES clients(id) ON DELETE SET NULL, -- Client association
   
   -- Polymorphic owner (can be user or agent)
   owner_type owner_type NOT NULL DEFAULT 'user',
@@ -370,24 +516,25 @@ CREATE TABLE projects (
   UNIQUE(organization_id, slug)
 );
 
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
-CREATE POLICY project_isolation ON projects
+ALTER TABLE missions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY project_isolation ON missions
   USING (organization_id = current_setting('app.current_org_id')::uuid);
 
-CREATE INDEX idx_projects_org ON projects(organization_id);
-CREATE INDEX idx_projects_workspace ON projects(workspace_id);
-CREATE INDEX idx_projects_status ON projects(organization_id, status);
-CREATE INDEX idx_projects_owner ON projects(owner_type, owner_id);
+CREATE INDEX idx_missions_org ON missions(organization_id);
+CREATE INDEX idx_missions_workspace ON missions(workspace_id);
+CREATE INDEX idx_missions_client ON missions(client_id);
+CREATE INDEX idx_missions_status ON missions(organization_id, status);
+CREATE INDEX idx_missions_owner ON missions(owner_type, owner_id);
 ```
 
-### Tasks
+### Actions
 
 ```sql
 CREATE TYPE task_status AS ENUM ('backlog', 'todo', 'in_progress', 'review', 'done', 'cancelled');
 CREATE TYPE task_priority AS ENUM ('low', 'medium', 'high', 'urgent');
 CREATE TYPE assignee_type AS ENUM ('user', 'agent', 'unassigned');
 
-CREATE TABLE tasks (
+CREATE TABLE actions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
   project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
@@ -427,26 +574,26 @@ CREATE TABLE tasks (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
-CREATE POLICY task_isolation ON tasks
+ALTER TABLE actions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY task_isolation ON actions
   USING (organization_id = current_setting('app.current_org_id')::uuid);
 
-CREATE INDEX idx_tasks_org ON tasks(organization_id);
+CREATE INDEX idx_actions_org ON actions(organization_id);
 CREATE INDEX idx_tasks_project ON tasks(project_id);
 CREATE INDEX idx_tasks_parent ON tasks(parent_task_id);
-CREATE INDEX idx_tasks_assignee ON tasks(assignee_type, assignee_id);
+CREATE INDEX idx_actions_assignee ON actions(assignee_type, assignee_id);
 CREATE INDEX idx_tasks_status ON tasks(project_id, status);
-CREATE INDEX idx_tasks_due_date ON tasks(due_date) WHERE due_date IS NOT NULL;
+CREATE INDEX idx_actions_due_date ON actions(due_date) WHERE due_date IS NOT NULL;
 CREATE INDEX idx_tasks_order ON tasks(project_id, status, order_index);
-CREATE INDEX idx_tasks_tags ON tasks USING GIN(tags);
+CREATE INDEX idx_actions_tags ON actions USING GIN(tags);
 ```
 
-### Task Dependencies
+### Action Dependencies
 
 ```sql
 CREATE TYPE dependency_type AS ENUM (
-  'blocks',      -- This task blocks the other
-  'blocked_by',  -- This task is blocked by the other
+  'blocks',      -- This action blocks the other
+  'blocked_by',  -- This action is blocked by the other
   'relates_to'   -- Related but not blocking
 );
 
@@ -541,6 +688,7 @@ CREATE TYPE goal_status AS ENUM ('not_started', 'in_progress', 'at_risk', 'compl
 CREATE TABLE goals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  client_id UUID REFERENCES clients(id) ON DELETE SET NULL, -- Optional client association
   
   -- Owner (who is responsible)
   owner_type owner_type NOT NULL,
@@ -556,7 +704,7 @@ CREATE TABLE goals (
   
   -- Progress tracking
   progress_percent INTEGER DEFAULT 0 CHECK (progress_percent BETWEEN 0 AND 100),
-  progress_auto_calculate BOOLEAN DEFAULT true, -- Calculate from linked projects
+  progress_auto_calculate BOOLEAN DEFAULT true, -- Calculate from linked missions
   
   -- Dates
   target_date DATE,
@@ -574,6 +722,7 @@ CREATE POLICY goal_isolation ON goals
   USING (organization_id = current_setting('app.current_org_id')::uuid);
 
 CREATE INDEX idx_goals_org ON goals(organization_id);
+CREATE INDEX idx_goals_client ON goals(client_id);
 CREATE INDEX idx_goals_owner ON goals(owner_type, owner_id);
 CREATE INDEX idx_goals_status ON goals(organization_id, status);
 ```
@@ -614,7 +763,7 @@ CREATE INDEX idx_time_entries_started ON time_entries(started_at);
 
 ```sql
 CREATE TYPE knowledge_source_type AS ENUM (
-  'task',           -- Learned from completing a task
+  'action',           -- Learned from completing a action
   'research',       -- From internet research
   'manual',         -- Manually added
   'conversation',   -- From conversation/comment
@@ -628,6 +777,12 @@ CREATE TYPE knowledge_category AS ENUM (
   'domain',
   'process',
   'other'
+);
+
+CREATE TYPE knowledge_scope_level AS ENUM (
+  'company',  -- Available to all agents in organization
+  'client',   -- Only for agents assigned to this client
+  'mission'   -- Specific to a mission
 );
 
 CREATE TABLE knowledge_entries (
@@ -652,6 +807,19 @@ CREATE TABLE knowledge_entries (
   
   -- Linked entities
   project_id UUID REFERENCES projects(id) ON DELETE SET NULL,
+  client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
+  
+  -- Knowledge Scoping (Company → Client → Mission hierarchy)
+  scope_level knowledge_scope_level NOT NULL DEFAULT 'company',
+  scope_id UUID, -- Polymorphic: client_id OR project_id depending on scope_level
+  
+  -- Memory Decay System (Phase 2 active, Phase 1 schema support)
+  relevance_score DECIMAL(3, 2) DEFAULT 1.0 CHECK (relevance_score BETWEEN 0 AND 1),
+  access_count INTEGER DEFAULT 0,
+  last_accessed_at TIMESTAMPTZ,
+  helpful_count INTEGER DEFAULT 0,
+  unhelpful_count INTEGER DEFAULT 0,
+  decay_disabled BOOLEAN DEFAULT FALSE, -- Evergreen knowledge (e.g., onboarding docs)
   
   -- Metadata
   metadata JSONB DEFAULT '{}',
@@ -664,8 +832,30 @@ CREATE TABLE knowledge_entries (
 );
 
 ALTER TABLE knowledge_entries ENABLE ROW LEVEL SECURITY;
+
+-- Basic tenant isolation
 CREATE POLICY knowledge_isolation ON knowledge_entries
   USING (organization_id = current_setting('app.current_org_id')::uuid);
+
+-- Client-scoped knowledge access (for agent runtime)
+-- Note: This assumes agent context is available via custom session variable
+CREATE POLICY knowledge_client_scope ON knowledge_entries
+  FOR SELECT USING (
+    -- Company-level knowledge: Always visible
+    scope_level = 'company'
+    OR
+    -- Client-level knowledge: Only if agent is assigned to that client
+    (scope_level = 'client' AND scope_id IN (
+      SELECT client_id FROM agent_client_assignments
+      WHERE agent_id = current_setting('app.current_agent_id', TRUE)::uuid
+    ))
+    OR
+    -- Mission-level knowledge: Only if agent is assigned to that mission
+    (scope_level = 'mission' AND scope_id IN (
+      SELECT project_id FROM agent_assignments
+      WHERE agent_id = current_setting('app.current_agent_id', TRUE)::uuid
+    ))
+  );
 
 -- Full-text search index
 CREATE INDEX idx_knowledge_search ON knowledge_entries USING GIN(search_vector);
@@ -691,6 +881,10 @@ CREATE INDEX idx_knowledge_agent ON knowledge_entries(agent_id);
 CREATE INDEX idx_knowledge_source ON knowledge_entries(source_type, source_id);
 CREATE INDEX idx_knowledge_category ON knowledge_entries(organization_id, category);
 CREATE INDEX idx_knowledge_tags ON knowledge_entries USING GIN(tags);
+CREATE INDEX idx_knowledge_client ON knowledge_entries(client_id);
+CREATE INDEX idx_knowledge_scope ON knowledge_entries(organization_id, scope_level, scope_id);
+CREATE INDEX idx_knowledge_relevance ON knowledge_entries(relevance_score DESC) WHERE decay_disabled = FALSE;
+CREATE INDEX idx_knowledge_last_accessed ON knowledge_entries(last_accessed_at DESC NULLS LAST);
 ```
 
 ### Knowledge Embeddings (Vector Storage)
@@ -722,29 +916,54 @@ CREATE INDEX idx_knowledge_embedding_hnsw ON knowledge_embeddings
 
 CREATE INDEX idx_knowledge_embedding_entry ON knowledge_embeddings(entry_id);
 
--- Semantic search function
+-- Semantic search function with scope awareness
 CREATE OR REPLACE FUNCTION search_knowledge_semantic(
   query_embedding vector(1536),
   org_id UUID,
+  agent_id UUID DEFAULT NULL,
   match_count INTEGER DEFAULT 10,
   similarity_threshold FLOAT DEFAULT 0.7
 )
 RETURNS TABLE (
   entry_id UUID,
   chunk_text TEXT,
-  similarity FLOAT
+  similarity FLOAT,
+  scope_level knowledge_scope_level
 ) AS $$
 BEGIN
   RETURN QUERY
   SELECT 
     ke.entry_id,
     ke.chunk_text,
-    1 - (ke.embedding <=> query_embedding) as similarity
+    1 - (ke.embedding <=> query_embedding) as similarity,
+    k.scope_level
   FROM knowledge_embeddings ke
   JOIN knowledge_entries k ON k.id = ke.entry_id
   WHERE k.organization_id = org_id
+    AND (
+      -- Company-level: always visible
+      k.scope_level = 'company'
+      OR
+      -- Client-level: only if agent is assigned to client
+      (agent_id IS NOT NULL AND k.scope_level = 'client' AND k.scope_id IN (
+        SELECT client_id FROM agent_client_assignments WHERE agent_id = search_knowledge_semantic.agent_id
+      ))
+      OR
+      -- Mission-level: only if agent is assigned to mission
+      (agent_id IS NOT NULL AND k.scope_level = 'mission' AND k.scope_id IN (
+        SELECT project_id FROM agent_assignments WHERE agent_id = search_knowledge_semantic.agent_id
+      ))
+    )
     AND 1 - (ke.embedding <=> query_embedding) > similarity_threshold
-  ORDER BY ke.embedding <=> query_embedding
+    AND k.relevance_score > 0.3 -- Filter out heavily decayed knowledge
+  ORDER BY 
+    -- Prioritize more specific scopes (mission > client > company)
+    CASE k.scope_level 
+      WHEN 'mission' THEN 1
+      WHEN 'client' THEN 2
+      WHEN 'company' THEN 3
+    END,
+    ke.embedding <=> query_embedding
   LIMIT match_count;
 END;
 $$ LANGUAGE plpgsql;
@@ -754,7 +973,7 @@ $$ LANGUAGE plpgsql;
 
 ## System Tables
 
-### Agent Assignments (Project-level)
+### Agent Assignments (Mission-level)
 
 ```sql
 CREATE TYPE agent_project_role AS ENUM ('owner', 'contributor', 'viewer');
@@ -772,6 +991,48 @@ CREATE TABLE agent_assignments (
 
 CREATE INDEX idx_agent_assignments_agent ON agent_assignments(agent_id);
 CREATE INDEX idx_agent_assignments_project ON agent_assignments(project_id);
+```
+
+### Agent Client Assignments
+
+```sql
+CREATE TABLE agent_client_assignments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  agent_id UUID NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  assigned_at TIMESTAMPTZ DEFAULT NOW(),
+  assigned_by UUID REFERENCES users(id),
+  
+  UNIQUE(agent_id, client_id)
+);
+
+CREATE INDEX idx_agent_client_assignments_agent ON agent_client_assignments(agent_id);
+CREATE INDEX idx_agent_client_assignments_client ON agent_client_assignments(client_id);
+
+-- RLS Policy: Users can view agent-client assignments in their organization
+ALTER TABLE agent_client_assignments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view agent-client assignments" ON agent_client_assignments
+  FOR SELECT USING (
+    client_id IN (
+      SELECT id FROM clients
+      WHERE organization_id IN (
+        SELECT organization_id FROM organization_memberships
+        WHERE user_id = auth.uid()
+      )
+    )
+  );
+
+CREATE POLICY "Admins can manage agent-client assignments" ON agent_client_assignments
+  FOR ALL USING (
+    client_id IN (
+      SELECT id FROM clients
+      WHERE organization_id IN (
+        SELECT organization_id FROM organization_memberships
+        WHERE user_id = auth.uid() AND role IN ('owner', 'admin')
+      )
+    )
+  );
 ```
 
 ### Integrations
@@ -871,7 +1132,7 @@ CREATE TABLE audit_logs (
   action VARCHAR(100) NOT NULL, -- 'create', 'update', 'delete', 'assign', etc.
   
   -- Resource
-  resource_type VARCHAR(50) NOT NULL, -- 'project', 'task', 'agent', etc.
+  resource_type VARCHAR(50) NOT NULL, -- 'mission', 'action', 'agent', etc.
   resource_id UUID NOT NULL,
   
   -- Change details
@@ -1319,11 +1580,11 @@ CREATE INDEX idx_learning_paths_org ON agent_learning_paths(organization_id);
 ## Drizzle ORM Schema Example
 
 ```typescript
-// packages/database/src/schema/tasks.ts
+// packages/database/src/schema/actions.ts
 import { pgTable, uuid, varchar, text, timestamp, integer, jsonb, pgEnum } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { organizations } from './organizations';
-import { projects } from './projects';
+import { missions } from './missions';
 
 export const taskStatusEnum = pgEnum('task_status', [
   'backlog', 'todo', 'in_progress', 'review', 'done', 'cancelled'
@@ -1337,7 +1598,7 @@ export const assigneeTypeEnum = pgEnum('assignee_type', [
   'user', 'agent', 'unassigned'
 ]);
 
-export const tasks = pgTable('tasks', {
+export const actions = pgTable('actions', {
   id: uuid('id').primaryKey().defaultRandom(),
   organizationId: uuid('organization_id').notNull().references(() => organizations.id),
   projectId: uuid('project_id').notNull().references(() => projects.id),
@@ -1363,22 +1624,22 @@ export const tasks = pgTable('tasks', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });
 
-export const tasksRelations = relations(tasks, ({ one, many }) => ({
+export const actionsRelations = relations(actions, ({ one, many }) => ({
   organization: one(organizations, {
-    fields: [tasks.organizationId],
+    fields: [actions.organizationId],
     references: [organizations.id],
   }),
-  project: one(projects, {
-    fields: [tasks.projectId],
-    references: [projects.id],
+  mission: one(missions, {
+    fields: [actions.projectId],
+    references: [missions.id],
   }),
-  parentTask: one(tasks, {
-    fields: [tasks.parentTaskId],
-    references: [tasks.id],
-    relationName: 'subtasks',
+  parentTask: one(actions, {
+    fields: [actions.parentTaskId],
+    references: [actions.id],
+    relationName: 'subactions',
   }),
-  subtasks: many(tasks, {
-    relationName: 'subtasks',
+  subactions: many(actions, {
+    relationName: 'subactions',
   }),
   comments: many(comments),
   timeEntries: many(timeEntries),
@@ -1392,8 +1653,8 @@ export const tasksRelations = relations(tasks, ({ one, many }) => ({
 | Table | Index | Type | Purpose |
 |-------|-------|------|---------|
 | tasks | project_id, status | B-tree | Kanban board queries |
-| tasks | due_date | B-tree | Deadline queries |
-| tasks | tags | GIN | Tag filtering |
+| actions | due_date | B-tree | Deadline queries |
+| actions | tags | GIN | Tag filtering |
 | knowledge_entries | search_vector | GIN | Full-text search |
 | knowledge_embeddings | embedding | HNSW | Vector similarity |
 | audit_logs | created_at | B-tree | Time-based queries |

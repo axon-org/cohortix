@@ -37,36 +37,44 @@ Development: http://localhost:3000/api/v1
 │                      AUTHENTICATION FLOW                             │
 └─────────────────────────────────────────────────────────────────────┘
 
- ┌────────┐                 ┌─────────┐                 ┌─────────────┐
- │ Client │                 │  Clerk  │                 │     API     │
- └───┬────┘                 └────┬────┘                 └──────┬──────┘
-     │                           │                              │
-     │  1. Sign In               │                              │
-     │──────────────────────────▶│                              │
-     │                           │                              │
-     │  2. JWT Token             │                              │
-     │◀──────────────────────────│                              │
-     │                           │                              │
-     │  3. API Request + Bearer Token                           │
-     │─────────────────────────────────────────────────────────▶│
-     │                           │                              │
-     │                           │  4. Verify Token             │
-     │                           │◀─────────────────────────────│
-     │                           │                              │
-     │                           │  5. Token Valid + User Info  │
-     │                           │─────────────────────────────▶│
-     │                           │                              │
-     │  6. Response                                             │
-     │◀─────────────────────────────────────────────────────────│
+ ┌────────┐              ┌──────────┐                 ┌─────────────┐
+ │ Client │              │ Supabase │                 │     API     │
+ └───┬────┘              └────┬─────┘                 └──────┬──────┘
+     │                        │                              │
+     │  1. Sign In            │                              │
+     │  (email/OAuth/magic)   │                              │
+     │───────────────────────▶│                              │
+     │                        │                              │
+     │  2. JWT + Session      │                              │
+     │     (httpOnly cookie)  │                              │
+     │◀───────────────────────│                              │
+     │                        │                              │
+     │  3. API Request with JWT cookie                       │
+     │──────────────────────────────────────────────────────▶│
+     │                        │                              │
+     │                        │  4. Verify JWT via JWKS      │
+     │                        │◀─────────────────────────────│
+     │                        │                              │
+     │                        │  5. JWT Valid + User Claims  │
+     │                        │─────────────────────────────▶│
+     │                        │                              │
+     │                        │  6. RLS automatically filters│
+     │                        │     based on auth.uid()      │
+     │                        │                              │
+     │  7. Response                                          │
+     │◀──────────────────────────────────────────────────────│
 ```
 
 ### Request Headers
 
 ```http
-Authorization: Bearer <jwt_token>
 Content-Type: application/json
 Accept: application/json
-X-Organization-ID: org_xxx  # Optional: Override default org
+X-Organization-ID: org_xxx  # Optional: Specify org context (if user has multiple)
+
+# JWT is automatically sent via httpOnly cookie
+# No Authorization header needed (more secure)
+# For API keys (server-to-server): Authorization: Bearer <supabase_service_key>
 ```
 
 ### Authentication Errors
@@ -187,12 +195,12 @@ X-RateLimit-Policy: 60;w=60
 
 ## API Endpoints
 
-### Projects
+### Missions
 
-#### List Projects
+#### List Missions
 
 ```http
-GET /api/v1/projects
+GET /api/v1/missions
 ```
 
 **Query Parameters:**
@@ -216,7 +224,7 @@ GET /api/v1/projects
       "id": "proj_abc123",
       "name": "Agent Command Center",
       "slug": "agent-command-center",
-      "description": "Main project for ACC development",
+      "description": "Main mission for ACC development",
       "status": "active",
       "ownerType": "user",
       "ownerId": "user_xyz",
@@ -250,10 +258,10 @@ GET /api/v1/projects
 }
 ```
 
-#### Get Project
+#### Get Mission
 
 ```http
-GET /api/v1/projects/:projectId
+GET /api/v1/missions/:projectId
 ```
 
 **Response:**
@@ -263,7 +271,7 @@ GET /api/v1/projects/:projectId
     "id": "proj_abc123",
     "name": "Agent Command Center",
     "slug": "agent-command-center",
-    "description": "Main project for ACC development",
+    "description": "Main mission for ACC development",
     "status": "active",
     "ownerType": "user",
     "ownerId": "user_xyz",
@@ -309,17 +317,17 @@ GET /api/v1/projects/:projectId
 }
 ```
 
-#### Create Project
+#### Create Mission
 
 ```http
-POST /api/v1/projects
+POST /api/v1/missions
 ```
 
 **Request Body:**
 ```json
 {
-  "name": "New Project",
-  "description": "Project description",
+  "name": "New Mission",
+  "description": "Mission description",
   "workspaceId": "ws_123",
   "ownerType": "user",
   "ownerId": "user_xyz",
@@ -336,17 +344,17 @@ POST /api/v1/projects
 {
   "data": {
     "id": "proj_new123",
-    "name": "New Project",
-    "slug": "new-project",
+    "name": "New Mission",
+    "slug": "new-mission",
     ...
   }
 }
 ```
 
-#### Update Project
+#### Update Mission
 
 ```http
-PATCH /api/v1/projects/:projectId
+PATCH /api/v1/missions/:projectId
 ```
 
 **Request Body:** (partial update)
@@ -357,23 +365,23 @@ PATCH /api/v1/projects/:projectId
 }
 ```
 
-#### Delete Project
+#### Delete Mission
 
 ```http
-DELETE /api/v1/projects/:projectId
+DELETE /api/v1/missions/:projectId
 ```
 
 **Response:** `204 No Content`
 
 ---
 
-### Tasks
+### Actions
 
-#### List Tasks
+#### List Actions
 
 ```http
-GET /api/v1/tasks
-GET /api/v1/projects/:projectId/tasks
+GET /api/v1/actions
+GET /api/v1/missions/:projectId/actions
 ```
 
 **Query Parameters:**
@@ -430,10 +438,10 @@ GET /api/v1/projects/:projectId/tasks
 }
 ```
 
-#### Get Task
+#### Get Action
 
 ```http
-GET /api/v1/tasks/:taskId
+GET /api/v1/actions/:taskId
 ```
 
 **Query Parameters:**
@@ -443,11 +451,11 @@ GET /api/v1/tasks/:taskId
 | `includeSubtasks` | boolean | true | Include subtasks |
 | `includeTimeEntries` | boolean | false | Include time entries |
 
-#### Create Task
+#### Create Action
 
 ```http
-POST /api/v1/tasks
-POST /api/v1/projects/:projectId/tasks
+POST /api/v1/actions
+POST /api/v1/missions/:projectId/actions
 ```
 
 **Request Body:**
@@ -468,22 +476,22 @@ POST /api/v1/projects/:projectId/tasks
 }
 ```
 
-#### Update Task
+#### Update Action
 
 ```http
-PATCH /api/v1/tasks/:taskId
+PATCH /api/v1/actions/:taskId
 ```
 
-#### Delete Task
+#### Delete Action
 
 ```http
-DELETE /api/v1/tasks/:taskId
+DELETE /api/v1/actions/:taskId
 ```
 
-#### Reorder Tasks (Kanban)
+#### Reorder Actions (Kanban)
 
 ```http
-POST /api/v1/tasks/:taskId/reorder
+POST /api/v1/actions/:taskId/reorder
 ```
 
 **Request Body:**
@@ -495,10 +503,10 @@ POST /api/v1/tasks/:taskId/reorder
 }
 ```
 
-#### Add Task Dependency
+#### Add Action Dependency
 
 ```http
-POST /api/v1/tasks/:taskId/dependencies
+POST /api/v1/actions/:taskId/dependencies
 ```
 
 **Request Body:**
@@ -509,10 +517,10 @@ POST /api/v1/tasks/:taskId/dependencies
 }
 ```
 
-#### Remove Task Dependency
+#### Remove Action Dependency
 
 ```http
-DELETE /api/v1/tasks/:taskId/dependencies/:dependencyId
+DELETE /api/v1/actions/:taskId/dependencies/:dependencyId
 ```
 
 ---
@@ -522,7 +530,7 @@ DELETE /api/v1/tasks/:taskId/dependencies/:dependencyId
 #### List Comments
 
 ```http
-GET /api/v1/tasks/:taskId/comments
+GET /api/v1/actions/:taskId/comments
 ```
 
 **Response:**
@@ -579,7 +587,7 @@ GET /api/v1/tasks/:taskId/comments
 #### Create Comment
 
 ```http
-POST /api/v1/tasks/:taskId/comments
+POST /api/v1/actions/:taskId/comments
 ```
 
 **Request Body:**
@@ -662,10 +670,10 @@ GET /api/v1/agents
 GET /api/v1/agents/:agentId
 ```
 
-#### Get Agent Tasks
+#### Get Agent Actions
 
 ```http
-GET /api/v1/agents/:agentId/tasks
+GET /api/v1/agents/:agentId/actions
 ```
 
 #### Get Agent Knowledge
@@ -690,14 +698,14 @@ GET /api/v1/agents/:agentId/performance
 {
   "data": {
     "period": "30d",
-    "tasksCompleted": 25,
-    "tasksInProgress": 3,
+    "actionsCompleted": 25,
+    "actionsInProgress": 3,
     "averageCompletionTime": 14400000,
     "totalTimeWorked": 432000000,
     "knowledgeEntriesCreated": 15,
     "timeline": [
-      { "date": "2026-02-01", "tasksCompleted": 2, "timeWorked": 28800000 },
-      { "date": "2026-02-02", "tasksCompleted": 3, "timeWorked": 36000000 }
+      { "date": "2026-02-01", "actionsCompleted": 2, "timeWorked": 28800000 },
+      { "date": "2026-02-02", "actionsCompleted": 3, "timeWorked": 36000000 }
     ]
   }
 }
@@ -739,7 +747,7 @@ GET /api/v1/knowledge/search
         "id": "agent_architect",
         "name": "Architect"
       },
-      "sourceType": "task",
+      "sourceType": "action",
       "sourceId": "task_xyz",
       "projectId": "proj_abc123",
       "relevanceScore": 0.92,
@@ -1432,7 +1440,7 @@ POST /api/v1/webhooks/clawdbot
 **Headers:**
 ```http
 X-Webhook-Secret: <configured_secret>
-X-Webhook-Event: task.completed
+X-Webhook-Event: action.completed
 ```
 
 **Event Types:**
@@ -1443,10 +1451,10 @@ X-Webhook-Event: task.completed
 - `knowledge.created`
 - `message.received`
 
-**Example Payload (task.completed):**
+**Example Payload (action.completed):**
 ```json
 {
-  "event": "task.completed",
+  "event": "action.completed",
   "timestamp": "2026-02-05T10:00:00.000Z",
   "data": {
     "agentId": "ai-developer",
@@ -1484,47 +1492,136 @@ POST /api/v1/webhooks/github
 
 ---
 
-## Real-Time Events (SSE)
+## Real-Time Events (Supabase Realtime)
 
-### Subscribe to Events
+### Subscribe to Database Changes
 
-```http
-GET /api/v1/events/subscribe
+Cohortix uses **Supabase Realtime** for all real-time features. The WebSocket-based subscriptions automatically sync database changes to clients.
+
+**Client-Side Implementation:**
+
+```typescript
+'use client';
+
+import { useEffect } from 'react';
+import { createBrowserClient } from '@supabase/ssr';
+
+export function useTaskSubscription(projectId: string) {
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    // Subscribe to action changes in this mission
+    const channel = supabase
+      .channel(`project:${projectId}:tasks`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'actions',
+          filter: `project_id=eq.${projectId}`,
+        },
+        (payload) => {
+          console.log('Action changed:', payload);
+          // Update UI state
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [projectId]);
+}
+
+// Subscribe to comment additions
+export function useCommentSubscription(taskId: string) {
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    const channel = supabase
+      .channel(`task:${taskId}:comments`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'comments',
+          filter: `task_id=eq.${taskId}`,
+        },
+        (payload) => {
+          console.log('New comment:', payload.new);
+          // Refetch comments or optimistically update
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [taskId]);
+}
 ```
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `projectId` | uuid | Subscribe to project events |
-| `taskId` | uuid | Subscribe to task events |
-| `agentId` | uuid | Subscribe to agent events |
+### Presence (Online Users)
 
-**Response:** Server-Sent Events stream
+```typescript
+// Track who's viewing a mission
+const channel = supabase.channel('mission-room:abc123', {
+  config: { presence: { key: userId } },
+});
 
+// Subscribe to presence
+channel
+  .on('presence', { event: 'sync' }, () => {
+    const state = channel.presenceState();
+    console.log('Online users:', Object.keys(state));
+  })
+  .on('presence', { event: 'join' }, ({ key }) => {
+    console.log(`User ${key} joined`);
+  })
+  .on('presence', { event: 'leave' }, ({ key }) => {
+    console.log(`User ${key} left`);
+  })
+  .subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      await channel.track({ online_at: new Date().toISOString() });
+    }
+  });
 ```
-event: task.updated
-data: {"taskId":"task_xyz","changes":{"status":"in_progress"},"timestamp":"2026-02-05T10:00:00.000Z"}
 
-event: comment.created
-data: {"commentId":"comment_abc","taskId":"task_xyz","authorType":"agent","authorId":"agent_dev","preview":"I've started working on..."}
+### Broadcast (Custom Messages)
 
-event: agent.status_changed
-data: {"agentId":"agent_dev","status":"busy","currentTask":"task_xyz"}
+```typescript
+// Send custom messages (not tied to database)
+const channel = supabase.channel('team-chat');
+
+// Send message
+channel.send({
+  type: 'broadcast',
+  event: 'cursor-move',
+  payload: { x: 100, y: 200 },
+});
+
+// Receive messages
+channel.on('broadcast', { event: 'cursor-move' }, (payload) => {
+  console.log('Cursor moved:', payload);
+});
 ```
 
 ### Event Types
 
-| Event | Description |
-|-------|-------------|
-| `task.created` | New task created |
-| `task.updated` | Task updated |
-| `task.deleted` | Task deleted |
-| `task.status_changed` | Task status changed |
-| `comment.created` | New comment added |
-| `comment.updated` | Comment edited |
-| `agent.status_changed` | Agent status changed |
-| `knowledge.created` | New knowledge entry |
-| `notification` | User notification |
+| Event | Trigger | Use Case |
+|-------|---------|----------|
+| `postgres_changes` | DB INSERT/UPDATE/DELETE | Sync action/mission/comment changes |
+| `presence` | User join/leave channel | Show who's online |
+| `broadcast` | Custom client messages | Cursors, typing indicators, notifications |
 
 ---
 
@@ -1542,7 +1639,7 @@ data: {"agentId":"agent_dev","status":"busy","currentTask":"task_xyz"}
 ```http
 Deprecation: true
 Sunset: Sat, 01 Jun 2027 00:00:00 GMT
-Link: </api/v2/projects>; rel="successor-version"
+Link: </api/v2/missions>; rel="successor-version"
 ```
 
 ---
@@ -1559,13 +1656,13 @@ const acc = new AgentCommandCenter({
   organizationId: 'org_xxx'
 });
 
-// List projects
+// List missions
 const projects = await acc.projects.list({ status: 'active' });
 
-// Create task
+// Create action
 const task = await acc.tasks.create({
   projectId: 'proj_xxx',
-  title: 'New task',
+  title: 'New action',
   assigneeType: 'agent',
   assigneeId: 'agent_dev'
 });
@@ -1573,7 +1670,7 @@ const task = await acc.tasks.create({
 // Subscribe to events
 acc.events.subscribe({
   projectId: 'proj_xxx',
-  onTaskUpdated: (event) => console.log('Task updated:', event),
+  onTaskUpdated: (event) => console.log('Action updated:', event),
   onCommentCreated: (event) => console.log('New comment:', event)
 });
 ```

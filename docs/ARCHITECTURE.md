@@ -8,9 +8,9 @@
 
 ## Executive Summary
 
-Agent Command Center is a multi-tenant SaaS platform that enables organizations to orchestrate AI agents for project management, task automation, and knowledge capture. The architecture is designed for:
+Agent Command Center is a multi-tenant SaaS platform that enables organizations to orchestrate AI agents for mission management, action automation, and knowledge capture. The architecture is designed for:
 
-- **Scale**: Support millions of tasks across thousands of tenants
+- **Scale**: Support millions of actions across thousands of tenants
 - **Security**: Enterprise-grade multi-tenant isolation
 - **Flexibility**: Abstraction layer for agent runtime portability
 - **Performance**: Sub-100ms response times for core operations
@@ -82,7 +82,7 @@ Agent Command Center is a multi-tenant SaaS platform that enables organizations 
 │  │  │                                                                      │    ││
 │  │  │  ┌────────────────────────────────────────────────────────────┐    │    ││
 │  │  │  │              PostgreSQL + pgvector                          │    │    ││
-│  │  │  │  • Relational Data (Users, Orgs, Projects, Tasks)          │    │    ││
+│  │  │  │  • Relational Data (Users, Orgs, Missions, Actions)          │    │    ││
 │  │  │  │  • Vector Embeddings (Knowledge Base)                       │    │    ││
 │  │  │  │  • Row-Level Security (Multi-tenant Isolation)              │    │    ││
 │  │  │  │  • Full-Text Search (pg_trgm)                               │    │    ││
@@ -107,6 +107,36 @@ Agent Command Center is a multi-tenant SaaS platform that enables organizations 
 │                                                                                  │
 └─────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+### Client Entity Integration
+
+The data model now includes a **Clients** entity that sits between Organizations and Missions:
+
+```
+Organization (Tenant)
+    │
+    ├─── Clients (1:many)
+    │       │
+    │       ├─── Missions (1:many, optional client_id)
+    │       ├─── Goals (1:many, optional client_id)
+    │       └─── Agent Assignments (many:many via agent_client_assignments)
+    │
+    ├─── Agents (1:many)
+    │       └─── Client Assignments (which clients this agent works on)
+    │
+    └─── Knowledge Entries (1:many)
+            ├─── Scope: Company-level (all agents see)
+            ├─── Scope: Client-level (only agents assigned to client)
+            └─── Scope: Mission-level (only agents assigned to mission)
+```
+
+**Key Design Points:**
+- **Optional Client Association:** Missions and goals can optionally belong to a client
+- **Agent-Client Assignment:** Tracks which agents work on which client accounts
+- **Client Metadata:** Industry, contact info, custom fields for client context
+- **Knowledge Segregation:** RLS policies ensure agents only see knowledge for clients they're assigned to
 
 ---
 
@@ -147,8 +177,8 @@ The application uses a **Backend-for-Frontend (BFF)** pattern within Next.js:
 │                                   │                      │
 │  ┌───────────────────────────────▼───────────────────┐  │
 │  │              API Route Handlers                    │  │
-│  │  • /api/v1/projects/*   (CRUD operations)         │  │
-│  │  • /api/v1/tasks/*      (Task management)         │  │
+│  │  • /api/v1/missions/*   (CRUD operations)         │  │
+│  │  • /api/v1/actions/*      (Action management)         │  │
 │  │  • /api/v1/agents/*     (Agent operations)        │  │
 │  │  • /api/v1/knowledge/*  (Knowledge base)          │  │
 │  │  • /api/v1/webhooks/*   (External triggers)       │  │
@@ -180,8 +210,8 @@ interface AgentRuntime {
   startAgent(agentId: string): Promise<void>;
   stopAgent(agentId: string): Promise<void>;
   
-  // Task execution
-  assignTask(agentId: string, task: Task): Promise<TaskExecution>;
+  // Action execution
+  assignTask(agentId: string, action: Action): Promise<TaskExecution>;
   getTaskStatus(executionId: string): Promise<TaskStatus>;
   
   // Communication
@@ -289,7 +319,7 @@ Daily 9 AM Evolution Session
 │                                       │                  │
 │                                       ▼                  │
 │                              ┌─────────────────┐        │
-│                              │ Campaign Created│        │
+│                              │ Goal Created│        │
 │                              │ Missions Assigned        │
 │                              └─────────────────┘        │
 └─────────────────────────────────────────────────────────┘
@@ -316,12 +346,12 @@ Daily 9 AM Evolution Session
 
 ```sql
 -- Example: Row-Level Security policy
-CREATE POLICY tenant_isolation ON projects
+CREATE POLICY tenant_isolation ON missions
   USING (organization_id = current_setting('app.current_org_id')::uuid);
 
 -- All queries automatically filtered by tenant
 SET app.current_org_id = 'org_xyz123';
-SELECT * FROM projects; -- Only returns org's projects
+SELECT * FROM missions; -- Only returns org's missions
 ```
 
 #### Supporting Data Stores
@@ -352,32 +382,39 @@ Webhook-based integrations with event-driven architecture:
 
 ```
 ┌────────┐    ┌────────────┐    ┌───────────┐    ┌─────────────┐
-│  User  │───▶│   Clerk    │───▶│  Next.js  │───▶│  PostgreSQL │
-│Browser │    │   Auth     │    │ Middleware│    │   (Users)   │
+│  User  │───▶│  Supabase  │───▶│  Next.js  │───▶│  PostgreSQL │
+│Browser │    │    Auth    │    │ Middleware│    │ (Supabase)  │
 └────────┘    └────────────┘    └───────────┘    └─────────────┘
      │              │                 │                  │
-     │  1. Login    │                 │                  │
+     │  1. Sign In  │                 │                  │
+     │  (email/OAuth)                 │                  │
      │─────────────▶│                 │                  │
      │              │                 │                  │
-     │  2. JWT      │                 │                  │
+     │  2. JWT +    │                 │                  │
+     │     Session  │                 │                  │
      │◀─────────────│                 │                  │
      │              │                 │                  │
-     │  3. Request with JWT           │                  │
+     │  3. Request with JWT (httpOnly cookie)            │
      │───────────────────────────────▶│                  │
      │              │                 │                  │
      │              │  4. Verify JWT  │                  │
+     │              │     via JWKS    │                  │
      │              │◀────────────────│                  │
      │              │                 │                  │
-     │              │                 │  5. Get user +   │
-     │              │                 │     org context  │
+     │              │  5. JWT Valid   │                  │
+     │              │─────────────────▶│                  │
+     │              │                 │                  │
+     │              │                 │  6. Query with   │
+     │              │                 │     auth.uid()   │
+     │              │                 │     (RLS active) │
      │              │                 │─────────────────▶│
      │              │                 │                  │
-     │              │                 │  6. Set RLS      │
-     │              │                 │     context      │
-     │              │                 │─────────────────▶│
+     │              │                 │  7. Filtered data│
+     │              │                 │     (RLS applied)│
+     │              │                 │◀─────────────────│
 ```
 
-### Task Creation Flow
+### Action Creation Flow
 
 ```
 ┌─────────┐   ┌───────────┐   ┌─────────────┐   ┌──────────┐   ┌───────────┐
@@ -386,13 +423,13 @@ Webhook-based integrations with event-driven architecture:
 └─────────┘   └───────────┘   └─────────────┘   └──────────┘   └───────────┘
      │              │                │                │               │
      │ 1. Create    │                │                │               │
-     │    Task      │                │                │               │
+     │    Action      │                │                │               │
      │─────────────▶│                │                │               │
      │              │ 2. Validate    │                │               │
      │              │    + Authorize │                │               │
      │              │───────────────▶│                │               │
      │              │                │ 3. Insert      │               │
-     │              │                │    task        │               │
+     │              │                │    action        │               │
      │              │                │───────────────▶│               │
      │              │                │                │               │
      │              │                │ 4. Trigger     │               │
@@ -446,7 +483,7 @@ Webhook-based integrations with event-driven architecture:
 │  ┌──────────────────────────────────────────────────────┐     │
 │  │         CONTINUOUS KNOWLEDGE CAPTURE                  │     │
 │  │  • Real-time capture during mission execution        │     │
-│  │  • Proactive knowledge creation (not just post-task) │     │
+│  │  • Proactive knowledge creation (not just post-action) │     │
 │  │  • Agent-initiated knowledge entries                 │     │
 │  └──────────────────────┬───────────────────────────────┘     │
 │                         │                                      │
@@ -543,6 +580,222 @@ Webhook-based integrations with event-driven architecture:
    - Attribution tracking for reputation
    - Usage metrics for quality signals
 
+### Scoped Knowledge Base Architecture
+
+**Three-tier knowledge scoping for client data segregation:**
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    SCOPED KNOWLEDGE BASE                          │
+│                                                                   │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │         COMPANY-LEVEL KNOWLEDGE (scope_level='company')    │  │
+│  │  • Deployment procedures                                   │  │
+│  │  • Coding standards                                        │  │
+│  │  • Internal tools & processes                              │  │
+│  │  • Onboarding documentation                                │  │
+│  │                                                             │  │
+│  │  Visibility: ALL agents in organization                    │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                             │                                     │
+│  ┌──────────────────────────▼──────────────────────────────────┐ │
+│  │        CLIENT-LEVEL KNOWLEDGE (scope_level='client')        │ │
+│  │  • Client X brand guidelines                                │ │
+│  │  • Client X API documentation                               │ │
+│  │  • Client X specific requirements                           │ │
+│  │  • Client X historical context                              │ │
+│  │                                                              │ │
+│  │  Visibility: Only agents assigned to Client X               │ │
+│  │             (via agent_client_assignments)                  │ │
+│  └──────────────────────────▼────────────────────────────────┘  │
+│                             │                                    │
+│  ┌──────────────────────────▼──────────────────────────────────┐ │
+│  │       MISSION-LEVEL KNOWLEDGE (scope_level='mission')       │ │
+│  │  • Mission Y architecture decisions                         │ │
+│  │  • Mission Y deployment config                              │ │
+│  │  • Mission Y tech stack specifics                           │ │
+│  │  • Mission Y learnings                                      │ │
+│  │                                                              │ │
+│  │  Visibility: Only agents assigned to Mission Y              │ │
+│  │             (via agent_assignments)                         │ │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+**Scope Resolution Algorithm:**
+
+1. **Agent searches knowledge** → Query includes agent_id
+2. **System checks scope permissions:**
+   - Company-level: Always included
+   - Client-level: Only if agent assigned to that client
+   - Mission-level: Only if agent assigned to that mission
+3. **Results prioritized by scope specificity:**
+   - Mission-level (most specific) ranked first
+   - Client-level ranked second
+   - Company-level (most general) ranked third
+4. **Semantic similarity** applied within each scope tier
+
+**Implementation via RLS + Custom Function:**
+
+```sql
+-- RLS policy ensures scope enforcement at database level
+CREATE POLICY knowledge_client_scope ON knowledge_entries
+  FOR SELECT USING (
+    scope_level = 'company'
+    OR (scope_level = 'client' AND scope_id IN (...agent's clients...))
+    OR (scope_level = 'mission' AND scope_id IN (...agent's missions...))
+  );
+
+-- Semantic search function respects scope hierarchy
+SELECT * FROM search_knowledge_semantic(
+  embedding, org_id, agent_id
+) ORDER BY scope_level, similarity DESC;
+```
+
+---
+
+### Knowledge Retrieval Flow (Scoped)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              AGENT KNOWLEDGE SEARCH FLOW                             │
+│                                                                      │
+│  Agent Query: "How do we deploy to production?"                     │
+│         │                                                            │
+│         ▼                                                            │
+│  ┌──────────────────────────────────────────────────────────┐       │
+│  │  1. Generate Query Embedding (OpenAI/Anthropic)          │       │
+│  └──────────────────┬───────────────────────────────────────┘       │
+│                     │                                                │
+│                     ▼                                                │
+│  ┌──────────────────────────────────────────────────────────┐       │
+│  │  2. Retrieve Agent Context                               │       │
+│  │     • agent_id from session                              │       │
+│  │     • Assigned clients from agent_client_assignments     │       │
+│  │     • Assigned missions from agent_assignments           │       │
+│  └──────────────────┬───────────────────────────────────────┘       │
+│                     │                                                │
+│                     ▼                                                │
+│  ┌──────────────────────────────────────────────────────────┐       │
+│  │  3. Query Knowledge Base (search_knowledge_semantic)     │       │
+│  │     • Vector similarity search                           │       │
+│  │     • Scope filtering (RLS + function)                   │       │
+│  │     • Relevance score filter (> 0.3)                     │       │
+│  └──────────────────┬───────────────────────────────────────┘       │
+│                     │                                                │
+│                     ▼                                                │
+│  ┌──────────────────────────────────────────────────────────┐       │
+│  │  4. Scope-Prioritized Results                            │       │
+│  │                                                           │       │
+│  │  [1] Mission: "Deploy Mission Y to Vercel" (0.92 sim)   │       │
+│  │  [2] Client: "Client X deployment checklist" (0.88 sim) │       │
+│  │  [3] Company: "General deployment guide" (0.85 sim)     │       │
+│  │  [4] Company: "CI/CD best practices" (0.80 sim)         │       │
+│  │                                                           │       │
+│  │  ❌ Filtered out: Client Z knowledge (not assigned)      │       │
+│  └──────────────────┬───────────────────────────────────────┘       │
+│                     │                                                │
+│                     ▼                                                │
+│  ┌──────────────────────────────────────────────────────────┐       │
+│  │  5. Return to Agent + Track Usage                        │       │
+│  │     • Increment access_count                             │       │
+│  │     • Update last_accessed_at                            │       │
+│  │     • Log usage in knowledge_usage table                 │       │
+│  └──────────────────────────────────────────────────────────┘       │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Key Security Features:**
+- **Database-level enforcement** via PostgreSQL RLS (can't bypass in app code)
+- **Agent context in session** variable (`app.current_agent_id`)
+- **Audit trail** in knowledge_usage table
+- **No cross-client leakage** even if app has bugs
+
+---
+
+### Memory Decay Pipeline (Phase 2)
+
+**Purpose:** Prevent knowledge base pollution from outdated/irrelevant entries
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              MEMORY DECAY SYSTEM (Phase 2 Active)                    │
+│                                                                      │
+│  Phase 1 (MVP): Schema fields present, no active decay              │
+│  Phase 2 (Post-MVP): Background jobs implement decay logic          │
+│                                                                      │
+│  ┌──────────────────────────────────────────────────────────┐       │
+│  │  DECAY SIGNALS (Tracked in knowledge_entries)            │       │
+│  │  • access_count (how often accessed)                     │       │
+│  │  • last_accessed_at (recency)                            │       │
+│  │  • helpful_count (positive feedback)                     │       │
+│  │  • unhelpful_count (negative feedback)                   │       │
+│  │  • decay_disabled (manual evergreen flag)                │       │
+│  └──────────────────┬───────────────────────────────────────┘       │
+│                     │                                                │
+│                     ▼                                                │
+│  ┌──────────────────────────────────────────────────────────┐       │
+│  │  DECAY ALGORITHM (Daily Background Job)                  │       │
+│  │                                                           │       │
+│  │  FOR each knowledge_entry WHERE decay_disabled = FALSE:  │       │
+│  │                                                           │       │
+│  │    days_since_access = NOW() - last_accessed_at          │       │
+│  │    helpfulness_ratio = helpful / (helpful + unhelpful)   │       │
+│  │                                                           │       │
+│  │    decay_factor = CASE                                   │       │
+│  │      WHEN days_since_access < 30  THEN 1.0  (no decay)   │       │
+│  │      WHEN days_since_access < 90  THEN 0.95              │       │
+│  │      WHEN days_since_access < 180 THEN 0.85              │       │
+│  │      WHEN days_since_access < 365 THEN 0.70              │       │
+│  │      ELSE 0.50                                           │       │
+│  │    END                                                    │       │
+│  │                                                           │       │
+│  │    helpfulness_boost = helpfulness_ratio * 0.2           │       │
+│  │                                                           │       │
+│  │    new_relevance = MIN(                                  │       │
+│  │      decay_factor + helpfulness_boost,                   │       │
+│  │      1.0                                                  │       │
+│  │    )                                                      │       │
+│  │                                                           │       │
+│  │    UPDATE knowledge_entries                              │       │
+│  │    SET relevance_score = new_relevance                   │       │
+│  │                                                           │       │
+│  └──────────────────┬───────────────────────────────────────┘       │
+│                     │                                                │
+│                     ▼                                                │
+│  ┌──────────────────────────────────────────────────────────┐       │
+│  │  SEARCH FILTERING (relevance_score > 0.3 threshold)      │       │
+│  │  • Entries below threshold excluded from search          │       │
+│  │  • Not deleted (audit trail preserved)                   │       │
+│  │  • Can be manually re-enabled if needed                  │       │
+│  └──────────────────────────────────────────────────────────┘       │
+│                                                                      │
+│  ┌──────────────────────────────────────────────────────────┐       │
+│  │  EVERGREEN KNOWLEDGE (decay_disabled = TRUE)             │       │
+│  │  • Onboarding documentation                              │       │
+│  │  • Core processes & standards                            │       │
+│  │  • Critical compliance info                              │       │
+│  │  • Never decays regardless of access patterns            │       │
+│  └──────────────────────────────────────────────────────────┘       │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Phase 1 (MVP) Implementation:**
+- Schema fields exist and tracked
+- `relevance_score` defaults to 1.0
+- `access_count` and `last_accessed_at` updated on search
+- `helpful_count` / `unhelpful_count` updated via feedback UI
+- No background decay jobs (manual review only)
+
+**Phase 2 (Post-MVP) Implementation:**
+- Daily cron job applies decay algorithm
+- Notification system alerts when knowledge falls below threshold
+- Admin UI for reviewing low-relevance knowledge
+- Agents can flag outdated knowledge for review
+
 ---
 
 ## Multi-Tenant Architecture
@@ -562,11 +815,11 @@ Webhook-based integrations with event-driven architecture:
 │  │  ┌─────────────────────────────────────────────┐    │    │
 │  │  │              WORKSPACE (Optional)            │    │    │
 │  │  │  • Team-level grouping                       │    │    │
-│  │  │  • Project container                         │    │    │
+│  │  │  • Mission container                         │    │    │
 │  │  │                                              │    │    │
 │  │  │  ┌──────────────────────────────────────┐   │    │    │
-│  │  │  │             PROJECT                   │   │    │    │
-│  │  │  │  • Contains tasks, milestones         │   │    │    │
+│  │  │  │             MISSION                   │   │    │    │
+│  │  │  │  • Contains actions, milestones         │   │    │    │
 │  │  │  │  • Agent assignments                  │   │    │    │
 │  │  │  │  • Knowledge scoping                  │   │    │    │
 │  │  │  └──────────────────────────────────────┘   │    │    │
@@ -657,14 +910,14 @@ Phase 1 (MVP - 2026)           Phase 2 (Growth - 2027)        Phase 3 (Enterpris
 // Webhook receiver for Clawdbot events
 POST /api/webhooks/clawdbot
 {
-  "event": "task.completed",
+  "event": "action.completed",
   "agent_id": "ai-developer",
   "task_id": "task_xyz",
   "result": { ... },
   "knowledge_gained": [ ... ]
 }
 
-// Outbound: Assign task to agent
+// Outbound: Assign action to agent
 POST https://clawdbot.api/v1/tasks
 {
   "agent": "ai-developer",
@@ -693,7 +946,7 @@ POST https://clawdbot.api/v1/tasks
 
 **Rationale**:
 - Faster time to market
-- Simpler deployment (single Vercel project)
+- Simpler deployment (single Vercel mission)
 - Full-stack type safety with TypeScript
 - Can extract microservices later if needed
 
@@ -707,15 +960,17 @@ POST https://clawdbot.api/v1/tasks
 - Sufficient for millions of embeddings
 - Lower operational complexity
 
-### 3. Clerk vs NextAuth vs Custom Auth
+### 3. Supabase Auth vs NextAuth vs Custom Auth
 
-**Decision**: Clerk (see TECH_STACK.md for full analysis)
+**Decision**: Supabase Auth (see TECH_STACK.md for full analysis)
 
 **Rationale**:
-- Enterprise SSO out of the box
-- Organization/multi-tenant support built-in
-- Faster implementation time
-- Excellent Next.js integration
+- Integrated with database (same service)
+- Native Row-Level Security (RLS) support
+- OAuth + magic links built-in
+- JWT-based authentication
+- Realtime authentication state changes
+- Cost-effective (included in Supabase)
 
 ### 4. Multi-Tenant Strategy
 
