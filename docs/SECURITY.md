@@ -38,65 +38,120 @@ Security is foundational to Agent Command Center. This document covers:
 └─────────────────────────────────────────────────────────────────────┘
 
   ┌─────────┐     ┌─────────────┐     ┌──────────────┐     ┌─────────┐
-  │ Browser │────▶│   Clerk     │────▶│   Next.js    │────▶│   API   │
-  │         │     │   Auth      │     │  Middleware  │     │ Routes  │
+  │ Browser │────▶│  Supabase   │────▶│   Next.js    │────▶│   API   │
+  │         │     │    Auth     │     │  Middleware  │     │ Routes  │
   └─────────┘     └─────────────┘     └──────────────┘     └─────────┘
        │                │                    │                  │
-       │  1. Login      │                    │                  │
+       │  1. Sign In    │                    │                  │
+       │  (email/OAuth) │                    │                  │
        │───────────────▶│                    │                  │
        │                │                    │                  │
-       │  2. MFA (if enabled)               │                  │
+       │  2. MFA (TOTP  │                    │                  │
+       │     if enabled)│                    │                  │
        │◀──────────────▶│                    │                  │
        │                │                    │                  │
-       │  3. JWT Token  │                    │                  │
+       │  3. JWT +      │                    │                  │
+       │     Session    │                    │                  │
        │◀───────────────│                    │                  │
        │                │                    │                  │
-       │  4. Request with Bearer Token       │                  │
+       │  4. Request with JWT (httpOnly cookie)                │
        │─────────────────────────────────────▶│                  │
        │                │                    │                  │
        │                │  5. Verify JWT     │                  │
+       │                │     via JWKS       │                  │
        │                │◀───────────────────│                  │
        │                │                    │                  │
-       │                │  6. Claims + Org   │                  │
+       │                │  6. JWT Valid +    │                  │
+       │                │     User Claims    │                  │
        │                │───────────────────▶│                  │
        │                │                    │                  │
-       │                │                    │  7. Set tenant   │
-       │                │                    │     context      │
+       │                │                    │  7. RLS active   │
+       │                │                    │     (auth.uid()) │
        │                │                    │─────────────────▶│
        │                │                    │                  │
-       │  8. Response                        │                  │
+       │  8. Response (filtered by RLS)      │                  │
        │◀─────────────────────────────────────────────────────────│
 ```
 
-### Clerk Configuration
+### Supabase Auth Configuration
 
 ```typescript
 // middleware.ts
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/webhooks/(.*)',
-  '/api/v1/health',
-]);
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
-const isApiRoute = createRouteMatcher(['/api/(.*)']);
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove(name: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+        },
+      },
+    }
+  );
 
-export default clerkMiddleware((auth, request) => {
-  if (!isPublicRoute(request)) {
-    auth().protect();
+  // Refresh session if needed
+  await supabase.auth.getSession();
+
+  // Protect dashboard routes
+  const { data: { session } } = await supabase.auth.getSession();
+  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard');
+
+  if (isProtectedRoute && !session) {
+    return NextResponse.redirect(new URL('/sign-in', request.url));
   }
-  
+
   // Set security headers
-  const response = auth();
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-XSS-Protection', '1; mode=block');
-  
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
   return response;
-});
+}
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
@@ -115,16 +170,37 @@ export const config = {
 
 ### Multi-Factor Authentication
 
-Clerk provides MFA out of the box:
+Supabase Auth provides MFA support:
 
-- **TOTP**: Authenticator apps (recommended)
-- **SMS**: Backup option
-- **Backup Codes**: Recovery method
+- **TOTP**: Authenticator apps (Google Authenticator, Authy, 1Password)
+- **QR Code Enrollment**: Easy setup via QR code scanning
+- **Recovery Codes**: Backup codes for account recovery
+
+**Implementation:**
+```typescript
+// Enroll MFA
+const { data, error } = await supabase.auth.mfa.enroll({
+  factorType: 'totp',
+  friendlyName: 'Work Phone',
+});
+
+// Challenge MFA
+const { data, error } = await supabase.auth.mfa.challenge({
+  factorId: data.id,
+});
+
+// Verify MFA code
+const { data, error } = await supabase.auth.mfa.verify({
+  factorId: data.id,
+  challengeId: challenge.id,
+  code: '123456', // User-provided code
+});
+```
 
 **Enforcement Levels:**
-- Free: Optional
-- Pro: Encouraged
-- Enterprise: Required for admins
+- Free tier: Optional
+- Pro tier: Encouraged for admins
+- Enterprise: Required for all users via RLS policies
 
 ---
 
@@ -154,7 +230,7 @@ Clerk provides MFA out of the box:
   └─────────────┘                          │
                                     ┌──────▼──────┐
                                     │   Member    │
-                                    │ (Full project
+                                    │ (Full mission
                                     │  access)     │
                                     └──────┬──────┘
                                            │
@@ -168,12 +244,12 @@ Clerk provides MFA out of the box:
 
 | Permission | Owner | Admin | Member | Viewer |
 |------------|-------|-------|--------|--------|
-| View projects | ✅ | ✅ | ✅ | ✅ |
-| Create projects | ✅ | ✅ | ✅ | ❌ |
-| Delete projects | ✅ | ✅ | ❌ | ❌ |
-| View tasks | ✅ | ✅ | ✅ | ✅ |
-| Create/edit tasks | ✅ | ✅ | ✅ | ❌ |
-| Delete tasks | ✅ | ✅ | ✅ | ❌ |
+| View missions | ✅ | ✅ | ✅ | ✅ |
+| Create missions | ✅ | ✅ | ✅ | ❌ |
+| Delete missions | ✅ | ✅ | ❌ | ❌ |
+| View actions | ✅ | ✅ | ✅ | ✅ |
+| Create/edit actions | ✅ | ✅ | ✅ | ❌ |
+| Delete actions | ✅ | ✅ | ✅ | ❌ |
 | Manage agents | ✅ | ✅ | ❌ | ❌ |
 | View knowledge | ✅ | ✅ | ✅ | ✅ |
 | Add knowledge | ✅ | ✅ | ✅ | ❌ |
@@ -191,14 +267,14 @@ Clerk provides MFA out of the box:
 ```typescript
 // lib/auth/permissions.ts
 export type Permission =
-  | 'projects:read'
-  | 'projects:create'
-  | 'projects:update'
-  | 'projects:delete'
-  | 'tasks:read'
-  | 'tasks:create'
-  | 'tasks:update'
-  | 'tasks:delete'
+  | 'missions:read'
+  | 'missions:create'
+  | 'missions:update'
+  | 'missions:delete'
+  | 'actions:read'
+  | 'actions:create'
+  | 'actions:update'
+  | 'actions:delete'
   | 'agents:read'
   | 'agents:manage'
   | 'knowledge:read'
@@ -212,8 +288,8 @@ export type Permission =
 export const rolePermissions: Record<OrgRole, Permission[]> = {
   owner: ['*'], // All permissions
   admin: [
-    'projects:*',
-    'tasks:*',
+    'missions:*',
+    'actions:*',
     'agents:*',
     'knowledge:*',
     'members:invite',
@@ -222,16 +298,16 @@ export const rolePermissions: Record<OrgRole, Permission[]> = {
     'audit:read',
   ],
   member: [
-    'projects:read',
-    'projects:create',
-    'projects:update',
-    'tasks:*',
+    'missions:read',
+    'missions:create',
+    'missions:update',
+    'actions:*',
     'knowledge:read',
     'knowledge:create',
   ],
   viewer: [
-    'projects:read',
-    'tasks:read',
+    'missions:read',
+    'actions:read',
     'knowledge:read',
   ],
 };
@@ -256,22 +332,48 @@ export function hasPermission(
 
 ```typescript
 // lib/auth/authorize.ts
-import { auth } from '@clerk/nextjs/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { hasPermission, Permission } from './permissions';
 
-export function requirePermission(permission: Permission) {
-  return async function authorize() {
-    const { userId, orgId, orgRole } = auth();
-    
-    if (!userId || !orgId) {
-      throw new UnauthorizedError('Authentication required');
+export async function requirePermission(permission: Permission) {
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookies().get(name)?.value;
+        },
+      },
     }
-    
-    if (!hasPermission(orgRole, permission)) {
-      throw new ForbiddenError(`Missing permission: ${permission}`);
-    }
-    
-    return { userId, orgId, orgRole };
+  );
+
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    throw new UnauthorizedError('Authentication required');
+  }
+
+  // Get user's org membership and role
+  const { data: membership } = await supabase
+    .from('organization_memberships')
+    .select('organization_id, role')
+    .eq('user_id', user.id)
+    .single();
+
+  if (!membership) {
+    throw new ForbiddenError('Not a member of any organization');
+  }
+
+  if (!hasPermission(membership.role, permission)) {
+    throw new ForbiddenError(`Missing permission: ${permission}`);
+  }
+
+  return {
+    userId: user.id,
+    orgId: membership.organization_id,
+    orgRole: membership.role,
   };
 }
 
@@ -280,9 +382,11 @@ export async function DELETE(
   request: Request,
   { params }: { params: { projectId: string } }
 ) {
-  const { orgId } = await requirePermission('projects:delete')();
+  const { orgId } = await requirePermission('missions:delete');
   
-  // Delete project...
+  // Delete mission (RLS will ensure it belongs to orgId)
+  const supabase = createServerClient(/* ... */);
+  await supabase.from('missions').delete().eq('id', params.projectId);
 }
 ```
 
@@ -290,68 +394,93 @@ export async function DELETE(
 
 ## Multi-Tenant Isolation
 
-### Database-Level Isolation
+### Database-Level Isolation (Supabase RLS)
 
 ```sql
--- Row-Level Security (RLS) implementation
+-- Row-Level Security (RLS) implementation using Supabase Auth
 -- Enable RLS on all tenant tables
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE missions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE actions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE agents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE knowledge_entries ENABLE ROW LEVEL SECURITY;
 -- ... all tenant tables
 
--- Create policy for tenant isolation
-CREATE POLICY tenant_isolation ON projects
-  FOR ALL
-  USING (organization_id = current_setting('app.current_org_id')::uuid)
-  WITH CHECK (organization_id = current_setting('app.current_org_id')::uuid);
+-- Create policy for tenant isolation using auth.uid()
+CREATE POLICY "Users can access their org's missions" ON missions
+  FOR ALL USING (
+    organization_id IN (
+      SELECT organization_id FROM organization_memberships
+      WHERE user_id = auth.uid()
+    )
+  );
 
--- Prevent cross-tenant data access
--- Even if application has a bug, database enforces isolation
+CREATE POLICY "Users can access their org's actions" ON actions
+  FOR ALL USING (
+    project_id IN (
+      SELECT id FROM missions
+      WHERE organization_id IN (
+        SELECT organization_id FROM organization_memberships
+        WHERE user_id = auth.uid()
+      )
+    )
+  );
+
+-- Supabase automatically enforces isolation
+-- auth.uid() returns the authenticated user's ID from JWT
+-- No manual context setting required!
 ```
 
-### Application-Level Isolation
+### Application-Level Security (Automatic with Supabase)
 
 ```typescript
-// lib/db/tenant-context.ts
-import { db } from '@repo/database';
-import { sql } from 'drizzle-orm';
+// lib/supabase/server.ts
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
-export async function withTenantContext<T>(
-  organizationId: string,
-  operation: () => Promise<T>
-): Promise<T> {
-  // Set tenant context
-  await db.execute(sql`SET app.current_org_id = ${organizationId}`);
-  
-  try {
-    return await operation();
-  } finally {
-    // Clear context
-    await db.execute(sql`RESET app.current_org_id`);
-  }
+export function createClient() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookies().get(name)?.value;
+        },
+      },
+    }
+  );
 }
 
-// Middleware sets context for every request
-// server/db/middleware.ts
-export async function dbMiddleware(
-  request: Request,
-  context: { organizationId: string }
-) {
-  return withTenantContext(context.organizationId, async () => {
-    // All database operations within this context
-    // are automatically filtered by organization_id
-  });
-}
+// Usage - RLS automatically applied
+const supabase = createClient();
+
+// This query automatically filters by user's org
+const { data: missions } = await supabase
+  .from('missions')
+  .select('*');
+// Returns only missions from user's organization
+
+// Attempting to access other org's data returns empty/error
+const { data } = await supabase
+  .from('missions')
+  .select('*')
+  .eq('id', 'project_from_other_org');
+// Returns null or empty (RLS blocks it)
 ```
+
+**Key Security Benefits:**
+1. **Database-enforced**: Isolation happens at database level, not application
+2. **Automatic**: No manual context setting required
+3. **JWT-based**: User identity extracted from JWT token
+4. **Fail-secure**: If JWT is invalid, auth.uid() returns NULL → no data access
+5. **Zero-trust**: Even if application has bugs, database blocks unauthorized access
 
 ### Agent Isolation
 
-Agents can only access their assigned projects:
+Agents can only access their assigned missions:
 
 ```typescript
-// Check agent has access to project
+// Check agent has access to mission
 async function verifyAgentProjectAccess(
   agentId: string,
   projectId: string
@@ -646,7 +775,7 @@ BEGIN
   WHERE created_at < NOW() - INTERVAL '90 days';
   
   -- Delete soft-deleted records older than 30 days
-  DELETE FROM projects
+  DELETE FROM missions
   WHERE deleted_at IS NOT NULL
     AND deleted_at < NOW() - INTERVAL '30 days';
 END;
@@ -704,9 +833,9 @@ await audit({
   actorType: 'user',
   actorId: user.id,
   action: 'delete',
-  resourceType: 'project',
-  resourceId: project.id,
-  oldValues: { name: project.name, status: project.status },
+  resourceType: 'mission',
+  resourceId: mission.id,
+  oldValues: { name: mission.name, status: mission.status },
   ipAddress: request.headers.get('x-forwarded-for'),
   userAgent: request.headers.get('user-agent'),
 });
@@ -718,7 +847,7 @@ await audit({
 // Get audit history for resource
 const history = await db.query.auditLogs.findMany({
   where: and(
-    eq(auditLogs.resourceType, 'project'),
+    eq(auditLogs.resourceType, 'mission'),
     eq(auditLogs.resourceId, projectId)
   ),
   orderBy: desc(auditLogs.createdAt),

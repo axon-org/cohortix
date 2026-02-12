@@ -21,16 +21,16 @@ Make AI orchestration accessible to everyone — not just developers. Your Cohor
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical Architecture |
 | [BRAND_GUIDELINES.md](docs/BRAND_GUIDELINES.md) | Voice, tone, and visual identity |
 
-## 🗂️ Project Structure
+## 🗂️ Mission Structure
 
 ```
 cohortix/
 ├── docs/              # All documentation
-├── .planning/         # Roadmap, state, project planning
+├── .planning/         # Roadmap, state, mission planning
 ├── designs/           # UI/UX designs
 ├── mockups/           # Visual mockups
 ├── archives/          # Reference materials (NeuroEngine)
-└── tasks/             # Task tracking
+└── actions/             # Action tracking
 ```
 
 ## 🎨 Key Terminology
@@ -39,7 +39,7 @@ cohortix/
 |---------------|-----------|
 | Agent | **Ally** |
 | Agents | **Cohort** |
-| Task | **Mission** |
+| Action | **Mission** |
 | Run/Execute | **Deploy** |
 | Create | **Recruit** |
 | Dashboard | **Mission Control** |

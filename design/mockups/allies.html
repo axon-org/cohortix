@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ally Directory — Cohortix</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;min-height:100vh;display:flex;}
+.sidebar{width:240px;background:#171717;border-right:1px solid #262626;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:10;}
+.sidebar-logo{height:64px;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid #262626;}
+.sidebar-logo span{font-size:20px;font-weight:700;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sidebar-nav{flex:1;padding:12px;display:flex;flex-direction:column;gap:2px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:#a3a3a3;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;transition:all 150ms;}
+.nav-item:hover{background:#262626;color:#d4d4d4;}
+.nav-item.active{background:rgba(168,85,247,0.12);color:#c084fc;border-left:3px solid #a855f7;}
+.nav-item .icon{width:20px;text-align:center;font-size:16px;}
+.nav-section{font-size:11px;font-weight:600;color:#525252;text-transform:uppercase;letter-spacing:0.05em;padding:20px 12px 8px;}
+.sidebar-bottom{padding:12px;border-top:1px solid #262626;}
+.topbar{height:64px;background:#171717;border-bottom:1px solid #262626;display:flex;align-items:center;padding:0 32px;gap:16px;position:fixed;top:0;left:240px;right:0;z-index:10;}
+.search-bar{flex:1;max-width:480px;height:40px;background:#262626;border:none;border-radius:10px;padding:0 16px 0 40px;color:#e5e5e5;font-size:14px;font-family:inherit;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23737373' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8' stroke='%23737373' stroke-width='2' fill='none'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65' stroke='%23737373' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:14px center;}
+.search-bar::placeholder{color:#525252;}
+.topbar-actions{display:flex;align-items:center;gap:12px;margin-left:auto;}
+.btn-primary{height:36px;padding:0 16px;background:#a855f7;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 150ms;}
+.btn-primary:hover{background:#9333ea;}
+.icon-btn{width:36px;height:36px;border-radius:8px;border:none;background:transparent;color:#a3a3a3;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.icon-btn:hover{background:#262626;color:#e5e5e5;}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#ec4899);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;}
+
+.main{margin-left:240px;margin-top:64px;padding:32px;flex:1;}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;}
+.page-title{font-size:24px;font-weight:700;color:#fafafa;}
+.page-subtitle{font-size:14px;color:#737373;margin-top:4px;}
+
+/* Filters */
+.filters{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;}
+.filter-search{height:40px;width:280px;background:#171717;border:1px solid #262626;border-radius:10px;padding:0 14px 0 38px;color:#e5e5e5;font-size:13px;font-family:inherit;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23525252' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8' stroke='%23525252' stroke-width='2' fill='none'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65' stroke='%23525252' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center;}
+.filter-search::placeholder{color:#525252;}
+.filter-pills{display:flex;gap:6px;}
+.pill{padding:7px 14px;border-radius:100px;border:1px solid #262626;background:transparent;color:#a3a3a3;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all 150ms;}
+.pill:hover{border-color:#404040;color:#d4d4d4;}
+.pill.active{background:rgba(168,85,247,0.15);border-color:#a855f7;color:#c084fc;}
+.view-toggle{margin-left:auto;display:flex;gap:4px;}
+.view-btn{width:36px;height:36px;border-radius:8px;border:1px solid #262626;background:transparent;color:#737373;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.view-btn.active{background:#262626;color:#e5e5e5;}
+
+/* Ally Grid */
+.ally-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.ally-card{background:#171717;border:1px solid #262626;border-radius:12px;padding:24px 20px;text-align:center;cursor:pointer;transition:all 200ms;}
+.ally-card:hover{transform:translateY(-2px);border-color:#404040;}
+.ally-avatar-wrap{position:relative;display:inline-block;margin-bottom:14px;}
+.ally-avatar{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;}
+.ally-ring{position:absolute;inset:-4px;border-radius:50%;border:3px solid #22c55e;}
+.ally-ring.standby{border-color:#525252;}
+.ally-ring.off{border-color:#ef4444;}
+.ally-ring.mission{animation:pulse-ring 2s ease-in-out infinite;}
+@keyframes pulse-ring{0%,100%{opacity:1;}50%{opacity:.5;}}
+.ally-name{font-size:16px;font-weight:600;color:#fafafa;margin-bottom:2px;}
+.ally-role{font-size:13px;color:#737373;margin-bottom:12px;}
+.ally-status{font-size:12px;font-weight:500;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.ally-status .dot{width:7px;height:7px;border-radius:50%;}
+.ally-status.on-mission{color:#4ade80;}
+.ally-status.on-mission .dot{background:#22c55e;}
+.ally-status.standing-by{color:#a3a3a3;}
+.ally-status.standing-by .dot{background:#525252;}
+.ally-status.off-duty{color:#f87171;}
+.ally-status.off-duty .dot{background:#ef4444;}
+.skill-pills{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px;}
+.skill-pill{font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px;background:rgba(168,85,247,0.12);color:#c084fc;}
+.workload{display:flex;align-items:center;gap:10px;font-size:12px;color:#737373;}
+.workload-bar{flex:1;height:4px;background:#262626;border-radius:100px;overflow:hidden;}
+.workload-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,#a855f7,#c084fc);}
+.workload-text{width:32px;text-align:right;font-weight:500;color:#a3a3a3;}
+.ally-missions{font-size:11px;color:#525252;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>✦ Cohortix</span></div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="dashboard.html"><span class="icon">🎯</span> Mission Control</a>
+    <a class="nav-item active"><span class="icon">🤖</span> Allies</a>
+    <a class="nav-item" href="campaign.html"><span class="icon">📋</span> Campaigns</a>
+    <a class="nav-item" href="knowledge.html"><span class="icon">💡</span> Knowledge Base</a>
+    <a class="nav-item"><span class="icon">🏢</span> Clients</a>
+    <a class="nav-item"><span class="icon">🎯</span> Goals</a>
+    <div class="nav-section">Campaigns</div>
+    <a class="nav-item"><span class="icon">📁</span> Q1 Marketing</a>
+    <a class="nav-item"><span class="icon">📁</span> Website Redesign</a>
+    <a class="nav-item"><span class="icon">📁</span> Product Launch</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <a class="nav-item"><span class="icon">⚙️</span> Settings</a>
+    <a class="nav-item"><span class="icon">❓</span> Help & Docs</a>
+  </div>
+</aside>
+
+<header class="topbar">
+  <input class="search-bar" placeholder="Search missions, allies, campaigns..." type="text">
+  <div class="topbar-actions">
+    <button class="btn-primary">＋ New Mission</button>
+    <button class="icon-btn">🔔</button>
+    <button class="icon-btn">🌙</button>
+    <div class="avatar">A</div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Ally Directory</div>
+      <div class="page-subtitle">12 allies in your cohort · 8 on mission · 3 standing by · 1 off duty</div>
+    </div>
+    <button class="btn-primary">＋ Recruit Ally</button>
+  </div>
+
+  <div class="filters">
+    <input class="filter-search" placeholder="Search by name, role, or skill..." type="text">
+    <div class="filter-pills">
+      <button class="pill active">All</button>
+      <button class="pill">On Mission</button>
+      <button class="pill">Standing By</button>
+      <button class="pill">Off Duty</button>
+    </div>
+    <div class="view-toggle">
+      <button class="view-btn active" title="Grid">▦</button>
+      <button class="view-btn" title="List">☰</button>
+    </div>
+  </div>
+
+  <div class="ally-grid">
+    <!-- Riley -->
+    <div class="ally-card">
+      <div class="ally-avatar-wrap">
+        <div class="ally-avatar" style="background:linear-gradient(135deg,#7e22ce,#a855f7);">R</div>
+        <div class="ally-ring mission"></div>
+      </div>
+      <div class="ally-name">Riley</div>
+      <div class="ally-role">AI Developer</div>
+      <div class="ally-status on-mission"><span class="dot"></span> On Mission</div>
+      <div class="skill-pills">
+        <span class="skill-pill">Python</span>
+        <span class="skill-pill">React</span>
+        <span class="skill-pill">API Design</span>
+      </div>
+      <div class="workload">
+        <div class="workload-bar"><div class="workload-fill" style="width:65%"></div></div>
+        <span class="workload-text">65%</span>
+      </div>
+      <div class="ally-missions">12 missions completed</div>
+    </div>
+
+    <!-- Jordan -->
+    <div class="ally-card">
+      <div class="ally-avatar-wrap">
+        <div class="ally-avatar" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);">J</div>
+        <div class="ally-ring mission"></div>
+      </div>
+      <div class="ally-name">Jordan</div>
+      <div class="ally-role">UX Researcher</div>
+      <div class="ally-status on-mission"><span class="dot"></span> On Mission</div>
+      <div class="skill-pills">
+        <span class="skill-pill">User Testing</span>
+        <span class="skill-pill">Analytics</span>
+        <span class="skill-pill">Figma</span>
+      </div>
+      <div class="workload">
+        <div class="workload-bar"><div class="workload-fill" style="width:80%"></div></div>
+        <span class="workload-text">80%</span>
+      </div>
+      <div class="ally-missions">18 missions completed</div>
+    </div>
+
+    <!-- Casey -->
+    <div class="ally-card">
+      <div class="ally-avatar-wrap">
+        <div class="ally-avatar" style="background:linear-gradient(135deg,#be185d,#ec4899);">C</div>
+        <div class="ally-ring standby"></div>
+      </div>
+      <div class="ally-name">Casey</div>
+      <div class="ally-role">Content Strategist</div>
+      <div class="ally-status standing-by"><span class="dot"></span> Standing By</div>
+      <div class="skill-pills">
+        <span class="skill-pill">Copywriting</span>
+        <span class="skill-pill">SEO</span>
+        <span class="skill-pill">Social Media</span>
+      </div>
+      <div class="workload">
+        <div class="workload-bar"><div class="workload-fill" style="width:20%"></div></div>
+        <span class="workload-text">20%</span>
+      </div>
+      <div class="ally-missions">9 missions completed</div>
+    </div>
+
+    <!-- Alex -->
+    <div class="ally-card">
+      <div class="ally-avatar-wrap">
+        <div class="ally-avatar" style="background:linear-gradient(135deg,#15803d,#22c55e);">A</div>
+        <div class="ally-ring mission"></div>
+      </div>
+      <div class="ally-name">Alex</div>
+      <div class="ally-role">Frontend Engineer</div>
+      <div class="ally-status on-mission"><span class="dot"></span> On Mission</div>
+      <div class="skill-pills">
+        <span class="skill-pill">TypeScript</span>
+        <span class="skill-pill">Next.js</span>
+        <span class="skill-pill">Tailwind</span>
+      </div>
+      <div class="workload">
+        <div class="workload-bar"><div class="workload-fill" style="width:90%"></div></div>
+        <span class="workload-text">90%</span>
+      </div>
+      <div class="ally-missions">22 missions completed</div>
+    </div>
+
+    <!-- Morgan -->
+    <div class="ally-card">
+      <div class="ally-avatar-wrap">
+        <div class="ally-avatar" style="background:linear-gradient(135deg,#b45309,#f59e0b);">M</div>
+        <div class="ally-ring mission"></div>
+      </div>
+      <div class="ally-name">Morgan</div>
+      <div class="ally-role">Data Analyst</div>
+      <div class="ally-status on-mission"><span class="dot"></span> On Mission</div>
+      <div class="skill-pills">
+        <span class="skill-pill">SQL</span>
+        <span class="skill-pill">Python</span>
+        <span class="skill-pill">Dashboards</span>
+      </div>
+      <div class="workload">
+        <div class="workload-bar"><div class="workload-fill" style="width:55%"></div></div>
+        <span class="workload-text">55%</span>
+      </div>
+      <div class="ally-missions">15 missions completed</div>
+    </div>
+
+    <!-- Sage -->
+    <div class="ally-card">
+      <div class="ally-avatar-wrap">
+        <div class="ally-avatar" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">S</div>
+        <div class="ally-ring standby"></div>
+      </div>
+      <div class="ally-name">Sage</div>
+      <div class="ally-role">DevOps Engineer</div>
+      <div class="ally-status standing-by"><span class="dot"></span> Standing By</div>
+      <div class="skill-pills">
+        <span class="skill-pill">Docker</span>
+        <span class="skill-pill">AWS</span>
+        <span class="skill-pill">CI/CD</span>
+      </div>
+      <div class="workload">
+        <div class="workload-bar"><div class="workload-fill" style="width:10%"></div></div>
+        <span class="workload-text">10%</span>
+      </div>
+      <div class="ally-missions">8 missions completed</div>
+    </div>
+
+    <!-- Jamie -->
+    <div class="ally-card">
+      <div class="ally-avatar-wrap">
+        <div class="ally-avatar" style="background:linear-gradient(135deg,#0f766e,#14b8a6);">J</div>
+        <div class="ally-ring mission"></div>
+      </div>
+      <div class="ally-name">Jamie</div>
+      <div class="ally-role">QA Engineer</div>
+      <div class="ally-status on-mission"><span class="dot"></span> On Mission</div>
+      <div class="skill-pills">
+        <span class="skill-pill">Testing</span>
+        <span class="skill-pill">Playwright</span>
+        <span class="skill-pill">Security</span>
+      </div>
+      <div class="workload">
+        <div class="workload-bar"><div class="workload-fill" style="width:70%"></div></div>
+        <span class="workload-text">70%</span>
+      </div>
+      <div class="ally-missions">20 missions completed</div>
+    </div>
+
+    <!-- Dakota -->
+    <div class="ally-card">
+      <div class="ally-avatar-wrap">
+        <div class="ally-avatar" style="background:linear-gradient(135deg,#991b1b,#ef4444);">D</div>
+        <div class="ally-ring off"></div>
+      </div>
+      <div class="ally-name">Dakota</div>
+      <div class="ally-role">Backend Engineer</div>
+      <div class="ally-status off-duty"><span class="dot"></span> Off Duty</div>
+      <div class="skill-pills">
+        <span class="skill-pill">Node.js</span>
+        <span class="skill-pill">PostgreSQL</span>
+        <span class="skill-pill">GraphQL</span>
+      </div>
+      <div class="workload">
+        <div class="workload-bar"><div class="workload-fill" style="width:0%"></div></div>
+        <span class="workload-text">0%</span>
+      </div>
+      <div class="ally-missions">14 missions completed</div>
+    </div>
+  </div>
+</main>
+</body>
+</html>
