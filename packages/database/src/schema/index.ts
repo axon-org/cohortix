@@ -9,6 +9,7 @@ export * from './workspaces';
 export * from './agents';
 export * from './agent-assignments';
 export * from './cohorts'; // Groups of agents
+export * from './cohort-members'; // Agent-to-cohort memberships
 
 // Goals & Missions (PPV Hierarchy: Goals → Missions → Actions)
 export * from './goals';

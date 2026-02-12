@@ -169,3 +169,45 @@ export async function getCohortActivity(cohortId: string, limit = 20) {
 
   return data || [];
 }
+
+/**
+ * Get engagement timeline data for a cohort
+ * Returns daily interaction counts for the past 30 days (or specified range)
+ * Used for the "Engagement Timeline" graph in Cohort Detail screen
+ */
+export async function getCohortEngagementTimeline(
+  cohortId: string,
+  daysBack: number = 30
+): Promise<Array<{ date: string; interaction_count: number }>> {
+  const supabase = await createClient();
+
+  // Calculate start date
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - daysBack);
+
+  // Query audit_logs for interactions by cohort members
+  // This assumes audit_logs tracks agent activity with entity_type and entity_id
+  const { data, error } = await supabase.rpc('get_cohort_engagement_timeline', {
+    p_cohort_id: cohortId,
+    p_start_date: startDate.toISOString().split('T')[0],
+    p_end_date: endDate.toISOString().split('T')[0],
+  });
+
+  if (error) {
+    console.error('Error fetching engagement timeline:', error);
+    // Return empty array with date range filled with zeros
+    const timeline = [];
+    for (let i = 0; i < daysBack; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - (daysBack - i - 1));
+      timeline.push({
+        date: date.toISOString().split('T')[0],
+        interaction_count: 0,
+      });
+    }
+    return timeline;
+  }
+
+  return data || [];
+}

@@ -10,7 +10,7 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const supabase = await createServerSupabaseClient()
-  
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -19,15 +19,14 @@ export default async function DashboardLayout({
     redirect('/sign-in')
   }
 
-  // Get user profile with organization
   const currentUser = await getCurrentUser()
 
   return (
     <div className="flex h-screen bg-background">
       <Sidebar user={currentUser} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header user={user} />
-        <main className="flex-1 overflow-y-auto p-8">
+        <Header user={currentUser} />
+        <main className="flex-1 overflow-y-auto p-6">
           {children}
         </main>
       </div>

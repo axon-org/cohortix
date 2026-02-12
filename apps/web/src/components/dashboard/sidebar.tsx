@@ -6,20 +6,19 @@ import { cn } from '@/lib/utils'
 import {
   LayoutGrid,
   Users,
-  BarChart3,
-  DollarSign,
-  Zap,
-  Settings,
+  Bot,
   Rocket,
+  Settings,
   User as UserIcon,
+  ChevronLeft,
 } from 'lucide-react'
+import { useState } from 'react'
 
 const navigation = [
-  { name: 'Mission Control', href: '/', icon: LayoutGrid },
+  { name: 'Dashboard', href: '/', icon: LayoutGrid },
   { name: 'Cohorts', href: '/cohorts', icon: Users },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Revenue', href: '/revenue', icon: DollarSign },
-  { name: 'Automations', href: '/automations', icon: Zap },
+  { name: 'Allies', href: '/allies', icon: Bot },
+  { name: 'Missions', href: '/missions', icon: Rocket },
 ]
 
 interface SidebarProps {
@@ -28,75 +27,109 @@ interface SidebarProps {
 
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname()
+  const [collapsed, setCollapsed] = useState(false)
 
-  // Extract user display info
   const displayName = user?.profile?.display_name || user?.email?.split('@')[0] || 'User'
   const userEmail = user?.email || ''
   const avatarUrl = user?.profile?.avatar_url
+  const orgName = user?.profile?.organization_name || 'Cohortix'
 
   return (
-    <div className="w-64 bg-card border-r border-border flex flex-col">
-      {/* Logo - Monochrome */}
-      <div className="flex items-center gap-3 p-6 border-b border-border">
-        <div className="w-10 h-10 bg-foreground rounded-lg flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-          <Rocket className="w-6 h-6 text-background" />
+    <div
+      className={cn(
+        'bg-[#111113] border-r border-border flex flex-col transition-all duration-200',
+        collapsed ? 'w-16' : 'w-60'
+      )}
+    >
+      {/* Org header */}
+      <div className="flex items-center gap-2.5 px-4 h-14 border-b border-border">
+        <div className="w-7 h-7 bg-foreground rounded-md flex items-center justify-center flex-shrink-0">
+          <Rocket className="w-4 h-4 text-background" />
         </div>
-        <span className="text-xl font-bold">Cohortix</span>
+        {!collapsed && (
+          <span className="text-sm font-semibold truncate">{orgName}</span>
+        )}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className={cn(
+            'ml-auto p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors',
+            collapsed && 'ml-0'
+          )}
+        >
+          <ChevronLeft
+            className={cn(
+              'w-4 h-4 transition-transform',
+              collapsed && 'rotate-180'
+            )}
+          />
+        </button>
       </div>
 
-      {/* Navigation - Monochrome with white glow */}
-      <nav className="flex-1 p-4 space-y-1">
+      {/* Navigation */}
+      <nav className="flex-1 px-2 py-3 space-y-0.5">
         {navigation.map((item) => {
-          const isActive = pathname === item.href
+          const isActive =
+            item.href === '/'
+              ? pathname === '/'
+              : pathname.startsWith(item.href)
           const Icon = item.icon
-          
+
           return (
             <Link
               key={item.name}
               href={item.href}
+              title={collapsed ? item.name : undefined}
               className={cn(
-                'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all relative',
+                'flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium transition-all relative group',
                 isActive
-                  ? 'text-foreground before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-foreground before:shadow-[0_0_8px_rgba(255,255,255,0.6)]'
-                  : 'text-muted-foreground hover:text-foreground hover:shadow-[0_0_5px_rgba(255,255,255,0.2)]'
+                  ? 'bg-secondary text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
               )}
             >
-              <Icon className="w-5 h-5" />
-              {item.name}
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-foreground rounded-r" />
+              )}
+              <Icon className="w-4 h-4 flex-shrink-0" />
+              {!collapsed && <span>{item.name}</span>}
             </Link>
           )
         })}
       </nav>
 
       {/* Settings */}
-      <div className="p-4 border-t border-border">
+      <div className="px-2 py-2 border-t border-border">
         <Link
           href="/settings"
-          className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+          title={collapsed ? 'Settings' : undefined}
+          className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
         >
-          <Settings className="w-5 h-5" />
-          Settings
+          <Settings className="w-4 h-4 flex-shrink-0" />
+          {!collapsed && <span>Settings</span>}
         </Link>
       </div>
 
-      {/* User Profile */}
-      <div className="p-4 border-t border-border">
-        <div className="flex items-center gap-3">
+      {/* User */}
+      <div className="px-3 py-3 border-t border-border">
+        <div className="flex items-center gap-2.5">
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt={displayName}
-              className="w-10 h-10 rounded-full object-cover"
+              className="w-7 h-7 rounded-full object-cover flex-shrink-0"
             />
           ) : (
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center">
-              <UserIcon className="w-5 h-5 text-white" />
+            <div className="w-7 h-7 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
+              <UserIcon className="w-3.5 h-3.5 text-muted-foreground" />
             </div>
           )}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{displayName}</p>
-            <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
-          </div>
+          {!collapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-medium truncate">{displayName}</p>
+              <p className="text-[11px] text-muted-foreground truncate">
+                {userEmail}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
