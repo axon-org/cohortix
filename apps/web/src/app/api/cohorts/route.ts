@@ -11,6 +11,29 @@ import { createCohort, createCohortSchema } from '@/server/db/mutations/cohorts'
 import { getCurrentUser, getUserOrganization } from '@/server/db/queries/dashboard';
 
 async function getAuthContext() {
+  // DEV MODE: Bypass auth for testing
+  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
+    
+    const { data: org } = await supabase
+      .from('organizations')
+      .select('id')
+      .limit(1)
+      .single()
+    
+    return { user: { id: 'dev-bypass' }, organizationId: org?.id || '' };
+  }
+
   const user = await getCurrentUser();
   if (!user) {
     return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };

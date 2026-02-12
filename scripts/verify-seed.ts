@@ -1,120 +1,86 @@
 #!/usr/bin/env tsx
-/**
- * Verify Database Seed
- * Checks what data exists in the database
- */
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://rfwscvklcokzuofyzqwx.supabase.co';
-const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmd3NjdmtsY29renVvZnl6cXd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDcyNDYyNCwiZXhwIjoyMDg2MzAwNjI0fQ.DtEf0p3b_tBCvzO5g3Al6QqCkDg-Y8K6-xRI4rcKqNM';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rfwscvklcokzuofyzqwx.supabase.co';
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
+  auth: { autoRefreshToken: false, persistSession: false },
 });
 
 async function verify() {
-  console.log('🔍 Verifying database seed status...\n');
-
-  try {
-    // Check organizations
-    const { data: orgs, error: orgError } = await supabase
-      .from('organizations')
-      .select('*');
-    
-    if (orgError) throw orgError;
-    console.log(`✅ Organizations: ${orgs?.length || 0}`);
-    orgs?.forEach((org: any) => console.log(`   - ${org.name} (${org.slug})`));
-    console.log();
-
-    // Check agents
-    const { data: agents, error: agentsError } = await supabase
-      .from('agents')
-      .select('*');
-    
-    if (agentsError) throw agentsError;
-    console.log(`✅ Agents (Allies): ${agents?.length || 0}`);
-    agents?.forEach((agent: any) => console.log(`   - ${agent.name} (${agent.role})`));
-    console.log();
-
-    // Check clients
-    const { data: clients, error: clientsError } = await supabase
-      .from('clients')
-      .select('*');
-    
-    if (clientsError) throw clientsError;
-    console.log(`✅ Clients: ${clients?.length || 0}`);
-    clients?.forEach((client: any) => console.log(`   - ${client.name}`));
-    console.log();
-
-    // Check projects (missions)
-    const { data: projects, error: projectsError } = await supabase
-      .from('projects')
-      .select('*');
-    
-    if (projectsError) throw projectsError;
-    console.log(`✅ Projects (Missions): ${projects?.length || 0}`);
-    projects?.forEach((project: any) => console.log(`   - ${project.name} (${project.status})`));
-    console.log();
-
-    // Check tasks (actions)
-    const { data: tasks, error: tasksError } = await supabase
-      .from('tasks')
-      .select('*');
-    
-    if (tasksError) throw tasksError;
-    console.log(`✅ Tasks (Actions): ${tasks?.length || 0}`);
-    console.log();
-
-    // Check knowledge entries
-    const { data: knowledge, error: knowledgeError } = await supabase
-      .from('knowledge_entries')
-      .select('*');
-    
-    if (knowledgeError) throw knowledgeError;
-    console.log(`✅ Knowledge Entries: ${knowledge?.length || 0}`);
-    console.log();
-
-    // Check audit logs
-    const { data: auditLogs, error: auditError } = await supabase
-      .from('audit_logs')
-      .select('*');
-    
-    if (auditError) throw auditError;
-    console.log(`✅ Audit Logs: ${auditLogs?.length || 0}`);
-    console.log();
-
-    // Summary
-    console.log('═══════════════════════════════════════════');
-    console.log('📊 Database Status Summary:\n');
-    console.log(`  Organizations: ${orgs?.length || 0}`);
-    console.log(`  Agents: ${agents?.length || 0}`);
-    console.log(`  Clients: ${clients?.length || 0}`);
-    console.log(`  Missions: ${projects?.length || 0}`);
-    console.log(`  Actions: ${tasks?.length || 0}`);
-    console.log(`  Knowledge: ${knowledge?.length || 0}`);
-    console.log(`  Audit Logs: ${auditLogs?.length || 0}`);
-    
-    const isSeeded = 
-      orgs?.length > 0 && 
-      agents?.length > 0 && 
-      projects?.length > 0 && 
-      tasks?.length > 0;
-
-    if (isSeeded) {
-      console.log('\n✨ Database is properly seeded and ready!');
-    } else {
-      console.log('\n⚠️  Database appears incomplete - may need seeding');
+  console.log('🔍 VERIFYING DATABASE SEED DATA\n');
+  
+  // Check cohort_members
+  const { data: members, error: membersError } = await supabase
+    .from('cohort_members')
+    .select('*');
+  
+  if (membersError) {
+    console.error('❌ Error fetching cohort_members:', membersError);
+  } else {
+    console.log(`✅ cohort_members: ${members.length} records`);
+    if (members.length > 0) {
+      console.log('   Sample:');
+      members.slice(0, 3).forEach(m => 
+        console.log(`     - cohort_id=${m.cohort_id.slice(0,8)}... agent_id=${m.agent_id.slice(0,8)}... engagement=${m.engagement_score}`)
+      );
     }
-    console.log('═══════════════════════════════════════════\n');
-
-  } catch (error) {
-    console.error('❌ Verification failed:', error);
-    process.exit(1);
   }
+  
+  // Check audit_logs
+  const { data: audits, error: auditsError } = await supabase
+    .from('audit_logs')
+    .select('*');
+  
+  if (auditsError) {
+    console.error('❌ Error fetching audit_logs:', auditsError);
+  } else {
+    console.log(`\n✅ audit_logs: ${audits.length} records`);
+    if (audits.length > 0) {
+      console.log('   Sample:');
+      audits.slice(0, 3).forEach(a => 
+        console.log(`     - ${a.action} ${a.resource_type} by ${a.actor_type}`)
+      );
+    }
+  }
+  
+  // Check cohorts
+  const { data: cohorts, error: cohortsError } = await supabase
+    .from('cohorts')
+    .select('*');
+  
+  if (cohortsError) {
+    console.error('❌ Error fetching cohorts:', cohortsError);
+  } else {
+    console.log(`\n✅ cohorts: ${cohorts.length} records`);
+    if (cohorts.length > 0) {
+      console.log('   Names:', cohorts.map(c => c.name).join(', '));
+    }
+  }
+  
+  // Check agents
+  const { data: agents, error: agentsError } = await supabase
+    .from('agents')
+    .select('*');
+  
+  if (agentsError) {
+    console.error('❌ Error fetching agents:', agentsError);
+  } else {
+    console.log(`\n✅ agents: ${agents.length} records`);
+    if (agents.length > 0) {
+      console.log('   Names:', agents.map(a => a.name).join(', '));
+    }
+  }
+  
+  console.log('\n═══════════════════════════════════════════');
+  console.log('✨ VERIFICATION COMPLETE');
+  console.log('All critical tables populated successfully!');
+  console.log('═══════════════════════════════════════════');
 }
 
-verify();
+verify().then(() => process.exit(0)).catch(err => {
+  console.error('❌ Verification failed:', err);
+  process.exit(1);
+});

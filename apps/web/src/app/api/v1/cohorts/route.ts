@@ -33,11 +33,25 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries())
   const query = validateData(cohortQuerySchema, searchParams) as CohortQueryParams
 
-  const supabase = await createClient()
+  let supabase: any
   let organizationId: string
+  let userId: string | null = null
 
   // DEV MODE: Bypass auth for testing
   if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+    // Use service role key to bypass RLS
+    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
+    supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
+    
     // Use first available organization for testing
     const { data: org } = await supabase
       .from('organizations')
@@ -46,8 +60,10 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       .single()
     
     organizationId = org?.id || ''
+    userId = 'dev-bypass'
     logger.info('DEV MODE: Using test organization', { organizationId })
   } else {
+    supabase = await createClient()
     // Get authenticated user
     const {
       data: { user },
@@ -57,6 +73,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     if (authError || !user) {
       throw new UnauthorizedError('Authentication required')
     }
+
+    userId = user.id
 
     // Get user's organization
     const { data: membership, error: membershipError } = await supabase
@@ -74,7 +92,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   logger.info('Fetching cohorts', {
     correlationId,
-    userId: user.id,
+    userId,
     organizationId,
     query,
   })
