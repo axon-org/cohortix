@@ -199,6 +199,10 @@ jobs:
             p/javascript
             p/typescript
             p/react
+            p/owasp-top-ten
+            p/supply-chain
+            p/xss
+            p/sql-injection
 
   dependency-audit:
     name: Dependency Audit
@@ -226,6 +230,35 @@ jobs:
 
       - name: Check for outdated dependencies
         run: pnpm outdated
+
+  snyk-scan:
+    name: Snyk Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'pull_request'
+    needs: [lint, type-check, unit-test, secret-scan]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --fail-on=upgradable
+        continue-on-error: true
+
+      - name: Upload Snyk results to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: snyk.sarif
 
   build:
     name: Build
@@ -290,9 +323,13 @@ jobs:
       - unit-test
       - secret-scan
       - build
+      - sast-scan
+      - snyk-scan
+      - dependency-audit
     steps:
       - name: Check all jobs
         run: |
+          # Core jobs (must pass)
           if [[ "${{ needs.lint.result }}" != "success" ]] || \
              [[ "${{ needs.type-check.result }}" != "success" ]] || \
              [[ "${{ needs.unit-test.result }}" != "success" ]] || \
@@ -301,4 +338,18 @@ jobs:
             echo "One or more required jobs failed"
             exit 1
           fi
+          
+          # PR-only jobs (only checked if running)
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            if [[ "${{ needs.sast-scan.result }}" != "success" ]] || \
+               [[ "${{ needs.dependency-audit.result }}" != "success" ]]; then
+              echo "One or more PR security checks failed"
+              exit 1
+            fi
+            # Snyk scan is allowed to continue on error for now
+            if [[ "${{ needs.snyk-scan.result }}" == "failure" ]]; then
+              echo "⚠️  Warning: Snyk scan failed but not blocking merge"
+            fi
+          fi
+          
           echo "All CI checks passed!"

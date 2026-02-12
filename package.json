@@ -14,13 +14,19 @@
     "db:migrate": "turbo db:migrate",
     "db:push": "turbo db:push",
     "db:studio": "turbo db:studio",
+    "db:reset": "dotenv -e .env.local -- tsx scripts/reset-db.ts",
+    "db:seed": "dotenv -e .env.local -- tsx scripts/seed-db.ts",
+    "seed": "pnpm db:seed",
     "clean": "turbo clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\""
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
+    "dotenv": "^17.2.4",
+    "dotenv-cli": "^11.0.0",
     "prettier": "^3.2.5",
+    "tsx": "^4.21.0",
     "turbo": "^2.0.0",
     "typescript": "^5.5.0"
   },

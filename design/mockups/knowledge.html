@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowledge Base — Cohortix</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;min-height:100vh;display:flex;}
+.sidebar{width:240px;background:#171717;border-right:1px solid #262626;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:10;}
+.sidebar-logo{height:64px;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid #262626;}
+.sidebar-logo span{font-size:20px;font-weight:700;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sidebar-nav{flex:1;padding:12px;display:flex;flex-direction:column;gap:2px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:#a3a3a3;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;transition:all 150ms;}
+.nav-item:hover{background:#262626;color:#d4d4d4;}
+.nav-item.active{background:rgba(168,85,247,0.12);color:#c084fc;border-left:3px solid #a855f7;}
+.nav-item .icon{width:20px;text-align:center;font-size:16px;}
+.nav-section{font-size:11px;font-weight:600;color:#525252;text-transform:uppercase;letter-spacing:0.05em;padding:20px 12px 8px;}
+.sidebar-bottom{padding:12px;border-top:1px solid #262626;}
+.topbar{height:64px;background:#171717;border-bottom:1px solid #262626;display:flex;align-items:center;padding:0 32px;gap:16px;position:fixed;top:0;left:240px;right:0;z-index:10;}
+.search-bar{flex:1;max-width:480px;height:40px;background:#262626;border:none;border-radius:10px;padding:0 16px 0 40px;color:#e5e5e5;font-size:14px;font-family:inherit;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23737373' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8' stroke='%23737373' stroke-width='2' fill='none'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65' stroke='%23737373' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:14px center;}
+.search-bar::placeholder{color:#525252;}
+.topbar-actions{display:flex;align-items:center;gap:12px;margin-left:auto;}
+.btn-primary{height:36px;padding:0 16px;background:#a855f7;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-primary:hover{background:#9333ea;}
+.icon-btn{width:36px;height:36px;border-radius:8px;border:none;background:transparent;color:#a3a3a3;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#ec4899);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;}
+.main{margin-left:240px;margin-top:64px;padding:32px;flex:1;}
+
+/* Hero Search */
+.kb-hero{text-align:center;padding:20px 0 36px;}
+.kb-hero h1{font-size:28px;font-weight:700;color:#fafafa;margin-bottom:6px;}
+.kb-hero p{font-size:15px;color:#737373;margin-bottom:24px;}
+.kb-search-wrap{max-width:600px;margin:0 auto;position:relative;}
+.kb-search{width:100%;height:48px;background:#171717;border:1px solid #262626;border-radius:12px;padding:0 16px 0 44px;color:#e5e5e5;font-size:15px;font-family:inherit;outline:none;transition:all 200ms;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%23737373' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8' stroke='%23737373' stroke-width='2' fill='none'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65' stroke='%23737373' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:14px center;}
+.kb-search:focus{border-color:#a855f7;box-shadow:0 0 0 3px rgba(168,85,247,0.15);background-color:#1a1a2e;}
+.kb-search::placeholder{color:#525252;}
+
+/* Filters */
+.filters{display:flex;align-items:center;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+.pill{padding:7px 14px;border-radius:100px;border:1px solid #262626;background:transparent;color:#a3a3a3;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all 150ms;}
+.pill:hover{border-color:#404040;color:#d4d4d4;}
+.pill.active{background:rgba(168,85,247,0.15);border-color:#a855f7;color:#c084fc;}
+.filter-label{font-size:12px;color:#525252;font-weight:500;}
+.sort-select{height:32px;background:#171717;border:1px solid #262626;border-radius:8px;color:#a3a3a3;font-size:12px;font-family:inherit;padding:0 10px;margin-left:auto;outline:none;}
+
+/* Category Cards */
+.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px;}
+.cat-card{background:#171717;border:1px solid #262626;border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all 200ms;}
+.cat-card:hover{border-color:#404040;transform:translateY(-1px);}
+.cat-icon{font-size:24px;margin-bottom:8px;}
+.cat-name{font-size:13px;font-weight:600;color:#e5e5e5;}
+.cat-count{font-size:11px;color:#525252;margin-top:2px;}
+
+/* Knowledge Grid */
+.section-title{font-size:16px;font-weight:600;color:#fafafa;margin-bottom:16px;}
+.intel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:24px;}
+.intel-card{background:#171717;border:1px solid #262626;border-left:4px solid #a855f7;border-radius:10px;padding:18px;cursor:pointer;transition:all 200ms;}
+.intel-card:hover{border-color:#404040;transform:translateY(-1px);}
+.intel-card.pink{border-left-color:#ec4899;}
+.intel-card.blue{border-left-color:#3b82f6;}
+.intel-card.green{border-left-color:#22c55e;}
+.intel-icon{font-size:18px;margin-bottom:8px;}
+.intel-title{font-size:14px;font-weight:600;color:#fafafa;margin-bottom:6px;line-height:1.4;}
+.intel-desc{font-size:12px;color:#737373;line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.intel-source{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:6px;margin-bottom:10px;}
+.intel-source.research{background:rgba(168,85,247,0.12);color:#c084fc;}
+.intel-source.manual{background:rgba(236,72,153,0.12);color:#f472b6;}
+.intel-source.observation{background:rgba(59,130,246,0.12);color:#60a5fa;}
+.intel-source.experiment{background:rgba(34,197,94,0.12);color:#4ade80;}
+.intel-footer{display:flex;align-items:center;gap:8px;font-size:11px;color:#525252;}
+.intel-footer .avatar-sm{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:#fff;}
+.intel-campaign{font-size:11px;color:#404040;margin-top:6px;}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px 0;color:#525252;font-size:13px;}
+.page-btn{width:32px;height:32px;border-radius:8px;border:1px solid #262626;background:transparent;color:#a3a3a3;font-size:12px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.page-btn.active{background:#a855f7;border-color:#a855f7;color:#fff;}
+.page-btn:hover:not(.active){background:#262626;}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>✦ Cohortix</span></div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="dashboard.html"><span class="icon">🎯</span> Mission Control</a>
+    <a class="nav-item" href="allies.html"><span class="icon">🤖</span> Allies</a>
+    <a class="nav-item" href="campaign.html"><span class="icon">📋</span> Campaigns</a>
+    <a class="nav-item active"><span class="icon">💡</span> Knowledge Base</a>
+    <a class="nav-item"><span class="icon">🏢</span> Clients</a>
+    <a class="nav-item"><span class="icon">🎯</span> Goals</a>
+    <div class="nav-section">Categories</div>
+    <a class="nav-item"><span class="icon">🔬</span> Research</a>
+    <a class="nav-item"><span class="icon">🎨</span> Design</a>
+    <a class="nav-item"><span class="icon">💻</span> Engineering</a>
+    <a class="nav-item"><span class="icon">📊</span> Analytics</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <a class="nav-item"><span class="icon">⚙️</span> Settings</a>
+  </div>
+</aside>
+
+<header class="topbar">
+  <input class="search-bar" placeholder="Search missions, allies, campaigns..." type="text">
+  <div class="topbar-actions">
+    <button class="btn-primary">＋ Add Intel</button>
+    <button class="icon-btn">🔔</button>
+    <div class="avatar">A</div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="kb-hero">
+    <h1>💡 Knowledge Base</h1>
+    <p>156 intel entries captured by your allies across all campaigns</p>
+    <div class="kb-search-wrap">
+      <input class="kb-search" placeholder="Search intel... &quot;What did we learn about API rate limiting?&quot;" type="text">
+    </div>
+  </div>
+
+  <!-- Categories -->
+  <div class="categories">
+    <div class="cat-card">
+      <div class="cat-icon">🔬</div>
+      <div class="cat-name">Research</div>
+      <div class="cat-count">52 entries</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">🎨</div>
+      <div class="cat-name">Design</div>
+      <div class="cat-count">28 entries</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">💻</div>
+      <div class="cat-name">Engineering</div>
+      <div class="cat-count">44 entries</div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">📊</div>
+      <div class="cat-name">Analytics</div>
+      <div class="cat-count">32 entries</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <span class="filter-label">Filter:</span>
+    <button class="pill active">All Sources</button>
+    <button class="pill">Research</button>
+    <button class="pill">Manual</button>
+    <button class="pill">Observation</button>
+    <button class="pill">Experiment</button>
+    <select class="sort-select">
+      <option>Sort: Most Recent</option>
+      <option>Sort: Relevance</option>
+      <option>Sort: Most Referenced</option>
+    </select>
+  </div>
+
+  <div class="section-title">Recent Intel</div>
+  <div class="intel-grid">
+    <div class="intel-card">
+      <div class="intel-icon">💡</div>
+      <div class="intel-title">API Rate Limiting Best Practices</div>
+      <div class="intel-desc">Token bucket algorithm provides the best balance between burst handling and sustained throughput. Redis-based implementation recommended for distributed systems. Key insight: sliding window counters outperform fixed windows.</div>
+      <div class="intel-source research">🔬 Research</div>
+      <div class="intel-footer">
+        <div class="avatar-sm" style="background:#7e22ce;">R</div>
+        <span>Riley · 2 days ago</span>
+      </div>
+      <div class="intel-campaign">Mission #42 · Q1 Marketing Push</div>
+    </div>
+
+    <div class="intel-card pink">
+      <div class="intel-icon">💡</div>
+      <div class="intel-title">User Testing Feedback Patterns</div>
+      <div class="intel-desc">Users consistently struggle with onboarding flow step 3 (team setup). 68% drop-off rate at this point. Recommendation: simplify to invite-later pattern and pre-populate with defaults.</div>
+      <div class="intel-source manual">✍️ Manual</div>
+      <div class="intel-footer">
+        <div class="avatar-sm" style="background:#1d4ed8;">J</div>
+        <span>Jordan · 4 days ago</span>
+      </div>
+      <div class="intel-campaign">Mission #39 · Website Redesign</div>
+    </div>
+
+    <div class="intel-card blue">
+      <div class="intel-icon">💡</div>
+      <div class="intel-title">Deployment Pipeline Optimization</div>
+      <div class="intel-desc">Parallelizing test suites across 4 workers reduced CI/CD pipeline time from 18 minutes to 5 minutes. Docker layer caching added another 40% improvement on build times.</div>
+      <div class="intel-source observation">👁️ Observation</div>
+      <div class="intel-footer">
+        <div class="avatar-sm" style="background:#6d28d9;">S</div>
+        <span>Sage · 5 days ago</span>
+      </div>
+      <div class="intel-campaign">Mission #35 · Product Launch v2</div>
+    </div>
+
+    <div class="intel-card green">
+      <div class="intel-icon">💡</div>
+      <div class="intel-title">Competitor Pricing Analysis</div>
+      <div class="intel-desc">Top 3 competitors use tiered pricing with free tier. Average mid-tier price: $49/mo. Key differentiator opportunity: usage-based pricing with no seat limits.</div>
+      <div class="intel-source research">🔬 Research</div>
+      <div class="intel-footer">
+        <div class="avatar-sm" style="background:#be185d;">C</div>
+        <span>Casey · 1 week ago</span>
+      </div>
+      <div class="intel-campaign">Mission #38 · Q1 Marketing Push</div>
+    </div>
+
+    <div class="intel-card">
+      <div class="intel-icon">💡</div>
+      <div class="intel-title">GraphQL vs REST Performance</div>
+      <div class="intel-desc">For our use case, GraphQL reduces over-fetching by 60% but adds ~15ms latency from query parsing. Recommendation: GraphQL for dashboard, REST for real-time operations.</div>
+      <div class="intel-source experiment">🧪 Experiment</div>
+      <div class="intel-footer">
+        <div class="avatar-sm" style="background:#7e22ce;">R</div>
+        <span>Riley · 1 week ago</span>
+      </div>
+      <div class="intel-campaign">Mission #33 · Product Launch v2</div>
+    </div>
+
+    <div class="intel-card pink">
+      <div class="intel-icon">💡</div>
+      <div class="intel-title">Social Media Engagement Benchmarks</div>
+      <div class="intel-desc">LinkedIn posts with images get 2.3x more engagement. Optimal posting time: Tue/Wed 9-11 AM. Carousel posts outperform single images by 1.8x in our industry.</div>
+      <div class="intel-source research">🔬 Research</div>
+      <div class="intel-footer">
+        <div class="avatar-sm" style="background:#be185d;">C</div>
+        <span>Casey · 9 days ago</span>
+      </div>
+      <div class="intel-campaign">Mission #31 · Q1 Marketing Push</div>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <button class="page-btn active">1</button>
+    <button class="page-btn">2</button>
+    <button class="page-btn">3</button>
+    <span>...</span>
+    <button class="page-btn">13</button>
+    <span style="margin-left:8px;">Showing 1–12 of 156</span>
+  </div>
+</main>
+</body>
+</html>
