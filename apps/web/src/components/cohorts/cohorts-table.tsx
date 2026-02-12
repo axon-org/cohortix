@@ -3,7 +3,18 @@
 // Date: 2026-02-12
 // Design: Linear-inspired dark theme, mockup 02-cohort-grid-linear-dark.png
 
+'use client'
+
 import Link from 'next/link';
+import { useState } from 'react';
+import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export interface CohortRow {
   id: string;
@@ -17,9 +28,11 @@ export interface CohortRow {
 interface CohortsTableProps {
   cohorts: CohortRow[];
   onRowClick?: (cohortId: string) => void;
+  onEdit?: (cohort: CohortRow) => void;
+  onDelete?: (cohort: CohortRow) => void;
 }
 
-export function CohortsTable({ cohorts, onRowClick }: CohortsTableProps) {
+export function CohortsTable({ cohorts, onRowClick, onEdit, onDelete }: CohortsTableProps) {
   const statusStyles = {
     active: 'bg-green-500/20 text-green-400 border-green-500/30',
     paused: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
@@ -102,16 +115,37 @@ export function CohortsTable({ cohorts, onRowClick }: CohortsTableProps) {
                 {cohort.start_date ? new Date(cohort.start_date).toLocaleDateString() : '—'}
               </td>
               <td className="px-6 py-4 text-right">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // TODO: Open actions menu
-                  }}
-                  className="text-gray-400 hover:text-white transition-colors"
-                  aria-label="Actions"
-                >
-                  •••
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-gray-400 hover:text-white transition-colors p-2 rounded-md hover:bg-[#2A2A2E]"
+                    aria-label="Actions"
+                  >
+                    <MoreVertical className="w-4 h-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-40">
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit?.(cohort);
+                      }}
+                    >
+                      <Pencil className="w-4 h-4 mr-2" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete?.(cohort);
+                      }}
+                      className="text-red-400 focus:text-red-400 focus:bg-red-500/10"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </td>
             </tr>
           ))}

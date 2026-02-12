@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CohortsTable, type CohortRow } from '@/components/cohorts/cohorts-table';
 import { CohortModal } from '@/components/cohorts/cohort-modal';
+import { useDeleteCohort } from '@/hooks/use-cohorts';
 
 export default function CohortsPage() {
   const router = useRouter();
@@ -18,6 +19,8 @@ export default function CohortsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingCohort, setEditingCohort] = useState<CohortRow | null>(null);
+  const deleteMutation = useDeleteCohort();
 
   // Debounced search
   useEffect(() => {
@@ -55,6 +58,29 @@ export default function CohortsPage() {
 
   function handleRowClick(cohortId: string) {
     router.push(`/cohorts/${cohortId}`);
+  }
+
+  function handleEdit(cohort: CohortRow) {
+    setEditingCohort(cohort);
+  }
+
+  async function handleDelete(cohort: CohortRow) {
+    if (!confirm(`Are you sure you want to delete "${cohort.name}"? This action cannot be undone.`)) {
+      return;
+    }
+    try {
+      await deleteMutation.mutateAsync(cohort.id);
+      fetchCohorts(); // Refresh the list
+    } catch (err) {
+      console.error('Failed to delete cohort:', err);
+      alert('Failed to delete cohort. Please try again.');
+    }
+  }
+
+  function handleModalClose() {
+    setShowCreateModal(false);
+    setEditingCohort(null);
+    fetchCohorts(); // Refresh after create/edit
   }
 
   return (
@@ -113,10 +139,30 @@ export default function CohortsPage() {
       )}
 
       {/* Table */}
-      {!loading && <CohortsTable cohorts={cohorts} onRowClick={handleRowClick} />}
+      {!loading && (
+        <CohortsTable
+          cohorts={cohorts}
+          onRowClick={handleRowClick}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
 
-      {/* Create Modal */}
-      <CohortModal open={showCreateModal} onOpenChange={setShowCreateModal} />
+      {/* Create/Edit Modal */}
+      <CohortModal
+        open={showCreateModal || !!editingCohort}
+        onOpenChange={(open) => {
+          if (!open) handleModalClose();
+        }}
+        cohort={editingCohort ? {
+          id: editingCohort.id,
+          name: editingCohort.name,
+          description: null,
+          status: editingCohort.status,
+          start_date: editingCohort.start_date,
+          end_date: null,
+        } : undefined}
+      />
     </div>
   );
 }

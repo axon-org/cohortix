@@ -73,6 +73,18 @@ export async function getDashboardKPIs(): Promise<DashboardKPIs> {
   return response.data
 }
 
+export interface EngagementDataPoint {
+  date: string
+  value: number
+}
+
+export async function getEngagementChartData(days: number = 30): Promise<EngagementDataPoint[]> {
+  const response = await fetchApi<{ data: EngagementDataPoint[] }>(
+    `/dashboard/engagement-chart?days=${days}`
+  )
+  return response.data
+}
+
 // ============================================================================
 // Cohorts API
 // ============================================================================
