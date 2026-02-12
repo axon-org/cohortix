@@ -34,17 +34,27 @@ export type CohortWithStats = Cohort & {
   avg_engagement: number;
 };
 
+export type CohortFilters = {
+  status?: 'active' | 'paused' | 'at-risk' | 'completed';
+  search?: string;
+  startDateFrom?: string;
+  startDateTo?: string;
+  sortBy?: 'name' | 'created_at' | 'start_date' | 'end_date';
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  pageSize?: number;
+};
+
 /**
  * Get all cohorts for an organization with filters and pagination
  */
 export async function getCohorts(
   orgId: string,
-  filters?: { status?: string; search?: string },
-  pagination?: { page?: number; limit?: number }
+  filters?: CohortFilters
 ) {
   const supabase = createClient();
-  const page = pagination?.page || 1;
-  const limit = pagination?.limit || 20;
+  const page = filters?.page || 1;
+  const limit = Math.min(filters?.pageSize || 20, 50); // Cap at 50
   const offset = (page - 1) * limit;
 
   let query = supabase
@@ -60,7 +70,17 @@ export async function getCohorts(
     query = query.ilike('name', `%${filters.search}%`);
   }
 
-  query = query.range(offset, offset + limit - 1).order('created_at', { ascending: false });
+  if (filters?.startDateFrom) {
+    query = query.gte('start_date', filters.startDateFrom);
+  }
+
+  if (filters?.startDateTo) {
+    query = query.lte('start_date', filters.startDateTo);
+  }
+
+  const sortBy = filters?.sortBy || 'created_at';
+  const sortOrder = filters?.sortOrder || 'desc';
+  query = query.range(offset, offset + limit - 1).order(sortBy, { ascending: sortOrder === 'asc' });
 
   const { data, error, count } = await query;
 

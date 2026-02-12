@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CohortsTable, type CohortRow } from '@/components/cohorts/cohorts-table';
+import { CohortModal } from '@/components/cohorts/cohort-modal';
 
 export default function CohortsPage() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function CohortsPage() {
   const [cohorts, setCohorts] = useState<CohortRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Debounced search
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function CohortsPage() {
           <p className="text-gray-400 mt-1">Manage and track your AI cohorts</p>
         </div>
         <button
-          onClick={() => router.push('/cohorts/new')}
+          onClick={() => setShowCreateModal(true)}
           className="px-4 py-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors font-medium"
         >
           + New Cohort
@@ -112,6 +114,9 @@ export default function CohortsPage() {
 
       {/* Table */}
       {!loading && <CohortsTable cohorts={cohorts} onRowClick={handleRowClick} />}
+
+      {/* Create Modal */}
+      <CohortModal open={showCreateModal} onOpenChange={setShowCreateModal} />
     </div>
   );
 }

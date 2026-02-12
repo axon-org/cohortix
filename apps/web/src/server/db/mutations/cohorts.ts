@@ -6,10 +6,9 @@ import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
 /**
- * Schema for creating a new cohort
+ * Schema for creating a new cohort (without org_id and created_by, those are injected)
  */
 export const createCohortSchema = z.object({
-  organization_id: z.string().uuid(),
   name: z.string().min(1).max(255),
   description: z.string().optional(),
   status: z.enum(['active', 'paused', 'at-risk', 'completed']).default('active'),
@@ -21,18 +20,26 @@ export const createCohortSchema = z.object({
 /**
  * Schema for updating an existing cohort
  */
-export const updateCohortSchema = createCohortSchema.partial().omit({ organization_id: true });
+export const updateCohortSchema = createCohortSchema.partial();
 
 /**
  * Create a new cohort
  */
-export async function createCohort(data: z.infer<typeof createCohortSchema>) {
+export async function createCohort(
+  organizationId: string,
+  createdBy: string, // Reserved for future use when schema adds created_by field
+  data: z.infer<typeof createCohortSchema>
+) {
   const validated = createCohortSchema.parse(data);
   const supabase = createClient();
 
   const { data: cohort, error } = await supabase
     .from('cohorts')
-    .insert(validated)
+    .insert({
+      organization_id: organizationId,
+      // created_by: createdBy, // TODO: Add to schema
+      ...validated,
+    })
     .select()
     .single();
 
