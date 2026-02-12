@@ -523,16 +523,18 @@ All credentials are in `.env.local`:
 
 ```bash
 # Transaction Pooler (for Vercel/serverless)
-DATABASE_URL=postgresql://postgres.rfwscvklcokzuofyzqwx:<DB_PASSWORD>@aws-0-us-east-1.pooler.supabase.com:6543/postgres
+DATABASE_URL=postgresql://postgres.<project-ref>:<DB_PASSWORD>@aws-0-<region>.pooler.supabase.com:6543/postgres
 
 # Direct connection (for migrations - if working)
-DIRECT_URL=postgresql://postgres.rfwscvklcokzuofyzqwx:<DB_PASSWORD>@db.rfwscvklcokzuofyzqwx.supabase.co:5432/postgres
+DIRECT_URL=postgresql://postgres.<project-ref>:<DB_PASSWORD>@db.<project-ref>.supabase.co:5432/postgres
 
 # Supabase API (for Supabase JS client)
 NEXT_PUBLIC_SUPABASE_URL=https://rfwscvklcokzuofyzqwx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... (server-only)
 ```
+
+Never commit real credentials or full connection strings to git.
 
 ---
 
