@@ -11,6 +11,7 @@ import {
   Settings,
   User as UserIcon,
   ChevronLeft,
+  FolderKanban,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -19,6 +20,7 @@ const navigation = [
   { name: 'Cohorts', href: '/cohorts', icon: Users },
   { name: 'Allies', href: '/allies', icon: Bot },
   { name: 'Missions', href: '/missions', icon: Rocket },
+  { name: 'Operations', href: '/operations', icon: FolderKanban },
 ]
 
 interface SidebarProps {

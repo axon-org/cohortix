@@ -408,3 +408,90 @@ export async function updateMission(id: string, data: Partial<CreateMissionInput
 export async function deleteMission(id: string): Promise<void> {
   await fetchApi(`/missions/${id}`, { method: 'DELETE' })
 }
+
+// ============================================================================
+// Operations API
+// ============================================================================
+
+export interface Operation {
+  id: string
+  name: string
+  slug: string
+  description?: string
+  status: 'planning' | 'active' | 'on_hold' | 'completed' | 'archived'
+  startDate?: string
+  targetDate?: string
+  completedAt?: string
+  color?: string
+  icon?: string
+  missionId?: string
+  ownerType: 'user' | 'agent'
+  ownerId: string
+  settings?: Record<string, any>
+  created_at: string
+  updated_at: string
+}
+
+export interface OperationListResponse {
+  data: Operation[]
+  meta: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}
+
+export interface OperationQueryParams {
+  page?: number
+  limit?: number
+  status?: Operation['status']
+  search?: string
+  missionId?: string
+  sortBy?: 'name' | 'createdAt' | 'status' | 'startDate' | 'targetDate'
+  sortOrder?: 'asc' | 'desc'
+}
+
+export async function getOperations(params?: OperationQueryParams): Promise<OperationListResponse> {
+  const searchParams = new URLSearchParams()
+  if (params?.page) searchParams.set('page', params.page.toString())
+  if (params?.limit) searchParams.set('limit', params.limit.toString())
+  if (params?.status) searchParams.set('status', params.status)
+  if (params?.search) searchParams.set('search', params.search)
+  if (params?.missionId) searchParams.set('missionId', params.missionId)
+  if (params?.sortBy) searchParams.set('sortBy', params.sortBy)
+  if (params?.sortOrder) searchParams.set('sortOrder', params.sortOrder)
+  const query = searchParams.toString()
+  return fetchApi<OperationListResponse>(`/operations${query ? `?${query}` : ''}`)
+}
+
+export interface CreateOperationInput {
+  name: string
+  description?: string
+  status?: Operation['status']
+  startDate?: string
+  targetDate?: string
+  missionId?: string
+  color?: string
+  icon?: string
+  settings?: Record<string, any>
+}
+
+export async function getOperation(id: string): Promise<Operation> {
+  const response = await fetchApi<{ data: Operation }>(`/operations/${id}`)
+  return response.data
+}
+
+export async function createOperation(data: CreateOperationInput): Promise<Operation> {
+  const response = await fetchApi<{ data: Operation }>('/operations', { method: 'POST', body: JSON.stringify(data) })
+  return response.data
+}
+
+export async function updateOperation(id: string, data: Partial<CreateOperationInput>): Promise<Operation> {
+  const response = await fetchApi<{ data: Operation }>(`/operations/${id}`, { method: 'PATCH', body: JSON.stringify(data) })
+  return response.data
+}
+
+export async function deleteOperation(id: string): Promise<void> {
+  await fetchApi(`/operations/${id}`, { method: 'DELETE' })
+}
