@@ -21,10 +21,12 @@ import {
 } from '@dnd-kit/sortable'
 import { KanbanColumn } from './kanban-column'
 import { KanbanCard } from './kanban-card'
+import { TaskDetailSheet } from './task-detail-sheet'
 import { type Operation } from '@/lib/api/client'
 import { useUpdateOperation } from '@/hooks/use-operations'
 
 export type KanbanStatus = 'planning' | 'active' | 'on_hold' | 'completed' | 'archived'
+export type GroupBy = 'status' | 'mission' | 'owner'
 
 const COLUMNS: { id: KanbanStatus; title: string }[] = [
   { id: 'planning', title: 'Todo' },
@@ -35,27 +37,58 @@ const COLUMNS: { id: KanbanStatus; title: string }[] = [
 
 interface KanbanBoardProps {
   initialTasks: Operation[]
+  groupBy?: GroupBy
 }
 
-export function KanbanBoard({ initialTasks }: KanbanBoardProps) {
+export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardProps) {
   const [tasks, setTasks] = useState<Operation[]>(initialTasks)
   const [activeTask, setActiveTask] = useState<Operation | null>(null)
+  const [selectedTask, setSelectedTask] = useState<Operation | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
   
   const updateOperation = useUpdateOperation()
 
+  // Dynamic columns based on grouping
+  const columns = useMemo(() => {
+    if (groupBy === 'status') return COLUMNS
+    
+    // For Mission or Ally, we extract unique IDs from tasks
+    const uniqueIds = Array.from(new Set(tasks.map(t => 
+      groupBy === 'mission' ? (t.missionId || 'unassigned') : t.ownerId
+    )))
+    
+    return uniqueIds.map(id => ({
+      id: id as any,
+      title: id === 'unassigned' ? 'No Mission' : (id.length > 8 ? id.slice(0, 8) : id)
+    }))
+  }, [groupBy, tasks])
+
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
 
-  const tasksByStatus = useMemo(() => {
-    return COLUMNS.reduce((acc, col) => {
-      acc[col.id] = tasks.filter((t) => t.status === col.id)
+  const tasksByGroup = useMemo(() => {
+    return columns.reduce((acc, col) => {
+      acc[col.id] = tasks.filter((t) => {
+        if (groupBy === 'status') return t.status === col.id
+        if (groupBy === 'mission') return (t.missionId || 'unassigned') === col.id
+        return t.ownerId === col.id
+      })
       return acc
-    }, {} as Record<KanbanStatus, Operation[]>)
-  }, [tasks])
+    }, {} as Record<string, Operation[]>)
+  }, [tasks, columns, groupBy])
+
+  function handleCardClick(task: Operation) {
+    setSelectedTask(task)
+    setIsSheetOpen(true)
+  }
 
   function handleDragStart(event: DragStart) {
     const { active } = event
@@ -84,7 +117,7 @@ export function KanbanBoard({ initialTasks }: KanbanBoardProps) {
         const activeIndex = tasks.findIndex((t) => t.id === activeId)
         const overIndex = tasks.findIndex((t) => t.id === overId)
 
-        if (tasks[activeIndex].status !== tasks[overIndex].status) {
+        if (groupBy === 'status' && tasks[activeIndex].status !== tasks[overIndex].status) {
           tasks[activeIndex].status = tasks[overIndex].status
           return arrayMove(tasks, activeIndex, overIndex - 1)
         }
@@ -97,7 +130,13 @@ export function KanbanBoard({ initialTasks }: KanbanBoardProps) {
     if (isActiveATask && isOverAColumn) {
       setTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId)
-        tasks[activeIndex].status = overId as KanbanStatus
+        if (groupBy === 'status') {
+          tasks[activeIndex].status = overId as KanbanStatus
+        } else if (groupBy === 'mission') {
+          tasks[activeIndex].missionId = overId === 'unassigned' ? undefined : String(overId)
+        } else {
+          tasks[activeIndex].ownerId = String(overId)
+        }
         return arrayMove(tasks, activeIndex, activeIndex)
       })
     }
@@ -105,17 +144,23 @@ export function KanbanBoard({ initialTasks }: KanbanBoardProps) {
 
   function handleDragEnd(event: DragEnd) {
     const { active, over } = event
-    if (!over) return
+    if (!over) {
+      setActiveTask(null)
+      return
+    }
 
     const activeId = active.id
-    const overId = over.id
-
     const activeTask = tasks.find((t) => t.id === activeId)
+    
     if (activeTask) {
-      // API Call for persistence (optimistic update already happened in state)
+      const updateData: Partial<Operation> = {}
+      if (groupBy === 'status') updateData.status = activeTask.status
+      if (groupBy === 'mission') updateData.missionId = activeTask.missionId
+      if (groupBy === 'owner') updateData.ownerId = activeTask.ownerId
+
       updateOperation.mutate({
         id: activeTask.id,
-        data: { status: activeTask.status },
+        data: updateData as any,
       })
     }
 
@@ -132,12 +177,13 @@ export function KanbanBoard({ initialTasks }: KanbanBoardProps) {
         onDragEnd={handleDragEnd}
       >
         <div className="flex gap-6 items-start">
-          {COLUMNS.map((col) => (
+          {columns.map((col) => (
             <KanbanColumn
               key={col.id}
               id={col.id}
               title={col.title}
-              tasks={tasksByStatus[col.id] || []}
+              tasks={tasksByGroup[col.id] || []}
+              onCardClick={handleCardClick}
             />
           ))}
         </div>
@@ -148,6 +194,13 @@ export function KanbanBoard({ initialTasks }: KanbanBoardProps) {
           ) : null}
         </DragOverlay>
       </DndContext>
+
+      <TaskDetailSheet 
+        task={selectedTask} 
+        open={isSheetOpen} 
+        onOpenChange={setIsSheetOpen} 
+      />
     </div>
   )
 }
+

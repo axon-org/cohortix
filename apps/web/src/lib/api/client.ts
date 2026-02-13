@@ -495,3 +495,102 @@ export async function updateOperation(id: string, data: Partial<CreateOperationI
 export async function deleteOperation(id: string): Promise<void> {
   await fetchApi(`/operations/${id}`, { method: 'DELETE' })
 }
+
+// ============================================================================
+// Comments API
+// ============================================================================
+
+export interface Comment {
+  id: string
+  content: string
+  entity_type: string
+  entity_id: string
+  author_id: string
+  author_name: string
+  author_avatar_url?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CommentListResponse {
+  data: Comment[]
+}
+
+export async function getComments(entityType: string, entityId: string): Promise<CommentListResponse> {
+  return fetchApi<CommentListResponse>(`/comments?entityType=${entityType}&entityId=${entityId}`)
+}
+
+export async function createComment(data: {
+  content: string
+  entityType: string
+  entityId: string
+}): Promise<Comment> {
+  const response = await fetchApi<{ data: Comment }>('/comments', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return response.data
+}
+
+// ============================================================================
+// Activity API
+// ============================================================================
+
+export interface Activity {
+  id: string
+  entity_type: string
+  entity_id: string
+  action: string
+  description: string
+  actor_id: string
+  actor_name: string
+  actor_avatar_url?: string
+  metadata?: Record<string, any>
+  created_at: string
+}
+
+export interface ActivityListResponse {
+  data: Activity[]
+}
+
+export async function getActivity(entityType: string, entityId: string): Promise<ActivityListResponse> {
+  return fetchApi<ActivityListResponse>(`/activity?entityType=${entityType}&entityId=${entityId}`)
+}
+
+// ============================================================================
+// Insights API
+// ============================================================================
+
+export interface Insight {
+  id: string
+  title: string
+  content: string
+  source?: string
+  ally_id?: string
+  ally_name?: string
+  ally_avatar_url?: string
+  tags?: string[]
+  created_at: string
+}
+
+export interface InsightListResponse {
+  data: Insight[]
+}
+
+export async function getInsights(): Promise<InsightListResponse> {
+  return fetchApi<InsightListResponse>('/insights')
+}
+
+export async function createInsight(data: {
+  title: string
+  content: string
+  source?: string
+  tags?: string[]
+}): Promise<Insight> {
+  const response = await fetchApi<{ data: Insight }>('/insights', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return response.data
+}
+

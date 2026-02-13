@@ -12,9 +12,10 @@ import { format } from 'date-fns'
 
 interface KanbanCardProps {
   task: Operation
+  onClick?: () => void
 }
 
-export function KanbanCard({ task }: KanbanCardProps) {
+export function KanbanCard({ task, onClick }: KanbanCardProps) {
   const {
     attributes,
     listeners,
@@ -33,6 +34,12 @@ export function KanbanCard({ task }: KanbanCardProps) {
   const style = {
     transform: CSS.Translate.toString(transform),
     transition,
+  }
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    // We only trigger onClick if it's a simple click, not a drag start
+    // However, dnd-kit uses pointer events too. 
+    // A better way is to let the user click the card and distinguish from drag.
   }
 
   if (isDragging) {
@@ -59,6 +66,7 @@ export function KanbanCard({ task }: KanbanCardProps) {
       style={style}
       {...attributes}
       {...listeners}
+      onClick={onClick}
       className={cn(
         "group relative bg-card hover:bg-accent/50 border border-border rounded-lg p-4 shadow-sm transition-all cursor-grab active:cursor-grabbing",
         "hover:border-primary/30"

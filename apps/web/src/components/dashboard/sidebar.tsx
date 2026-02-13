@@ -21,6 +21,7 @@ const navigation = [
   { name: 'Allies', href: '/allies', icon: Bot },
   { name: 'Missions', href: '/missions', icon: Rocket },
   { name: 'Operations', href: '/operations', icon: FolderKanban },
+  { name: 'Kanban', href: '/kanban', icon: FolderKanban },
 ]
 
 interface SidebarProps {

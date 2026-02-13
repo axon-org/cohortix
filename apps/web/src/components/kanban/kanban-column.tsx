@@ -12,12 +12,13 @@ import { type KanbanStatus } from './kanban-board'
 import { cn } from '@/lib/utils'
 
 interface KanbanColumnProps {
-  id: KanbanStatus
+  id: string
   title: string
   tasks: Operation[]
+  onCardClick?: (task: Operation) => void
 }
 
-export function KanbanColumn({ id, title, tasks }: KanbanColumnProps) {
+export function KanbanColumn({ id, title, tasks, onCardClick }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: id,
     data: {
@@ -50,7 +51,7 @@ export function KanbanColumn({ id, title, tasks }: KanbanColumnProps) {
       >
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <KanbanCard key={task.id} task={task} />
+            <KanbanCard key={task.id} task={task} onClick={() => onCardClick?.(task)} />
           ))}
         </SortableContext>
       </div>
