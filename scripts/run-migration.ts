@@ -1,51 +1,80 @@
-import postgres from 'postgres';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
+/**
+ * Migration Runner
+ * 
+ * Applies SQL migration files to Supabase
+ * 
+ * Run with: pnpm tsx scripts/run-migration.ts <migration-file>
+ */
 
-// Prefer DIRECT_URL for migrations, but allow DATABASE_URL as fallback.
-const databaseUrl = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
+import { createClient } from '@supabase/supabase-js'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as dotenv from 'dotenv'
 
-if (!databaseUrl) {
-  console.error('❌ DIRECT_URL or DATABASE_URL not found in .env.local');
-  process.exit(1);
-}
+dotenv.config({ path: '.env.local' })
 
-console.log('🔌 Connecting to Supabase database...\n');
-
-const sql = postgres(databaseUrl, {
-  max: 1,
-  ssl: 'require',
-});
-
-async function runMigration() {
-  try {
-    console.log('📖 Reading migration file...');
-    const migrationPath = resolve(
-      process.cwd(),
-      'packages/database/src/migrations/0000_initial_with_rls.sql'
-    );
-    const migrationSQL = readFileSync(migrationPath, 'utf-8');
-
-    console.log('✅ Migration file loaded\n');
-    console.log('🚀 Running migration (this may take a minute)...\n');
-
-    // Execute the entire migration
-    await sql.unsafe(migrationSQL);
-
-    console.log('✅ Migration completed successfully!\n');
-    console.log('📊 Database schema is now set up with:');
-    console.log('   • 16 tables');
-    console.log('   • 14 enum types');
-    console.log('   • Row-Level Security policies');
-    console.log('   • Indexes and constraints\n');
-
-    await sql.end();
-    process.exit(0);
-  } catch (error) {
-    console.error('❌ Migration failed:', error);
-    await sql.end();
-    process.exit(1);
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
   }
+)
+
+async function runMigration(migrationPath: string) {
+  console.log(`📦 Running migration: ${migrationPath}\n`)
+
+  // Read migration file
+  const fullPath = path.resolve(migrationPath)
+  
+  if (!fs.existsSync(fullPath)) {
+    console.error(`❌ Migration file not found: ${fullPath}`)
+    process.exit(1)
+  }
+
+  const sql = fs.readFileSync(fullPath, 'utf-8')
+  
+  console.log('SQL Preview:')
+  console.log('─'.repeat(80))
+  console.log(sql.substring(0, 500))
+  console.log('─'.repeat(80))
+  console.log('\n🚀 Executing migration...\n')
+
+  // Execute migration
+  const { error } = await supabase.rpc('exec_sql', { sql_string: sql }).select()
+
+  if (error) {
+    // If the rpc function doesn't exist, try direct query
+    console.log('⚠️  RPC method not available, trying direct query...\n')
+    
+    const { error: queryError } = await (supabase as any).rpc('query', { query_text: sql })
+    
+    if (queryError) {
+      console.error('❌ Migration failed:', queryError)
+      process.exit(1)
+    }
+  }
+
+  console.log('✅ Migration completed successfully!\n')
 }
 
-runMigration();
+const migrationFile = process.argv[2]
+
+if (!migrationFile) {
+  console.error('❌ Usage: pnpm tsx scripts/run-migration.ts <migration-file>')
+  console.error('   Example: pnpm tsx scripts/run-migration.ts supabase/migrations/20260213185300_create_missions_table.sql')
+  process.exit(1)
+}
+
+runMigration(migrationFile)
+  .then(() => {
+    console.log('✅ Done!')
+    process.exit(0)
+  })
+  .catch((error) => {
+    console.error('❌ Error:', error)
+    process.exit(1)
+  })
