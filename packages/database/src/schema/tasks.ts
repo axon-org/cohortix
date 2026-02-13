@@ -1,24 +1,23 @@
 import { pgTable, uuid, varchar, text, timestamp, integer, decimal, jsonb, pgEnum } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
-import { missions } from './missions';
+import { operations } from './operations'; // Operations (bounded initiatives)
 import { milestones } from './milestones';
-import { ownerTypeEnum } from './goals';
+import { ownerTypeEnum } from './missions';
 
 // Note: Table name remains 'tasks' in database for backwards compatibility
-// User-facing terminology: "Action" (not "Task")
-export const actionStatusEnum = pgEnum('task_status', ['backlog', 'todo', 'in_progress', 'review', 'done', 'cancelled']);
-export const actionPriorityEnum = pgEnum('task_priority', ['low', 'medium', 'high', 'urgent']);
+// User-facing terminology: "Task" (atomic unit of work)
+export const taskStatusEnum = pgEnum('task_status', ['backlog', 'todo', 'in_progress', 'review', 'done', 'cancelled']);
+export const taskPriorityEnum = pgEnum('task_priority', ['low', 'medium', 'high', 'urgent']);
 export const assigneeTypeEnum = pgEnum('assignee_type', ['user', 'agent', 'unassigned']);
 
-export const actions = pgTable('tasks', {
+export const tasks = pgTable('tasks', {
   id: uuid('id').primaryKey().defaultRandom(),
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
-  projectId: uuid('project_id')
-    .notNull()
-    .references(() => missions.id, { onDelete: 'cascade' }), // References missions table
-  parentTaskId: uuid('parent_task_id').references(() => actions.id, { onDelete: 'cascade' }),
+  projectId: uuid('project_id').references(() => operations.id, { onDelete: 'set null' }), // References operations (projects table in DB) - optional for rhythm tasks
+  rhythmId: uuid('rhythm_id'), // References rhythms table - added via migration (circular dependency)
+  parentTaskId: uuid('parent_task_id').references(() => tasks.id, { onDelete: 'cascade' }),
   milestoneId: uuid('milestone_id').references(() => milestones.id, { onDelete: 'set null' }),
   
   // Polymorphic assignee (user or ally)
@@ -31,8 +30,8 @@ export const actions = pgTable('tasks', {
   
   title: varchar('title', { length: 500 }).notNull(),
   description: text('description'),
-  status: actionStatusEnum('status').default('backlog').notNull(),
-  priority: actionPriorityEnum('priority').default('medium').notNull(),
+  status: taskStatusEnum('status').default('backlog').notNull(),
+  priority: taskPriorityEnum('priority').default('medium').notNull(),
   
   // Dates
   dueDate: timestamp('due_date', { withTimezone: true }),
@@ -54,21 +53,21 @@ export const actions = pgTable('tasks', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
-// Self-referencing relation for sub-actions
-export const actionsRelations = {
-  parentAction: {
-    fields: [actions.parentTaskId],
-    references: [actions.id],
+// Self-referencing relation for sub-tasks
+export const tasksRelations = {
+  parentTask: {
+    fields: [tasks.parentTaskId],
+    references: [tasks.id],
   },
 };
 
-export type Action = typeof actions.$inferSelect;
-export type InsertAction = typeof actions.$inferInsert;
+export type Task = typeof tasks.$inferSelect;
+export type InsertTask = typeof tasks.$inferInsert;
 
-// Legacy aliases for backwards compatibility
-export const tasks = actions;
-export const taskStatusEnum = actionStatusEnum;
-export const taskPriorityEnum = actionPriorityEnum;
-export const tasksRelations = actionsRelations;
-export type Task = Action;
-export type InsertTask = InsertAction;
+// Legacy aliases for backwards compatibility (old "Action" terminology)
+export const actions = tasks;
+export const actionStatusEnum = taskStatusEnum;
+export const actionPriorityEnum = taskPriorityEnum;
+export const actionsRelations = tasksRelations;
+export type Action = Task;
+export type InsertAction = InsertTask;

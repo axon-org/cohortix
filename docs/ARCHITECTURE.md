@@ -8,9 +8,9 @@
 
 ## Executive Summary
 
-Agent Command Center is a multi-tenant SaaS platform that enables organizations to orchestrate AI agents for mission management, action automation, and knowledge capture. The architecture is designed for:
+Agent Command Center is a multi-tenant SaaS platform that enables organizations to orchestrate AI agents for operation management, task automation, and knowledge capture. The architecture is designed for:
 
-- **Scale**: Support millions of actions across thousands of tenants
+- **Scale**: Support millions of tasks across thousands of tenants
 - **Security**: Enterprise-grade multi-tenant isolation
 - **Flexibility**: Abstraction layer for agent runtime portability
 - **Performance**: Sub-100ms response times for core operations
@@ -120,7 +120,7 @@ Organization (Tenant)
     ├─── Clients (1:many)
     │       │
     │       ├─── Missions (1:many, optional client_id)
-    │       ├─── Goals (1:many, optional client_id)
+    │       ├─── Missions (1:many, optional client_id)  # Database: 'goals' table → rename to 'missions' pending
     │       └─── Agent Assignments (many:many via agent_client_assignments)
     │
     ├─── Agents (1:many)
@@ -133,7 +133,7 @@ Organization (Tenant)
 ```
 
 **Key Design Points:**
-- **Optional Client Association:** Missions and goals can optionally belong to a client
+- **Optional Client Association:** Operations and missions can optionally belong to a client
 - **Agent-Client Assignment:** Tracks which agents work on which client accounts
 - **Client Metadata:** Industry, contact info, custom fields for client context
 - **Knowledge Segregation:** RLS policies ensure agents only see knowledge for clients they're assigned to
@@ -210,8 +210,8 @@ interface AgentRuntime {
   startAgent(agentId: string): Promise<void>;
   stopAgent(agentId: string): Promise<void>;
   
-  // Action execution
-  assignTask(agentId: string, action: Action): Promise<TaskExecution>;
+  // Task execution
+  assignTask(agentId: string, task: Task): Promise<TaskExecution>;
   getTaskStatus(executionId: string): Promise<TaskStatus>;
   
   // Communication
@@ -269,7 +269,7 @@ Daily 9 AM Evolution Session
          │
          ├──▶ Reflection + Integration (15 min)
          │    • What did I learn?
-         │    • How does this apply to my missions?
+         │    • How does this apply to my operations?
          │    • What questions remain?
          │
          ├──▶ Update Expertise Matrix
@@ -279,26 +279,26 @@ Daily 9 AM Evolution Session
          │
          └──▶ Identify Next Learning Goal
               • Analyze performance gaps
-              • Review upcoming mission requirements
+              • Review upcoming operation requirements
               • Propose next course/material
 ```
 
-#### Bidirectional Goal Flow
+#### Bidirectional Mission Flow
 
-**Architecture supports both human→agent AND agent→human goal initiation**
+**Architecture supports both human→agent AND agent→human mission initiation**
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              BIDIRECTIONAL GOAL FLOW                     │
+│           BIDIRECTIONAL MISSION FLOW                     │
 │                                                          │
 │  ┌─────────────────┐         ┌─────────────────┐        │
-│  │  Human Proposes │────────▶│  Goal Created   │        │
-│  │      Goal       │         │  (Approved)     │        │
+│  │  Human Proposes │────────▶│ Mission Created │        │
+│  │     Mission     │         │  (Approved)     │        │
 │  └─────────────────┘         └────────┬────────┘        │
 │                                       │                  │
 │                                       ▼                  │
 │  ┌─────────────────┐         ┌─────────────────┐        │
-│  │  Agent Observes │────────▶│  Goal Proposal  │        │
+│  │  Agent Observes │────────▶│ Mission Proposal│        │
 │  │  Performance    │         │  (Pending)      │        │
 │  │  Issues/Opps    │         └────────┬────────┘        │
 │  └─────────────────┘                  │                  │
@@ -319,14 +319,14 @@ Daily 9 AM Evolution Session
 │                                       │                  │
 │                                       ▼                  │
 │                              ┌─────────────────┐        │
-│                              │ Goal Created│        │
-│                              │ Missions Assigned        │
+│                              │ Mission Created │        │
+│                              │ Operations Assigned      │
 │                              └─────────────────┘        │
 └─────────────────────────────────────────────────────────┘
 ```
 
 **Key Components:**
-- **Goal Source Tracking:** Every goal tagged with `source: 'human' | 'agent'`
+- **Mission Source Tracking:** Every mission tagged with `source: 'human' | 'agent'`
 - **Approval Workflow:** Agent proposals require human review
 - **Justification System:** Agents must provide evidence for proposals
 - **Modification Support:** Humans can adjust scope/priority before approval
@@ -337,7 +337,7 @@ Daily 9 AM Evolution Session
 
 **Why PostgreSQL:**
 - Battle-tested for enterprise workloads
-- pgvector extension for semantic search (knowledge base)
+- pgvector extension for semantic search (intelligence base)
 - Row-Level Security (RLS) for multi-tenant isolation
 - ACID compliance for data integrity
 - JSON/JSONB for flexible schema where needed
@@ -346,12 +346,12 @@ Daily 9 AM Evolution Session
 
 ```sql
 -- Example: Row-Level Security policy
-CREATE POLICY tenant_isolation ON missions
+CREATE POLICY tenant_isolation ON operations
   USING (organization_id = current_setting('app.current_org_id')::uuid);
 
 -- All queries automatically filtered by tenant
 SET app.current_org_id = 'org_xyz123';
-SELECT * FROM missions; -- Only returns org's missions
+SELECT * FROM operations; -- Only returns org's operations
 ```
 
 #### Supporting Data Stores

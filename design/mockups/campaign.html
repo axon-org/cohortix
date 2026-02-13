@@ -68,23 +68,23 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
 .kanban-col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 4px;}
 .kanban-col-title{font-size:13px;font-weight:600;color:#a3a3a3;display:flex;align-items:center;gap:8px;}
 .kanban-count{width:20px;height:20px;border-radius:6px;background:#262626;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#737373;}
-.mission-card{background:#171717;border:1px solid #262626;border-radius:8px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all 200ms;}
-.mission-card:hover{border-color:#404040;transform:translateY(-1px);}
-.mission-title{font-size:13px;font-weight:600;color:#e5e5e5;margin-bottom:6px;line-height:1.4;}
-.mission-desc{font-size:12px;color:#525252;line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.mission-meta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#525252;}
-.mission-priority{display:flex;align-items:center;gap:4px;font-weight:500;}
-.mission-priority.high{color:#f59e0b;}
-.mission-priority.urgent{color:#ef4444;}
-.mission-priority.medium{color:#737373;}
-.mission-priority.low{color:#525252;}
-.mission-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
-.mission-ally{display:flex;align-items:center;gap:6px;font-size:11px;color:#737373;}
-.mission-ally-avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;}
-.mission-tags{display:flex;gap:4px;}
-.mission-tag{font-size:10px;padding:2px 6px;border-radius:4px;background:#262626;color:#737373;}
-.add-mission{width:100%;padding:10px;border:1px dashed #262626;border-radius:8px;background:transparent;color:#525252;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;text-align:center;transition:all 150ms;}
-.add-mission:hover{border-color:#404040;color:#737373;background:#171717;}
+.task-card{background:#171717;border:1px solid #262626;border-radius:8px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all 200ms;}
+.task-card:hover{border-color:#404040;transform:translateY(-1px);}
+.task-title{font-size:13px;font-weight:600;color:#e5e5e5;margin-bottom:6px;line-height:1.4;}
+.task-desc{font-size:12px;color:#525252;line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.task-meta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#525252;}
+.task-priority{display:flex;align-items:center;gap:4px;font-weight:500;}
+.task-priority.high{color:#f59e0b;}
+.task-priority.urgent{color:#ef4444;}
+.task-priority.medium{color:#737373;}
+.task-priority.low{color:#525252;}
+.task-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+.task-ally{display:flex;align-items:center;gap:6px;font-size:11px;color:#737373;}
+.task-ally-avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;}
+.task-tags{display:flex;gap:4px;}
+.task-tag{font-size:10px;padding:2px 6px;border-radius:4px;background:#262626;color:#737373;}
+.add-task{width:100%;padding:10px;border:1px dashed #262626;border-radius:8px;background:transparent;color:#525252;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;text-align:center;transition:all 150ms;}
+.add-task:hover{border-color:#404040;color:#737373;background:#171717;}
 </style>
 </head>
 <body>
@@ -92,13 +92,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
 <aside class="sidebar">
   <div class="sidebar-logo"><span>✦ Cohortix</span></div>
   <nav class="sidebar-nav">
-    <a class="nav-item" href="dashboard.html"><span class="icon">🎯</span> Mission Control</a>
+    <a class="nav-item" href="dashboard.html"><span class="icon">🎯</span> Command Center</a>
     <a class="nav-item" href="allies.html"><span class="icon">🤖</span> Allies</a>
-    <a class="nav-item active"><span class="icon">📋</span> Campaigns</a>
-    <a class="nav-item" href="knowledge.html"><span class="icon">💡</span> Knowledge Base</a>
+    <a class="nav-item"><span class="icon">🎯</span> Missions</a>
+    <a class="nav-item active"><span class="icon">📋</span> Operations</a>
+    <a class="nav-item" href="knowledge.html"><span class="icon">💡</span> Intelligence</a>
     <a class="nav-item"><span class="icon">🏢</span> Clients</a>
-    <a class="nav-item"><span class="icon">🎯</span> Goals</a>
-    <div class="nav-section">Campaigns</div>
+    <div class="nav-section">Active Operations</div>
     <a class="nav-item active"><span class="icon">📁</span> Q1 Marketing</a>
     <a class="nav-item"><span class="icon">📁</span> Website Redesign</a>
     <a class="nav-item"><span class="icon">📁</span> Product Launch</a>
@@ -109,9 +109,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
 </aside>
 
 <header class="topbar">
-  <input class="search-bar" placeholder="Search missions, allies, campaigns..." type="text">
+  <input class="search-bar" placeholder="Search missions, allies, operations..." type="text">
   <div class="topbar-actions">
-    <button class="btn-primary">＋ New Mission</button>
+    <button class="btn-primary">＋ New Task</button>
     <button class="icon-btn">🔔</button>
     <div class="avatar">A</div>
   </div>
@@ -119,7 +119,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
 
 <main class="main">
   <div class="breadcrumb">
-    <a href="dashboard.html">Home</a> / <a href="#">Campaigns</a> / <span style="color:#a3a3a3;">Q1 Marketing Push</span>
+    <a href="dashboard.html">Home</a> / <a href="#">Operations</a> / <span style="color:#a3a3a3;">Q1 Marketing Push</span>
   </div>
 
   <div class="campaign-hero">
@@ -177,51 +177,51 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
       <div class="kanban-col-header">
         <div class="kanban-col-title">Todo <span class="kanban-count">4</span></div>
       </div>
-      <div class="mission-card">
-        <div class="mission-title">Define target audience segments</div>
-        <div class="mission-desc">Research and document primary and secondary audience personas for Q1 campaign.</div>
-        <div class="mission-meta">
-          <span class="mission-priority high">🔶 High</span>
+      <div class="task-card">
+        <div class="task-title">Define target audience segments</div>
+        <div class="task-desc">Research and document primary and secondary audience personas for Q1 campaign.</div>
+        <div class="task-meta">
+          <span class="task-priority high">🔶 High</span>
           <span>📎 2 · 💬 3</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#be185d;">C</div> Casey</div>
           <div class="mission-tags"><span class="mission-tag">Research</span></div>
         </div>
       </div>
-      <div class="mission-card">
-        <div class="mission-title">Create email drip campaign</div>
-        <div class="mission-desc">Design a 5-part email sequence for lead nurturing.</div>
-        <div class="mission-meta">
-          <span class="mission-priority medium">⬜ Medium</span>
+      <div class="task-card">
+        <div class="task-title">Create email drip campaign</div>
+        <div class="task-desc">Design a 5-part email sequence for lead nurturing.</div>
+        <div class="task-meta">
+          <span class="task-priority medium">⬜ Medium</span>
           <span>💬 1</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#be185d;">C</div> Casey</div>
         </div>
       </div>
-      <div class="mission-card">
-        <div class="mission-title">Set up analytics tracking</div>
-        <div class="mission-desc">Implement UTM parameters and conversion tracking across all channels.</div>
-        <div class="mission-meta">
-          <span class="mission-priority medium">⬜ Medium</span>
+      <div class="task-card">
+        <div class="task-title">Set up analytics tracking</div>
+        <div class="task-desc">Implement UTM parameters and conversion tracking across all channels.</div>
+        <div class="task-meta">
+          <span class="task-priority medium">⬜ Medium</span>
           <span>📎 1</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#b45309;">M</div> Morgan</div>
         </div>
       </div>
-      <div class="mission-card">
-        <div class="mission-title">Design social media templates</div>
-        <div class="mission-desc">Create reusable templates for Instagram, Twitter, and LinkedIn posts.</div>
-        <div class="mission-meta">
-          <span class="mission-priority low">⬜ Low</span>
+      <div class="task-card">
+        <div class="task-title">Design social media templates</div>
+        <div class="task-desc">Create reusable templates for Instagram, Twitter, and LinkedIn posts.</div>
+        <div class="task-meta">
+          <span class="task-priority low">⬜ Low</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally" style="color:#525252;">Unassigned</div>
         </div>
       </div>
-      <button class="add-mission">＋ Add mission</button>
+      <button class="add-task">＋ Add mission</button>
     </div>
 
     <!-- IN PROGRESS -->
@@ -230,37 +230,37 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
         <div class="kanban-col-title">In Progress <span class="kanban-count">3</span></div>
       </div>
       <div class="mission-card" style="border-left:3px solid #a855f7;">
-        <div class="mission-title">Competitor analysis report</div>
-        <div class="mission-desc">Deep dive on top 5 competitors' marketing strategies, channels, and messaging.</div>
-        <div class="mission-meta">
-          <span class="mission-priority urgent">🔴 Urgent</span>
+        <div class="task-title">Competitor analysis report</div>
+        <div class="task-desc">Deep dive on top 5 competitors' marketing strategies, channels, and messaging.</div>
+        <div class="task-meta">
+          <span class="task-priority urgent">🔴 Urgent</span>
           <span>📎 4 · 💬 7</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#7e22ce;">R</div> Riley</div>
           <div class="mission-tags"><span class="mission-tag">Research</span></div>
         </div>
       </div>
       <div class="mission-card" style="border-left:3px solid #a855f7;">
-        <div class="mission-title">Landing page wireframes</div>
-        <div class="mission-desc">Create wireframes for campaign landing page with A/B variants.</div>
-        <div class="mission-meta">
-          <span class="mission-priority high">🔶 High</span>
+        <div class="task-title">Landing page wireframes</div>
+        <div class="task-desc">Create wireframes for campaign landing page with A/B variants.</div>
+        <div class="task-meta">
+          <span class="task-priority high">🔶 High</span>
           <span>📎 2</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#1d4ed8;">J</div> Jordan</div>
           <div class="mission-tags"><span class="mission-tag">Design</span></div>
         </div>
       </div>
       <div class="mission-card" style="border-left:3px solid #a855f7;">
-        <div class="mission-title">Content calendar Q1</div>
-        <div class="mission-desc">Plan all social media, blog, and email content for January–March.</div>
-        <div class="mission-meta">
-          <span class="mission-priority high">🔶 High</span>
+        <div class="task-title">Content calendar Q1</div>
+        <div class="task-desc">Plan all social media, blog, and email content for January–March.</div>
+        <div class="task-meta">
+          <span class="task-priority high">🔶 High</span>
           <span>💬 5</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#be185d;">C</div> Casey</div>
           <div class="mission-tags"><span class="mission-tag">Content</span></div>
         </div>
@@ -272,25 +272,25 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
       <div class="kanban-col-header">
         <div class="kanban-col-title">Review <span class="kanban-count">2</span></div>
       </div>
-      <div class="mission-card">
-        <div class="mission-title">Brand messaging framework</div>
-        <div class="mission-desc">Core messaging pillars, value propositions, and tagline options.</div>
-        <div class="mission-meta">
-          <span class="mission-priority high">🔶 High</span>
+      <div class="task-card">
+        <div class="task-title">Brand messaging framework</div>
+        <div class="task-desc">Core messaging pillars, value propositions, and tagline options.</div>
+        <div class="task-meta">
+          <span class="task-priority high">🔶 High</span>
           <span>📎 3 · 💬 12</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#be185d;">C</div> Casey</div>
         </div>
       </div>
-      <div class="mission-card">
-        <div class="mission-title">Market size estimation</div>
-        <div class="mission-desc">TAM/SAM/SOM analysis for the campaign's target market.</div>
-        <div class="mission-meta">
-          <span class="mission-priority medium">⬜ Medium</span>
+      <div class="task-card">
+        <div class="task-title">Market size estimation</div>
+        <div class="task-desc">TAM/SAM/SOM analysis for the campaign's target market.</div>
+        <div class="task-meta">
+          <span class="task-priority medium">⬜ Medium</span>
           <span>📎 1 · 💬 4</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#b45309;">M</div> Morgan</div>
           <div class="mission-tags"><span class="mission-tag">Data</span></div>
         </div>
@@ -304,31 +304,31 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
       </div>
       <div class="mission-card" style="opacity:0.7;">
         <div class="mission-title" style="text-decoration:line-through;">Campaign brief & objectives</div>
-        <div class="mission-desc">Define campaign goals, KPIs, budget, and timeline.</div>
-        <div class="mission-meta">
+        <div class="task-desc">Define campaign goals, KPIs, budget, and timeline.</div>
+        <div class="task-meta">
           <span>✅ Completed Feb 3</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#7e22ce;">R</div> Riley</div>
         </div>
       </div>
       <div class="mission-card" style="opacity:0.7;">
         <div class="mission-title" style="text-decoration:line-through;">Stakeholder interviews</div>
-        <div class="mission-desc">Interview 5 key stakeholders to align on goals and expectations.</div>
-        <div class="mission-meta">
+        <div class="task-desc">Interview 5 key stakeholders to align on goals and expectations.</div>
+        <div class="task-meta">
           <span>✅ Completed Feb 5</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#1d4ed8;">J</div> Jordan</div>
         </div>
       </div>
       <div class="mission-card" style="opacity:0.7;">
         <div class="mission-title" style="text-decoration:line-through;">API rate limiting research</div>
-        <div class="mission-desc">Research best practices for API rate limiting implementation.</div>
-        <div class="mission-meta">
+        <div class="task-desc">Research best practices for API rate limiting implementation.</div>
+        <div class="task-meta">
           <span>✅ Completed Feb 8</span>
         </div>
-        <div class="mission-footer">
+        <div class="task-footer">
           <div class="mission-ally"><div class="mission-ally-avatar" style="background:#7e22ce;">R</div> Riley</div>
         </div>
       </div>

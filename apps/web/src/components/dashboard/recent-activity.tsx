@@ -93,13 +93,23 @@ function ActivityItem({ activity }: { activity: Activity }) {
 function formatEventMessage(eventType: string, eventData: any): string {
   switch (eventType) {
     case 'task.created':
-      return 'created a new mission'
+      return 'created a new task' // Task = atomic work unit
     case 'task.updated':
-      return 'updated a mission'
+      return 'updated a task'
     case 'task.completed':
-      return 'completed a mission'
+      return 'completed a task'
     case 'project.created':
-      return 'created a new cohort'
+      return 'created a new operation' // Operation = bounded initiative (DB: projects table)
+    case 'project.updated':
+      return 'updated an operation'
+    case 'project.completed':
+      return 'completed an operation'
+    case 'goal.created':
+      return 'created a new mission' // Mission = measurable outcome (DB: goals table)
+    case 'goal.updated':
+      return 'updated a mission'
+    case 'goal.completed':
+      return 'achieved a mission'
     case 'agent.created':
       return 'added a new ally'
     case 'agent.status_changed':

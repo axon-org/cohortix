@@ -18,13 +18,13 @@ Cohortix adopts a **mobile-first, 6-breakpoint responsive system** using Tailwin
 ### Problem Statement
 
 AI agent coordination requires:
-1. **Desktop-optimized workflows** — Assigning missions, monitoring 5+ allies simultaneously
-2. **Mobile accessibility** — Check mission status, approve actions, view notifications
+1. **Desktop-optimized workflows** — Assigning operations, monitoring 5+ allies simultaneously
+2. **Mobile accessibility** — Check operation status, approve tasks, view notifications
 3. **Tablet usability** — Hybrid use case (monitoring + light coordination)
 
 ### Design Constraint
 
-Unlike Notion or Trello (which are fully mobile-capable), Cohortix involves **complex multi-pane workflows** (Mission Control dashboard, ally briefs, goal hierarchies). Full feature parity on mobile is **impractical and unnecessary**.
+Unlike Notion or Trello (which are fully mobile-capable), Cohortix involves **complex multi-pane workflows** (Mission Control dashboard, ally briefs, mission hierarchies). Full feature parity on mobile is **impractical and unnecessary**.
 
 ---
 
@@ -61,13 +61,13 @@ Unlike Notion or Trello (which are fully mobile-capable), Cohortix involves **co
 **Philosophy:** Mobile is for **checking in**, not **deep work**.
 
 **What's optimized:**
-- ✅ **Mission status overview** — See active missions, ally statuses
-- ✅ **Notifications** — Approve mission steps, acknowledge learnings
-- ✅ **Quick edits** — Update mission titles, change ally assignments
+- ✅ **Operation status overview** — See active operations, ally statuses
+- ✅ **Notifications** — Approve operation tasks, acknowledge learnings
+- ✅ **Quick edits** — Update operation titles, change ally assignments
 
 **What's deprioritized:**
 - ⚠️ **Mission Control dashboard** — Simplified to list view (no 3-column grid)
-- ⚠️ **Goal hierarchy** — Collapsible tree, not full visual hierarchy
+- ⚠️ **Mission hierarchy** — Collapsible tree, not full visual hierarchy
 - ⚠️ **Ally briefs** — Reduced to essential fields (full form requires desktop)
 
 **Layout changes:**
@@ -78,11 +78,11 @@ Unlike Notion or Trello (which are fully mobile-capable), Cohortix involves **co
 
 **Example:**
 ```html
-<!-- Desktop: 3-column mission grid -->
+<!-- Desktop: 3-column operation grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  <MissionCard />
-  <MissionCard />
-  <MissionCard />
+  <OperationCard />
+  <OperationCard />
+  <OperationCard />
 </div>
 
 <!-- Mobile: Single column, stacked -->
@@ -112,10 +112,10 @@ Unlike Notion or Trello (which are fully mobile-capable), Cohortix involves **co
 **Philosophy:** This is where **mission coordination** happens.
 
 **What's optimized:**
-- ✅ **3-column mission grids** — Scan 9-12 missions at once
+- ✅ **3-column operation grids** — Scan 9-12 operations at once
 - ✅ **Persistent sidebar** — Always visible navigation
 - ✅ **Split-screen detail views** — Property panel + content area
-- ✅ **Multi-window support** — Open multiple missions in tabs
+- ✅ **Multi-window support** — Open multiple operations in tabs
 
 **Layout specifications:**
 - **Sidebar:** 240px fixed width
@@ -181,7 +181,7 @@ Unlike Notion or Trello (which are fully mobile-capable), Cohortix involves **co
 </aside>
 ```
 
-### 2. Mission/Goal Cards
+### 2. Operation/Mission Cards
 
 | Breakpoint | Layout |
 |------------|--------|
@@ -363,7 +363,7 @@ export default function Page() {
 
 **Current:** Content maxes out at 1440px (centered with auto margins)
 
-**Future:** Consider 3-column Mission Control at 2560px+ (requires user testing)
+**Future:** Consider 4-column Mission Control at 2560px+ (requires user testing)
 
 ---
 

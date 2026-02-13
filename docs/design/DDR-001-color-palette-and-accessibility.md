@@ -18,8 +18,8 @@ Cohortix adopts a **Linear-inspired dark-first design** with **#5E6AD2 (blue-vio
 ### Problem Statement
 
 AI agent coordination interfaces require:
-1. **Extended screen time tolerance** — Users monitor mission progress for hours
-2. **Clear visual hierarchy** — Distinguish between active missions, standing-by allies, and completed goals
+1. **Extended screen time tolerance** — Users monitor operation progress for hours
+2. **Clear visual hierarchy** — Distinguish between active operations, standing-by allies, and accomplished missions
 3. **Professional credibility** — Not a toy, not intimidating; approachable yet serious
 4. **Accessibility compliance** — Minimum WCAG 2.2 AA for enterprise customers
 
@@ -97,7 +97,7 @@ Dark mode is the **primary experience**, not an afterthought. Light mode is the 
 **What we changed:**
 - **Warmer accents** — Added `#F59E0B` (amber) for warnings vs. Linear's cooler yellows
 - **Higher contrast text** — `#FAFAFA` vs. Linear's `#E6E6E6` (better readability)
-- **Mission-themed UI** — Status colors reflect "On Mission" / "Standing By" states
+- **Operation-themed UI** — Status colors reflect "On Mission" / "Standing By" states
 
 ### 3. Accessibility as Non-Negotiable
 
@@ -108,7 +108,7 @@ Dark mode is the **primary experience**, not an afterthought. Light mode is the 
 - ✅ **Reduced motion** — `prefers-reduced-motion` respects user preferences
 
 **Text contrast hierarchy:**
-- **Primary text:** 17.8:1 (AAA) — Mission titles, ally names
+- **Primary text:** 17.8:1 (AAA) — Operation titles, ally names
 - **Secondary text:** 4.9:1 (AA) — Metadata, timestamps
 - **Muted text:** 4.5:1 (AA minimum) — Helper text, placeholders
 

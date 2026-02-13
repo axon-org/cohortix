@@ -17,7 +17,7 @@ The Cohortix Design System is a comprehensive set of design standards, component
 
 ### 1. Agent-First, Human-Friendly
 - AI coordination interfaces require clarity, not cleverness
-- Every ally status, mission state visible at a glance
+- Every ally status, operation state visible at a glance
 - Warm, approachable language (not enterprise jargon)
 
 ### 2. Dark Mode by Design
@@ -72,13 +72,13 @@ The Cohortix Design System is a comprehensive set of design standards, component
 
 | Component | Purpose | Status |
 |-----------|---------|--------|
-| MissionCard | Displays mission summary | 🟡 In Progress |
+| TaskCard | Displays task/operation summary | 🟡 In Progress |
 | AllyCard | Shows ally profile + status | 🟡 In Progress |
-| GoalCard | Goal hierarchy display | 📝 Planned |
+| MissionCard | Mission (strategic goal) hierarchy display | 📝 Planned |
 | WorkloadMeter | Ally capacity visualization | 📝 Planned |
 | StatusRing | Ally availability indicator | 📝 Planned |
-| MissionTimeline | Chronological mission view | 📝 Planned |
-| IntelCard | Captured learnings display | 📝 Planned |
+| OperationTimeline | Chronological operation view | 📝 Planned |
+| InsightCard | Captured learnings display | 📝 Planned |
 
 ### Layout Layer
 **Page-level structure (templates)**
@@ -86,7 +86,7 @@ The Cohortix Design System is a comprehensive set of design standards, component
 | Layout | Purpose | Responsive Strategy |
 |--------|---------|---------------------|
 | Sidebar + Main | Primary app layout | Collapsible sidebar on mobile |
-| Three-Column Grid | Mission/goal browsing | 3 → 2 → 1 columns |
+| Three-Column Grid | Mission/operation browsing | 3 → 2 → 1 columns |
 | Split Screen | Detail view + properties | Stack on mobile |
 | Modal Overlay | Focused actions | Full-screen on mobile |
 
@@ -153,14 +153,19 @@ The Cohortix Design System is a comprehensive set of design standards, component
 
 ### Component Typography
 
-**Mission Card:**
+**Task/Operation Card:**
 - Title: 18px semibold (lg)
 - Description: 14px normal (sm)
 - Metadata: 12px normal (xs)
 
+**Mission Card (Strategic Goal):**
+- Title: 18px semibold (lg)
+- Vision: 14px normal (sm)
+- Metadata: 12px normal (xs)
+
 **Ally Card:**
 - Name: 18px semibold (lg)
-- Role: 14px normal (sm)
+- Domain: 14px normal (sm)
 - Status: 14px medium (sm)
 
 **Navigation:**
@@ -199,9 +204,9 @@ Destructive: #EF4444 (red)
 
 **Semantic Status Colors:**
 ```
-Mission Active: #10B981 (green)
-Mission Backlog: #F59E0B (amber)
-Mission Completed: #3B82F6 (blue)
+Task/Operation Active: #10B981 (green)
+Task/Operation Backlog: #F59E0B (amber)
+Task/Operation Completed: #3B82F6 (blue)
 Ally On Mission: #10B981 (green ring)
 Ally Standing By: #6E7079 (gray ring)
 Ally Off Duty: #EF4444 (red ring)
@@ -271,7 +276,7 @@ Active:   bg-primary/80 scale-98
 Disabled: opacity-50 cursor-not-allowed
 ```
 
-### Mission Card States
+### Task/Operation Card States
 
 | State | Badge Color | Border | Shadow |
 |-------|-------------|--------|--------|
@@ -349,7 +354,7 @@ All components use design tokens:
 
 ```tsx
 <Button className="bg-primary text-primary-foreground">
-  Deploy Cohort
+  Deploy Operation
 </Button>
 ```
 
@@ -420,17 +425,56 @@ const cardStyle = {
 
 ## Terminology
 
-**Cohortix uses mission-based language (not generic PM jargon)**
+**Cohortix uses PPV-aligned terminology (Personal Productivity Vision framework)**
 
-| Generic | Cohortix | Why |
-|---------|----------|-----|
-| Agent | **Ally** | Partnership, not tools |
-| Task | **Mission** | Purpose-driven, important |
-| Workflow | **Goal** | Outcome-oriented |
-| Dashboard | **Mission Control** | Thematic consistency |
-| Running | **On Mission** | Human, narrative |
+### Core Hierarchy (Alignment Zone)
 
-**See:** [DDR-002: Terminology Decisions](./DDR-002-terminology-decisions.md)
+| PPV Layer | Cohortix Term | Definition | UI Context |
+|-----------|---------------|------------|------------|
+| Pillars & Purpose | **Domain** | Core life/expertise area | Ally specialization tags |
+| Life Aspirations | **Vision** | Emotional north star, the WHY | Mission descriptions |
+| Goals (PPV) | **Mission** | Measurable strategic outcome | Mission cards, mission control |
+| Projects | **Operation** | Bounded initiative with start/end | Operation timeline, cards |
+| Routines | **Rhythm** | Recurring habit/cadence | Rhythm schedules |
+| Actions | **Task** | Atomic unit of work | Task lists, checkboxes |
+
+**Hierarchy:** Domain → Vision → Mission → Operation / Rhythm → Task
+
+### Knowledge Zone
+
+| Term | Definition | UI Context |
+|------|------------|------------|
+| **Intelligence** | Knowledge organized by topic | Knowledge base, intel cards |
+| **Insight** | Individual learning capture | Insight entries, notes |
+
+### Status Language
+
+| Status | Meaning | Visual Indicator |
+|--------|---------|------------------|
+| **On Mission** | Actively working | Green ring |
+| **Standing By** | Idle, ready for work | Gray ring |
+| **Off Duty** | Offline/disabled | Red ring |
+
+### Action Verbs
+
+| Verb | Context | UI Labels |
+|------|---------|-----------|
+| **Recruit** | Create/add new Ally | "Recruit Ally" button |
+| **Brief** | Give context for Mission | "Brief Ally" action |
+| **Deploy** | Start Mission/Operation | "Deploy" button |
+| **Debrief** | Reflect and review | "Debrief" review panels |
+| **Mission Accomplished** | Completion | Success state |
+
+### Legacy Term Migration
+
+| Old Term | New Term | Notes |
+|----------|----------|-------|
+| Goal (as workflow) | Mission | Strategic measurable outcome |
+| Mission (as task) | Operation or Task | Bounded initiative or atomic work |
+| Knowledge Base | Intelligence | Topic-organized knowledge |
+| Learning | Insight | Individual capture |
+
+**See:** [TERMINOLOGY.md](../../TERMINOLOGY.md) — Authoritative reference
 
 ---
 
@@ -481,6 +525,15 @@ const cardStyle = {
 
 ## Change Log
 
+### Version 1.1 (2026-02-12)
+- ✅ Updated terminology to PPV-aligned framework
+  - Mission (atomic) → Task/Operation
+  - Goal (strategic) → Mission
+  - Added: Domain, Vision, Rhythm, Intelligence, Insight, Debrief
+  - Updated component names: MissionCard → TaskCard/OperationCard, IntelCard → InsightCard
+  - Status language: On Mission, Standing By, Off Duty
+  - Action verbs: Recruit, Brief, Deploy, Debrief, Mission Accomplished
+
 ### Version 1.0 (2026-02-11)
 - ✅ Created DDRs (001-004)
 - ✅ Extracted design tokens to TypeScript
@@ -495,10 +548,13 @@ const cardStyle = {
 ### Q1 2026 Priorities
 
 1. **Component Library Completion** (Devi + Lubna)
-   - [ ] MissionCard implementation
+   - [ ] TaskCard implementation (atomic work units)
+   - [ ] OperationCard implementation (bounded initiatives)
+   - [ ] MissionCard implementation (strategic goals)
    - [ ] AllyCard implementation
    - [ ] WorkloadMeter component
    - [ ] StatusRing component
+   - [ ] InsightCard implementation (knowledge captures)
 
 2. **Design Token Integration**
    - [ ] Update all hardcoded colors to token references

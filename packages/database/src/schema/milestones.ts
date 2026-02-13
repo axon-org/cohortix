@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, text, timestamp, date, pgEnum } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
-import { missions as projects } from './missions'; // missions table (DB name: projects)
+import { operations as projects } from './operations'; // operations table (DB name: projects)
 
 export const milestoneStatusEnum = pgEnum('milestone_status', ['upcoming', 'active', 'completed', 'missed']);
 

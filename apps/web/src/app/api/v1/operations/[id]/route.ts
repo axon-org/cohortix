@@ -1,7 +1,7 @@
 /**
- * Individual Mission API Route - GET, PATCH, DELETE
- * Missions are measurable outcomes that serve Visions (PPV Goal level).
- * Maps to `goals` table. Axon Codex v1.2 compliant.
+ * Individual Operation API Route - GET, PATCH, DELETE
+ * Operations are bounded initiatives with start/end dates that achieve Missions.
+ * Maps to `projects` table. Axon Codex v1.2 compliant.
  * 
  * PPV Hierarchy: Mission (measurable outcome) → Operation (bounded initiative) → Task (atomic work)
  */
@@ -16,7 +16,7 @@ import {
   NotFoundError,
 } from '@/lib/errors'
 import { validateRequest, validateData } from '@/lib/validation'
-import { updateMissionSchema, type UpdateMissionInput } from '@/lib/validations/mission'
+import { updateOperationSchema, type UpdateOperationInput } from '@/lib/validations/operation'
 import { uuidSchema } from '@/lib/validation'
 
 interface RouteContext {
@@ -65,7 +65,7 @@ async function getAuthContext() {
 }
 
 // ============================================================================
-// GET /api/v1/missions/:id
+// GET /api/v1/operations/:id
 // ============================================================================
 
 export const GET = withErrorHandler(
@@ -74,25 +74,25 @@ export const GET = withErrorHandler(
     logger.setContext({ correlationId })
 
     const { id } = await context.params
-    const missionId = validateData(uuidSchema, id)
+    const operationId = validateData(uuidSchema, id)
 
     const { supabase, organizationId } = await getAuthContext()
 
-    const { data: mission, error } = await supabase
-      .from('goals')
+    const { data: operation, error } = await supabase
+      .from('projects')
       .select('*')
-      .eq('id', missionId)
+      .eq('id', operationId)
       .eq('organization_id', organizationId)
       .single()
 
-    if (error || !mission) throw new NotFoundError('Mission', missionId)
+    if (error || !operation) throw new NotFoundError('Operation', operationId)
 
-    return NextResponse.json({ data: mission })
+    return NextResponse.json({ data: operation })
   }
 )
 
 // ============================================================================
-// PATCH /api/v1/missions/:id
+// PATCH /api/v1/operations/:id
 // ============================================================================
 
 export const PATCH = withErrorHandler(
@@ -101,54 +101,55 @@ export const PATCH = withErrorHandler(
     logger.setContext({ correlationId })
 
     const { id } = await context.params
-    const missionId = validateData(uuidSchema, id)
+    const operationId = validateData(uuidSchema, id)
 
-    const validator = validateRequest(updateMissionSchema, { target: 'body' })
-    const data = (await validator(request)) as UpdateMissionInput
+    const validator = validateRequest(updateOperationSchema, { target: 'body' })
+    const data = (await validator(request)) as UpdateOperationInput
 
     const { supabase, organizationId } = await getAuthContext()
 
     const { data: existing } = await supabase
-      .from('goals')
+      .from('projects')
       .select('id')
-      .eq('id', missionId)
+      .eq('id', operationId)
       .eq('organization_id', organizationId)
       .single()
-    if (!existing) throw new NotFoundError('Mission', missionId)
+    if (!existing) throw new NotFoundError('Operation', operationId)
 
     const updateData: Record<string, any> = {}
-    if (data.title !== undefined) updateData.title = data.title
+    if (data.name !== undefined) updateData.name = data.name
     if (data.description !== undefined) updateData.description = data.description
     if (data.status !== undefined) updateData.status = data.status
-    if (data.clientId !== undefined) updateData.client_id = data.clientId
+    if (data.startDate !== undefined) updateData.start_date = data.startDate
     if (data.targetDate !== undefined) updateData.target_date = data.targetDate
-    if (data.keyResults !== undefined) updateData.key_results = data.keyResults
-    if (data.progressPercent !== undefined) updateData.progress_percent = data.progressPercent
-    if (data.progressAutoCalculate !== undefined) updateData.progress_auto_calculate = data.progressAutoCalculate
+    if (data.missionId !== undefined) updateData.goal_id = data.missionId // DB column still named 'goal_id'
+    if (data.color !== undefined) updateData.color = data.color
+    if (data.icon !== undefined) updateData.icon = data.icon
+    if (data.settings !== undefined) updateData.settings = data.settings
 
     // Auto-set completed_at when status changes to completed
     if (data.status === 'completed') updateData.completed_at = new Date().toISOString()
     if (data.status && data.status !== 'completed') updateData.completed_at = null
 
-    const { data: mission, error } = await supabase
-      .from('goals')
+    const { data: operation, error } = await supabase
+      .from('projects')
       .update(updateData)
-      .eq('id', missionId)
+      .eq('id', operationId)
       .select()
       .single()
 
     if (error) {
-      logger.error('Failed to update mission', { correlationId, error: { message: error.message, code: error.code } })
+      logger.error('Failed to update operation', { correlationId, error: { message: error.message, code: error.code } })
       throw error
     }
 
-    logger.info('Mission updated', { correlationId, missionId })
-    return NextResponse.json({ data: mission })
+    logger.info('Operation updated', { correlationId, operationId })
+    return NextResponse.json({ data: operation })
   }
 )
 
 // ============================================================================
-// DELETE /api/v1/missions/:id
+// DELETE /api/v1/operations/:id
 // ============================================================================
 
 export const DELETE = withErrorHandler(
@@ -157,25 +158,25 @@ export const DELETE = withErrorHandler(
     logger.setContext({ correlationId })
 
     const { id } = await context.params
-    const missionId = validateData(uuidSchema, id)
+    const operationId = validateData(uuidSchema, id)
 
     const { supabase, organizationId } = await getAuthContext()
 
     const { data: existing } = await supabase
-      .from('goals')
-      .select('id, title')
-      .eq('id', missionId)
+      .from('projects')
+      .select('id, name')
+      .eq('id', operationId)
       .eq('organization_id', organizationId)
       .single()
-    if (!existing) throw new NotFoundError('Mission', missionId)
+    if (!existing) throw new NotFoundError('Operation', operationId)
 
-    const { error } = await supabase.from('goals').delete().eq('id', missionId)
+    const { error } = await supabase.from('projects').delete().eq('id', operationId)
     if (error) {
-      logger.error('Failed to delete mission', { correlationId, error: { message: error.message, code: error.code } })
+      logger.error('Failed to delete operation', { correlationId, error: { message: error.message, code: error.code } })
       throw error
     }
 
-    logger.info('Mission deleted', { correlationId, missionId, missionTitle: existing.title })
+    logger.info('Operation deleted', { correlationId, operationId, operationName: existing.name })
     return new NextResponse(null, { status: 204 })
   }
 )

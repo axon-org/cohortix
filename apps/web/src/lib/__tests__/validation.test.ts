@@ -1,6 +1,13 @@
 /**
  * Tests for Input Validation
  * Codex v1.2 Section 2.5.1
+ * 
+ * TERMINOLOGY (2026-02-12 PPV Alignment):
+ * - Mission = Measurable outcome (DB: goals table) - PPV Goal level
+ * - Operation = Bounded initiative (DB: projects table) - PPV Project level  
+ * - Task = Atomic work unit (DB: tasks table) - PPV Action level
+ * 
+ * This test file uses schema imports which include legacy aliases for backwards compatibility.
  */
 
 import { describe, it, expect } from 'vitest'
@@ -174,33 +181,33 @@ describe('Validation Schemas', () => {
     })
   })
 
-  describe('Goal Schema', () => {
-    it('should validate valid goal data', () => {
-      const validGoal = {
-        title: 'Test Goal',
+  describe('Mission Objective Schema (Legacy: Goal)', () => {
+    it('should validate valid mission objective data', () => {
+      const validMissionObjective = {
+        title: 'Grow Filmzya to $50k MRR',
         missionId: '550e8400-e29b-41d4-a716-446655440000',
       }
 
-      const result = createGoalSchema.safeParse(validGoal)
+      const result = createGoalSchema.safeParse(validMissionObjective)
       expect(result.success).toBe(true)
     })
 
     it('should require missionId', () => {
-      const invalidGoal = {
-        title: 'Test Goal',
+      const invalidMissionObjective = {
+        title: 'Grow Filmzya to $50k MRR',
       }
 
-      const result = createGoalSchema.safeParse(invalidGoal)
+      const result = createGoalSchema.safeParse(invalidMissionObjective)
       expect(result.success).toBe(false)
     })
 
     it('should apply default status', () => {
-      const goal = {
-        title: 'Test Goal',
+      const missionObjective = {
+        title: 'Grow Filmzya to $50k MRR',
         missionId: '550e8400-e29b-41d4-a716-446655440000',
       }
 
-      const result = createGoalSchema.parse(goal)
+      const result = createGoalSchema.parse(missionObjective)
       expect(result.status).toBe('not_started')
     })
   })

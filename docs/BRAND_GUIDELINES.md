@@ -2,8 +2,8 @@
 
 **Product:** Cohortix  
 **Domain:** cohortix.ai  
-**Version:** 1.0  
-**Date:** 2026-02-05
+**Version:** 2.0 — PPV Pro Aligned  
+**Date:** 2026-02-12 (Updated from 2026-02-05)
 
 ---
 
@@ -31,27 +31,113 @@ The name combines "Cohort" (a group of people working toward a common goal) with
 
 ## Terminology Table
 
-We use friendly, mission-based language instead of cold enterprise jargon. This makes AI collaboration feel like teamwork, not IT administration.
+We use friendly, mission-based language aligned with **PPV Pro productivity principles**. This makes AI collaboration feel like teamwork, not IT administration.
 
-| ❌ Old/Generic Term | ✅ Cohortix Term | Usage Example |
-|---------------------|------------------|---------------|
+**Core Principle:** Humans and AI allies use the SAME terminology. There is no separate vocabulary.
+
+**Hierarchy:** Domain → Vision → Mission → Operation / Rhythm → Task
+
+### Core PPV Hierarchy (Alignment Zone)
+
+From abstract → concrete:
+
+| PPV Pro Original | Cohortix Term | Definition | Human Example | Ally Example |
+|------------------|---------------|------------|---------------|--------------|
+| Pillars & Purpose | **Domain** | Core life/expertise area that defines identity | "Family", "Health", "Business" | "Content Strategy", "Analytics" |
+| Life Aspirations | **Vision** | Big emotional north star — the WHY | "Achieve financial freedom" | "Become the best content strategist" |
+| Goals | **Mission** | Measurable outcome that serves a Vision | "Launch Cohortix and reach $50k MRR" | "Master Next.js 15 patterns" |
+| Projects | **Operation** | Bounded initiative with start/end | "Build auth system" (Feb 1-15) | "Research 50 competitor channels" |
+| Routines | **Rhythm** | Recurring habit with no end date | "Weekly business review" | "Daily learning cycle" |
+| Actions | **Task** | Atomic unit of work | "Draft email copy" | "Summarize article on hooks" |
+
+### Knowledge Zone
+
+| Generic Term | Cohortix Term | Usage Example |
+|--------------|---------------|---------------|
+| Knowledge base / Topic vault | **Intelligence** | "Search the Intelligence for React patterns" |
+| Note / Learning / Capture | **Insight** | "Capture an Insight from this Task" |
+
+### Rhythm Zone (Reviews)
+
+| Generic Term | Cohortix Term | Usage Example |
+|--------------|---------------|---------------|
+| Daily review | **Daily Debrief** | "Complete your Daily Debrief" |
+| Weekly review | **Weekly Debrief** | "Conduct your Weekly Debrief" |
+| Bi-monthly review | **Cycle Debrief** | "Strategic Cycle Debrief (every 2 months)" |
+
+### Ally Identity & Actions
+
+| Generic Term | Cohortix Term | Usage Example |
+|--------------|---------------|---------------|
 | Agent | **Ally** | "Add a new ally to your cohort" |
 | Agents (group) | **Cohort** | "Your cohort is ready for deployment" |
-| Action | **Mission** | "Assign this mission to your ally" |
-| Workflow / Series of actions | **Goal** | "This goal includes 5 missions" |
 | Dashboard / UI | **Mission Control** | "View progress in Mission Control" |
 | Create agent | **Recruit** | "Recruit a new ally" |
+| Assign work | **Brief** | "Brief your ally on this Mission" |
 | Run / Start / Execute | **Deploy** | "Deploy your cohort" |
-| User workspace | **Base** or **HQ** | "Welcome to your HQ" |
-| Agent status: running | **On mission** | "3 allies currently on mission" |
-| Agent status: idle | **Standing by** | "Ally standing by, ready for deployment" |
-| Agent status: offline | **Off duty** | "This ally is currently off duty" |
-| Assign action | **Brief** | "Brief your ally on this mission" |
-| Complete action | **Mission accomplished** | "Mission accomplished! Learnings captured." |
-| Action queue | **Mission roster** | "5 missions in the roster" |
-| Organization | **HQ** | "Invite teammates to your HQ" |
-| Mission | **Goal** | "Start a new goal" |
-| Knowledge base | **Intel** | "Search past intel" |
+| Complete | **Mission Accomplished** | "Mission accomplished! Learnings captured." |
+| Reflect | **Debrief** | "Debrief on today's work" |
+| User workspace | **HQ** | "Welcome to your HQ" |
+
+### Status Language
+
+| Generic Term | Cohortix Term | Usage Example |
+|--------------|---------------|---------------|
+| Agent status: running | **On Mission** | "3 allies currently on mission" |
+| Agent status: idle | **Standing By** | "Ally standing by, ready for deployment" |
+| Agent status: offline | **Off Duty** | "This ally is currently off duty" |
+
+---
+
+## The Dual Human+Agent PPV Model
+
+**Revolutionary concept:** Humans and allies use the SAME productivity system.
+
+### Key Principles
+
+1. **Unified Vocabulary** — No "human goals" vs. "agent tasks"
+2. **Ally Autonomy** — Allies can set their own Visions and Missions
+3. **Mutual Understanding** — Humans and allies speak the same language
+4. **Scalability** — One system works for 1 ally or 100 allies
+
+### Human PPV Stack Example
+
+```
+Domain: Business
+  ↓
+Vision: Build a $10M/year AI company
+  ↓
+Mission: Launch Cohortix and reach $50k MRR
+  ↓
+Operation: Build MVP auth system
+  └─ Task: Implement Google OAuth
+  ↓
+Rhythm: Weekly business review
+  └─ Task: Review metrics
+```
+
+### Ally PPV Stack Example
+
+```
+Domain: Full-Stack Development
+  ↓
+Vision: Become the most reliable AI developer
+  ↓
+Mission: Master Next.js 15 patterns
+  ↓
+Operation: Build Cohortix auth system
+  └─ Task: Implement Supabase Auth
+  ↓
+Rhythm: Daily learning cycle
+  └─ Task: Study one Next.js pattern
+```
+
+### UI Copy Implications
+
+- **Ally profiles** show their Domains, Visions, and active Missions
+- **Mission Control** displays both human and ally Missions side-by-side
+- **Intelligence** is shared — one ally's Insight benefits all
+- **Debriefs** can be individual (ally-specific) or team-wide
 
 ---
 
@@ -102,7 +188,7 @@ We use friendly, mission-based language instead of cold enterprise jargon. This 
 **First Mission:**
 > Nice! Your ally is standing by and ready for action.
 > 
-> Now, let's deploy them on their first mission. What would you like them to help with?
+> Now, let's brief them on their first Mission. What measurable outcome would you like to achieve?
 
 ### Mission Control (Dashboard)
 
@@ -112,35 +198,35 @@ We use friendly, mission-based language instead of cold enterprise jargon. This 
 
 **Mission Status:**
 > Active Missions
-> 5 missions in progress across 2 goals
+> 5 Missions in progress · 8 Operations active · 23 Tasks today
 
-**Intel Section:**
-> Recent Intel
-> Your cohort has captured 12 insights this week. Search or browse below.
+**Intelligence Section:**
+> Recent Intelligence
+> Your cohort has captured 12 Insights this week. Search or browse below.
 
 ### Success Messages
 
 **Mission Complete:**
 > ✅ Mission accomplished!
 > 
-> Your ally finished the research goal and added 3 new insights to your intel.
+> Your ally completed the research Operation and added 3 new Insights to your Intelligence.
 
 **Ally Recruited:**
 > 🎉 Welcome to the cohort!
 > 
-> Riley is ready for deployment. Brief them on their first mission to get started.
+> Riley is ready for deployment. Brief them on their first Mission to get started.
 
 ### Error Messages
 
-**Mission Failed:**
-> ⚠️ This mission hit a roadblock.
+**Operation Failed:**
+> ⚠️ This Operation hit a roadblock.
 > 
 > Don't worry — your ally saved their progress. Here's what happened:
 > [Error details]
 > 
 > **What you can do:**
-> - Retry the mission
-> - Break it into smaller missions
+> - Retry the Operation
+> - Break it into smaller Tasks
 > - Brief a different ally
 
 **Connection Issue:**
@@ -158,16 +244,16 @@ We use friendly, mission-based language instead of cold enterprise jargon. This 
 > [Recruit an Ally]
 
 **No Missions:**
-> All clear! No active missions right now.
+> All clear! No active Missions right now.
 > 
 > Ready to start something new?
 > 
-> [Start a Goal]
+> [Create Mission]
 
-**No Intel:**
-> Your intel is empty for now.
+**No Intelligence:**
+> Your Intelligence is empty for now.
 > 
-> As your allies complete missions, they'll capture insights here. It's like a team knowledge base that builds itself.
+> As your allies complete Operations and Tasks, they'll capture Insights here. It's like a team knowledge base that builds itself.
 
 ---
 
@@ -194,9 +280,15 @@ Before publishing any copy, check:
 | Utilize | Use |
 | Optimize | Improve |
 | Synergy | Teamwork |
-| Workflow automation | Automated goals |
+| Goal (as atomic task) | Mission (measurable outcome) or Task (atomic work) |
+| Project | Operation |
+| Routine / Habit | Rhythm |
+| Knowledge base | Intelligence |
+| Note / Entry | Insight |
+| Review | Debrief |
+| Workflow automation | Automated Operations |
 | Agent orchestration | Cohort coordination |
-| Multi-tenant | Teams / Organizations |
+| Multi-tenant | Teams / Organizations / HQs |
 | SaaS platform | Cohortix |
 | End user | You |
 | Functionality | Features |
@@ -229,15 +321,27 @@ PRODUCT:     Cohortix
 DOMAIN:      cohortix.ai
 TAGLINE:     "Your AI crew, ready for action."
 
+PPV HIERARCHY (ALIGNMENT ZONE):
+  Domain → Vision → Mission → Operation/Rhythm → Task
+
 TERMINOLOGY:
-  Agent       → Ally
-  Agents      → Cohort
-  Action        → Mission
-  Workflow    → Goal
-  Dashboard   → Mission Control
-  Create      → Recruit
-  Run/Start   → Deploy
-  Workspace   → Base / HQ
+  Agent              → Ally
+  Agents (group)     → Cohort
+  Life pillar        → Domain
+  Life aspiration    → Vision
+  Goal (strategic)   → Mission
+  Project            → Operation
+  Routine/Habit      → Rhythm
+  Action/To-do       → Task
+  Knowledge Base     → Intelligence
+  Note/Learning      → Insight
+  Review             → Debrief
+  Dashboard          → Mission Control
+  Create agent       → Recruit
+  Assign work        → Brief
+  Run/Start          → Deploy
+  Complete           → Mission Accomplished
+  Workspace          → HQ
 
 VOICE: Friendly · Encouraging · Clear · Playful
 ANTI-VOICE: Corporate · Cold · Jargon-heavy · Robotic
@@ -245,4 +349,18 @@ ANTI-VOICE: Corporate · Cold · Jargon-heavy · Robotic
 
 ---
 
+## Changelog
+
+- **2026-02-12:** PPV Pro alignment update (v2.0)
+  - Updated: Terminology table with full PPV hierarchy (Domain → Vision → Mission → Operation/Rhythm → Task)
+  - Added: Human and Ally examples for each PPV level
+  - Added: The Dual Human+Agent PPV Model section
+  - Updated: All example copy to use new terminology (Mission, Operation, Task, Intelligence, Insight, Debrief)
+  - Updated: Words to Avoid table with terminology migration
+  - Updated: Quick Reference Card with full PPV hierarchy
+- **2026-02-05:** Initial version (v1.0)
+
+---
+
 *This is a living document. Update as the brand evolves.*
+*Aligned with: [TERMINOLOGY.md](TERMINOLOGY.md) (Authoritative Reference)*

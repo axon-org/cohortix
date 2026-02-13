@@ -790,24 +790,26 @@ POST /api/v1/knowledge
 
 ---
 
-### Goals
+### Missions (Strategic Outcomes)
 
-#### List Goals
+> **⚠️ API Terminology Note:** These endpoints currently use `/api/v1/goals` in the implementation but represent **Missions** (strategic outcomes) in Cohortix terminology. This is technical debt - future API versions should use `/api/v1/missions`.
+
+#### List Missions
 
 ```http
-GET /api/v1/goals
+GET /api/v1/goals  # TODO v2: /api/v1/missions
 ```
 
-#### Get Goal
+#### Get Mission
 
 ```http
-GET /api/v1/goals/:goalId
+GET /api/v1/goals/:goalId  # TODO v2: /api/v1/missions/:missionId
 ```
 
-#### Create Goal
+#### Create Mission
 
 ```http
-POST /api/v1/goals
+POST /api/v1/goals  # TODO v2: /api/v1/missions
 ```
 
 **Request Body:**
@@ -825,10 +827,10 @@ POST /api/v1/goals
 }
 ```
 
-#### Update Goal Progress
+#### Update Mission Progress
 
 ```http
-PATCH /api/v1/goals/:goalId/progress
+PATCH /api/v1/goals/:goalId/progress  # TODO v2: /api/v1/missions/:missionId/progress
 ```
 
 **Request Body:**
@@ -844,12 +846,14 @@ PATCH /api/v1/goals/:goalId/progress
 
 ---
 
-### Goal Proposals (Bidirectional Goal Setting)
+### Mission Proposals (Bidirectional Mission Setting)
 
-#### List Goal Proposals
+> **Note:** Agents can propose new strategic missions for human approval, enabling bottom-up initiative.
+
+#### List Mission Proposals
 
 ```http
-GET /api/v1/goal-proposals
+GET /api/v1/goal-proposals  # TODO v2: /api/v1/mission-proposals
 ```
 
 **Query Parameters:**
@@ -871,7 +875,7 @@ GET /api/v1/goal-proposals
         "avatarUrl": "https://..."
       },
       "title": "Improve test coverage for API routes",
-      "description": "Current test coverage for API routes is below 70%. Propose goal to increase to 85%.",
+      "description": "Current test coverage for API routes is below 70%. Propose mission to increase to 85%.",
       "justification": "Recent analysis shows 15 API routes lack tests. This creates risk for regressions.",
       "evidence": {
         "currentCoverage": 68,
@@ -887,16 +891,16 @@ GET /api/v1/goal-proposals
 }
 ```
 
-#### Get Goal Proposal
+#### Get Mission Proposal
 
 ```http
-GET /api/v1/goal-proposals/:proposalId
+GET /api/v1/goal-proposals/:proposalId  # TODO v2: /api/v1/mission-proposals/:proposalId
 ```
 
-#### Create Goal Proposal (Agent-initiated)
+#### Create Mission Proposal (Agent-initiated)
 
 ```http
-POST /api/v1/goal-proposals
+POST /api/v1/goal-proposals  # TODO v2: /api/v1/mission-proposals
 ```
 
 **Request Body:**
@@ -917,10 +921,10 @@ POST /api/v1/goal-proposals
 }
 ```
 
-#### Approve Goal Proposal
+#### Approve Mission Proposal
 
 ```http
-POST /api/v1/goal-proposals/:proposalId/approve
+POST /api/v1/goal-proposals/:proposalId/approve  # TODO v2: /api/v1/mission-proposals/:proposalId/approve
 ```
 
 **Request Body:**
@@ -939,8 +943,8 @@ POST /api/v1/goal-proposals/:proposalId/approve
 {
   "data": {
     "proposal": { ... },
-    "resultingGoal": {
-      "id": "goal_xyz789",
+    "resultingMission": {
+      "id": "goal_xyz789",  // TODO v2: mission_xyz789
       "title": "Improve test coverage for API routes",
       "source": "agent",
       "proposalId": "gp_abc123",
@@ -950,10 +954,10 @@ POST /api/v1/goal-proposals/:proposalId/approve
 }
 ```
 
-#### Reject Goal Proposal
+#### Reject Mission Proposal
 
 ```http
-POST /api/v1/goal-proposals/:proposalId/reject
+POST /api/v1/goal-proposals/:proposalId/reject  # TODO v2: /api/v1/mission-proposals/:proposalId/reject
 ```
 
 **Request Body:**
@@ -962,6 +966,8 @@ POST /api/v1/goal-proposals/:proposalId/reject
   "reason": "Coverage is acceptable for MVP phase. Will revisit post-launch."
 }
 ```
+
+> **Terminology Note:** The term "Mission" in Cohortix refers to strategic measurable outcomes (equivalent to PPV "Goals"). The term "Operation" refers to bounded initiatives (equivalent to PPV "Projects"). "Tasks" are atomic units of work (equivalent to PPV "Actions").
 
 ---
 

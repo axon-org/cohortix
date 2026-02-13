@@ -18,7 +18,7 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutGrid },
   { name: 'Cohorts', href: '/cohorts', icon: Users },
   { name: 'Allies', href: '/allies', icon: Bot },
-  { name: 'Missions', href: '/missions', icon: Rocket },
+  { name: 'Operations', href: '/missions', icon: Rocket }, // Route: /missions (legacy)
 ]
 
 interface SidebarProps {

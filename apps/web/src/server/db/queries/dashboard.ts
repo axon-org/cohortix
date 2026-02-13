@@ -85,19 +85,23 @@ export async function getUserOrganization(userId: string) {
 
 /**
  * Dashboard KPI Metrics
- * Note: Database tables are 'projects' (Missions) and 'tasks' (Actions)
+ * 
+ * PPV Terminology:
+ * - Operations (DB: projects) = Bounded initiatives with start/end dates
+ * - Tasks (DB: tasks) = Atomic units of work
+ * - Allies (DB: agents) = AI teammates
  */
 export async function getDashboardKPIs(organizationId: string) {
   const supabase = await createClient();
   
-  // Total active missions (database table: projects)
+  // Total active operations (database table: projects)
   const { count: activeMissions } = await supabase
     .from('projects')
     .select('*', { count: 'exact', head: true })
     .eq('organization_id', organizationId)
     .eq('status', 'active');
   
-  // Total actions in progress (database table: tasks)
+  // Total tasks in progress (database table: tasks)
   const { count: actionsInProgress } = await supabase
     .from('tasks')
     .select('*', { count: 'exact', head: true })
@@ -111,7 +115,7 @@ export async function getDashboardKPIs(organizationId: string) {
     .eq('organization_id', organizationId)
     .eq('status', 'active');
   
-  // Completion rate (completed actions / total actions)
+  // Completion rate (completed tasks / total tasks)
   const { count: completedActions } = await supabase
     .from('tasks')
     .select('*', { count: 'exact', head: true })
@@ -128,8 +132,8 @@ export async function getDashboardKPIs(organizationId: string) {
     : 0;
   
   return {
-    activeMissions: activeMissions || 0,
-    actionsInProgress: actionsInProgress || 0,
+    activeMissions: activeMissions || 0, // Legacy prop name (actually Operations)
+    actionsInProgress: actionsInProgress || 0, // Legacy prop name (actually Tasks)
     activeAllies: activeAllies || 0,
     completionRate,
   };
@@ -163,12 +167,12 @@ export async function getRecentActivity(organizationId: string, limit = 10) {
 
 /**
  * Active Alerts/Notifications
- * Note: User-facing: "Actions", Database table: "tasks"
+ * Note: User-facing: "Tasks", Database table: "tasks"
  */
 export async function getActiveAlerts(organizationId: string) {
   const supabase = await createClient();
   
-  // Get urgent actions without assignees
+  // Get urgent tasks without assignees
   const { data: unassignedUrgent } = await supabase
     .from('tasks')
     .select('id, title, project_id')
@@ -177,7 +181,7 @@ export async function getActiveAlerts(organizationId: string) {
     .is('assignee_id', null)
     .limit(5);
   
-  // Get overdue actions (past target date)
+  // Get overdue tasks (past target date)
   const today = new Date().toISOString().split('T')[0];
   const { data: overdueActions } = await supabase
     .from('tasks')
@@ -188,7 +192,7 @@ export async function getActiveAlerts(organizationId: string) {
     .lt('target_date', today)
     .limit(5);
   
-  // Get blocked actions
+  // Get blocked tasks
   const { data: blockedActions } = await supabase
     .from('tasks')
     .select('id, title, blocked_reason')
@@ -211,11 +215,11 @@ export async function getActiveAlerts(organizationId: string) {
   if (unassignedUrgent && unassignedUrgent.length > 0) {
     alerts.push({
       type: 'warning' as const,
-      title: 'Unassigned urgent actions',
-      message: `${unassignedUrgent.length} urgent actions need allies assigned`,
+      title: 'Unassigned urgent tasks',
+      message: `${unassignedUrgent.length} urgent tasks need allies assigned`,
       action: {
         label: 'Assign now',
-        href: '/actions?filter=urgent-unassigned',
+        href: '/tasks?filter=urgent-unassigned',
       },
     });
   }
@@ -223,11 +227,11 @@ export async function getActiveAlerts(organizationId: string) {
   if (overdueActions && overdueActions.length > 0) {
     alerts.push({
       type: 'error' as const,
-      title: 'Overdue actions',
-      message: `${overdueActions.length} actions are past their target date`,
+      title: 'Overdue tasks',
+      message: `${overdueActions.length} tasks are past their target date`,
       action: {
         label: 'Review',
-        href: '/actions?filter=overdue',
+        href: '/tasks?filter=overdue',
       },
     });
   }
@@ -235,11 +239,11 @@ export async function getActiveAlerts(organizationId: string) {
   if (blockedActions && blockedActions.length > 0) {
     alerts.push({
       type: 'info' as const,
-      title: 'Blocked actions',
-      message: `${blockedActions.length} actions are blocked and need attention`,
+      title: 'Blocked tasks',
+      message: `${blockedActions.length} tasks are blocked and need attention`,
       action: {
         label: 'Unblock',
-        href: '/actions?filter=blocked',
+        href: '/tasks?filter=blocked',
       },
     });
   }
@@ -248,8 +252,9 @@ export async function getActiveAlerts(organizationId: string) {
 }
 
 /**
- * Active Missions Overview
- * Note: User-facing: "Missions", Database table: "projects"
+ * Active Operations Overview
+ * Note: User-facing: "Operations", Database table: "projects"
+ * Legacy function name kept for backwards compatibility.
  */
 export async function getActiveMissions(organizationId: string, limit = 6) {
   const supabase = await createClient();
@@ -268,24 +273,24 @@ export async function getActiveMissions(organizationId: string, limit = 6) {
     .limit(limit);
   
   if (error) {
-    console.error('Error fetching missions:', error);
+    console.error('Error fetching operations:', error);
     return [];
   }
   
-  // Calculate action statistics for each mission
+  // Calculate task statistics for each operation
   const missionsWithStats = missions?.map((mission: any) => {
-    const actions = mission.tasks || [];
-    const totalActions = actions.length;
-    const completedActions = actions.filter((t: any) => t.status === 'done').length;
-    const inProgressActions = actions.filter((t: any) => t.status === 'in_progress').length;
+    const tasks = mission.tasks || [];
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter((t: any) => t.status === 'done').length;
+    const inProgressTasks = tasks.filter((t: any) => t.status === 'in_progress').length;
     
     return {
       ...mission,
       stats: {
-        total: totalActions,
-        completed: completedActions,
-        inProgress: inProgressActions,
-        progress: totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0,
+        total: totalTasks,
+        completed: completedTasks,
+        inProgress: inProgressTasks,
+        progress: totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0,
       },
     };
   });
@@ -295,7 +300,7 @@ export async function getActiveMissions(organizationId: string, limit = 6) {
 
 /**
  * Active Allies Overview
- * Note: User-facing: "Actions", Database table: "tasks"
+ * Note: User-facing: "Tasks", Database table: "tasks"
  */
 export async function getActiveAllies(organizationId: string) {
   const supabase = await createClient();
@@ -321,17 +326,17 @@ export async function getActiveAllies(organizationId: string) {
   
   // Calculate workload for each ally
   const alliesWithWorkload = allies?.map((ally: any) => {
-    const actions = ally.assigned_actions || [];
-    const activeActions = actions.filter((t: any) => 
+    const tasks = ally.assigned_actions || []; // Legacy field name: assigned_actions
+    const activeTasks = tasks.filter((t: any) => 
       t.status === 'in_progress' || t.status === 'todo'
     );
     
     return {
       ...ally,
       workload: {
-        active: activeActions.length,
-        total: actions.length,
-        currentMission: activeActions[0]?.mission,
+        active: activeTasks.length,
+        total: tasks.length,
+        currentMission: activeTasks[0]?.mission,
       },
     };
   });

@@ -1,7 +1,7 @@
 /**
- * Missions API Route - GET (list) and POST (create)
- * Missions are measurable outcomes that serve Visions (PPV Goal level).
- * Maps to `goals` table. Axon Codex v1.2 compliant.
+ * Operations API Route - GET (list) and POST (create)
+ * Operations are bounded initiatives with start/end dates that achieve Missions.
+ * Maps to `projects` table. Axon Codex v1.2 compliant.
  * 
  * PPV Hierarchy: Mission (measurable outcome) → Operation (bounded initiative) → Task (atomic work)
  */
@@ -17,14 +17,15 @@ import {
 } from '@/lib/errors'
 import { validateRequest, validateData } from '@/lib/validation'
 import {
-  createMissionSchema,
-  missionQuerySchema,
-  type CreateMissionInput,
-  type MissionQueryParams,
-} from '@/lib/validations/mission'
+  createOperationSchema,
+  operationQuerySchema,
+  type CreateOperationInput,
+  type OperationQueryParams,
+} from '@/lib/validations/operation'
+import { generateSlug } from '@/lib/utils/cohort'
 
 // ============================================================================
-// GET /api/v1/missions
+// GET /api/v1/operations
 // ============================================================================
 
 export const GET = withErrorHandler(async (request: NextRequest) => {
@@ -32,7 +33,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   logger.setContext({ correlationId })
 
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries())
-  const query = validateData(missionQuerySchema, searchParams) as MissionQueryParams
+  const query = validateData(operationQuerySchema, searchParams) as OperationQueryParams
 
   let supabase: any
   let organizationId: string
@@ -69,40 +70,38 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     organizationId = membership.organization_id
   }
 
-  logger.info('Fetching missions', { correlationId, userId, organizationId, query })
+  logger.info('Fetching operations', { correlationId, userId, organizationId, query })
 
   let queryBuilder = supabase
-    .from('goals')
+    .from('projects')
     .select('*', { count: 'exact' })
     .eq('organization_id', organizationId)
 
   if (query.status) queryBuilder = queryBuilder.eq('status', query.status)
-  if (query.ownerType) queryBuilder = queryBuilder.eq('owner_type', query.ownerType)
-  if (query.ownerId) queryBuilder = queryBuilder.eq('owner_id', query.ownerId)
   if (query.search) {
     queryBuilder = queryBuilder.or(
-      `title.ilike.%${query.search}%,description.ilike.%${query.search}%`
+      `name.ilike.%${query.search}%,description.ilike.%${query.search}%`
     )
   }
 
   const orderColumn = query.sortBy === 'createdAt' ? 'created_at' :
+                     query.sortBy === 'startDate' ? 'start_date' :
                      query.sortBy === 'targetDate' ? 'target_date' :
-                     query.sortBy === 'progressPercent' ? 'progress_percent' :
                      query.sortBy
   queryBuilder = queryBuilder.order(orderColumn, { ascending: query.sortOrder === 'asc' })
 
   const start = (query.page - 1) * query.limit
   queryBuilder = queryBuilder.range(start, start + query.limit - 1)
 
-  const { data: missions, error, count } = await queryBuilder
+  const { data: operations, error, count } = await queryBuilder
 
   if (error) {
-    logger.error('Failed to fetch missions', { correlationId, error: { message: error.message, code: error.code } })
+    logger.error('Failed to fetch operations', { correlationId, error: { message: error.message, code: error.code } })
     throw error
   }
 
   return NextResponse.json({
-    data: missions || [],
+    data: operations || [],
     meta: {
       page: query.page,
       limit: query.limit,
@@ -113,15 +112,15 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 })
 
 // ============================================================================
-// POST /api/v1/missions
+// POST /api/v1/operations
 // ============================================================================
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId()
   logger.setContext({ correlationId })
 
-  const validator = validateRequest(createMissionSchema, { target: 'body' })
-  const data = (await validator(request)) as CreateMissionInput
+  const validator = validateRequest(createOperationSchema, { target: 'body' })
+  const data = (await validator(request)) as CreateOperationInput
 
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -135,34 +134,37 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   if (!membership) throw new ForbiddenError('User is not associated with any organization')
 
   const organizationId = membership.organization_id
+  const baseSlug = generateSlug(data.name)
+  const timestamp = Date.now().toString().slice(-6)
+  const slug = `${baseSlug}-${timestamp}`
 
-  logger.info('Creating mission', { correlationId, userId: user.id, organizationId, missionTitle: data.title })
+  logger.info('Creating operation', { correlationId, userId: user.id, organizationId, operationName: data.name })
 
-  const { data: mission, error } = await supabase
-    .from('goals')
+  const { data: operation, error } = await supabase
+    .from('projects')
     .insert({
       organization_id: organizationId,
-      client_id: data.clientId || null,
-      owner_type: data.ownerType,
-      owner_id: data.ownerId,
-      created_by_type: 'user',
-      created_by_id: user.id,
-      title: data.title,
+      name: data.name,
+      slug,
       description: data.description || null,
       status: data.status,
+      owner_type: 'user',
+      owner_id: user.id,
+      start_date: data.startDate || null,
       target_date: data.targetDate || null,
-      key_results: data.keyResults,
-      progress_percent: data.progressPercent,
-      progress_auto_calculate: data.progressAutoCalculate,
+      goal_id: data.missionId || null, // DB column still named 'goal_id'
+      color: data.color || null,
+      icon: data.icon || null,
+      settings: data.settings || {},
     })
     .select()
     .single()
 
   if (error) {
-    logger.error('Failed to create mission', { correlationId, error: { message: error.message, code: error.code } })
+    logger.error('Failed to create operation', { correlationId, error: { message: error.message, code: error.code } })
     throw error
   }
 
-  logger.info('Mission created', { correlationId, missionId: mission.id })
-  return NextResponse.json({ data: mission }, { status: 201 })
+  logger.info('Operation created', { correlationId, operationId: operation.id })
+  return NextResponse.json({ data: operation }, { status: 201 })
 })
