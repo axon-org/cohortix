@@ -1,0 +1,39 @@
+{
+  "name": "cohortix",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cohortix monorepo - Agent Command Center",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "test:e2e": "turbo test:e2e",
+    "type-check": "turbo type-check",
+    "db:generate": "turbo db:generate",
+    "db:migrate": "turbo db:migrate",
+    "db:push": "turbo db:push",
+    "db:studio": "turbo db:studio",
+    "db:reset": "dotenv -e .env.local -- tsx scripts/reset-db.ts",
+    "db:seed": "dotenv -e .env.local -- tsx scripts/seed-db.ts",
+    "seed": "pnpm db:seed",
+    "clean": "turbo clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "dotenv": "^17.2.4",
+    "dotenv-cli": "^11.0.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.2.5",
+    "tsx": "^4.21.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

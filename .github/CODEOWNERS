@@ -1,0 +1,161 @@
+# CODEOWNERS - Code Review Ownership
+# 
+# This file defines which teams/individuals are automatically requested
+# for review when files in specific paths are modified.
+#
+# Format: <file pattern> <owner(s)>
+# Owners can be:
+#   - GitHub usernames: @username
+#   - GitHub teams: @org/team-name
+#   - Email addresses: email@example.com
+#
+# Rules are evaluated in order, last match takes precedence.
+# More specific patterns override less specific ones.
+#
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# ═══════════════════════════════════════════════════════════════
+# DEFAULT OWNERS
+# These owners will be the default owners for everything in the repo.
+# Unless a later match takes precedence, these will be requested.
+# ═══════════════════════════════════════════════════════════════
+
+* @platform-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# DOCUMENTATION
+# All documentation files require docs team review
+# ═══════════════════════════════════════════════════════════════
+
+/docs/ @docs-team
+*.md @docs-team
+/README.md @docs-team @platform-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# FRONTEND APPLICATION
+# UI/UX and frontend implementation
+# ═══════════════════════════════════════════════════════════════
+
+/apps/web/ @frontend-team
+/apps/web/src/components/ @frontend-team @ui-team
+/apps/web/src/app/ @frontend-team
+/apps/web/src/styles/ @frontend-team @ui-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# BACKEND & API
+# Server-side logic and API routes
+# ═══════════════════════════════════════════════════════════════
+
+/apps/api/ @backend-team
+/apps/web/src/app/api/ @backend-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# DATABASE
+# Schema, migrations, and database-related code
+# ═══════════════════════════════════════════════════════════════
+
+/packages/database/ @backend-team
+/packages/database/migrations/ @backend-team @platform-team
+/packages/database/schema/ @backend-team
+*.sql @backend-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# SHARED PACKAGES
+# Shared utilities, types, and configurations
+# ═══════════════════════════════════════════════════════════════
+
+/packages/ui/ @frontend-team @ui-team
+/packages/types/ @backend-team @frontend-team
+/packages/lib/ @backend-team @frontend-team
+/packages/config/ @platform-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# AUTHENTICATION & SECURITY
+# Security-sensitive files require security team review
+# ═══════════════════════════════════════════════════════════════
+
+/apps/web/src/middleware.ts @backend-team @security-team
+/packages/auth/ @backend-team @security-team
+**/auth*.* @backend-team @security-team
+**/security*.* @backend-team @security-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# TESTING
+# Test files and testing infrastructure
+# ═══════════════════════════════════════════════════════════════
+
+**/*.test.ts @qa-team
+**/*.test.tsx @qa-team @frontend-team
+**/*.spec.ts @qa-team
+**/e2e/ @qa-team
+/playwright.config.ts @qa-team @platform-team
+/vitest.config.ts @qa-team @platform-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# CI/CD & INFRASTRUCTURE
+# DevOps, deployment, and automation
+# ═══════════════════════════════════════════════════════════════
+
+/.github/ @platform-team
+/.github/workflows/ @platform-team @devops-team
+/Dockerfile @devops-team @platform-team
+/docker-compose.yml @devops-team @platform-team
+/vercel.json @devops-team @platform-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# CONFIGURATION FILES
+# Root-level configuration requires platform team review
+# ═══════════════════════════════════════════════════════════════
+
+/package.json @platform-team
+/pnpm-workspace.yaml @platform-team
+/turbo.json @platform-team
+/tsconfig.json @platform-team
+/.eslintrc.* @platform-team
+/.prettierrc.* @platform-team
+/.env.example @backend-team @platform-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# DEPENDENCY UPDATES
+# Dependency files require careful review
+# ═══════════════════════════════════════════════════════════════
+
+/pnpm-lock.yaml @platform-team
+**/package.json @platform-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# LEGAL & COMPLIANCE
+# Legal documents require legal team review
+# ═══════════════════════════════════════════════════════════════
+
+/LICENSE @legal-team
+/PRIVACY.md @legal-team
+/TERMS.md @legal-team
+
+
+# ═══════════════════════════════════════════════════════════════
+# TEAM DEFINITIONS (for reference)
+# ═══════════════════════════════════════════════════════════════
+#
+# @platform-team       - Overall platform architecture and infrastructure
+# @frontend-team       - Frontend developers (React, Next.js)
+# @backend-team        - Backend developers (API, database)
+# @ui-team             - UI/UX designers and component library maintainers
+# @qa-team             - Quality assurance and testing engineers
+# @devops-team         - DevOps and CI/CD engineers
+# @security-team       - Security specialists
+# @docs-team           - Technical writers and documentation maintainers
+# @legal-team          - Legal and compliance team
+#
+# ═══════════════════════════════════════════════════════════════

@@ -1,32 +1,57 @@
-# Agent Command Center
+# Cohortix
 
-> Agents as a Service — Project Management for AI Agents
+> **Your AI team, ready to help.**
 
-## Overview
+Cohortix is a platform where everyday people can build and manage their own team of AI helpers (Allies) to get things done.
 
-A comprehensive platform for managing AI agent organizations, featuring:
-- Agent directory and profiles
-- Project and task management
-- Knowledge base
-- Cross-agent collaboration
-- Enterprise-grade security
+## 🌐 Domain
 
-## Development
+**cohortix.ai**
 
-```bash
-# Development environment
-git checkout dev
+## 🎯 Vision
 
-# Feature development
-git checkout -b feature/your-feature dev
+Make AI orchestration accessible to everyone — not just developers. Your Cohort of Allies works together to complete Missions, learns from experience, and grows over time.
+
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [TERMINOLOGY.md](docs/TERMINOLOGY.md) | **Start here** — All Cohortix branding terms |
+| [PRD.md](docs/PRD.md) | Product Requirements |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical Architecture |
+| [BRAND_GUIDELINES.md](docs/BRAND_GUIDELINES.md) | Voice, tone, and visual identity |
+
+## 🗂️ Mission Structure
+
+```
+cohortix/
+├── docs/              # All documentation
+├── .planning/         # Roadmap, state, mission planning
+├── designs/           # UI/UX designs
+├── mockups/           # Visual mockups
+├── archives/          # Reference materials (NeuroEngine)
+└── actions/             # Action tracking
 ```
 
-## Environments
+## 🎨 Key Terminology
 
-- **Production**: main branch → Vercel production
-- **Development**: dev branch → Vercel preview
+| Instead of... | We say... |
+|---------------|-----------|
+| Agent | **Ally** |
+| Agents | **Cohort** |
+| Action | **Mission** |
+| Run/Execute | **Deploy** |
+| Create | **Recruit** |
+| Dashboard | **Mission Control** |
+| Memory | **Core Memory** |
+| Skills | **Talents** |
+
+See [TERMINOLOGY.md](docs/TERMINOLOGY.md) for the complete guide.
+
+## 🚀 Status
+
+**Phase:** Pre-Development (Planning Complete)
 
 ---
 
-*Built by Ahmad's AI Organization*
-
+*Built with ❤️ for everyday people*
