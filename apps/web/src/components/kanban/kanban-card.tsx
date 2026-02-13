@@ -10,8 +10,19 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Calendar, MoreHorizontal } from 'lucide-react'
 import { format } from 'date-fns'
 
+type Task = {
+  id: string
+  title: string
+  status: string
+  priority?: string
+  dueDate?: string
+  assigneeId?: string
+  projectId?: string
+  projects?: { id: string; name: string; status: string }
+}
+
 interface KanbanCardProps {
-  task: Operation
+  task: Operation | Task
   onClick?: () => void
 }
 
@@ -52,13 +63,39 @@ export function KanbanCard({ task, onClick }: KanbanCardProps) {
     )
   }
 
-  const priorityColor = {
+  const isTask = 'title' in task
+  const displayName = isTask ? task.title : task.name
+  const displayStatus = task.status
+  const displayDate = isTask ? task.dueDate : task.targetDate
+  const displayOwnerId = isTask ? task.assigneeId : task.ownerId
+
+  const operationStatusColors = {
     planning: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
     active: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20',
     on_hold: 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20',
     completed: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
     archived: 'bg-slate-500/10 text-slate-500 border-slate-500/20',
-  }[task.status]
+  }
+
+  const taskStatusColors = {
+    backlog: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+    todo: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    in_progress: 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20',
+    review: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    done: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    cancelled: 'bg-red-500/10 text-red-400 border-red-500/20',
+  }
+
+  const priorityColors = {
+    low: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+    medium: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    high: 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20',
+    urgent: 'bg-red-500/10 text-red-400 border-red-500/20',
+  }
+
+  const statusColor = isTask 
+    ? (taskStatusColors as any)[displayStatus] || taskStatusColors.backlog
+    : (operationStatusColors as any)[displayStatus] || operationStatusColors.planning
 
   return (
     <div
@@ -75,7 +112,7 @@ export function KanbanCard({ task, onClick }: KanbanCardProps) {
       <div className="flex flex-col gap-3">
         <div className="flex items-start justify-between gap-2">
           <h4 className="font-medium text-sm leading-tight line-clamp-2">
-            {task.name}
+            {displayName}
           </h4>
           <button className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
             <MoreHorizontal className="w-4 h-4" />
@@ -83,10 +120,20 @@ export function KanbanCard({ task, onClick }: KanbanCardProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 font-normal", priorityColor)}>
-            {task.status}
+          <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 font-normal", statusColor)}>
+            {displayStatus.replace('_', ' ')}
           </Badge>
-          {task.missionId && (
+          {isTask && task.priority && (
+            <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 font-normal", (priorityColors as any)[task.priority])}>
+              {task.priority}
+            </Badge>
+          )}
+          {isTask && task.projects && (
+            <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">
+              {task.projects.name}
+            </span>
+          )}
+          {!isTask && task.missionId && (
             <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">
               Mission: {task.missionId?.slice(0, 8) ?? 'Unknown'}
             </span>
@@ -97,14 +144,14 @@ export function KanbanCard({ task, onClick }: KanbanCardProps) {
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Calendar className="w-3.5 h-3.5" />
             <span className="text-[10px]">
-              {task.targetDate ? format(new Date(task.targetDate), 'MMM d') : 'No date'}
+              {displayDate ? format(new Date(displayDate), 'MMM d') : 'No date'}
             </span>
           </div>
 
           <div className="flex -space-x-2">
             <Avatar className="w-6 h-6 border-2 border-card">
-              <AvatarImage src={`https://avatar.vercel.sh/${task.ownerId}`} />
-              <AvatarFallback className="text-[8px]">{(task.ownerId || 'NA').slice(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarImage src={`https://avatar.vercel.sh/${displayOwnerId}`} />
+              <AvatarFallback className="text-[8px]">{(displayOwnerId || 'NA').slice(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
           </div>
         </div>

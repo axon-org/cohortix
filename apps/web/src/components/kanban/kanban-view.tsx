@@ -14,8 +14,19 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { type Operation } from '@/lib/api/client'
 
+type Task = {
+  id: string
+  title: string
+  status: string
+  priority?: string
+  dueDate?: string
+  assigneeId?: string
+  projectId?: string
+  projects?: { id: string; name: string; status: string }
+}
+
 interface KanbanViewProps {
-  initialTasks: Operation[]
+  initialTasks: Operation[] | Task[]
   viewType?: 'tasks' | 'operations'
 }
 

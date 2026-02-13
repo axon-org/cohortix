@@ -25,43 +25,67 @@ import { TaskDetailSheet } from './task-detail-sheet'
 import { type Operation } from '@/lib/api/client'
 import { useUpdateOperation } from '@/hooks/use-operations'
 
+type Task = {
+  id: string
+  title: string
+  status: string
+  priority?: string
+  dueDate?: string
+  assigneeId?: string
+  projectId?: string
+  projects?: { id: string; name: string; status: string }
+}
+
 export type KanbanStatus = 'planning' | 'active' | 'on_hold' | 'completed' | 'archived'
+export type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled'
 export type GroupBy = 'status' | 'mission' | 'owner'
 
-const COLUMNS: { id: KanbanStatus; title: string }[] = [
+const OPERATION_COLUMNS: { id: KanbanStatus; title: string }[] = [
   { id: 'planning', title: 'Todo' },
   { id: 'active', title: 'In Progress' },
   { id: 'on_hold', title: 'Review' },
   { id: 'completed', title: 'Done' },
 ]
 
+const TASK_COLUMNS: { id: TaskStatus; title: string }[] = [
+  { id: 'backlog', title: 'Backlog' },
+  { id: 'todo', title: 'Todo' },
+  { id: 'in_progress', title: 'In Progress' },
+  { id: 'review', title: 'Review' },
+  { id: 'done', title: 'Done' },
+]
+
 interface KanbanBoardProps {
-  initialTasks: Operation[]
+  initialTasks: Operation[] | Task[]
   groupBy?: GroupBy
 }
 
 export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardProps) {
-  const [tasks, setTasks] = useState<Operation[]>(initialTasks)
-  const [activeTask, setActiveTask] = useState<Operation | null>(null)
-  const [selectedTask, setSelectedTask] = useState<Operation | null>(null)
+  const [tasks, setTasks] = useState<(Operation | Task)[]>(initialTasks)
+  const [activeTask, setActiveTask] = useState<Operation | Task | null>(null)
+  const [selectedTask, setSelectedTask] = useState<Operation | Task | null>(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   
   const updateOperation = useUpdateOperation()
+  const isTaskView = initialTasks.length > 0 && 'title' in initialTasks[0]
 
   // Dynamic columns based on grouping
   const columns = useMemo(() => {
-    if (groupBy === 'status') return COLUMNS
+    if (groupBy === 'status') return isTaskView ? TASK_COLUMNS : OPERATION_COLUMNS
     
     // For Mission or Ally, we extract unique IDs from tasks
-    const uniqueIds = Array.from(new Set(tasks.map(t => 
-      groupBy === 'mission' ? (t.missionId || 'unassigned') : t.ownerId
-    )))
+    const uniqueIds = Array.from(new Set(tasks.map(t => {
+      if (groupBy === 'mission') {
+        return 'missionId' in t ? (t.missionId || 'unassigned') : 'unassigned'
+      }
+      return 'ownerId' in t ? t.ownerId : ('assigneeId' in t ? t.assigneeId : undefined)
+    })))
     
     return uniqueIds.map(id => ({
       id: id as any,
       title: id === 'unassigned' ? 'No Mission' : ((id?.length ?? 0) > 8 ? id?.slice(0, 8) ?? id : id ?? 'Unassigned')
     }))
-  }, [groupBy, tasks])
+  }, [groupBy, tasks, isTaskView])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -78,14 +102,18 @@ export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardPro
     return columns.reduce((acc, col) => {
       acc[col.id] = tasks.filter((t) => {
         if (groupBy === 'status') return t.status === col.id
-        if (groupBy === 'mission') return (t.missionId || 'unassigned') === col.id
-        return t.ownerId === col.id
+        if (groupBy === 'mission') {
+          const missionId = 'missionId' in t ? t.missionId : undefined
+          return (missionId || 'unassigned') === col.id
+        }
+        const ownerId = 'ownerId' in t ? t.ownerId : ('assigneeId' in t ? t.assigneeId : undefined)
+        return ownerId === col.id
       })
       return acc
-    }, {} as Record<string, Operation[]>)
+    }, {} as Record<string, (Operation | Task)[]>)
   }, [tasks, columns, groupBy])
 
-  function handleCardClick(task: Operation) {
+  function handleCardClick(task: Operation | Task) {
     setSelectedTask(task)
     setIsSheetOpen(true)
   }

@@ -1,12 +1,12 @@
 import { KanbanView } from '@/components/kanban/kanban-view'
-import { getOperations } from '@/server/db/queries/operations'
+import { getTasks } from '@/server/db/queries/tasks'
 
 export const metadata = {
   title: 'Tasks | Cohortix',
 }
 
 export default async function TasksPage() {
-  const operations = await getOperations()
+  const tasks = await getTasks()
 
-  return <KanbanView initialTasks={operations} viewType="tasks" />
+  return <KanbanView initialTasks={tasks} viewType="tasks" />
 }

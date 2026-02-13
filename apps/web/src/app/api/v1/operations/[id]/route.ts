@@ -40,7 +40,11 @@ export const GET = withMiddleware(standardRateLimit,
 
     const { data: operation, error } = await supabase
       .from('projects')
-      .select('*')
+      .select(`
+        *,
+        missions!mission_id(id, title, status),
+        task_count:tasks!project_id(count)
+      `)
       .eq('id', operationId)
       .eq('organization_id', organizationId)
       .single()

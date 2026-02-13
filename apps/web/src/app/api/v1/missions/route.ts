@@ -40,7 +40,10 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
 
   let queryBuilder = supabase
     .from('missions')
-    .select('*', { count: 'exact' })
+    .select(`
+      *,
+      operation_count:projects!mission_id(count)
+    `, { count: 'exact' })
     .eq('organization_id', organizationId)
 
   if (query.status) queryBuilder = queryBuilder.eq('status', query.status)

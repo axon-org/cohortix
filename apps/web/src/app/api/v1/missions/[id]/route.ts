@@ -38,7 +38,10 @@ export const GET = withMiddleware(standardRateLimit,
 
     const { data: mission, error } = await supabase
       .from('missions')
-      .select('*')
+      .select(`
+        *,
+        operation_count:projects!mission_id(count)
+      `)
       .eq('id', missionId)
       .eq('organization_id', organizationId)
       .single()
