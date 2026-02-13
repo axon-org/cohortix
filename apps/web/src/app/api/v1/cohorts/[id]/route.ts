@@ -12,6 +12,7 @@ import {
   ForbiddenError,
   NotFoundError,
 } from '@/lib/errors'
+import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
 import { validateRequest, validateData } from '@/lib/validation'
 import { updateCohortSchema, type UpdateCohortInput } from '@/lib/validations/cohort'
 import { uuidSchema } from '@/lib/validation'
@@ -24,7 +25,7 @@ interface RouteContext {
 // GET /api/v1/cohorts/:id - Get a single cohort
 // ============================================================================
 
-export const GET = withErrorHandler(
+export const GET = withMiddleware(standardRateLimit, 
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId()
     logger.setContext({ correlationId })
@@ -126,7 +127,7 @@ export const GET = withErrorHandler(
 // PATCH /api/v1/cohorts/:id - Update a cohort
 // ============================================================================
 
-export const PATCH = withErrorHandler(
+export const PATCH = withMiddleware(standardRateLimit, 
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId()
     logger.setContext({ correlationId })
@@ -224,7 +225,7 @@ export const PATCH = withErrorHandler(
 // DELETE /api/v1/cohorts/:id - Delete a cohort
 // ============================================================================
 
-export const DELETE = withErrorHandler(
+export const DELETE = withMiddleware(standardRateLimit, 
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId()
     logger.setContext({ correlationId })

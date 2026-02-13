@@ -17,6 +17,7 @@ import {
   UnauthorizedError,
   ForbiddenError,
 } from '@/lib/errors'
+import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
 
 interface KPIData {
   kpis: {
@@ -33,7 +34,7 @@ interface KPIData {
   }
 }
 
-export const GET = withErrorHandler(async (request: NextRequest) => {
+export const GET = withMiddleware(standardRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId()
   logger.setContext({ correlationId })
 

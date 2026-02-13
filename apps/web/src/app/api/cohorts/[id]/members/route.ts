@@ -10,29 +10,6 @@ import { getCurrentUser, getUserOrganization } from '@/server/db/queries/dashboa
 import { getCohortById } from '@/server/db/queries/cohorts';
 
 async function getAuthContext() {
-  // DEV MODE: Bypass auth for testing
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
-    const supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
-    
-    const { data: org } = await supabase
-      .from('organizations')
-      .select('id')
-      .limit(1)
-      .single()
-    
-    return { user: { id: 'dev-bypass' }, organizationId: org?.id || '' };
-  }
-
   const user = await getCurrentUser();
   if (!user) {
     return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
@@ -53,14 +30,10 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   const { id } = await context.params;
 
   try {
-    // Verify cohort exists
-    // In BYPASS mode, we trust the cohort exists since we got a valid org
-    // In production, getCohortById uses RLS to verify access
-    if (!(process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true')) {
-      const cohort = await getCohortById(id);
-      if (!cohort) {
-        return NextResponse.json({ error: 'Cohort not found' }, { status: 404 });
-      }
+    // Verify cohort exists (RLS will handle access)
+    const cohort = await getCohortById(id);
+    if (!cohort) {
+      return NextResponse.json({ error: 'Cohort not found' }, { status: 404 });
     }
 
     // Fetch members with engagement scores and statuses

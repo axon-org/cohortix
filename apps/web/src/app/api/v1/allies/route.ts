@@ -12,6 +12,7 @@ import {
   ForbiddenError,
   ValidationError,
 } from '@/lib/errors'
+import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
 import { validateRequest, validateData } from '@/lib/validation'
 import {
   createAllySchema,
@@ -25,7 +26,7 @@ import { generateSlug } from '@/lib/utils/cohort'
 // GET /api/v1/allies - List allies with pagination and filtering
 // ============================================================================
 
-export const GET = withErrorHandler(async (request: NextRequest) => {
+export const GET = withMiddleware(standardRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId()
   logger.setContext({ correlationId })
 
@@ -115,7 +116,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 // POST /api/v1/allies - Create a new ally
 // ============================================================================
 
-export const POST = withErrorHandler(async (request: NextRequest) => {
+export const POST = withMiddleware(standardRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId()
   logger.setContext({ correlationId })
 

@@ -2,16 +2,6 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
-  // DEV MODE: Bypass auth entirely when testing
-  if (
-    process.env.NODE_ENV === 'development' && 
-    process.env.BYPASS_AUTH === 'true'
-  ) {
-    return NextResponse.next({
-      request,
-    })
-  }
-
   let supabaseResponse = NextResponse.next({
     request,
   })

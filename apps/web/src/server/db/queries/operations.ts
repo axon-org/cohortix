@@ -10,20 +10,6 @@ import { createClient } from '@supabase/supabase-js'
  * Create Supabase client with service role for server-side queries
  */
 async function createServerClient() {
-  // Use service role to bypass RLS in development
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    return createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
-  }
-
   // Production: Import SSR client
   const { createServerClient } = await import('@supabase/ssr')
   const { cookies } = await import('next/headers')
@@ -43,16 +29,11 @@ async function createServerClient() {
 }
 
 /**
- * Get organization ID for current user or development bypass
+ * Get organization ID for current user
  */
 async function getOrganizationId() {
   const supabase = await createServerClient()
   
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    const { data: org } = await supabase.from('organizations').select('id').limit(1).single()
-    return org?.id || null
-  }
-
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 

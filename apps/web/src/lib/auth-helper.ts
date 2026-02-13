@@ -12,49 +12,16 @@ export interface AuthContext {
   supabase: any
   organizationId: string
   userId: string
-  isDevBypass: boolean
 }
 
 /**
  * Get authenticated context with organization membership
- * 
- * Handles both production auth (Supabase) and development auth bypass.
  * 
  * @throws {UnauthorizedError} If user is not authenticated
  * @throws {ForbiddenError} If user is not associated with any organization
  * @returns {AuthContext} Supabase client, organization ID, and user ID
  */
 export async function getAuthContext(): Promise<AuthContext> {
-  // DEV MODE: Bypass auth for testing
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
-    
-    const supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
-    
-    // Use first available organization for testing
-    const { data: org } = await supabase
-      .from('organizations')
-      .select('id')
-      .limit(1)
-      .single()
-    
-    return {
-      supabase,
-      organizationId: org?.id || '',
-      userId: 'dev-bypass',
-      isDevBypass: true,
-    }
-  }
-
   // PRODUCTION: Standard Supabase auth
   const supabase = await createClient()
   
@@ -81,7 +48,6 @@ export async function getAuthContext(): Promise<AuthContext> {
     supabase,
     organizationId: membership.organization_id,
     userId: user.id,
-    isDevBypass: false,
   }
 }
 

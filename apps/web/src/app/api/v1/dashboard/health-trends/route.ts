@@ -13,6 +13,7 @@ import {
   UnauthorizedError,
   ForbiddenError,
 } from '@/lib/errors'
+import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
 import { validateData } from '@/lib/validation'
 import {
   healthTrendsQuerySchema,
@@ -26,7 +27,7 @@ interface DataPoint {
   totalMembers: number
 }
 
-export const GET = withErrorHandler(async (request: NextRequest) => {
+export const GET = withMiddleware(standardRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId()
   logger.setContext({ correlationId })
 

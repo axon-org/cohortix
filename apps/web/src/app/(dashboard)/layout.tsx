@@ -9,19 +9,12 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  let currentUser = null
-  
-  if (process.env.BYPASS_AUTH === 'true') {
-    // Dev mode: skip auth, use mock user
-    currentUser = { id: 'dev-user', email: 'test@cohortix.dev', name: 'Ahmad (Dev)', role: 'admin', avatar_url: null }
-  } else {
-    const supabase = await createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      redirect('/sign-in')
-    }
-    currentUser = await getCurrentUser()
+  const supabase = await createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    redirect('/sign-in')
   }
+  const currentUser = await getCurrentUser()
 
   return (
     <div className="flex h-screen bg-background">
