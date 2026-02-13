@@ -21,7 +21,7 @@
 7. **Terminology Alignment** — IN PROGRESS (subagent running)
 
 ### What's Next 🔜
-1. Complete terminology alignment (Missions→Missions, Actions→Actions across all files)
+1. ~~Complete terminology alignment~~ ✅ Done (2026-02-13) — see `docs/TERMINOLOGY.md`
 2. Mobile responsive fixes for dashboard
 3. Fix Next.js warnings (bottom-left corner)
 4. Build Cohort Grid screen
@@ -34,8 +34,8 @@
 ### Key Decisions Made
 - **Supabase** for auth AND database (NOT Clerk/Neon)
 - **Tailwind v3** (codebase uses v3 syntax, was accidentally installed as v4)
-- **Terminology hierarchy:** Pillars → Aspirations → Goals → Missions → Actions (based on PPV from August Bradley)
-- **"Goal" dropped** — Goals cover that role in the hierarchy
+- **Terminology hierarchy:** Domain → Vision → Mission → Operation/Rhythm → Task (PPV Pro by August Bradley, rebranded for Cohortix)
+- **⚠️ MANDATORY: Read `docs/TERMINOLOGY.md` before any work** — this is the authoritative terminology reference. Use ONLY these terms in code, UI, docs, and communications.
 - **Supabase server client** lives in `apps/web/src/lib/supabase/` (NOT in shared packages — Next.js `cookies()` can't run from packages)
 
 ### Credentials
@@ -1683,7 +1683,7 @@ pnpm db:seed
 | Workspace | **Base** | User workspace |
 | Training | **Growth** | Ally learning/improvement |
 
-**Full Hierarchy:** Pillars → Aspirations → Goals → Missions → Actions
+**Full Hierarchy:** Domain → Vision → Mission → Operation / Rhythm → Task
 
 ### Colors
 
@@ -2271,12 +2271,16 @@ pnpm db:studio       # Open database GUI
  TERMINOLOGY (USE CONSISTENTLY)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-HIERARCHY: Pillars → Aspirations → Goals → Missions → Actions
+HIERARCHY: Domain → Vision → Mission → Operation / Rhythm → Task
+
+⚠️  READ docs/TERMINOLOGY.md FOR FULL REFERENCE
 
 ❌ Agent       → ✅ Ally
 ❌ Agents      → ✅ Cohort
-❌ Mission     → ✅ Mission
-❌ Action        → ✅ Action
+❌ Project     → ✅ Operation
+❌ Routine     → ✅ Rhythm
+❌ Goal        → ✅ Mission
+❌ Action      → ✅ Task
 ❌ Dashboard   → ✅ Mission Control
 ❌ Create      → ✅ Recruit
 ❌ Run/Execute → ✅ Deploy

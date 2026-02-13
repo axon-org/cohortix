@@ -12,6 +12,7 @@ import {
   User as UserIcon,
   ChevronLeft,
   FolderKanban,
+  CheckSquare,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -21,6 +22,7 @@ const navigation = [
   { name: 'Allies', href: '/allies', icon: Bot },
   { name: 'Missions', href: '/missions', icon: Rocket },
   { name: 'Operations', href: '/operations', icon: FolderKanban },
+  { name: 'Tasks', href: '/tasks', icon: CheckSquare },
 ]
 
 interface SidebarProps {

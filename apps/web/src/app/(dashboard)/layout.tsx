@@ -10,15 +10,10 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const supabase = await createServerSupabaseClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
+  const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     redirect('/sign-in')
   }
-
   const currentUser = await getCurrentUser()
 
   return (

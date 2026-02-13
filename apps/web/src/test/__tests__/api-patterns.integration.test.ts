@@ -27,10 +27,10 @@ describe('API Route Patterns', () => {
       })
 
       const request = new Request('https://example.com/api/users')
-      const response = await handler(request)
+      const response = await handler(request) as Response
 
       expect(response.status).toBe(400)
-      const body = await response.json()
+      const body = await response.json() as any
       expect(body.type).toContain('bad-request')
       expect(body.errors).toBeDefined()
     })
@@ -41,10 +41,10 @@ describe('API Route Patterns', () => {
       })
 
       const request = new Request('https://example.com/api/protected')
-      const response = await handler(request)
+      const response = await handler(request) as Response
 
       expect(response.status).toBe(401)
-      const body = await response.json()
+      const body = await response.json() as any
       expect(body.title).toBe('Unauthorized')
     })
 
@@ -54,10 +54,10 @@ describe('API Route Patterns', () => {
       })
 
       const request = new Request('https://example.com/api/missions/mission-123')
-      const response = await handler(request)
+      const response = await handler(request) as Response
 
       expect(response.status).toBe(404)
-      const body = await response.json()
+      const body = await response.json() as any
       expect(body.detail).toContain('mission-123')
     })
   })

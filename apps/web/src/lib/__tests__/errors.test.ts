@@ -238,10 +238,10 @@ describe('withErrorHandler', () => {
     })
 
     const mockRequest = new Request('https://example.com/api/users/123')
-    const response = await handler(mockRequest)
+    const response = await handler(mockRequest) as Response
 
     expect(response.status).toBe(404)
-    const body = await response.json()
+    const body = await response.json() as any
     expect(body.title).toBe('Resource Not Found')
   })
 
@@ -251,15 +251,15 @@ describe('withErrorHandler', () => {
     })
 
     const mockRequest = new Request('https://example.com/api/users')
-    const response = await handler(mockRequest)
+    const response = await handler(mockRequest) as Response
 
     expect(response.status).toBe(200)
-    const body = await response.json()
+    const body = await response.json() as any
     expect(body.success).toBe(true)
   })
 
   it('should extract instance from request URL', async () => {
-    const handler = withErrorHandler(async (request: Request) => {
+    const handler = withErrorHandler(async (request: Request): Promise<NextResponse> => {
       throw new ForbiddenError()
     })
 

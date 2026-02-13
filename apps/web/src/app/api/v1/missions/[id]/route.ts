@@ -1,6 +1,7 @@
 /**
  * Individual Mission API Route - GET, PATCH, DELETE
- * Maps to `projects` table. Axon Codex v1.2 compliant.
+ * Maps to `missions` table (PPV Hierarchy: measurable goals with target dates).
+ * Axon Codex v1.2 compliant.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -12,6 +13,7 @@ import {
   ForbiddenError,
   NotFoundError,
 } from '@/lib/errors'
+import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
 import { validateRequest, validateData } from '@/lib/validation'
 import { updateMissionSchema, type UpdateMissionInput } from '@/lib/validations/mission'
 import { uuidSchema } from '@/lib/validation'
@@ -25,28 +27,6 @@ interface RouteContext {
 // ============================================================================
 
 async function getAuthContext() {
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
-    const supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
-    
-    const { data: org } = await supabase
-      .from('organizations')
-      .select('id')
-      .limit(1)
-      .single()
-    
-    return { supabase, organizationId: org?.id || '', userId: 'dev-bypass' }
-  }
-
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) throw new UnauthorizedError('Authentication required')
@@ -65,7 +45,7 @@ async function getAuthContext() {
 // GET /api/v1/missions/:id
 // ============================================================================
 
-export const GET = withErrorHandler(
+export const GET = withMiddleware(standardRateLimit, 
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId()
     logger.setContext({ correlationId })
@@ -76,7 +56,7 @@ export const GET = withErrorHandler(
     const { supabase, organizationId } = await getAuthContext()
 
     const { data: mission, error } = await supabase
-      .from('projects')
+      .from('missions')
       .select('*')
       .eq('id', missionId)
       .eq('organization_id', organizationId)
@@ -92,7 +72,7 @@ export const GET = withErrorHandler(
 // PATCH /api/v1/missions/:id
 // ============================================================================
 
-export const PATCH = withErrorHandler(
+export const PATCH = withMiddleware(standardRateLimit, 
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId()
     logger.setContext({ correlationId })
@@ -106,7 +86,7 @@ export const PATCH = withErrorHandler(
     const { supabase, organizationId } = await getAuthContext()
 
     const { data: existing } = await supabase
-      .from('projects')
+      .from('missions')
       .select('id')
       .eq('id', missionId)
       .eq('organization_id', organizationId)
@@ -114,22 +94,15 @@ export const PATCH = withErrorHandler(
     if (!existing) throw new NotFoundError('Mission', missionId)
 
     const updateData: Record<string, any> = {}
-    if (data.name !== undefined) updateData.name = data.name
+    if (data.name !== undefined) updateData.title = data.name
     if (data.description !== undefined) updateData.description = data.description
     if (data.status !== undefined) updateData.status = data.status
-    if (data.startDate !== undefined) updateData.start_date = data.startDate
     if (data.targetDate !== undefined) updateData.target_date = data.targetDate
-    if (data.goalId !== undefined) updateData.goal_id = data.goalId
-    if (data.color !== undefined) updateData.color = data.color
-    if (data.icon !== undefined) updateData.icon = data.icon
-    if (data.settings !== undefined) updateData.settings = data.settings
-
-    // Auto-set completed_at when status changes to completed
-    if (data.status === 'completed') updateData.completed_at = new Date().toISOString()
-    if (data.status && data.status !== 'completed') updateData.completed_at = null
+    if (data.visionId !== undefined) updateData.vision_id = data.visionId
+    if (data.progress !== undefined) updateData.progress = data.progress
 
     const { data: mission, error } = await supabase
-      .from('projects')
+      .from('missions')
       .update(updateData)
       .eq('id', missionId)
       .select()
@@ -149,7 +122,7 @@ export const PATCH = withErrorHandler(
 // DELETE /api/v1/missions/:id
 // ============================================================================
 
-export const DELETE = withErrorHandler(
+export const DELETE = withMiddleware(standardRateLimit, 
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId()
     logger.setContext({ correlationId })
@@ -160,20 +133,20 @@ export const DELETE = withErrorHandler(
     const { supabase, organizationId } = await getAuthContext()
 
     const { data: existing } = await supabase
-      .from('projects')
-      .select('id, name')
+      .from('missions')
+      .select('id, title')
       .eq('id', missionId)
       .eq('organization_id', organizationId)
       .single()
     if (!existing) throw new NotFoundError('Mission', missionId)
 
-    const { error } = await supabase.from('projects').delete().eq('id', missionId)
+    const { error } = await supabase.from('missions').delete().eq('id', missionId)
     if (error) {
       logger.error('Failed to delete mission', { correlationId, error: { message: error.message, code: error.code } })
       throw error
     }
 
-    logger.info('Mission deleted', { correlationId, missionId, missionName: existing.name })
+    logger.info('Mission deleted', { correlationId, missionId, missionTitle: existing.title })
     return new NextResponse(null, { status: 204 })
   }
 )

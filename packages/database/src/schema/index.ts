@@ -11,7 +11,7 @@ export * from './agent-assignments';
 export * from './cohorts'; // Groups of agents
 export * from './cohort-members'; // Agent-to-cohort memberships
 
-// Goals & Missions (PPV Hierarchy: Goals → Missions → Actions)
+// PPV Hierarchy: Domain → Vision → Mission → Operation/Rhythm → Task
 export * from './goals';
 // Note: Both missions.ts and projects.ts export the same types with legacy aliases
 // Only export from missions.ts to avoid duplicate exports
@@ -23,6 +23,8 @@ export * from './milestones';
 // Only export from actions.ts to avoid duplicate exports
 export * from './actions';
 export * from './comments';
+export * from './activity-log';
+export * from './insights';
 export * from './time-entries';
 
 // Knowledge Base

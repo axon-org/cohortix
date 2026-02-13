@@ -12,7 +12,7 @@ export default function AlliesPage() {
             Manage your AI agents and their capabilities.
           </p>
         </div>
-        <Button>
+        <Button variant="primary">
           <Plus className="w-4 h-4 mr-2" />
           New Ally
         </Button>

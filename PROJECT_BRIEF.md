@@ -86,7 +86,7 @@ Cohortix is an **Allies-as-a-Service (AaaS)** platform that enables humans to ma
 1. **Supabase over Clerk/Neon** — Unified platform for auth + database + realtime (ADR-001 pending)
 2. **Drizzle ORM over Prisma** — Type-safe, lightweight, better PostgreSQL support (ADR-002 pending)
 3. **Multi-tenant RLS Strategy** — Shared DB + row-level security for tenant isolation (ADR-003 pending)
-4. **Terminology:** Pillars → Aspirations → Goals → Missions → Actions (based on Pillars, Pipelines & Vaults)
+4. **Terminology:** Domain → Vision → Mission → Operation / Rhythm → Task (based on PPV Pro by August Bradley — see `docs/TERMINOLOGY.md`)
 5. **Agent Runtime Abstraction** — Clawdbot adapter (v1), future custom runtime (v2+)
 
 ---

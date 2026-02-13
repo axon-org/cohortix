@@ -40,7 +40,6 @@ export async function GET() {
       env: {
         hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
         hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-        bypassAuth: process.env.BYPASS_AUTH
       }
     })
   } catch (error: any) {

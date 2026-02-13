@@ -118,7 +118,7 @@ export function CohortModal({ open, onOpenChange, cohort }: CohortModalProps) {
         await updateMutation.mutateAsync({ id: cohort.id, data: payload })
       } else {
         const newCohort = await createMutation.mutateAsync(payload)
-        router.push(`/cohorts/${newCohort.data.id}`)
+        router.push(`/cohorts/${newCohort.id}`)
       }
 
       onOpenChange(false)

@@ -12,21 +12,6 @@ import { cookies } from 'next/headers';
  * Create Supabase client with server-side cookies
  */
 async function createClient() {
-  // DEV MODE: Use service role to bypass RLS when testing
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
-    return createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    );
-  }
-
   // Production: Use SSR client with cookies for auth
   const cookieStore = await cookies();
   
@@ -85,14 +70,14 @@ export async function getUserOrganization(userId: string) {
 
 /**
  * Dashboard KPI Metrics
- * Note: Database tables are 'projects' (Missions) and 'tasks' (Actions)
+ * Note: PPV Hierarchy - missions table (Missions), projects table (Operations), tasks table (Tasks)
  */
 export async function getDashboardKPIs(organizationId: string) {
   const supabase = await createClient();
   
-  // Total active missions (database table: projects)
+  // Total active missions (database table: missions)
   const { count: activeMissions } = await supabase
-    .from('projects')
+    .from('missions')
     .select('*', { count: 'exact', head: true })
     .eq('organization_id', organizationId)
     .eq('status', 'active');
@@ -249,19 +234,14 @@ export async function getActiveAlerts(organizationId: string) {
 
 /**
  * Active Missions Overview
- * Note: User-facing: "Missions", Database table: "projects"
+ * Note: PPV Hierarchy - User-facing: "Missions", Database table: "missions"
  */
 export async function getActiveMissions(organizationId: string, limit = 6) {
   const supabase = await createClient();
   
   const { data: missions, error } = await supabase
-    .from('projects')
-    .select(`
-      *,
-      client:clients(name, slug),
-      owner_agent:agents!projects_owner_id_fkey(name, avatar_url),
-      tasks(id, status)
-    `)
+    .from('missions')
+    .select('*')
     .eq('organization_id', organizationId)
     .eq('status', 'active')
     .order('created_at', { ascending: false })
@@ -272,25 +252,64 @@ export async function getActiveMissions(organizationId: string, limit = 6) {
     return [];
   }
   
-  // Calculate action statistics for each mission
-  const missionsWithStats = missions?.map((mission: any) => {
-    const actions = mission.tasks || [];
-    const totalActions = actions.length;
-    const completedActions = actions.filter((t: any) => t.status === 'done').length;
-    const inProgressActions = actions.filter((t: any) => t.status === 'in_progress').length;
-    
-    return {
-      ...mission,
-      stats: {
-        total: totalActions,
-        completed: completedActions,
-        inProgress: inProgressActions,
-        progress: totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0,
-      },
-    };
-  });
+  // For each mission, count linked operations and tasks
+  const missionsWithStats = await Promise.all(
+    (missions || []).map(async (mission: any) => {
+      // Count operations (projects) linked to this mission
+      const { count: operationsCount } = await supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true })
+        .eq('mission_id', mission.id);
+      
+      // Get all operations for this mission to count their tasks
+      const { data: operations } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('mission_id', mission.id);
+      
+      let totalActions = 0;
+      let completedActions = 0;
+      let inProgressActions = 0;
+      
+      if (operations && operations.length > 0) {
+        const operationIds = operations.map((op: any) => op.id);
+        
+        const { count: total } = await supabase
+          .from('tasks')
+          .select('*', { count: 'exact', head: true })
+          .in('project_id', operationIds);
+        
+        const { count: completed } = await supabase
+          .from('tasks')
+          .select('*', { count: 'exact', head: true })
+          .in('project_id', operationIds)
+          .eq('status', 'done');
+        
+        const { count: inProgress } = await supabase
+          .from('tasks')
+          .select('*', { count: 'exact', head: true })
+          .in('project_id', operationIds)
+          .eq('status', 'in_progress');
+        
+        totalActions = total || 0;
+        completedActions = completed || 0;
+        inProgressActions = inProgress || 0;
+      }
+      
+      return {
+        ...mission,
+        stats: {
+          operations: operationsCount || 0,
+          total: totalActions,
+          completed: completedActions,
+          inProgress: inProgressActions,
+          progress: mission.progress || 0,
+        },
+      };
+    })
+  );
   
-  return missionsWithStats || [];
+  return missionsWithStats;
 }
 
 /**

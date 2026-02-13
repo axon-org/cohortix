@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { RateLimitError } from './errors'
+import { RateLimitError, AppError } from './errors'
 import { logger } from './logger'
 
 export interface RateLimitConfig {
@@ -240,6 +240,15 @@ export const strictRateLimit: RateLimitConfig = {
 }
 
 /**
+ * Auth rate limit for authentication endpoints
+ * 20 requests per minute
+ */
+export const authRateLimit: RateLimitConfig = {
+  maxRequests: 20,
+  windowMs: 60 * 1000, // 1 minute
+}
+
+/**
  * Standard rate limit for most API endpoints
  * 100 requests per minute
  */
@@ -259,3 +268,121 @@ export const generousRateLimit: RateLimitConfig = {
 
 // Export store for testing
 export { store as rateLimitStore }
+
+// ============================================================================
+// Combined Middleware (Rate Limiting + Error Handling)
+// ============================================================================
+
+/**
+ * Combined rate limiting and error handling middleware
+ * 
+ * Wraps an API route handler with both rate limiting and RFC 7807 error handling.
+ * This is the recommended way to protect API routes.
+ * 
+ * Usage:
+ * ```ts
+ * import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
+ * 
+ * export const GET = withMiddleware(standardRateLimit, async (request) => {
+ *   // Your handler code
+ *   return NextResponse.json({ data: [] })
+ * })
+ * ```
+ */
+export function withMiddleware(
+  rateLimitConfig: RateLimitConfig,
+  handler: (request: NextRequest, context?: any) => Promise<NextResponse>
+) {
+  const rateLimiter = createRateLimiter(rateLimitConfig)
+
+  return async (request: NextRequest, context?: any): Promise<NextResponse> => {
+    try {
+      // Apply rate limiting first
+      await rateLimiter(request)
+      
+      // Then execute the handler
+      return await handler(request, context)
+    } catch (error) {
+      // Handle rate limit errors
+      if (error instanceof RateLimitError) {
+        return NextResponse.json(
+          error.toProblemDetails(request.nextUrl.pathname),
+          {
+            status: 429,
+            headers: {
+              'Content-Type': 'application/problem+json',
+              'Retry-After': String(error.extensions?.retryAfter || 60),
+              'X-RateLimit-Limit': String(rateLimitConfig.maxRequests),
+              'X-RateLimit-Remaining': '0',
+              'X-RateLimit-Reset': String(Date.now() + rateLimitConfig.windowMs),
+            },
+          }
+        )
+      }
+      
+      // Handle all other errors with RFC 7807 format
+      const instance = new URL(request.url).pathname
+      
+      // Handle AppError instances (all our custom errors)
+      if (error instanceof AppError) {
+        const problemDetails = error.toProblemDetails(instance)
+        return NextResponse.json(problemDetails, {
+          status: error.statusCode,
+          headers: {
+            'Content-Type': 'application/problem+json',
+          },
+        })
+      }
+      
+      // Handle generic Error instances
+      if (error instanceof Error) {
+        logger.error('Unexpected error', {
+          error: {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          },
+          instance,
+        })
+        
+        return NextResponse.json(
+          {
+            type: 'https://cohortix.com/errors/internal-server-error',
+            title: 'Internal Server Error',
+            status: 500,
+            detail: error.message,
+            instance,
+          },
+          {
+            status: 500,
+            headers: {
+              'Content-Type': 'application/problem+json',
+            },
+          }
+        )
+      }
+      
+      // Unknown error type
+      logger.error('Unknown error type', {
+        error: String(error),
+        instance,
+      })
+      
+      return NextResponse.json(
+        {
+          type: 'https://cohortix.com/errors/internal-server-error',
+          title: 'Internal Server Error',
+          status: 500,
+          detail: 'An unexpected error occurred',
+          instance,
+        },
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/problem+json',
+          },
+        }
+      )
+    }
+  }
+}

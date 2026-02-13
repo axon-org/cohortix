@@ -24,21 +24,6 @@ interface CohortFilters {
 }
 
 async function createClient() {
-  // DEV MODE: Use service role to bypass RLS when testing
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
-    return createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    );
-  }
-
   // Production: Use SSR client with cookies for auth
   const cookieStore = await cookies();
   return createServerClient(
@@ -218,7 +203,7 @@ export async function getCohortEngagementTimeline(
       const date = new Date();
       date.setDate(date.getDate() - (daysBack - i - 1));
       timeline.push({
-        date: date.toISOString().split('T')[0],
+        date: date.toISOString().split('T')[0]!,
         interaction_count: 0,
       });
     }

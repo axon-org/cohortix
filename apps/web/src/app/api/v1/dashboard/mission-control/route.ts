@@ -17,6 +17,7 @@ import {
   UnauthorizedError,
   ForbiddenError,
 } from '@/lib/errors'
+import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
 
 interface KPIData {
   kpis: {
@@ -33,66 +34,35 @@ interface KPIData {
   }
 }
 
-export const GET = withErrorHandler(async (request: NextRequest) => {
+export const GET = withMiddleware(standardRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId()
   logger.setContext({ correlationId })
 
-  let supabase: any
-  let organizationId: string
-  let userId: string | null = null
+  const supabase = await createClient()
+  // Get authenticated user
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
 
-  // DEV MODE: Bypass auth for testing
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    // Use service role key to bypass RLS
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
-    supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
-    
-    // Use first available organization for testing
-    const { data: org } = await supabase
-      .from('organizations')
-      .select('id')
-      .limit(1)
-      .single()
-    
-    organizationId = org?.id || ''
-    userId = 'dev-bypass'
-    logger.info('DEV MODE: Using test organization', { organizationId })
-  } else {
-    supabase = await createClient()
-    // Get authenticated user
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      throw new UnauthorizedError('Authentication required')
-    }
-
-    userId = user.id
-
-    // Get user's organization
-    const { data: membership, error: membershipError } = await supabase
-      .from('organization_memberships')
-      .select('organization_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (membershipError || !membership) {
-      throw new ForbiddenError('User is not associated with any organization')
-    }
-
-    organizationId = membership.organization_id
+  if (authError || !user) {
+    throw new UnauthorizedError('Authentication required')
   }
+
+  const userId = user.id
+
+  // Get user's organization
+  const { data: membership, error: membershipError } = await supabase
+    .from('organization_memberships')
+    .select('organization_id')
+    .eq('user_id', user.id)
+    .single()
+
+  if (membershipError || !membership) {
+    throw new ForbiddenError('User is not associated with any organization')
+  }
+
+  const organizationId = membership.organization_id
 
   logger.info('Fetching Mission Control KPIs', {
     correlationId,
@@ -135,12 +105,12 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const agents = agentsResult.data || []
 
   // Calculate current KPIs
-  const activeCohortsCount = cohorts.filter((c) => c.status === 'active').length
-  const atRiskCount = cohorts.filter((c) => c.status === 'at-risk').length
+  const activeCohortsCount = cohorts.filter((c: any) => c.status === 'active').length
+  const atRiskCount = cohorts.filter((c: any) => c.status === 'at-risk').length
   const totalAllies = agents.length
 
   // Calculate average engagement
-  const totalEngagement = cohorts.reduce((sum, cohort) => {
+  const totalEngagement = cohorts.reduce((sum: number, cohort: any) => {
     const engagement = parseFloat(cohort.engagement_percent || '0')
     return sum + engagement
   }, 0)
@@ -170,8 +140,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const prevAgents = prevAgentsResult.data || []
 
   // Calculate trends (percentage change)
-  const prevActiveCount = prevCohorts.filter((c) => c.status === 'active').length
-  const prevAtRiskCount = prevCohorts.filter((c) => c.status === 'at-risk').length
+  const prevActiveCount = prevCohorts.filter((c: any) => c.status === 'active').length
+  const prevAtRiskCount = prevCohorts.filter((c: any) => c.status === 'at-risk').length
   const prevAlliesCount = prevAgents.length
 
   const calculatePercentageChange = (current: number, previous: number): number => {

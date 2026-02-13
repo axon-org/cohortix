@@ -1,31 +1,33 @@
 # Cohortix Terminology — Authoritative Reference
 
-**Status:** APPROVED by Ahmad (2026-02-12)
+**Status:** APPROVED by Ahmad (2026-02-13)
 **Based on:** PPV Pro by August Bradley, adapted for Cohortix's dual human+agent model
 
 ---
 
-## PPV Hierarchy (Pillars, Pipelines, Vaults)
+## PPV Hierarchy (Domain → Vision → Mission → Operation/Rhythm → Task)
 
-Cohortix follows August Bradley's **PPV methodology** for organizing work:
+Cohortix follows August Bradley's **PPV methodology**, rebranded for clarity and UI-friendliness:
 
 ```
-Pillars (Life/Business Areas)
-  └─> Aspirations (Long-term visions)
-      └─> Goals (Measurable objectives)
-          └─> Missions (Executable projects)
-              └─> Actions (Individual tasks)
+Domain (life/business area)
+  └─> Vision (long-term aspiration, 3-5+ years)
+      └─> Mission (measurable goal with target date)
+          ├─> Operation (bounded project with start/end)
+          └─> Rhythm (recurring routine, no end date)
+              └─> Task (individual atomic action)
 ```
 
 ### Hierarchy Definitions
 
-| Level | Description | Example |
-|-------|-------------|---------|
-| **Pillar** | A fundamental area of life or business | "Personal Growth", "Business Development", "Health & Fitness" |
-| **Aspiration** | A long-term vision within a Pillar | "Become a thought leader in AI" |
-| **Goal** | A measurable objective with a target date | "Launch AI consulting practice by Q2 2026" |
-| **Mission** | A specific project to achieve a Goal | "Build Cohortix MVP with core features" |
-| **Action** | An individual task within a Mission | "Design database schema for multi-tenancy" |
+| Level | PPV Pro Original | Description | Human Example | Ally Example |
+|-------|-----------------|-------------|---------------|--------------|
+| **Domain** | Pillars & Purpose | Core life/expertise area that defines identity | "Family", "Health", "Business" | "Content Strategy", "Analytics" |
+| **Vision** | Life Aspirations | Big emotional north star — the WHY | "Achieve financial freedom" | "Become the best content strategist" |
+| **Mission** | Goals | Measurable outcome that serves a Vision | "Launch Cohortix and reach $50k MRR" | "Master Next.js 15 patterns" |
+| **Operation** | Projects | Bounded initiative with start/end | "Build auth system" (Feb 1-15) | "Research 50 competitor channels" |
+| **Rhythm** | Routines | Recurring habit with no end date | "Weekly business review" | "Daily learning cycle" |
+| **Task** | Actions | Atomic unit of work | "Draft email copy" | "Summarize article on hooks" |
 
 ---
 
@@ -44,22 +46,23 @@ Pillars (Life/Business Areas)
 
 | Concept | Cohortix Term | Definition | ❌ Don't Use |
 |---------|---------------|------------|--------------|
-| Major life/business area | **Pillar** | A fundamental domain of focus | Category, Area |
-| Long-term vision | **Aspiration** | Where you want to be in 3-5+ years | Vision, Dream |
-| Measurable objective | **Goal** | A specific, time-bound target | Objective, Target, OKR |
-| Executable project | **Mission** | A project that moves a Goal forward | Project, Initiative, Task |
-| Individual task | **Action** | A single executable step in a Mission | Task, To-do, Item |
-| Related Missions | **Campaign** (deprecated) | **Replaced by Goals** — no longer used | Workflow chain, Pipeline |
+| Major life/business area | **Domain** | Core area that defines identity | Pillar, Category, Area |
+| Long-term aspiration | **Vision** | Emotional north star — the WHY | Aspiration, Dream, Life Aspiration |
+| Measurable goal | **Mission** | Specific, time-bound outcome | Goal, Objective, Target, OKR |
+| Bounded project | **Operation** | Initiative with start/end date | Project, Initiative |
+| Recurring routine | **Rhythm** | Habit with no end date | Routine, Habit |
+| Individual task | **Task** | Atomic unit of work | Action, To-do, Item |
+| Related Missions | **Campaign** (deprecated) | **No longer used** | Workflow chain, Pipeline |
 
 ### Action Verbs
 
 | Concept | Cohortix Term | Definition | ❌ Don't Use |
 |---------|---------------|------------|--------------|
-| Starting a Mission | **Deploy** | "Deploy a Mission" | Run, Execute, Start |
+| Starting an Operation | **Deploy** | "Deploy an Operation" | Run, Execute, Start |
 | Creating an Ally | **Recruit** | "Recruit a new Ally" | Create, Spawn, Add |
-| Stopping/pausing | **Stand Down** | "Stand down this Mission" | Stop, Kill, Abort |
+| Stopping/pausing | **Stand Down** | "Stand down this Operation" | Stop, Kill, Abort |
 | Creating a Mission | **Launch** | "Launch a new Mission" | Create, Start |
-| Completing an Action | **Complete** | "Mark Action as complete" | Done, Finish |
+| Completing a Task | **Complete** | "Mark Task as complete" | Done, Finish |
 
 ### Knowledge & Memory (The "What They Know")
 
@@ -95,17 +98,18 @@ Pillars (Life/Business Areas)
 From abstract → concrete:
 
 ### Hierarchy Navigation
-- ✅ "This Mission supports your Goal: 'Launch AI consulting practice'"
+- ✅ "This Operation supports your Mission: 'Launch AI consulting practice'"
+- ✅ "This Mission rolls up to your Vision: 'Achieve financial freedom'"
 - ❌ "This project is part of campaign XYZ"
 
 ### Creating Work
-- ✅ "Deploy a Mission to your Cohort"
-- ✅ "Add Actions to break down this Mission"
+- ✅ "Deploy an Operation for your Cohort"
+- ✅ "Add Tasks to break down this Operation"
 - ❌ "Run a workflow with your agents"
 - ❌ "Create tasks for this project"
 
 ### Viewing Results
-- ✅ "Your Ally completed 3 Actions today and gained new Insights"
+- ✅ "Your Ally completed 3 Tasks today and gained new Insights"
 - ❌ "The agent finished tasks and updated its memory"
 
 ### Knowledge Growth
@@ -113,12 +117,12 @@ From abstract → concrete:
 - ❌ "The learning has been stored in the agent's long-term memory"
 
 ### Error States
-- ✅ "Mission paused — your Ally needs guidance"
+- ✅ "Operation paused — your Ally needs guidance"
 - ❌ "Workflow failed — agent encountered an error"
 
 ### PPV Context
-- ✅ "This Mission rolls up to your Aspiration: 'Become a thought leader in AI'"
-- ✅ "5 Actions remaining to complete this Mission"
+- ✅ "This Mission rolls up to your Vision: 'Become a thought leader in AI'"
+- ✅ "5 Tasks remaining to complete this Operation"
 - ❌ "This project is part of your pipeline"
 
 ---
@@ -131,7 +135,7 @@ From abstract → concrete:
 - Be encouraging — celebrate progress
 - Use simple words — avoid jargon
 - Be warm — Allies are helpers, not tools
-- Show hierarchy context — connect Actions → Missions → Goals → Aspirations
+- Show hierarchy context — connect Tasks → Operations → Missions → Visions → Domains
 
 ### Don't ❌
 - Don't use passive voice
@@ -149,47 +153,54 @@ From abstract → concrete:
 ## Rhythm Zone (Review Cadences)
 
 ```
-┌─────────────────────────────────────────────────┐
-│  COHORTIX TERMINOLOGY CHEAT SHEET               │
-├─────────────────────────────────────────────────┤
-│  PPV HIERARCHY:                                  │
-│  Pillar → Aspiration → Goal → Mission → Action  │
-│                                                  │
-│  ENTITY MAPPING:                                 │
-│  Agent        →  Ally                           │
-│  Agents       →  Cohort                         │
-│  Project      →  Mission                        │
-│  Task         →  Action                         │
-│  Campaign     →  [DEPRECATED - use Goal]        │
-│                                                  │
-│  ACTIONS:                                        │
-│  Run/Start    →  Deploy                         │
-│  Create Ally  →  Recruit                        │
-│  Dashboard    →  Mission Control                │
-│  Workspace    →  Base                           │
-│                                                  │
-│  KNOWLEDGE:                                      │
-│  Memory       →  Core Memory / Notes            │
-│  Knowledge    →  Expertise                      │
-│  Learnings    →  Insights                       │
-│  Skills       →  Talents                        │
-│  Evolution    →  Growth                         │
-│  Training     →  Reflection                     │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  COHORTIX TERMINOLOGY CHEAT SHEET                        │
+├──────────────────────────────────────────────────────────┤
+│  PPV HIERARCHY:                                          │
+│  Domain → Vision → Mission → Operation/Rhythm → Task    │
+│                                                          │
+│  PPV PRO → COHORTIX MAPPING:                             │
+│  Pillar          →  Domain                              │
+│  Life Aspiration →  Vision                              │
+│  Goal            →  Mission                             │
+│  Project         →  Operation                           │
+│  Routine         →  Rhythm                              │
+│  Action          →  Task                                │
+│                                                          │
+│  ENTITY MAPPING:                                         │
+│  Agent        →  Ally                                   │
+│  Agents       →  Cohort                                 │
+│  Dashboard    →  Mission Control                        │
+│  Workspace    →  Base                                   │
+│                                                          │
+│  ACTIONS:                                                │
+│  Run/Start    →  Deploy                                 │
+│  Create Ally  →  Recruit                                │
+│                                                          │
+│  KNOWLEDGE:                                              │
+│  Topic Vault  →  Intelligence                           │
+│  NeuroBits    →  Insight                                │
+│  Reviews      →  Debrief (daily/weekly/cycle)           │
+│  Skills       →  Talents                                │
+│  Evolution    →  Growth                                 │
+│  Training     →  Reflection                             │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## Migration Notes
 
-**As of 2026-02-11:**
-- **Projects** renamed to **Missions** (database table name unchanged)
-- **Tasks** renamed to **Actions** (database table name unchanged)
-- **Campaign** deprecated — **Goals** now serve this purpose
-- New hierarchy introduced: Pillars → Aspirations → Goals → Missions → Actions
+**As of 2026-02-12:**
+- Full PPV Pro hierarchy adopted: Domain → Vision → Mission → Operation/Rhythm → Task
+- PPV Pro terms rebranded for UI-friendliness (shorter, agent-compatible)
+- **Campaign** deprecated — no longer used
+- Database tables use new names (domains, visions, rhythms, intelligence, insights, debriefs)
+- Legacy tables: `goals` = Missions, `projects` = Operations (table names unchanged, user-facing terms updated)
 
-All UI labels, documentation, and user-facing text updated to reflect this terminology.
+**As of 2026-02-13:**
+- TERMINOLOGY.md fully aligned with approved hierarchy (was still showing old Pillar/Aspiration/Goal terms)
 
 ---
 
-*Last updated: 2026-02-11*
+*Last updated: 2026-02-13*

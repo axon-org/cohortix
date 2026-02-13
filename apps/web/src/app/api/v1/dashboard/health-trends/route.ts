@@ -13,6 +13,7 @@ import {
   UnauthorizedError,
   ForbiddenError,
 } from '@/lib/errors'
+import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
 import { validateData } from '@/lib/validation'
 import {
   healthTrendsQuerySchema,
@@ -26,7 +27,7 @@ interface DataPoint {
   totalMembers: number
 }
 
-export const GET = withErrorHandler(async (request: NextRequest) => {
+export const GET = withMiddleware(standardRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId()
   logger.setContext({ correlationId })
 
@@ -37,58 +38,31 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     searchParams
   ) as HealthTrendsQueryParams
 
-  let supabase: any
-  let organizationId: string
-  let userId: string
+  // Get authenticated user
+  const supabase = await createClient()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
 
-  // DEV MODE: Bypass auth for testing
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
-    supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
-    
-    const { data: org } = await supabase
-      .from('organizations')
-      .select('id')
-      .limit(1)
-      .single()
-    
-    organizationId = org?.id || ''
-    userId = 'dev-bypass'
-  } else {
-    // Get authenticated user
-    supabase = await createClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      throw new UnauthorizedError('Authentication required')
-    }
-
-    // Get user's organization
-    const { data: membership, error: membershipError } = await supabase
-      .from('organization_memberships')
-      .select('organization_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (membershipError || !membership) {
-      throw new ForbiddenError('User is not associated with any organization')
-    }
-
-    organizationId = membership.organization_id
-    userId = user.id
+  if (authError || !user) {
+    throw new UnauthorizedError('Authentication required')
   }
+
+  const userId = user.id
+
+  // Get user's organization
+  const { data: membership, error: membershipError } = await supabase
+    .from('organization_memberships')
+    .select('organization_id')
+    .eq('user_id', user.id)
+    .single()
+
+  if (membershipError || !membership) {
+    throw new ForbiddenError('User is not associated with any organization')
+  }
+
+  const organizationId = membership.organization_id
 
   logger.info('Fetching health trends', {
     correlationId,
@@ -145,14 +119,14 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     const dateStr = currentDate.toISOString().split('T')[0]!
 
     // Filter cohorts that existed at this date
-    const cohortsAtDate = (cohorts || []).filter((cohort) => {
+    const cohortsAtDate = (cohorts || []).filter((cohort: any) => {
       const createdAt = new Date(cohort.created_at)
       return createdAt <= currentDate
     })
 
-    const activeCohorts = cohortsAtDate.filter((c) => c.status === 'active').length
+    const activeCohorts = cohortsAtDate.filter((c: any) => c.status === 'active').length
 
-    const totalEngagement = cohortsAtDate.reduce((sum, cohort) => {
+    const totalEngagement = cohortsAtDate.reduce((sum: number, cohort: any) => {
       return sum + parseFloat(cohort.engagement_percent || '0')
     }, 0)
 
@@ -161,7 +135,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
         ? Math.round((totalEngagement / cohortsAtDate.length) * 100) / 100
         : 0
 
-    const totalMembers = cohortsAtDate.reduce((sum, cohort) => {
+    const totalMembers = cohortsAtDate.reduce((sum: number, cohort: any) => {
       return sum + (cohort.member_count || 0)
     }, 0)
 

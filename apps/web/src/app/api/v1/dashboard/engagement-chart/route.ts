@@ -7,61 +7,41 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { withErrorHandler, UnauthorizedError, ForbiddenError } from '@/lib/errors'
+import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
 
 interface EngagementDataPoint {
   date: string
   value: number
 }
 
-export const GET = withErrorHandler(async (request: NextRequest) => {
+export const GET = withMiddleware(standardRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId()
   logger.setContext({ correlationId })
 
   const { searchParams } = new URL(request.url)
   const days = parseInt(searchParams.get('days') || '30')
 
-  let supabase: any
-  let organizationId: string
+  const supabase = await createClient()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
 
-  // DEV MODE: Bypass auth for testing
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
-    supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-      }
-    )
-
-    const { data: org } = await supabase.from('organizations').select('id').limit(1).single()
-    organizationId = org?.id || ''
-  } else {
-    supabase = await createClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      throw new UnauthorizedError('Authentication required')
-    }
-
-    const { data: membership } = await supabase
-      .from('organization_memberships')
-      .select('organization_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (!membership) {
-      throw new ForbiddenError('No organization found')
-    }
-
-    organizationId = membership.organization_id
+  if (authError || !user) {
+    throw new UnauthorizedError('Authentication required')
   }
+
+  const { data: membership } = await supabase
+    .from('organization_memberships')
+    .select('organization_id')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!membership) {
+    throw new ForbiddenError('No organization found')
+  }
+
+  const organizationId = membership.organization_id
 
   // Fetch cohorts engagement data
   const { data: cohorts, error } = await supabase
@@ -87,19 +67,19 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     
     // Calculate average engagement for cohorts created up to this date
     const relevantCohorts = (cohorts || []).filter(
-      (c) => new Date(c.created_at) <= date
+      (c: any) => new Date(c.created_at) <= date
     )
 
     let avgEngagement = 0
     if (relevantCohorts.length > 0) {
-      const totalEngagement = relevantCohorts.reduce((sum, c) => {
+      const totalEngagement = relevantCohorts.reduce((sum: number, c: any) => {
         return sum + parseFloat(c.engagement_percent || '0')
       }, 0)
       avgEngagement = totalEngagement / relevantCohorts.length
     }
 
     dataPoints.push({
-      date: date.toISOString().split('T')[0],
+      date: date.toISOString().split('T')[0]!,
       value: Math.round(avgEngagement * 100) / 100,
     })
   }

@@ -12,6 +12,7 @@ import {
   ForbiddenError,
   NotFoundError,
 } from '@/lib/errors'
+import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
 import { validateRequest, validateData } from '@/lib/validation'
 import { updateAllySchema, type UpdateAllyInput } from '@/lib/validations/ally'
 import { uuidSchema } from '@/lib/validation'
@@ -25,28 +26,6 @@ interface RouteContext {
 // ============================================================================
 
 async function getAuthContext() {
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
-    const supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
-    
-    const { data: org } = await supabase
-      .from('organizations')
-      .select('id')
-      .limit(1)
-      .single()
-    
-    return { supabase, organizationId: org?.id || '', userId: 'dev-bypass' }
-  }
-
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) throw new UnauthorizedError('Authentication required')
@@ -65,7 +44,7 @@ async function getAuthContext() {
 // GET /api/v1/allies/:id
 // ============================================================================
 
-export const GET = withErrorHandler(
+export const GET = withMiddleware(standardRateLimit, 
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId()
     logger.setContext({ correlationId })
@@ -92,7 +71,7 @@ export const GET = withErrorHandler(
 // PATCH /api/v1/allies/:id
 // ============================================================================
 
-export const PATCH = withErrorHandler(
+export const PATCH = withMiddleware(standardRateLimit, 
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId()
     logger.setContext({ correlationId })
@@ -144,7 +123,7 @@ export const PATCH = withErrorHandler(
 // DELETE /api/v1/allies/:id
 // ============================================================================
 
-export const DELETE = withErrorHandler(
+export const DELETE = withMiddleware(standardRateLimit, 
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId()
     logger.setContext({ correlationId })
