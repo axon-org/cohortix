@@ -2,17 +2,17 @@ import postgres from 'postgres';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-// Get direct URL from environment - use pooler as fallback
-const directUrl = process.env.DATABASE_URL || 'postgresql://postgres.rfwscvklcokzuofyzqwx:c1wGxCYcgHa4kXulaeCrE6qqeZbB9@aws-0-us-east-1.pooler.supabase.com:6543/postgres';
+// Prefer DIRECT_URL for migrations, but allow DATABASE_URL as fallback.
+const databaseUrl = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 
-if (!directUrl) {
-  console.error('❌ DIRECT_URL not found in .env.local');
+if (!databaseUrl) {
+  console.error('❌ DIRECT_URL or DATABASE_URL not found in .env.local');
   process.exit(1);
 }
 
 console.log('🔌 Connecting to Supabase database...\n');
 
-const sql = postgres(directUrl, {
+const sql = postgres(databaseUrl, {
   max: 1,
   ssl: 'require',
 });

@@ -73,18 +73,6 @@ export async function getDashboardKPIs(): Promise<DashboardKPIs> {
   return response.data
 }
 
-export interface EngagementDataPoint {
-  date: string
-  value: number
-}
-
-export async function getEngagementChartData(days: number = 30): Promise<EngagementDataPoint[]> {
-  const response = await fetchApi<{ data: EngagementDataPoint[] }>(
-    `/dashboard/engagement-chart?days=${days}`
-  )
-  return response.data
-}
-
 // ============================================================================
 // Cohorts API
 // ============================================================================
@@ -343,25 +331,24 @@ export async function deleteAlly(id: string): Promise<void> {
 }
 
 // ============================================================================
-// Missions API (Measurable Outcomes - maps to goals table)
+// Missions API
 // ============================================================================
 
 export interface Mission {
   id: string
-  organization_id: string
-  client_id?: string
-  owner_type: 'user' | 'agent'
-  owner_id: string
-  created_by_type: 'user' | 'agent'
-  created_by_id: string
-  title: string
+  name: string
+  slug: string
   description?: string
-  status: 'not_started' | 'in_progress' | 'at_risk' | 'completed' | 'cancelled'
-  progress_percent: number
-  progress_auto_calculate: boolean
+  status: 'planning' | 'active' | 'on_hold' | 'completed' | 'archived'
+  owner_type: string
+  owner_id: string
+  start_date?: string
   target_date?: string
   completed_at?: string
-  key_results: any[]
+  goal_id?: string
+  color?: string
+  icon?: string
+  settings: Record<string, any>
   created_at: string
   updated_at: string
 }
@@ -376,9 +363,7 @@ export interface MissionQueryParams {
   limit?: number
   status?: Mission['status']
   search?: string
-  ownerId?: string
-  ownerType?: 'user' | 'agent'
-  sortBy?: 'title' | 'createdAt' | 'status' | 'targetDate' | 'progressPercent'
+  sortBy?: 'name' | 'createdAt' | 'status' | 'startDate' | 'targetDate'
   sortOrder?: 'asc' | 'desc'
 }
 
@@ -395,16 +380,14 @@ export async function getMissions(params?: MissionQueryParams): Promise<MissionL
 }
 
 export interface CreateMissionInput {
-  title: string
+  name: string
   description?: string
   status?: Mission['status']
-  clientId?: string
-  ownerType: 'user' | 'agent'
-  ownerId: string
+  startDate?: string
   targetDate?: string
-  keyResults?: any[]
-  progressPercent?: number
-  progressAutoCalculate?: boolean
+  color?: string
+  icon?: string
+  settings?: Record<string, any>
 }
 
 export async function getMission(id: string): Promise<Mission> {
@@ -424,90 +407,4 @@ export async function updateMission(id: string, data: Partial<CreateMissionInput
 
 export async function deleteMission(id: string): Promise<void> {
   await fetchApi(`/missions/${id}`, { method: 'DELETE' })
-}
-
-// ============================================================================
-// Operations API (Bounded Initiatives - maps to projects table)
-// ============================================================================
-
-export interface Operation {
-  id: string
-  organization_id: string
-  workspace_id?: string
-  client_id?: string
-  owner_type: 'user' | 'agent'
-  owner_id: string
-  name: string
-  slug: string
-  description?: string
-  status: 'planning' | 'active' | 'on_hold' | 'completed' | 'archived'
-  color?: string
-  icon?: string
-  start_date?: string
-  target_date?: string
-  completed_at?: string
-  goal_id?: string // Links to Mission (DB column name)
-  settings: Record<string, any>
-  created_at: string
-  updated_at: string
-}
-
-export interface OperationListResponse {
-  data: Operation[]
-  meta: { page: number; limit: number; total: number; totalPages: number }
-}
-
-export interface OperationQueryParams {
-  page?: number
-  limit?: number
-  status?: Operation['status']
-  search?: string
-  cohortId?: string
-  sortBy?: 'name' | 'createdAt' | 'status' | 'startDate' | 'targetDate'
-  sortOrder?: 'asc' | 'desc'
-}
-
-export async function getOperations(params?: OperationQueryParams): Promise<OperationListResponse> {
-  const searchParams = new URLSearchParams()
-  if (params?.page) searchParams.set('page', params.page.toString())
-  if (params?.limit) searchParams.set('limit', params.limit.toString())
-  if (params?.status) searchParams.set('status', params.status)
-  if (params?.search) searchParams.set('search', params.search)
-  if (params?.cohortId) searchParams.set('cohortId', params.cohortId)
-  if (params?.sortBy) searchParams.set('sortBy', params.sortBy)
-  if (params?.sortOrder) searchParams.set('sortOrder', params.sortOrder)
-  const query = searchParams.toString()
-  return fetchApi<OperationListResponse>(`/operations${query ? `?${query}` : ''}`)
-}
-
-export interface CreateOperationInput {
-  name: string
-  description?: string
-  status?: Operation['status']
-  cohortId?: string
-  missionId?: string
-  startDate?: string
-  targetDate?: string
-  color?: string
-  icon?: string
-  settings?: Record<string, any>
-}
-
-export async function getOperation(id: string): Promise<Operation> {
-  const response = await fetchApi<{ data: Operation }>(`/operations/${id}`)
-  return response.data
-}
-
-export async function createOperation(data: CreateOperationInput): Promise<Operation> {
-  const response = await fetchApi<{ data: Operation }>('/operations', { method: 'POST', body: JSON.stringify(data) })
-  return response.data
-}
-
-export async function updateOperation(id: string, data: Partial<CreateOperationInput>): Promise<Operation> {
-  const response = await fetchApi<{ data: Operation }>(`/operations/${id}`, { method: 'PATCH', body: JSON.stringify(data) })
-  return response.data
-}
-
-export async function deleteOperation(id: string): Promise<void> {
-  await fetchApi(`/operations/${id}`, { method: 'DELETE' })
 }

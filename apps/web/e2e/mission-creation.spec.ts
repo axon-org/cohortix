@@ -1,14 +1,9 @@
 /**
- * E2E Tests - Operation Creation Flow
+ * E2E Tests - Mission Creation Flow
  * Codex v1.2 Section 4.3
  * 
- * TERMINOLOGY (2026-02-12):
- * - Operation = Bounded initiative with start/end dates (DB: projects table)
- * - Mission = Measurable outcome (DB: goals table) - different concept
- * 
- * This test suite validates the Operation creation flow.
- * Tests critical operation creation user journey:
- * - Navigate to operation creation
+ * Tests critical mission (cohort) creation user journey:
+ * - Navigate to mission creation
  * - Fill form with valid data
  * - Submit and verify creation
  * - Handle validation errors
@@ -17,19 +12,19 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
-test.describe('Operation Creation Flow (Legacy: Mission)', () => {
+test.describe('Mission Creation Flow', () => {
   test.beforeEach(async ({ page }) => {
     // In a real scenario, authenticate first
-    // For now, we'll navigate to the operations page (legacy route: /missions)
+    // For now, we'll navigate to the missions page
     await page.goto('/')
   })
 
-  test.skip('should navigate to operation creation form', async ({ page }) => {
+  test.skip('should navigate to mission creation form', async ({ page }) => {
     // TODO: Implement authentication and navigation
     // This test is skipped until we have auth setup
     
-    // Look for "Create Operation" or "New Operation" button (legacy: "New Mission")
-    const createButton = page.locator('button:has-text("Create Operation"), button:has-text("New Operation"), button:has-text("New Mission"), a:has-text("Create Operation")')
+    // Look for "Create Mission" or "New Mission" button
+    const createButton = page.locator('button:has-text("Create Mission"), button:has-text("New Mission"), a:has-text("Create Mission")')
     
     // If button exists, click it
     const buttonCount = await createButton.count()

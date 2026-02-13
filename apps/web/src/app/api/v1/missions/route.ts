@@ -1,9 +1,6 @@
 /**
  * Missions API Route - GET (list) and POST (create)
- * Missions are measurable outcomes that serve Visions (PPV Goal level).
- * Maps to `goals` table. Axon Codex v1.2 compliant.
- * 
- * PPV Hierarchy: Mission (measurable outcome) → Operation (bounded initiative) → Task (atomic work)
+ * Maps to `projects` table. Axon Codex v1.2 compliant.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -22,6 +19,7 @@ import {
   type CreateMissionInput,
   type MissionQueryParams,
 } from '@/lib/validations/mission'
+import { generateSlug } from '@/lib/utils/cohort'
 
 // ============================================================================
 // GET /api/v1/missions
@@ -72,22 +70,20 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   logger.info('Fetching missions', { correlationId, userId, organizationId, query })
 
   let queryBuilder = supabase
-    .from('goals')
+    .from('projects')
     .select('*', { count: 'exact' })
     .eq('organization_id', organizationId)
 
   if (query.status) queryBuilder = queryBuilder.eq('status', query.status)
-  if (query.ownerType) queryBuilder = queryBuilder.eq('owner_type', query.ownerType)
-  if (query.ownerId) queryBuilder = queryBuilder.eq('owner_id', query.ownerId)
   if (query.search) {
     queryBuilder = queryBuilder.or(
-      `title.ilike.%${query.search}%,description.ilike.%${query.search}%`
+      `name.ilike.%${query.search}%,description.ilike.%${query.search}%`
     )
   }
 
   const orderColumn = query.sortBy === 'createdAt' ? 'created_at' :
+                     query.sortBy === 'startDate' ? 'start_date' :
                      query.sortBy === 'targetDate' ? 'target_date' :
-                     query.sortBy === 'progressPercent' ? 'progress_percent' :
                      query.sortBy
   queryBuilder = queryBuilder.order(orderColumn, { ascending: query.sortOrder === 'asc' })
 
@@ -135,25 +131,28 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   if (!membership) throw new ForbiddenError('User is not associated with any organization')
 
   const organizationId = membership.organization_id
+  const baseSlug = generateSlug(data.name)
+  const timestamp = Date.now().toString().slice(-6)
+  const slug = `${baseSlug}-${timestamp}`
 
-  logger.info('Creating mission', { correlationId, userId: user.id, organizationId, missionTitle: data.title })
+  logger.info('Creating mission', { correlationId, userId: user.id, organizationId, missionName: data.name })
 
   const { data: mission, error } = await supabase
-    .from('goals')
+    .from('projects')
     .insert({
       organization_id: organizationId,
-      client_id: data.clientId || null,
-      owner_type: data.ownerType,
-      owner_id: data.ownerId,
-      created_by_type: 'user',
-      created_by_id: user.id,
-      title: data.title,
+      name: data.name,
+      slug,
       description: data.description || null,
       status: data.status,
+      owner_type: 'user',
+      owner_id: user.id,
+      start_date: data.startDate || null,
       target_date: data.targetDate || null,
-      key_results: data.keyResults,
-      progress_percent: data.progressPercent,
-      progress_auto_calculate: data.progressAutoCalculate,
+      goal_id: data.goalId || null,
+      color: data.color || null,
+      icon: data.icon || null,
+      settings: data.settings || {},
     })
     .select()
     .single()

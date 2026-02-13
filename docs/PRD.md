@@ -2,16 +2,14 @@
 
 **Version:** 2.0 — PPV Pro Aligned
 **Status:** Draft / Ready for Review  
-**Date:** 2026-02-12 (Updated from 2026-02-05)
+**Date:** 2026-02-05  
 **Owner:** August (Mission Manager)  
 **Stakeholders:** Ahmad (CEO), Idris (Architect), Alim (CEO Proxy)
 
 ---
 
 ## 1. Executive Summary
-Cohortix is an **Allies-as-a-Service (AaaS)** platform designed to bridge the gap between human strategic direction and autonomous AI execution. While existing productivity tools (ClickUp, Linear, Notion) focus on human-to-human collaboration, Cohortix is built from the ground up to enable humans and AI allies to work together using a **unified PPV Pro-aligned productivity system**. The platform provides a central interface called **Mission Control** for managing Domains, Visions, Missions, Operations, and Tasks, with automated Intelligence capture and review Debriefs — eventually evolving into a multi-tenant SaaS for external organizations.
-
-**Revolutionary concept:** Humans and allies use the SAME productivity hierarchy (Domain → Vision → Mission → Operation/Rhythm → Task).
+Cohortix is an **Allies-as-a-Service (AaaS)** platform designed to bridge the gap between human strategic direction and autonomous AI execution. While existing mission management tools (ClickUp, Linear) focus on human-to-human collaboration, Cohortix is built from the ground up to allow humans to manage a high-performing organization of AI allies. The platform provides a unified interface called **Mission Control** for goal tracking, mission orchestration, and organizational knowledge retention, eventually evolving into a multi-tenant SaaS for external organizations.
 
 ---
 
@@ -20,25 +18,23 @@ Cohortix is an **Allies-as-a-Service (AaaS)** platform designed to bridge the ga
 To create the world's first true "Agentic Operating System" where humans and AI allies collaborate as equals within a proven productivity framework (PPV Pro).
 
 ### Strategic Goals
-- **Unified Visibility:** Provide a single source of truth for all human and ally activities via Mission Control.
-- **Autonomous Execution:** Enable allies to break down Missions into Operations and Tasks without human hand-holding.
-- **Equal Partnership:** Allies can have their own Domains, Visions, and Missions — not just execute human work.
-- **Knowledge Persistence:** Automatically capture Insights and organize into Intelligence topics during work.
-- **Multi-Tenant Scalability:** Build a foundation that supports multiple organizations (HQs), each with their own isolated ally workforce (cohort).
+- **Unified Visibility:** Provide a single source of truth for all ally activities via Mission Control.
+- **Autonomous Execution:** Enable allies to break down goals into goals and missions without human hand-holding.
+- **Knowledge Persistence:** Automatically capture and categorize every insight gained by allies during mission execution.
+- **Multi-Tenant Scalability:** Build a foundation that supports multiple organizations, each with their own isolated ally workforce (cohort).
 - **Platform Independence:** Transition from a Clawdbot-dependent UI to a standalone ally runtime environment.
 
 ---
 
 ## 3. User Personas
 ### 3.1 Human Users
-*   **Ahmad (The Visionary/CEO):** Sets high-level Visions and Missions, monitors organizational health via Debriefs, provides strategic feedback.
-*   **Organizational Admin:** Manages user access, multi-tenant settings (HQs), and ally provisioning (recruiting).
-*   **External Clients (Future):** View-only or restricted access to track progress on their specific Missions.
+*   **Ahmad (The Visionary/CEO):** Sets high-level goals, monitors organizational health, and provides strategic feedback.
+*   **Organizational Admin:** Manages user access, multi-tenant settings, and ally provisioning (recruiting).
+*   **External Clients (Future):** View-only or restricted access to track progress on their specific goals.
 
 ### 3.2 AI Allies (Digital Teammates)
-*   **Mission Manager Allies:** Receive Missions from humans, break them into Operations and Tasks, coordinate specialist allies.
-*   **Specialist Allies (Dev, Design, Research):** Execute specific Tasks, report progress, contribute Insights to Intelligence.
-*   **Autonomous Allies (Future):** Set their own Visions and Missions based on observations, propose work to humans.
+*   **Mission Manager Allies:** Receive goals from humans, create goals/missions, and assign work to specialists.
+*   **Specialist Allies (Dev, Design, Research):** Execute specific missions, report progress, and contribute to the intel base.
 
 ### 3.3 System Entities
 *   **The Orchestrator:** The backend logic that handles state transitions, dependency checking, and ally-to-ally communication.
@@ -51,9 +47,9 @@ To create the world's first true "Agentic Operating System" where humans and AI 
 - **Identity Isolation:** Users and data must be strictly scoped to a `TenantID` (HQ).
 - **Role-Based Access Control (RBAC):**
     - `Owner`: Full access to billing, users, and all data.
-    - `Manager`: Can create Missions, Operations, and manage allies.
-    - `Contributor (Ally)`: Can update Tasks, add Insights, and view assigned Missions.
-    - `Viewer`: Read-only access to specific Missions.
+    - `Manager`: Can create goals, goals, and manage allies.
+    - `Contributor (Ally)`: Can update missions, add intel, and view assigned goals.
+    - `Viewer`: Read-only access to specific goals.
 - **Invite System:** Admin-driven manual invite links for early-stage control.
 
 ### 4.2 Ally Directory & Management
@@ -74,108 +70,22 @@ To create the world's first true "Agentic Operating System" where humans and AI 
   - Rhythms (recurring habits they maintain)
   - Tasks (atomic work units they complete)
 
-### 4.3 The Alignment Zone (Productivity Hierarchy)
-
-**Core hierarchy:** Domain → Vision → Mission → Operation / Rhythm → Task
-
-#### 4.3.1 Domains
-- **Definition:** Core life/expertise areas that define identity
-- **Examples:**
-  - Human: "Family", "Health", "Business", "Learning"
-  - Ally: "Content Strategy", "Full-Stack Development", "Analytics"
-- **Features:**
-  - Create/edit/archive Domains
-  - Assign Domains to users and allies
-  - Domain-based filtering in Mission Control
-  - Domain health metrics (activity level, Mission completion rate)
-- **UI:**
-  - Domain cards with icon, color, description
-  - "Add Domain" flow with templates
-  - Domain selector in Mission/Operation/Rhythm creation
-
-#### 4.3.2 Visions
-- **Definition:** Big emotional north stars — the WHY behind everything
-- **Examples:**
-  - Human: "Achieve financial freedom", "Build a $10M company"
-  - Ally: "Become the best content strategist", "Master full-stack patterns"
-- **Features:**
-  - Create/edit Visions linked to Domains
-  - Track Missions that serve each Vision
-  - Vision dashboard showing progress toward aspirational goals
-  - Vision health: Are you working on it? (activity indicator)
-- **UI:**
-  - Inspirational vision cards with imagery
-  - "Why This Matters" description field
-  - Vision → Mission connection visualization
-
-#### 4.3.3 Missions
-- **Definition:** Measurable outcomes that serve a Vision (replaces "Goal" from v1)
-- **Examples:**
-  - Human: "Grow Filmzya to $50k MRR", "Launch Cohortix MVP"
-  - Ally: "Master Next.js 15 patterns", "Complete 50 content audits"
-- **Features:**
-  - Create Missions linked to Visions and Domains
-  - Success criteria and measurable outcomes
-  - Timeline and milestones
-  - Mission status: Planning, Active, Blocked, Accomplished
-  - Mission health meter (on track / at risk / blocked)
-  - Automatic breakdown into Operations and Tasks
-- **UI:**
-  - Mission cards with progress indicators
-  - Mission detail view with Operations/Tasks breakdown
-  - Mission timeline (Gantt-style visualization)
-
-#### 4.3.4 Operations
-- **Definition:** Bounded initiatives with start/end that achieve a Mission (replaces "Project" from v1)
-- **Examples:**
-  - Human: "Build welcome email sequence", "Launch marketing campaign"
-  - Ally: "Research 50 competitor channels", "Build auth system"
-- **Features:**
-  - Create Operations linked to Missions
-  - Start/end dates, milestones
-  - Task breakdown and assignment
-  - Operation status: Todo, In Progress, Review, Done
-  - Dependencies (Operation B cannot start until Operation A is Done)
-- **UI:**
-  - Operation cards in Kanban board
-  - Operation detail with task list
-  - Dependency visualization
-
-#### 4.3.5 Rhythms
-- **Definition:** Recurring habits with no end date that sustain a Mission (new feature)
-- **Examples:**
-  - Human: "Weekly business review", "Daily standup"
-  - Ally: "Daily learning cycle", "Weekly skill assessment"
-- **Features:**
-  - Create Rhythms linked to Missions
-  - Recurrence patterns (daily, weekly, monthly)
-  - Consistency tracking (streak counter)
-  - Rhythm status: Active, Paused, Skipped
-  - Task templates for each occurrence
-- **UI:**
-  - Rhythm cards with consistency indicators
-  - Calendar view for scheduled occurrences
-  - "Complete today's Rhythm" quick actions
-
-#### 4.3.6 Tasks
-- **Definition:** Atomic unit of work within an Operation or Rhythm (replaces "Mission" from v1)
-- **Examples:**
-  - "Draft email copy", "Implement login form", "Summarize article"
-- **Features:**
-  - Create Tasks within Operations or Rhythms
-  - Rich text descriptions, attachments
-  - Task status: Todo, In Progress, Review, Done
-  - Assignment to humans or allies
-  - Time estimates and tracking
-  - Checklist support (sub-tasks)
-- **UI:**
-  - Task cards in Kanban or list view
-  - Quick task creation (inline add)
-  - Drag-and-drop between statuses
+### 4.3 Goal & Goal Hierarchy
+- **Goals:** High-level objectives set by Humans (e.g., "Launch Marketing Goal").
+- **Goals:** Automatically generated by PM Allies from Goals. Includes timelines and milestones.
+- **Missions & Sub-missions:** The atomic units of work. Supports rich text, attachments, and status (Todo, In Progress, Review, Done).
+- **Dependencies:** Linear blocking (Mission B cannot start until Mission A is "Done").
 
 ### 4.4 Views (Mission Control)
+- **Kanban Board:** Primary view for mission status management.
+- **List View:** High-density table for bulk management and filtering.
+- **Timeline (Gantt):** Visualizing goal schedules and dependency chains.
+- **Global Intel Feed:** Real-time stream of insights being added across the organization.
 
-Mission Control is the central dashboard for all work visibility.
+### 4.5 Automated Intel Base
+- **Insight Capture:** Every time an ally completes a mission, it must summarize "Key Learnings."
+- **Semantic Search:** Users can search the intel using natural language (e.g., "What did we learn about Vercel deployment issues?").
+- **Intel Linking:** Every intel entry links back to the original Mission/Goal/Ally that generated it.
 
 - **Dashboard View:** High-level overview
   - Active Missions across all Domains
@@ -397,50 +307,57 @@ Allies grow expertise over time through structured learning.
   - **Phase 1:** Schema fields present, not actively decaying
   - **Phase 2:** Background jobs reduce relevance over time for unused Intelligence
 
+### 4.10 Client Management & Scoped Knowledge
+- **Client Entity:** Organizations can manage multiple clients
+  - Client profiles with industry, contact info, metadata
+  - Client-specific missions, goals, and goals
+  - Client assignment to agents (agents work on specific client accounts)
+  - Segregated knowledge bases per client
+- **Scoped Knowledge Base Architecture:** Three-tier knowledge scoping
+  - **Company-level knowledge:** Available to all agents (e.g., "How we deploy apps")
+  - **Client-level knowledge:** Only for agents assigned to that client (e.g., "Client X's brand guidelines")
+  - **Mission-level knowledge:** Specific to a mission within a client (e.g., "Mission Y's API structure")
+  - RLS policies ensure agents only access knowledge for clients they're assigned to
+- **Knowledge Retrieval with Scope Resolution:** Smart scope hierarchy
+  - Agent searches knowledge → System checks mission → client → company layers
+  - Most specific knowledge surfaced first
+  - Prevents knowledge leakage between clients
+- **Memory Decay System (Schema Support in Phase 1, Active in Phase 2):**
+  - **Relevance Scoring:** Knowledge entries have `relevance_score` (0.0-1.0, default 1.0)
+  - **Access Tracking:** Track `access_count`, `last_accessed_at` for usage patterns
+  - **Helpfulness Signals:** `helpful_count`, `unhelpful_count` from agent feedback
+  - **Decay Prevention:** `decay_disabled` boolean for evergreen knowledge
+  - **Phase 1:** Schema fields present, not actively decaying
+  - **Phase 2:** Background jobs reduce relevance over time for unused knowledge
+
 ---
 
 ## 5. User Stories
 
 | Role | Requirement | Benefit |
 | :--- | :--- | :--- |
-| **Human CEO** | As Ahmad, I want to set a "Vision" in my Business Domain. | So that all my Missions align with my long-term aspirations. |
-| **Human CEO** | As Ahmad, I want to create a "Mission" with measurable outcomes. | So that I can track progress toward my Visions. |
-| **Human CEO** | As Ahmad, I want to see a "Health Meter" for each Mission. | So that I can instantly identify which Missions are blocked or at risk. |
-| **AI Ally** | As a PM Ally, I want to break down a Mission into Operations and Tasks. | So that I can coordinate specialist allies effectively. |
-| **AI Ally** | As an Ally, I want to have my own Domains and Visions. | So that I can grow as a specialist and propose relevant work. |
-| **AI Ally** | As an Ally, I want to propose Missions based on my observations. | So that I can proactively suggest improvements (e.g., "test coverage dropped, proposing Mission to fix it"). |
-| **Human CEO** | As Ahmad, I want to approve/reject/modify ally-proposed Missions. | So that I maintain strategic control while benefiting from ally insights. |
+| **Human CEO** | As Ahmad, I want to set a "Goal" in natural language. | So that I don't have to manually create 50 missions for my allies. |
+| **Human CEO** | As Ahmad, I want to see a "Health Meter" for each goal. | So that I can instantly identify which goals are blocked or at risk. |
+| **AI Ally** | As a PM Ally, I want to create a goal structure from a goal. | So that I can coordinate specialist allies effectively. |
+| **AI Ally** | As an Ally, I want to propose goals based on my observations. | So that I can proactively suggest improvements (e.g., "test coverage dropped, proposing goal to fix it"). |
+| **Human CEO** | As Ahmad, I want to approve/reject/modify ally-proposed goals. | So that I maintain strategic control while benefiting from ally insights. |
 | **Admin** | As an Admin, I want to invite a new HQ (organization). | So that we can begin scaling the platform as a SaaS. |
 | **Human User** | As a user, I want to search the Intelligence with semantic understanding. | So that I can leverage past ally findings with context and relationships. |
 | **AI Ally** | As an Ally, I want to build and refine Intelligence continuously. | So that my expertise grows over time, not just on Task completion. |
 | **AI Ally** | As an Ally, I want to maintain a "Daily Learning" Rhythm. | So that I systematically improve my capabilities. |
 | **Human CEO** | As Ahmad, I want to track ally expertise growth over time. | So that I can see measurable ROI on ally evolution. |
-| **Human User** | As a user, I want to complete a Daily Debrief. | So that I can reflect on my day and plan tomorrow. |
-| **Human CEO** | As Ahmad, I want to conduct a Weekly Debrief. | So that I can review Mission health and adjust strategy. |
-| **Human User** | As a user, I want to track my Rhythm consistency. | So that I can build sustainable habits (e.g., weekly reviews). |
 | **Human Admin** | As an Admin, I want to create and manage client profiles. | So that I can organize work by client and maintain client-specific context. |
-| **Human Manager** | As a Manager, I want to assign allies to specific clients. | So that allies only access Intelligence and Missions for clients they work on. |
-| **AI Ally** | As an Ally, I want to search Intelligence scoped to my assigned clients. | So that I only see relevant Intelligence for the clients I'm working with. |
+| **Human Manager** | As a Manager, I want to assign agents to specific clients. | So that agents only access knowledge and missions for clients they work on. |
+| **AI Ally** | As an Ally, I want to search knowledge scoped to my assigned clients. | So that I only see relevant knowledge for the clients I'm working with. |
 | **Human CEO** | As Ahmad, I want to ensure client data remains segregated. | So that sensitive client information never leaks between accounts. |
-| **AI Ally** | As an Ally, I want Intelligence to decay over time if unused. | So that outdated information doesn't pollute my search results (Phase 2). |
+| **AI Ally** | As an Ally, I want knowledge to decay over time if unused. | So that outdated information doesn't pollute my search results (Phase 2). |
 
 ---
 
 ## 6. Acceptance Criteria
-
-### Feature: Mission-to-Operation Conversion
-- Given a Mission input, the system must prompt an Ally to generate at least 3 Operations.
-- The resulting Operations must be linked to the Mission ID.
-
-### Feature: Domain-Based Organization
-- Every Vision must belong to a Domain.
-- Every Mission must belong to a Vision (and inherit its Domain).
-- Filtering by Domain must show all child entities (Visions, Missions, Operations, Tasks).
-
-### Feature: Rhythm Consistency Tracking
-- Rhythms must track completion streaks.
-- Missing a Rhythm occurrence must break the streak.
-- Users can "skip" a Rhythm without breaking the streak (e.g., planned vacation).
+### Feature: Goal-to-Goal Conversion
+- Given a Goal input, the system must prompt an Ally to generate at least 3 Missions.
+- The resulting Goal must be linked to the Goal ID.
 
 ### Feature: RBAC Isolation
 - A user from HQ A must receive a 403 error if attempting to access a Mission ID belonging to HQ B via direct URL.
@@ -465,7 +382,7 @@ Allies grow expertise over time through structured learning.
 - **Security:** Data encryption at rest and in transit (AES-256, TLS 1.3).
 - **Scalability:** Architecture must support up to 1,000 concurrent allies per HQ.
 - **Reliability:** 99.9% uptime for the UI and API layer.
-- **Auditability:** Every change to a Task, Operation, or Mission must be logged with a timestamp and Actor ID.
+- **Auditability:** Every change to a mission or goal must be logged with a timestamp and Actor ID.
 
 ---
 
@@ -485,59 +402,41 @@ Allies grow expertise over time through structured learning.
 | In Scope | Out of Scope |
 | :--- | :--- |
 | Auth & Invite System (Manual) | Public Self-Signup |
-| Ally Directory (Profiles/Status/Domains/Visions) | Ally Training/Fine-tuning UI |
-| **Domains & Visions** | Advanced Vision Templates |
-| **Missions (replaces Goals)** | Complex Automated Missions (e.g., Zapier-style) |
-| **Operations (replaces Projects) & Tasks** | Native Mobile Apps (Web only) |
-| **Rhythms (recurring habits)** | Advanced Rhythm Analytics |
-| Kanban Board, List View, Timeline | Calendar View (future) |
+| Ally Directory (Profiles/Status) | Ally Training/Fine-tuning UI |
+| Goals & Kanban Board | Native Mobile Apps (Web only) |
+| Missions/Sub-missions & Dependencies | Complex Automated Goals (e.g., Zapier-style) |
 | Threaded Comments & @Mentions | Real-time Video/Voice Chat |
-| **Daily/Weekly/Cycle Debriefs** | AI-Powered Debrief Recommendations |
-| **Bidirectional Mission Setting (Human + Ally proposals)** | Automated Mission Approval |
-| **Living Intelligence (Graph relationships)** | Visual Knowledge Graph UI (v2.0) |
-| **Insight Versioning & Evolution** | Advanced Analytics/BI Dashboards |
-| **Cross-Ally Intelligence Sharing** | Intelligence Marketplace |
-| **Basic Ally Evolution (Learning materials ingestion)** | Third-party Integrations (GitHub/Figma) |
-| **Expertise Tracking (Skill matrix)** | AI-Powered Learning Recommendations |
-| **Daily Evolution Rhythms** | Advanced Learning Path Recommendations |
+| **Bidirectional Goal Setting (Human + Ally proposals)** | Advanced Goal Templates |
+| **Ally Goal Approval Workflow** | Automated Goal Approval |
+| **Living Knowledge Base (Graph relationships)** | Visual Knowledge Graph UI (v2.0) |
+| **Knowledge Versioning & Evolution** | Advanced Analytics/BI Dashboards |
+| **Cross-Ally Knowledge Sharing** | Knowledge Marketplace |
+| **Basic Agent Evolution (Learning materials ingestion)** | Third-party Integrations (GitHub/Figma) |
+| **Expertise Tracking (Skill matrix)** | Advanced Learning Path Recommendations |
+| **Daily Evolution Sessions** | AI-Powered Learning Recommendations |
 | **Client Management (Profiles, Assignment, RLS)** | Client-level Billing & Usage Analytics |
-| **Scoped Intelligence (Company/Client/Mission layers)** | Visual Intelligence Scope Explorer |
+| **Scoped Knowledge Base (Company/Client/Mission layers)** | Visual Knowledge Scope Explorer |
 | **Memory Decay Schema Fields (not active)** | Active Memory Decay Pipeline |
 | Clawdbot Notification Sync | Real-time Collaboration Features |
 
 ---
 
 ## 10. Success Metrics
-
-### Ally Autonomy & Proactivity
-- **Ally Autonomy Rate:** % of Operations created by allies vs. humans (Target: > 80%).
-- **Ally Proactivity Rate:** % of Missions proposed by allies vs. humans (Target: > 30%).
-- **Mission Approval Rate:** % of ally-proposed Missions approved by humans (Target: > 60%).
-
-### Knowledge & Learning
-- **Time to Information:** Average time a human takes to find a historical Insight (Target: < 10 seconds).
-- **Intelligence Reuse Rate:** % of Operations where allies reference existing Intelligence (Target: > 50%).
-- **Knowledge Graph Growth:** Number of Insights + relationships added per week.
+- **Ally Autonomy Rate:** % of missions created by allies vs. humans (Target: > 80%).
+- **Ally Proactivity Rate:** % of goals proposed by allies vs. humans (Target: > 30%).
+- **Goal Approval Rate:** % of ally-proposed goals approved by humans (Target: > 60%).
+- **Time to Information:** Average time a human takes to find a historical goal insight (Target: < 10 seconds).
+- **Knowledge Reuse Rate:** % of missions where allies reference existing knowledge (Target: > 50%).
+- **Knowledge Graph Growth:** Number of knowledge entries + relationships added per week.
 - **Ally Expertise Growth:** Average skill proficiency increase per ally per month (Target: +5 points).
-- **Evolution Session Completion:** % of scheduled evolution Rhythms completed (Target: > 90%).
-- **Learning ROI:** Correlation between learning hours and Task success rate.
-
-### Productivity & Execution
-- **Mission Velocity:** Average time from Mission creation to Mission completion.
-- **Operation Velocity:** Average time from Operation creation to Operation completion.
-- **Rhythm Consistency:** Average streak length for user and ally Rhythms (Target: > 30 days).
-- **Debrief Completion Rate:** % of Daily/Weekly Debriefs completed (Target: > 80% daily, > 90% weekly).
-
-### Client & Multi-Tenancy
-- **Client Segregation Compliance:** % of Intelligence access attempts correctly scoped (Target: 100%).
-- **Intelligence Scope Distribution:** Ratio of company/client/mission-level Insights.
-- **Intelligence Relevance (Phase 2):** Average relevance score of accessed Intelligence (Target: > 0.7).
-- **Memory Decay Efficiency (Phase 2):** % reduction in search time due to irrelevant Intelligence removal (Target: > 20%).
-
-### Engagement
-- **Daily Active Users (DAU)** and **Daily Active Allies (DAA)**.
-- **Average session duration** in Mission Control.
-- **Feature adoption rates** (Domains, Visions, Rhythms, Debriefs).
+- **Evolution Session Completion:** % of scheduled evolution sessions completed (Target: > 90%).
+- **Learning ROI:** Correlation between learning hours and mission success rate.
+- **Client Segregation Compliance:** % of knowledge access attempts correctly scoped (Target: 100%).
+- **Knowledge Scope Distribution:** Ratio of company/client/mission-level knowledge entries.
+- **Knowledge Relevance (Phase 2):** Average relevance score of accessed knowledge (Target: > 0.7).
+- **Memory Decay Efficiency (Phase 2):** % reduction in search time due to irrelevant knowledge removal (Target: > 20%).
+- **Engagement:** Daily Active Users (DAU) and Daily Active Allies (DAA).
+- **Goal Velocity:** Average time from Goal creation to Goal completion.
 
 ---
 
@@ -545,7 +444,7 @@ Allies grow expertise over time through structured learning.
 
 | Risk | Impact | Mitigation |
 | :--- | :--- | :--- |
-| **Ally Hallucinations** | High | Implementation of a "Human-in-the-loop" review step for critical Operation structures. |
+| **Ally Hallucinations** | High | Implementation of a "Human-in-the-loop" review step for critical goal structures. |
 | **Multi-tenant Data Leak** | Critical | Strict Row-Level Security (RLS) in the database and automated security testing. |
 | **API Rate Limits (LLMs)** | Medium | Implement robust queuing and caching layers for ally communications. |
 | **High Latency** | Low | Optimized database indexing and edge-cached frontend. |
@@ -596,10 +495,9 @@ Allies grow expertise over time through structured learning.
 - [ ] Multi-tenant isolation verified (User A cannot see User B's allies)
 - [ ] Service layer handles all business logic (not route handlers)
 
-**Phase 3 (Alignment Zone) Verification:**
-- [ ] Domains, Visions, Missions, Operations, Rhythms, Tasks can all be created
-- [ ] Hierarchy is enforced (Mission requires Vision, Operation requires Mission)
-- [ ] Dependencies work (Operation B blocked until Operation A is Done)
+**Phase 3 (Goal & Goal Hierarchy) Verification:**
+- [ ] Goals can be created and linked to goals
+- [ ] Missions support dependencies
 - [ ] Audit logs capture all changes
 
 **Phase 4 (Mission Control Views) Verification:**
@@ -641,8 +539,8 @@ Allies grow expertise over time through structured learning.
 | Pattern | Application in Cohortix | Priority |
 |---------|------------------------|----------|
 | **JWKS JWT Validation** | API key validation, service auth, webhooks | Phase 1 |
-| **Cursor Pagination** | All list endpoints (Missions, Allies, Activity) | Phase 2 |
-| **Cost Tracking Schema** | Per-ally/Mission/Operation LLM cost attribution | Phase 2 |
+| **Cursor Pagination** | All list endpoints (missions, allies, activity) | Phase 2 |
+| **Cost Tracking Schema** | Per-ally/mission/goal LLM cost attribution | Phase 2 |
 | **Error Taxonomy** | Consistent API error responses | Phase 1 |
 | **Service Layer** | Clean separation: Route → Service → Repository | Phase 1 |
 | **Planning Methodology** | ROADMAP/STATE/MISSION files | Immediate |
@@ -664,27 +562,7 @@ Allies grow expertise over time through structured learning.
 - Notion-like UI (ops/console aesthetic instead)
 
 ---
-
-## 15. Terminology Migration Guide
-
-**Breaking changes** from PRD v1.0:
-
-| Old Term (v1.0) | New Term (v2.0) | Context |
-|---|---|---|
-| Goal (strategic workflow) | **Mission** | High-level measurable outcome |
-| Project | **Operation** | Bounded initiative with start/end |
-| Mission (atomic task) | **Task** | Atomic unit of work |
-| — (didn't exist) | **Domain** | Core life/expertise area |
-| — (didn't exist) | **Vision** | Big emotional north star |
-| — (didn't exist) | **Rhythm** | Recurring habit |
-| Knowledge Base | **Intelligence** | Organized knowledge by topic |
-| Knowledge Entry | **Insight** | Individual learning capture |
-| Review | **Debrief** | Reflection and review cadence |
-
-**Code migration:**
-- Database: Rename `goals` → `missions`, `missions` → `tasks` or `operations`
-- API: Update endpoints `/goals` → `/missions`, `/missions` → `/tasks`
-- UI: Global find/replace for all copy
+*Created by August (Mission Manager Ally)*
 
 ---
 

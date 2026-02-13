@@ -4,39 +4,34 @@ import { useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { DataTable, SortableHeader } from '@/components/ui/data-table'
 import { Button } from '@/components/ui/button'
-import { OperationStatusChip, type OperationStatus } from '@/components/ui/operation-status-chip'
+import { MissionStatusChip, type MissionStatus } from '@/components/ui/mission-status-chip'
 import { formatDate } from '@/lib/utils'
 
-// Operations = Bounded initiatives with start/end dates that achieve Missions
-export interface OperationRow {
+export interface MissionRow {
   id: string
   name: string
-  status: OperationStatus
+  status: MissionStatus
   startDate: string | null
   targetDate: string | null
   completedAt: string | null
 }
 
-interface OperationsTableProps {
-  data: OperationRow[]
+interface MissionsTableProps {
+  data: MissionRow[]
 }
 
-// Legacy alias for backwards compatibility
-export type MissionRow = OperationRow
-export type MissionsTableProps = OperationsTableProps
-
-export function OperationsTable({ data }: OperationsTableProps) {
-  const columns = useMemo<ColumnDef<OperationRow>[]>(
+export function MissionsTable({ data }: MissionsTableProps) {
+  const columns = useMemo<ColumnDef<MissionRow>[]>(
     () => [
       {
         accessorKey: 'name',
-        header: ({ column }) => <SortableHeader column={column}>Operation Name</SortableHeader>,
+        header: ({ column }) => <SortableHeader column={column}>Name</SortableHeader>,
         cell: ({ row }) => <span className="font-medium">{row.getValue('name')}</span>,
       },
       {
         accessorKey: 'status',
         header: 'Status',
-        cell: ({ row }) => <OperationStatusChip status={row.getValue('status')} />,
+        cell: ({ row }) => <MissionStatusChip status={row.getValue('status')} />,
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
       },
       {
@@ -72,9 +67,9 @@ export function OperationsTable({ data }: OperationsTableProps) {
       columns={columns}
       data={data}
       searchKey="name"
-      searchPlaceholder="Search operations..."
-      onRowClick={(operation) => { window.location.href = `/operations/${operation.id}` }}
-      emptyMessage="No operations found. Operations are bounded initiatives with start/end dates that achieve Missions."
+      searchPlaceholder="Search missions..."
+      onRowClick={(mission) => { window.location.href = `/missions/${mission.id}` }}
+      emptyMessage="No missions found."
       toolbar={(table) => (
         <div className="flex items-center gap-2">
           {(['planning', 'active', 'on_hold', 'completed'] as const).map((s) => (
@@ -95,6 +90,3 @@ export function OperationsTable({ data }: OperationsTableProps) {
     />
   )
 }
-
-// Legacy alias for backwards compatibility
-export const MissionsTable = OperationsTable

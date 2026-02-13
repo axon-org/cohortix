@@ -29,11 +29,10 @@ export const dateRangeSchema = z.object({
 })
 
 // ============================================================================
-// Operation Schemas (Bounded Initiatives)
-// LEGACY: These are generic schemas. Use @/lib/validations/operation for production.
+// Mission Schemas
 // ============================================================================
 
-export const createOperationSchema = z.object({
+export const createMissionSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(200),
   description: z.string().min(10, 'Description must be at least 10 characters').optional(),
   status: z.enum(['planning', 'active', 'paused', 'completed', 'archived']).default('planning'),
@@ -44,46 +43,35 @@ export const createOperationSchema = z.object({
   tags: z.array(z.string()).optional(),
 })
 
-export const updateOperationSchema = createOperationSchema.partial()
+export const updateMissionSchema = createMissionSchema.partial()
 
-export const operationQuerySchema = z.object({
+export const missionQuerySchema = z.object({
   status: z.enum(['planning', 'active', 'paused', 'completed', 'archived']).optional(),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
   assignedTo: uuidSchema.optional(),
   search: z.string().optional(),
 }).merge(paginationSchema)
 
-// Legacy aliases (old "Mission" meant bounded initiative)
-export const createMissionSchema = createOperationSchema
-export const updateMissionSchema = updateOperationSchema
-export const missionQuerySchema = operationQuerySchema
-
 // ============================================================================
-// Mission Schemas (Measurable Outcomes)
-// LEGACY: These are generic schemas. For production, create specific Mission schemas in @/lib/validations/
+// Goal Schemas
 // ============================================================================
 
-export const createMissionObjectiveSchema = z.object({
+export const createGoalSchema = z.object({
   title: z.string().min(3).max(200),
   description: z.string().optional(),
-  operationId: uuidSchema, // Links to Operation (bounded initiative)
+  missionId: uuidSchema,
   targetDate: z.string().datetime().optional(),
   status: z.enum(['not_started', 'in_progress', 'completed', 'blocked']).default('not_started'),
   metrics: z.record(z.any()).optional(),
 })
 
-export const updateMissionObjectiveSchema = createMissionObjectiveSchema.partial()
-
-// Legacy alias (old "Goal" meant measurable outcome)
-export const createGoalSchema = createMissionObjectiveSchema
-export const updateGoalSchema = updateMissionObjectiveSchema
+export const updateGoalSchema = createGoalSchema.partial()
 
 // ============================================================================
-// Ally Schemas (AI Teammates)
-// LEGACY: These are generic schemas. Use @/lib/validations/ally for production.
+// Agent Schemas
 // ============================================================================
 
-export const createAllySchema = z.object({
+export const createAgentSchema = z.object({
   name: z.string().min(2).max(100),
   role: z.string().min(2).max(100),
   specialty: z.string().optional(),
@@ -91,40 +79,31 @@ export const createAllySchema = z.object({
   status: z.enum(['active', 'idle', 'offline', 'maintenance']).default('active'),
 })
 
-export const updateAllySchema = createAllySchema.partial()
-
-// Legacy alias (old "Agent" terminology)
-export const createAgentSchema = createAllySchema
-export const updateAgentSchema = updateAllySchema
+export const updateAgentSchema = createAgentSchema.partial()
 
 // ============================================================================
-// Task Schemas (Atomic Units of Work)
-// LEGACY: These are generic schemas. Use @/lib/validations/task for production.
+// Action Schemas
 // ============================================================================
 
-export const createTaskSchema = z.object({
+export const createActionSchema = z.object({
   title: z.string().min(3).max(200),
   description: z.string().optional(),
-  operationId: uuidSchema, // Links to Operation (bounded initiative)
+  goalId: uuidSchema,
   assignedTo: uuidSchema.optional(),
   dueDate: z.string().datetime().optional(),
   status: z.enum(['pending', 'in_progress', 'completed', 'blocked', 'cancelled']).default('pending'),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
 })
 
-export const updateTaskSchema = createTaskSchema.partial()
-
-// Legacy alias (old "Action" meant atomic task)
-export const createActionSchema = createTaskSchema
-export const updateActionSchema = updateTaskSchema
+export const updateActionSchema = createActionSchema.partial()
 
 // ============================================================================
 // Time Entry Schemas
 // ============================================================================
 
 export const createTimeEntrySchema = z.object({
-  taskId: uuidSchema, // Links to Task (atomic work unit)
-  allyId: uuidSchema, // Ally (agent) who logged the time
+  actionId: uuidSchema,
+  agentId: uuidSchema,
   startTime: z.string().datetime(),
   endTime: z.string().datetime().optional(),
   duration: z.number().int().positive().optional(),
@@ -132,10 +111,6 @@ export const createTimeEntrySchema = z.object({
 })
 
 export const updateTimeEntrySchema = createTimeEntrySchema.partial()
-
-// Legacy aliases
-export const actionId = 'taskId' // Field name mapping
-export const agentId = 'allyId' // Field name mapping
 
 // ============================================================================
 // Validation Middleware

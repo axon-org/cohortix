@@ -1,9 +1,6 @@
 /**
  * Individual Mission API Route - GET, PATCH, DELETE
- * Missions are measurable outcomes that serve Visions (PPV Goal level).
- * Maps to `goals` table. Axon Codex v1.2 compliant.
- * 
- * PPV Hierarchy: Mission (measurable outcome) → Operation (bounded initiative) → Task (atomic work)
+ * Maps to `projects` table. Axon Codex v1.2 compliant.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -79,7 +76,7 @@ export const GET = withErrorHandler(
     const { supabase, organizationId } = await getAuthContext()
 
     const { data: mission, error } = await supabase
-      .from('goals')
+      .from('projects')
       .select('*')
       .eq('id', missionId)
       .eq('organization_id', organizationId)
@@ -109,7 +106,7 @@ export const PATCH = withErrorHandler(
     const { supabase, organizationId } = await getAuthContext()
 
     const { data: existing } = await supabase
-      .from('goals')
+      .from('projects')
       .select('id')
       .eq('id', missionId)
       .eq('organization_id', organizationId)
@@ -117,21 +114,22 @@ export const PATCH = withErrorHandler(
     if (!existing) throw new NotFoundError('Mission', missionId)
 
     const updateData: Record<string, any> = {}
-    if (data.title !== undefined) updateData.title = data.title
+    if (data.name !== undefined) updateData.name = data.name
     if (data.description !== undefined) updateData.description = data.description
     if (data.status !== undefined) updateData.status = data.status
-    if (data.clientId !== undefined) updateData.client_id = data.clientId
+    if (data.startDate !== undefined) updateData.start_date = data.startDate
     if (data.targetDate !== undefined) updateData.target_date = data.targetDate
-    if (data.keyResults !== undefined) updateData.key_results = data.keyResults
-    if (data.progressPercent !== undefined) updateData.progress_percent = data.progressPercent
-    if (data.progressAutoCalculate !== undefined) updateData.progress_auto_calculate = data.progressAutoCalculate
+    if (data.goalId !== undefined) updateData.goal_id = data.goalId
+    if (data.color !== undefined) updateData.color = data.color
+    if (data.icon !== undefined) updateData.icon = data.icon
+    if (data.settings !== undefined) updateData.settings = data.settings
 
     // Auto-set completed_at when status changes to completed
     if (data.status === 'completed') updateData.completed_at = new Date().toISOString()
     if (data.status && data.status !== 'completed') updateData.completed_at = null
 
     const { data: mission, error } = await supabase
-      .from('goals')
+      .from('projects')
       .update(updateData)
       .eq('id', missionId)
       .select()
@@ -162,20 +160,20 @@ export const DELETE = withErrorHandler(
     const { supabase, organizationId } = await getAuthContext()
 
     const { data: existing } = await supabase
-      .from('goals')
-      .select('id, title')
+      .from('projects')
+      .select('id, name')
       .eq('id', missionId)
       .eq('organization_id', organizationId)
       .single()
     if (!existing) throw new NotFoundError('Mission', missionId)
 
-    const { error } = await supabase.from('goals').delete().eq('id', missionId)
+    const { error } = await supabase.from('projects').delete().eq('id', missionId)
     if (error) {
       logger.error('Failed to delete mission', { correlationId, error: { message: error.message, code: error.code } })
       throw error
     }
 
-    logger.info('Mission deleted', { correlationId, missionId, missionTitle: existing.title })
+    logger.info('Mission deleted', { correlationId, missionId, missionName: existing.name })
     return new NextResponse(null, { status: 204 })
   }
 )

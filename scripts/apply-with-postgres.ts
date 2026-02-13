@@ -7,7 +7,14 @@ import postgres from 'postgres';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres.rfwscvklcokzuofyzqwx:c1wGxCYcgHa4kXulaeCrE6qqeZbB9@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require';
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  console.error(
+    '❌ DATABASE_URL not found. Set it in your environment before running this script.'
+  );
+  process.exit(1);
+}
 
 async function main() {
   console.log('🚀 Applying Cohortix Cohorts Migrations\n');

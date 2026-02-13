@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Command Center — Cohortix</title>
+<title>Mission Control — Cohortix</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -125,13 +125,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
 <aside class="sidebar">
   <div class="sidebar-logo"><span>✦ Cohortix</span></div>
   <nav class="sidebar-nav">
-    <a class="nav-item active"><span class="icon">🎯</span> Command Center</a>
+    <a class="nav-item active"><span class="icon">🎯</span> Mission Control</a>
     <a class="nav-item" href="allies.html"><span class="icon">🤖</span> Allies</a>
-    <a class="nav-item"><span class="icon">🎯</span> Missions</a>
-    <a class="nav-item" href="campaign.html"><span class="icon">📋</span> Operations</a>
-    <a class="nav-item" href="knowledge.html"><span class="icon">💡</span> Intelligence</a>
+    <a class="nav-item" href="campaign.html"><span class="icon">📋</span> Campaigns</a>
+    <a class="nav-item" href="knowledge.html"><span class="icon">💡</span> Knowledge Base</a>
     <a class="nav-item"><span class="icon">🏢</span> Clients</a>
-    <div class="nav-section">Active Operations</div>
+    <a class="nav-item"><span class="icon">🎯</span> Goals</a>
+    <div class="nav-section">Campaigns</div>
     <a class="nav-item"><span class="icon">📁</span> Q1 Marketing</a>
     <a class="nav-item"><span class="icon">📁</span> Website Redesign</a>
     <a class="nav-item"><span class="icon">📁</span> Product Launch</a>
@@ -144,9 +144,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
 
 <!-- Topbar -->
 <header class="topbar">
-  <input class="search-bar" placeholder="Search operations, allies, missions..." type="text">
+  <input class="search-bar" placeholder="Search missions, allies, campaigns..." type="text">
   <div class="topbar-actions">
-    <button class="btn-primary">＋ New Operation</button>
+    <button class="btn-primary">＋ New Mission</button>
     <button class="icon-btn">🔔</button>
     <button class="icon-btn">🌙</button>
     <div class="avatar">A</div>
@@ -155,13 +155,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
 
 <!-- Main Content -->
 <main class="main">
-  <h1 class="page-title">Command Center</h1>
+  <h1 class="page-title">Mission Control</h1>
   <p class="page-subtitle">Welcome back, Ahmad. Here's what's happening across your cohort.</p>
 
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat-card">
-      <div class="stat-label"><span class="stat-icon">📋</span> Active Operations</div>
+      <div class="stat-label"><span class="stat-icon">📋</span> Active Campaigns</div>
       <div class="stat-value">6</div>
       <div class="stat-change up">↑ 2 this week</div>
     </div>
@@ -171,12 +171,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
       <div class="stat-change up">↑ 3 deployed today</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label"><span class="stat-icon">✅</span> Tasks Completed</div>
+      <div class="stat-label"><span class="stat-icon">✅</span> Missions Completed</div>
       <div class="stat-value">24</div>
       <div class="stat-change up">↑ 12% vs last week</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label"><span class="stat-icon">💡</span> Insights Captured</div>
+      <div class="stat-label"><span class="stat-icon">💡</span> Intel Captured</div>
       <div class="stat-value">156</div>
       <div class="stat-change up">↑ 8 new today</div>
     </div>
@@ -214,9 +214,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
     </div>
   </div>
 
-  <!-- Operation Grid -->
+  <!-- Campaign Grid -->
   <div class="section-header" style="margin-top:28px;">
-    <div class="section-title">Active Operations</div>
+    <div class="section-title">Active Campaigns</div>
     <a class="section-link" href="campaign.html">View all →</a>
   </div>
   <div class="campaign-grid">
@@ -226,7 +226,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
         <div class="status-badge active"><span class="dot"></span>Active</div>
       </div>
       <div class="campaign-title">Q1 Marketing Push</div>
-      <div class="campaign-meta">Acme Corp · 3 allies · 12 tasks</div>
+      <div class="campaign-meta">Acme Corp · 3 allies · 12 missions</div>
       <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:45%;"></div></div>
       <div class="campaign-footer">
         <span class="campaign-progress-text">45% complete</span>
@@ -243,7 +243,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
         <div class="status-badge active"><span class="dot"></span>Active</div>
       </div>
       <div class="campaign-title">Website Redesign</div>
-      <div class="campaign-meta">Acme Corp · 2 allies · 8 tasks</div>
+      <div class="campaign-meta">Acme Corp · 2 allies · 8 missions</div>
       <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:72%;"></div></div>
       <div class="campaign-footer">
         <span class="campaign-progress-text">72% complete</span>
@@ -259,7 +259,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
         <div class="status-badge planned"><span class="dot"></span>Planned</div>
       </div>
       <div class="campaign-title">Product Launch v2</div>
-      <div class="campaign-meta">Beta Inc · 4 allies · 18 tasks</div>
+      <div class="campaign-meta">Beta Inc · 4 allies · 18 missions</div>
       <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:15%;"></div></div>
       <div class="campaign-footer">
         <span class="campaign-progress-text">15% complete</span>
@@ -281,21 +281,21 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
       <div class="feed-item">
         <div class="feed-icon completed">✅</div>
         <div>
-          <div class="feed-text"><strong>Riley</strong> completed <strong>Task #42</strong> — API rate limiting implementation</div>
+          <div class="feed-text"><strong>Riley</strong> completed <strong>Mission #42</strong> — API rate limiting implementation</div>
           <div class="feed-time">2 hours ago</div>
         </div>
       </div>
       <div class="feed-item">
         <div class="feed-icon intel">💡</div>
         <div>
-          <div class="feed-text"><strong>Jordan</strong> captured insight: <strong>"User testing feedback patterns"</strong></div>
+          <div class="feed-text"><strong>Jordan</strong> captured intel: <strong>"User testing feedback patterns"</strong></div>
           <div class="feed-time">4 hours ago</div>
         </div>
       </div>
       <div class="feed-item">
         <div class="feed-icon created">🎯</div>
         <div>
-          <div class="feed-text">New operation <strong>"Product Launch v2"</strong> created for Beta Inc</div>
+          <div class="feed-text">New campaign <strong>"Product Launch v2"</strong> created for Beta Inc</div>
           <div class="feed-time">6 hours ago</div>
         </div>
       </div>
@@ -309,7 +309,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#e5e5e5;m
       <div class="feed-item">
         <div class="feed-icon completed">✅</div>
         <div>
-          <div class="feed-text"><strong>Casey</strong> completed <strong>Task #38</strong> — Competitor analysis report</div>
+          <div class="feed-text"><strong>Casey</strong> completed <strong>Mission #38</strong> — Competitor analysis report</div>
           <div class="feed-time">Yesterday</div>
         </div>
       </div>

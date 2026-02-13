@@ -1,43 +1,60 @@
 /**
- * Mission (Measurable Outcome) Validation Schemas
- * Missions are strategic outcomes that serve Visions (PPV Goal level).
- * Maps to 'goals' table in database.
+ * Mission (Project) Validation Schemas
+ * Follows same pattern as cohort validations.
  */
 
 import { z } from 'zod'
 
-export const missionStatusEnum = z.enum(['not_started', 'in_progress', 'at_risk', 'completed', 'cancelled'])
+export const missionStatusEnum = z.enum(['planning', 'active', 'on_hold', 'completed', 'archived'])
 export type MissionStatus = z.infer<typeof missionStatusEnum>
 
 export const createMissionSchema = z.object({
-  title: z
+  name: z
     .string()
-    .min(3, 'Title must be at least 3 characters')
-    .max(500, 'Title must be less than 500 characters')
+    .min(3, 'Name must be at least 3 characters')
+    .max(255, 'Name must be less than 255 characters')
     .trim(),
   description: z.string().max(10000).optional(),
-  status: missionStatusEnum.default('not_started'),
-  clientId: z.string().uuid().optional().nullable(),
-  ownerType: z.enum(['user', 'agent']).default('user'),
-  ownerId: z.string().uuid(),
+  status: missionStatusEnum.default('planning'),
+  cohortId: z.string().uuid().optional().nullable(),
+  goalId: z.string().uuid().optional().nullable(),
+  startDate: z.string().date('Invalid date format (use YYYY-MM-DD)').optional().nullable(),
   targetDate: z.string().date('Invalid date format (use YYYY-MM-DD)').optional().nullable(),
-  keyResults: z.array(z.record(z.any())).default([]),
-  progressPercent: z.number().int().min(0).max(100).default(0),
-  progressAutoCalculate: z.boolean().default(true),
-})
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Invalid hex color').optional().nullable(),
+  icon: z.string().max(50).optional().nullable(),
+  settings: z.record(z.any()).optional(),
+}).refine(
+  (data) => {
+    if (data.startDate && data.targetDate) {
+      return new Date(data.startDate) <= new Date(data.targetDate)
+    }
+    return true
+  },
+  { message: 'Target date must be after start date', path: ['targetDate'] }
+)
 
 export type CreateMissionInput = z.infer<typeof createMissionSchema>
 
 export const updateMissionSchema = z.object({
-  title: z.string().min(3).max(500).trim().optional(),
+  name: z.string().min(3).max(255).trim().optional(),
   description: z.string().max(10000).optional().nullable(),
   status: missionStatusEnum.optional(),
-  clientId: z.string().uuid().optional().nullable(),
+  cohortId: z.string().uuid().optional().nullable(),
+  goalId: z.string().uuid().optional().nullable(),
+  startDate: z.string().date().optional().nullable(),
   targetDate: z.string().date().optional().nullable(),
-  keyResults: z.array(z.record(z.any())).optional(),
-  progressPercent: z.number().int().min(0).max(100).optional(),
-  progressAutoCalculate: z.boolean().optional(),
-})
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional().nullable(),
+  icon: z.string().max(50).optional().nullable(),
+  settings: z.record(z.any()).optional(),
+}).refine(
+  (data) => {
+    if (data.startDate && data.targetDate) {
+      return new Date(data.startDate) <= new Date(data.targetDate)
+    }
+    return true
+  },
+  { message: 'Target date must be after start date', path: ['targetDate'] }
+)
 
 export type UpdateMissionInput = z.infer<typeof updateMissionSchema>
 
@@ -46,20 +63,9 @@ export const missionQuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(100).default(20),
   status: missionStatusEnum.optional(),
   search: z.string().trim().optional(),
-  ownerId: z.string().uuid().optional(),
-  ownerType: z.enum(['user', 'agent']).optional(),
-  sortBy: z.enum(['title', 'createdAt', 'status', 'targetDate', 'progressPercent']).default('createdAt'),
+  cohortId: z.string().uuid().optional(),
+  sortBy: z.enum(['name', 'createdAt', 'status', 'startDate', 'targetDate']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 })
 
 export type MissionQueryParams = z.infer<typeof missionQuerySchema>
-
-// Legacy aliases for backwards compatibility (old "Goal" terminology)
-export const goalStatusEnum = missionStatusEnum;
-export type GoalStatus = MissionStatus;
-export const createGoalSchema = createMissionSchema;
-export type CreateGoalInput = CreateMissionInput;
-export const updateGoalSchema = updateMissionSchema;
-export type UpdateGoalInput = UpdateMissionInput;
-export const goalQuerySchema = missionQuerySchema;
-export type GoalQueryParams = MissionQueryParams;

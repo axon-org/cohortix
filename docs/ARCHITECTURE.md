@@ -8,9 +8,9 @@
 
 ## Executive Summary
 
-Agent Command Center is a multi-tenant SaaS platform that enables organizations to orchestrate AI agents for operation management, task automation, and knowledge capture. The architecture is designed for:
+Agent Command Center is a multi-tenant SaaS platform that enables organizations to orchestrate AI agents for mission management, action automation, and knowledge capture. The architecture is designed for:
 
-- **Scale**: Support millions of tasks across thousands of tenants
+- **Scale**: Support millions of actions across thousands of tenants
 - **Security**: Enterprise-grade multi-tenant isolation
 - **Flexibility**: Abstraction layer for agent runtime portability
 - **Performance**: Sub-100ms response times for core operations
@@ -120,7 +120,7 @@ Organization (Tenant)
     ├─── Clients (1:many)
     │       │
     │       ├─── Missions (1:many, optional client_id)
-    │       ├─── Missions (1:many, optional client_id)  # Database: 'goals' table → rename to 'missions' pending
+    │       ├─── Goals (1:many, optional client_id)
     │       └─── Agent Assignments (many:many via agent_client_assignments)
     │
     ├─── Agents (1:many)
@@ -133,7 +133,7 @@ Organization (Tenant)
 ```
 
 **Key Design Points:**
-- **Optional Client Association:** Operations and missions can optionally belong to a client
+- **Optional Client Association:** Missions and goals can optionally belong to a client
 - **Agent-Client Assignment:** Tracks which agents work on which client accounts
 - **Client Metadata:** Industry, contact info, custom fields for client context
 - **Knowledge Segregation:** RLS policies ensure agents only see knowledge for clients they're assigned to
@@ -210,8 +210,8 @@ interface AgentRuntime {
   startAgent(agentId: string): Promise<void>;
   stopAgent(agentId: string): Promise<void>;
   
-  // Task execution
-  assignTask(agentId: string, task: Task): Promise<TaskExecution>;
+  // Action execution
+  assignTask(agentId: string, action: Action): Promise<TaskExecution>;
   getTaskStatus(executionId: string): Promise<TaskStatus>;
   
   // Communication
@@ -319,8 +319,8 @@ Daily 9 AM Evolution Session
 │                                       │                  │
 │                                       ▼                  │
 │                              ┌─────────────────┐        │
-│                              │ Mission Created │        │
-│                              │ Operations Assigned      │
+│                              │ Goal Created│        │
+│                              │ Missions Assigned        │
 │                              └─────────────────┘        │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -346,12 +346,12 @@ Daily 9 AM Evolution Session
 
 ```sql
 -- Example: Row-Level Security policy
-CREATE POLICY tenant_isolation ON operations
+CREATE POLICY tenant_isolation ON missions
   USING (organization_id = current_setting('app.current_org_id')::uuid);
 
 -- All queries automatically filtered by tenant
 SET app.current_org_id = 'org_xyz123';
-SELECT * FROM operations; -- Only returns org's operations
+SELECT * FROM missions; -- Only returns org's missions
 ```
 
 #### Supporting Data Stores

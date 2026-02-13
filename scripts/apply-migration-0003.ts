@@ -2,7 +2,12 @@ import postgres from 'postgres';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-const directUrl = process.env.DIRECT_URL || 'postgresql://postgres.rfwscvklcokzuofyzqwx:c1wGxCYcgHa4kXulaeCrE6qqeZbB9@db.rfwscvklcokzuofyzqwx.supabase.co:5432/postgres';
+const directUrl = process.env.DIRECT_URL;
+
+if (!directUrl) {
+  console.error('❌ DIRECT_URL not found. Set it in your environment before running.');
+  process.exit(1);
+}
 
 console.log('🔌 Connecting to Supabase (direct connection)...\n');
 

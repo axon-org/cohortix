@@ -1,6 +1,6 @@
 import { pgTable, uuid, timestamp, bigint, text, jsonb, index } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
-import { tasks } from './tasks'; // Tasks (atomic work units)
+import { actions as tasks } from './actions'; // actions table (DB name: tasks)
 import { agents } from './agents';
 
 export const timeEntries = pgTable('time_entries', {

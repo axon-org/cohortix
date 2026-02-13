@@ -1,184 +1,219 @@
-// Cohortix Sprint 2: Cohorts Mutations Module (COH-B3)
-// Author: John (Backend) - Task brief: /tmp/john-sprint2-backend.md
-// Date: 2026-02-12
+/**
+ * Cohort Mutations Module (COH-B3)
+ * 
+ * Server-side write operations for cohorts.
+ * Uses Supabase client with RLS for automatic tenant isolation.
+ */
 
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { z } from 'zod';
 
-/**
- * Schema for creating a new cohort (without org_id and created_by, those are injected)
- */
+async function createClient() {
+  const cookieStore = await cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    }
+  );
+}
+
+// ============================================================================
+// Validation Schemas
+// ============================================================================
+
 export const createCohortSchema = z.object({
-  name: z.string().min(1).max(255),
+  name: z.string().min(1, 'Name is required').max(255),
   description: z.string().optional(),
   status: z.enum(['active', 'paused', 'at-risk', 'completed']).default('active'),
-  start_date: z.string().optional(),
-  end_date: z.string().optional(),
-  metadata: z.record(z.unknown()).default({}),
+  start_date: z.string().nullable().optional(),
+  end_date: z.string().nullable().optional(),
+  settings: z.record(z.unknown()).optional(),
+}).refine(
+  (data) => {
+    if (data.start_date && data.end_date) {
+      return new Date(data.end_date) >= new Date(data.start_date);
+    }
+    return true;
+  },
+  { message: 'End date must be after start date', path: ['end_date'] }
+);
+
+export const updateCohortSchema = z.object({
+  name: z.string().min(1).max(255).optional(),
+  description: z.string().optional(),
+  status: z.enum(['active', 'paused', 'at-risk', 'completed']).optional(),
+  start_date: z.string().nullable().optional(),
+  end_date: z.string().nullable().optional(),
+  settings: z.record(z.unknown()).optional(),
 });
 
-/**
- * Schema for updating an existing cohort
- */
-export const updateCohortSchema = createCohortSchema.partial();
+export type CreateCohortInput = z.infer<typeof createCohortSchema>;
+export type UpdateCohortInput = z.infer<typeof updateCohortSchema>;
+
+// ============================================================================
+// Mutations
+// ============================================================================
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
 
 /**
  * Create a new cohort
  */
 export async function createCohort(
   organizationId: string,
-  createdBy: string, // Reserved for future use when schema adds created_by field
-  data: z.infer<typeof createCohortSchema>
+  createdBy: string,
+  input: CreateCohortInput
 ) {
-  const validated = createCohortSchema.parse(data);
-  const supabase = createClient();
+  const validated = createCohortSchema.parse(input);
+  const supabase = await createClient();
 
-  const { data: cohort, error } = await supabase
+  const slug = slugify(validated.name) + '-' + Date.now().toString(36);
+
+  const { data, error } = await supabase
     .from('cohorts')
     .insert({
       organization_id: organizationId,
-      // created_by: createdBy, // TODO: Add to schema
-      ...validated,
+      created_by: createdBy,
+      slug,
+      name: validated.name,
+      description: validated.description || null,
+      status: validated.status,
+      start_date: validated.start_date || null,
+      end_date: validated.end_date || null,
+      settings: validated.settings || {},
     })
     .select()
     .single();
 
   if (error) {
-    console.error('createCohort error:', error);
-    throw error;
+    console.error('Error creating cohort:', error);
+    throw new Error(`Failed to create cohort: ${error.message}`);
   }
 
-  return cohort;
+  return data;
 }
 
 /**
  * Update an existing cohort
  */
-export async function updateCohort(id: string, data: z.infer<typeof updateCohortSchema>) {
-  const validated = updateCohortSchema.parse(data);
-  const supabase = createClient();
+export async function updateCohort(cohortId: string, input: UpdateCohortInput) {
+  const validated = updateCohortSchema.parse(input);
+  const supabase = await createClient();
 
-  const { data: cohort, error } = await supabase
-    .from('cohorts')
-    .update({ ...validated, updated_at: new Date().toISOString() })
-    .eq('id', id)
-    .select()
-    .single();
+  const updateData: Record<string, unknown> = {
+    ...validated,
+    updated_at: new Date().toISOString(),
+  };
 
-  if (error) {
-    console.error('updateCohort error:', error);
-    throw error;
+  // Update slug if name changed
+  if (validated.name) {
+    updateData.slug = slugify(validated.name) + '-' + Date.now().toString(36);
   }
 
-  return cohort;
-}
-
-/**
- * Soft delete a cohort by setting status to archived
- * (Hard delete: use .delete() instead)
- */
-export async function deleteCohort(id: string, hardDelete = false) {
-  const supabase = createClient();
-
-  if (hardDelete) {
-    const { error } = await supabase.from('cohorts').delete().eq('id', id);
-
-    if (error) {
-      console.error('deleteCohort (hard) error:', error);
-      throw error;
-    }
-
-    return { success: true };
-  }
-
-  // Soft delete
   const { data, error } = await supabase
     .from('cohorts')
-    .update({ status: 'archived' as const, updated_at: new Date().toISOString() })
-    .eq('id', id)
+    .update(updateData)
+    .eq('id', cohortId)
     .select()
     .single();
 
   if (error) {
-    console.error('deleteCohort (soft) error:', error);
-    throw error;
+    console.error('Error updating cohort:', error);
+    throw new Error(`Failed to update cohort: ${error.message}`);
   }
 
   return data;
 }
 
 /**
- * Add a member to a cohort
+ * Soft delete (archive) a cohort
  */
-export async function addCohortMember(cohortId: string, userId?: string, allyId?: string) {
-  if (!userId && !allyId) {
-    throw new Error('Either userId or allyId must be provided');
-  }
-
-  const supabase = createClient();
+export async function deleteCohort(cohortId: string) {
+  const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from('cohort_members')
-    .insert({
-      cohort_id: cohortId,
-      user_id: userId || null,
-      ally_id: allyId || null,
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error('addCohortMember error:', error);
-    throw error;
-  }
-
-  return data;
-}
-
-/**
- * Remove a member from a cohort
- */
-export async function removeCohortMember(cohortId: string, memberId: string) {
-  const supabase = createClient();
-
-  const { error } = await supabase
-    .from('cohort_members')
-    .delete()
-    .eq('id', memberId)
-    .eq('cohort_id', cohortId);
-
-  if (error) {
-    console.error('removeCohortMember error:', error);
-    throw error;
-  }
-
-  return { success: true };
-}
-
-/**
- * Update a member's engagement score
- */
-export async function updateMemberEngagement(cohortId: string, memberId: string, score: number) {
-  if (score < 0 || score > 100) {
-    throw new Error('Engagement score must be between 0 and 100');
-  }
-
-  const supabase = createClient();
-
-  const { data, error } = await supabase
-    .from('cohort_members')
+    .from('cohorts')
     .update({
-      engagement_score: score,
+      status: 'completed',
       updated_at: new Date().toISOString(),
     })
-    .eq('id', memberId)
-    .eq('cohort_id', cohortId)
+    .eq('id', cohortId)
     .select()
     .single();
 
   if (error) {
-    console.error('updateMemberEngagement error:', error);
-    throw error;
+    console.error('Error archiving cohort:', error);
+    throw new Error(`Failed to archive cohort: ${error.message}`);
+  }
+
+  return data;
+}
+
+/**
+ * Update cohort member count (increment/decrement)
+ */
+export async function updateCohortMemberCount(cohortId: string, delta: number) {
+  const supabase = await createClient();
+
+  // Get current count
+  const { data: cohort } = await supabase
+    .from('cohorts')
+    .select('member_count')
+    .eq('id', cohortId)
+    .single();
+
+  if (!cohort) throw new Error('Cohort not found');
+
+  const newCount = Math.max(0, cohort.member_count + delta);
+
+  const { data, error } = await supabase
+    .from('cohorts')
+    .update({ member_count: newCount, updated_at: new Date().toISOString() })
+    .eq('id', cohortId)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to update member count: ${error.message}`);
+  }
+
+  return data;
+}
+
+/**
+ * Update cohort engagement percentage
+ */
+export async function updateCohortEngagement(cohortId: string, engagementPercent: number) {
+  const supabase = await createClient();
+
+  const clamped = Math.min(100, Math.max(0, engagementPercent));
+
+  const { data, error } = await supabase
+    .from('cohorts')
+    .update({
+      engagement_percent: clamped,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', cohortId)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to update engagement: ${error.message}`);
   }
 
   return data;

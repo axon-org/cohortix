@@ -7,14 +7,14 @@ export default function MissionsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Operations</h1>
+          <h1 className="text-3xl font-bold">Missions</h1>
           <p className="text-muted-foreground mt-1">
-            Bounded initiatives with start/end dates that achieve your Missions.
+            Track and manage your projects from planning to completion.
           </p>
         </div>
         <Button>
           <Plus className="w-4 h-4 mr-2" />
-          New Operation
+          New Mission
         </Button>
       </div>
       <MissionsTableClient />

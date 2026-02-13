@@ -130,9 +130,9 @@ Devi (AI Developer) can read this and understand the contract without documentat
 | Component | Usage | WCAG Compliance |
 |-----------|-------|-----------------|
 | **Button** | Primary actions, links | ✅ AA (focus ring, contrast) |
-| **Card** | Operations, missions, ally profiles | ✅ AA (semantic HTML) |
+| **Card** | Missions, goals, ally profiles | ✅ AA (semantic HTML) |
 | **Dialog** | Modals, confirmations | ✅ AAA (focus trap, Esc key) |
-| **Form** | Operation briefs, ally creation | ✅ AA (labels, error messages) |
+| **Form** | Mission briefs, ally creation | ✅ AA (labels, error messages) |
 | **Input** | Text fields, search | ✅ AA (aria-labelledby, placeholder) |
 | **Select** | Ally assignment, status filters | ✅ AA (keyboard navigation) |
 | **Dropdown Menu** | Context menus, actions | ✅ AA (arrow key navigation) |
@@ -140,18 +140,18 @@ Devi (AI Developer) can read this and understand the contract without documentat
 | **Toast** | Success, error notifications | ✅ AA (aria-live regions) |
 | **Avatar** | Ally profiles, user menu | ✅ AA (alt text, fallback initials) |
 | **Badge** | Status indicators, counts | ✅ AA (color + text) |
-| **Progress** | Operation completion, workload | ✅ AA (aria-valuenow, min/max) |
+| **Progress** | Mission completion, workload | ✅ AA (aria-valuenow, min/max) |
 | **Tooltip** | Icon explanations, help text | ✅ AA (aria-describedby) |
 
 ### Custom Components (To Be Built)
 
 | Component | Based On | Status |
 |-----------|----------|--------|
-| **OperationCard** | Card + Badge + Progress | 🟡 In progress |
+| **MissionCard** | Card + Badge + Progress | 🟡 In progress |
 | **AllyCard** | Card + Avatar + Badge | 🟡 In progress |
 | **WorkloadMeter** | Progress + Tooltip | 📝 Planned |
 | **StatusRing** | Custom SVG | 📝 Planned |
-| **OperationTimeline** | Custom (no base) | 📝 Planned |
+| **MissionTimeline** | Custom (no base) | 📝 Planned |
 
 ---
 

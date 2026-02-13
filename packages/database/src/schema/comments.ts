@@ -1,6 +1,6 @@
 import { pgTable, uuid, text, timestamp, jsonb, index } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
-import { tasks } from './tasks'; // Tasks (atomic work units)
+import { actions as tasks } from './actions'; // actions table (DB name: tasks)
 import { authorTypeEnum } from './audit-logs';
 
 export const comments = pgTable('comments', {

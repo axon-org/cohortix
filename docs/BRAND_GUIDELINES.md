@@ -71,73 +71,22 @@ From abstract → concrete:
 |--------------|---------------|---------------|
 | Agent | **Ally** | "Add a new ally to your cohort" |
 | Agents (group) | **Cohort** | "Your cohort is ready for deployment" |
+| Action | **Mission** | "Assign this mission to your ally" |
+| Workflow / Series of actions | **Goal** | "This goal includes 5 missions" |
 | Dashboard / UI | **Mission Control** | "View progress in Mission Control" |
 | Create agent | **Recruit** | "Recruit a new ally" |
 | Assign work | **Brief** | "Brief your ally on this Mission" |
 | Run / Start / Execute | **Deploy** | "Deploy your cohort" |
-| Complete | **Mission Accomplished** | "Mission accomplished! Learnings captured." |
-| Reflect | **Debrief** | "Debrief on today's work" |
-| User workspace | **HQ** | "Welcome to your HQ" |
-
-### Status Language
-
-| Generic Term | Cohortix Term | Usage Example |
-|--------------|---------------|---------------|
-| Agent status: running | **On Mission** | "3 allies currently on mission" |
-| Agent status: idle | **Standing By** | "Ally standing by, ready for deployment" |
-| Agent status: offline | **Off Duty** | "This ally is currently off duty" |
-
----
-
-## The Dual Human+Agent PPV Model
-
-**Revolutionary concept:** Humans and allies use the SAME productivity system.
-
-### Key Principles
-
-1. **Unified Vocabulary** — No "human goals" vs. "agent tasks"
-2. **Ally Autonomy** — Allies can set their own Visions and Missions
-3. **Mutual Understanding** — Humans and allies speak the same language
-4. **Scalability** — One system works for 1 ally or 100 allies
-
-### Human PPV Stack Example
-
-```
-Domain: Business
-  ↓
-Vision: Build a $10M/year AI company
-  ↓
-Mission: Launch Cohortix and reach $50k MRR
-  ↓
-Operation: Build MVP auth system
-  └─ Task: Implement Google OAuth
-  ↓
-Rhythm: Weekly business review
-  └─ Task: Review metrics
-```
-
-### Ally PPV Stack Example
-
-```
-Domain: Full-Stack Development
-  ↓
-Vision: Become the most reliable AI developer
-  ↓
-Mission: Master Next.js 15 patterns
-  ↓
-Operation: Build Cohortix auth system
-  └─ Task: Implement Supabase Auth
-  ↓
-Rhythm: Daily learning cycle
-  └─ Task: Study one Next.js pattern
-```
-
-### UI Copy Implications
-
-- **Ally profiles** show their Domains, Visions, and active Missions
-- **Mission Control** displays both human and ally Missions side-by-side
-- **Intelligence** is shared — one ally's Insight benefits all
-- **Debriefs** can be individual (ally-specific) or team-wide
+| User workspace | **Base** or **HQ** | "Welcome to your HQ" |
+| Agent status: running | **On mission** | "3 allies currently on mission" |
+| Agent status: idle | **Standing by** | "Ally standing by, ready for deployment" |
+| Agent status: offline | **Off duty** | "This ally is currently off duty" |
+| Assign action | **Brief** | "Brief your ally on this mission" |
+| Complete action | **Mission accomplished** | "Mission accomplished! Learnings captured." |
+| Action queue | **Mission roster** | "5 missions in the roster" |
+| Organization | **HQ** | "Invite teammates to your HQ" |
+| Mission | **Goal** | "Start a new goal" |
+| Knowledge base | **Intel** | "Search past intel" |
 
 ---
 
@@ -198,7 +147,7 @@ Rhythm: Daily learning cycle
 
 **Mission Status:**
 > Active Missions
-> 5 Missions in progress · 8 Operations active · 23 Tasks today
+> 5 missions in progress across 2 goals
 
 **Intelligence Section:**
 > Recent Intelligence
@@ -209,7 +158,7 @@ Rhythm: Daily learning cycle
 **Mission Complete:**
 > ✅ Mission accomplished!
 > 
-> Your ally completed the research Operation and added 3 new Insights to your Intelligence.
+> Your ally finished the research goal and added 3 new insights to your intel.
 
 **Ally Recruited:**
 > 🎉 Welcome to the cohort!
@@ -248,7 +197,7 @@ Rhythm: Daily learning cycle
 > 
 > Ready to start something new?
 > 
-> [Create Mission]
+> [Start a Goal]
 
 **No Intelligence:**
 > Your Intelligence is empty for now.
@@ -280,13 +229,7 @@ Before publishing any copy, check:
 | Utilize | Use |
 | Optimize | Improve |
 | Synergy | Teamwork |
-| Goal (as atomic task) | Mission (measurable outcome) or Task (atomic work) |
-| Project | Operation |
-| Routine / Habit | Rhythm |
-| Knowledge base | Intelligence |
-| Note / Entry | Insight |
-| Review | Debrief |
-| Workflow automation | Automated Operations |
+| Workflow automation | Automated goals |
 | Agent orchestration | Cohort coordination |
 | Multi-tenant | Teams / Organizations / HQs |
 | SaaS platform | Cohortix |
@@ -325,23 +268,14 @@ PPV HIERARCHY (ALIGNMENT ZONE):
   Domain → Vision → Mission → Operation/Rhythm → Task
 
 TERMINOLOGY:
-  Agent              → Ally
-  Agents (group)     → Cohort
-  Life pillar        → Domain
-  Life aspiration    → Vision
-  Goal (strategic)   → Mission
-  Project            → Operation
-  Routine/Habit      → Rhythm
-  Action/To-do       → Task
-  Knowledge Base     → Intelligence
-  Note/Learning      → Insight
-  Review             → Debrief
-  Dashboard          → Mission Control
-  Create agent       → Recruit
-  Assign work        → Brief
-  Run/Start          → Deploy
-  Complete           → Mission Accomplished
-  Workspace          → HQ
+  Agent       → Ally
+  Agents      → Cohort
+  Action        → Mission
+  Workflow    → Goal
+  Dashboard   → Mission Control
+  Create      → Recruit
+  Run/Start   → Deploy
+  Workspace   → Base / HQ
 
 VOICE: Friendly · Encouraging · Clear · Playful
 ANTI-VOICE: Corporate · Cold · Jargon-heavy · Robotic

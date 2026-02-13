@@ -1,13 +1,11 @@
-// TERMINOLOGY UPDATE (2026-02-12): Mission → Operation
-// Operations are bounded initiatives with start/end dates that achieve Missions
 'use client'
 
 import { useMissions } from '@/hooks/use-missions'
-import { OperationsTable, type OperationRow } from './missions-table'
+import { MissionsTable, type MissionRow } from './missions-table'
 import { Skeleton } from '@/components/ui/skeleton'
 
-export function OperationsTableClient() {
-  const { data, isLoading, error } = useMissions() // Hook name kept for API compatibility
+export function MissionsTableClient() {
+  const { data, isLoading, error } = useMissions()
 
   if (isLoading) {
     return (
@@ -38,7 +36,7 @@ export function OperationsTableClient() {
   if (error) {
     return (
       <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 text-center">
-        <p className="text-destructive font-medium">Failed to load operations</p>
+        <p className="text-destructive font-medium">Failed to load missions</p>
         <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
       </div>
     )
@@ -47,23 +45,20 @@ export function OperationsTableClient() {
   if (!data?.data || data.data.length === 0) {
     return (
       <div className="bg-card border border-border rounded-lg p-12 text-center">
-        <p className="text-muted-foreground">No operations found.</p>
-        <p className="text-sm text-muted-foreground mt-1">Operations are bounded initiatives with start/end dates. Create your first operation to achieve a Mission.</p>
+        <p className="text-muted-foreground">No missions found.</p>
+        <p className="text-sm text-muted-foreground mt-1">Create your first mission to get started.</p>
       </div>
     )
   }
 
-  const tableData: OperationRow[] = data.data.map((operation) => ({
-    id: operation.id,
-    name: operation.name,
-    status: operation.status,
-    startDate: operation.start_date || null,
-    targetDate: operation.target_date || null,
-    completedAt: operation.completed_at || null,
+  const tableData: MissionRow[] = data.data.map((mission) => ({
+    id: mission.id,
+    name: mission.name,
+    status: mission.status,
+    startDate: mission.start_date || null,
+    targetDate: mission.target_date || null,
+    completedAt: mission.completed_at || null,
   }))
 
-  return <OperationsTable data={tableData} />
+  return <MissionsTable data={tableData} />
 }
-
-// Legacy alias for backwards compatibility
-export const MissionsTableClient = OperationsTableClient

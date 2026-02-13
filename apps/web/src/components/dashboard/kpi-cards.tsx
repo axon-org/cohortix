@@ -3,8 +3,8 @@ import { formatNumber, formatCurrency, formatPercentage } from '@/lib/utils'
 import { Sparkline } from '@/components/ui/sparkline'
 
 interface KpiCardsProps {
-  activeMissions: number // Legacy prop name: actually Operations (bounded initiatives)
-  actionsInProgress: number // Legacy prop name: actually Tasks (atomic work)
+  activeMissions: number
+  actionsInProgress: number
   activeAllies: number
   completionRate: number
 }
@@ -17,18 +17,18 @@ export function KpiCards({
 }: KpiCardsProps) {
   const kpiData = [
     {
-      label: 'ACTIVE OPERATIONS',
-      value: activeMissions, // TODO: Rename prop to activeOperations
+      label: 'ACTIVE MISSIONS',
+      value: activeMissions,
       change: 0,
-      changeLabel: 'Operations',
+      changeLabel: 'Missions',
       isPositive: true,
       sparklineData: [1, 2, 2, 3, 3, 3, 3, activeMissions],
     },
     {
-      label: 'TASKS IN PROGRESS',
-      value: actionsInProgress, // TODO: Rename prop to tasksInProgress
+      label: 'ACTIONS IN PROGRESS',
+      value: actionsInProgress,
       change: 0,
-      changeLabel: 'Tasks',
+      changeLabel: 'Actions',
       isPositive: true,
       sparklineData: [2, 3, 4, 5, 4, 5, 4, actionsInProgress],
     },
