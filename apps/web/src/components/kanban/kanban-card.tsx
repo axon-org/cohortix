@@ -104,7 +104,7 @@ export function KanbanCard({ task, onClick }: KanbanCardProps) {
           <div className="flex -space-x-2">
             <Avatar className="w-6 h-6 border-2 border-card">
               <AvatarImage src={`https://avatar.vercel.sh/${task.ownerId}`} />
-              <AvatarFallback className="text-[8px]">{task.ownerId.slice(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="text-[8px]">{(task.ownerId || 'NA').slice(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
           </div>
         </div>
