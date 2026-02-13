@@ -9,9 +9,9 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragStart,
-  DragOver,
-  DragEnd,
+  type DragStartEvent,
+  type DragOverEvent,
+  type DragEndEvent,
 } from '@dnd-kit/core'
 import {
   arrayMove,
@@ -90,13 +90,13 @@ export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardPro
     setIsSheetOpen(true)
   }
 
-  function handleDragStart(event: DragStart) {
+  function handleDragStart(event: DragStartEvent) {
     const { active } = event
     const task = tasks.find((t) => t.id === active.id)
     if (task) setActiveTask(task)
   }
 
-  function handleDragOver(event: DragOver) {
+  function handleDragOver(event: DragOverEvent) {
     const { active, over } = event
     if (!over) return
 
@@ -117,8 +117,10 @@ export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardPro
         const activeIndex = tasks.findIndex((t) => t.id === activeId)
         const overIndex = tasks.findIndex((t) => t.id === overId)
 
-        if (groupBy === 'status' && tasks[activeIndex].status !== tasks[overIndex].status) {
-          tasks[activeIndex].status = tasks[overIndex].status
+        if (activeIndex === -1 || overIndex === -1) return tasks
+
+        if (groupBy === 'status' && tasks[activeIndex]!.status !== tasks[overIndex]!.status) {
+          tasks[activeIndex]!.status = tasks[overIndex]!.status
           return arrayMove(tasks, activeIndex, overIndex - 1)
         }
 
@@ -130,19 +132,21 @@ export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardPro
     if (isActiveATask && isOverAColumn) {
       setTasks((tasks) => {
         const activeIndex = tasks.findIndex((t) => t.id === activeId)
+        if (activeIndex === -1) return tasks
+        
         if (groupBy === 'status') {
-          tasks[activeIndex].status = overId as KanbanStatus
+          tasks[activeIndex]!.status = overId as KanbanStatus
         } else if (groupBy === 'mission') {
-          tasks[activeIndex].missionId = overId === 'unassigned' ? undefined : String(overId)
+          tasks[activeIndex]!.missionId = overId === 'unassigned' ? undefined : String(overId)
         } else {
-          tasks[activeIndex].ownerId = String(overId)
+          tasks[activeIndex]!.ownerId = String(overId)
         }
         return arrayMove(tasks, activeIndex, activeIndex)
       })
     }
   }
 
-  function handleDragEnd(event: DragEnd) {
+  function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (!over) {
       setActiveTask(null)

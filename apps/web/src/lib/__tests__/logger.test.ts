@@ -204,15 +204,15 @@ describe('Logger', () => {
     it('should only log debug in development mode', () => {
       const originalEnv = process.env.NODE_ENV
 
-      process.env.NODE_ENV = 'production'
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true })
       testLogger.debug('Debug message')
       expect(consoleLogSpy).not.toHaveBeenCalled()
 
-      process.env.NODE_ENV = 'development'
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'development', writable: true })
       testLogger.debug('Debug message')
       expect(consoleLogSpy).toHaveBeenCalled()
 
-      process.env.NODE_ENV = originalEnv
+      Object.defineProperty(process.env, 'NODE_ENV', { value: originalEnv, writable: true })
     })
   })
 

@@ -145,14 +145,14 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     const dateStr = currentDate.toISOString().split('T')[0]!
 
     // Filter cohorts that existed at this date
-    const cohortsAtDate = (cohorts || []).filter((cohort) => {
+    const cohortsAtDate = (cohorts || []).filter((cohort: any) => {
       const createdAt = new Date(cohort.created_at)
       return createdAt <= currentDate
     })
 
-    const activeCohorts = cohortsAtDate.filter((c) => c.status === 'active').length
+    const activeCohorts = cohortsAtDate.filter((c: any) => c.status === 'active').length
 
-    const totalEngagement = cohortsAtDate.reduce((sum, cohort) => {
+    const totalEngagement = cohortsAtDate.reduce((sum: number, cohort: any) => {
       return sum + parseFloat(cohort.engagement_percent || '0')
     }, 0)
 
@@ -161,7 +161,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
         ? Math.round((totalEngagement / cohortsAtDate.length) * 100) / 100
         : 0
 
-    const totalMembers = cohortsAtDate.reduce((sum, cohort) => {
+    const totalMembers = cohortsAtDate.reduce((sum: number, cohort: any) => {
       return sum + (cohort.member_count || 0)
     }, 0)
 

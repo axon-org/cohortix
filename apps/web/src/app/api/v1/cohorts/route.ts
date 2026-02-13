@@ -35,7 +35,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   let supabase: any
   let organizationId: string
-  let userId: string | null = null
+  let userId: string | undefined = undefined
 
   // DEV MODE: Bypass auth for testing
   if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {

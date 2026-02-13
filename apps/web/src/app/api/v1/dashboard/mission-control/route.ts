@@ -39,7 +39,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   let supabase: any
   let organizationId: string
-  let userId: string | null = null
+  let userId: string | undefined = undefined
 
   // DEV MODE: Bypass auth for testing
   if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
@@ -135,12 +135,12 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const agents = agentsResult.data || []
 
   // Calculate current KPIs
-  const activeCohortsCount = cohorts.filter((c) => c.status === 'active').length
-  const atRiskCount = cohorts.filter((c) => c.status === 'at-risk').length
+  const activeCohortsCount = cohorts.filter((c: any) => c.status === 'active').length
+  const atRiskCount = cohorts.filter((c: any) => c.status === 'at-risk').length
   const totalAllies = agents.length
 
   // Calculate average engagement
-  const totalEngagement = cohorts.reduce((sum, cohort) => {
+  const totalEngagement = cohorts.reduce((sum: number, cohort: any) => {
     const engagement = parseFloat(cohort.engagement_percent || '0')
     return sum + engagement
   }, 0)
@@ -170,8 +170,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const prevAgents = prevAgentsResult.data || []
 
   // Calculate trends (percentage change)
-  const prevActiveCount = prevCohorts.filter((c) => c.status === 'active').length
-  const prevAtRiskCount = prevCohorts.filter((c) => c.status === 'at-risk').length
+  const prevActiveCount = prevCohorts.filter((c: any) => c.status === 'active').length
+  const prevAtRiskCount = prevCohorts.filter((c: any) => c.status === 'at-risk').length
   const prevAlliesCount = prevAgents.length
 
   const calculatePercentageChange = (current: number, previous: number): number => {

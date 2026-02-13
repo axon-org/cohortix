@@ -87,19 +87,19 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     
     // Calculate average engagement for cohorts created up to this date
     const relevantCohorts = (cohorts || []).filter(
-      (c) => new Date(c.created_at) <= date
+      (c: any) => new Date(c.created_at) <= date
     )
 
     let avgEngagement = 0
     if (relevantCohorts.length > 0) {
-      const totalEngagement = relevantCohorts.reduce((sum, c) => {
+      const totalEngagement = relevantCohorts.reduce((sum: number, c: any) => {
         return sum + parseFloat(c.engagement_percent || '0')
       }, 0)
       avgEngagement = totalEngagement / relevantCohorts.length
     }
 
     dataPoints.push({
-      date: date.toISOString().split('T')[0],
+      date: date.toISOString().split('T')[0]!,
       value: Math.round(avgEngagement * 100) / 100,
     })
   }

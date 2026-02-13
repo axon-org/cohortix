@@ -113,7 +113,7 @@ describe('ActivityLog', () => {
 
   it('applies correct color for joined_cohort action', () => {
     const { container } = render(
-      <ActivityLog activities={[mockActivities[0]]} />
+      <ActivityLog activities={[mockActivities[0]!]} />
     )
     
     const icon = container.querySelector('.text-success')
@@ -122,7 +122,7 @@ describe('ActivityLog', () => {
 
   it('applies correct color for engagement_spike action', () => {
     const { container } = render(
-      <ActivityLog activities={[mockActivities[1]]} />
+      <ActivityLog activities={[mockActivities[1]!]} />
     )
     
     const icon = container.querySelector('.text-success')
@@ -131,7 +131,7 @@ describe('ActivityLog', () => {
 
   it('applies correct color for engagement_drop action', () => {
     const { container } = render(
-      <ActivityLog activities={[mockActivities[2]]} />
+      <ActivityLog activities={[mockActivities[2]!]} />
     )
     
     const icon = container.querySelector('.text-warning')
@@ -140,7 +140,7 @@ describe('ActivityLog', () => {
 
   it('applies correct color for left_cohort action', () => {
     const { container } = render(
-      <ActivityLog activities={[mockActivities[3]]} />
+      <ActivityLog activities={[mockActivities[3]!]} />
     )
     
     const icon = container.querySelector('.text-muted-foreground')
@@ -149,7 +149,7 @@ describe('ActivityLog', () => {
 
   it('applies default color for unknown actions', () => {
     const { container } = render(
-      <ActivityLog activities={[mockActivities[5]]} />
+      <ActivityLog activities={[mockActivities[5]!]} />
     )
     
     // Unknown actions should use default muted foreground
@@ -184,7 +184,7 @@ describe('ActivityLog', () => {
   })
 
   it('handles single activity correctly', () => {
-    render(<ActivityLog activities={[mockActivities[0]]} />)
+    render(<ActivityLog activities={[mockActivities[0]!]} />)
     
     expect(screen.getByText('Alim joined the cohort')).toBeInTheDocument()
     expect(screen.queryByText('No activity yet')).not.toBeInTheDocument()

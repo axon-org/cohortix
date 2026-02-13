@@ -200,8 +200,8 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
             />
             <Button 
               type="submit" 
-              size="icon" 
-              className="absolute bottom-3 right-3 h-8 w-8 rounded-md"
+              size="sm" 
+              className="absolute bottom-3 right-3 h-8 w-8 rounded-md p-0"
               disabled={!comment.trim() || createCommentMutation.isPending}
             >
               <Send className="w-4 h-4" />
