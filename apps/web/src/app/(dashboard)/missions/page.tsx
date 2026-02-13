@@ -12,7 +12,7 @@ export default function MissionsPage() {
             Track and manage your projects from planning to completion.
           </p>
         </div>
-        <Button>
+        <Button variant="primary">
           <Plus className="w-4 h-4 mr-2" />
           New Mission
         </Button>

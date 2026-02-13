@@ -33,8 +33,8 @@ export function KanbanView({ initialTasks, viewType = 'operations' }: KanbanView
     <div className="flex flex-col h-full space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-3xl font-bold">{title}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
             {subtitle}
           </p>
         </div>
@@ -63,7 +63,8 @@ export function KanbanView({ initialTasks, viewType = 'operations' }: KanbanView
 
           <Button 
             size="sm" 
-            className="gap-2 bg-[#5E6AD2] hover:bg-[#5E6AD2]/90 text-white shadow-sm hover:shadow-md transition-all"
+            variant="primary"
+            className="gap-2"
           >
             <Plus className="w-4 h-4" />
             {buttonText}

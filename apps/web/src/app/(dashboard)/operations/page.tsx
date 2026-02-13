@@ -40,7 +40,7 @@ export default function OperationsPage() {
             </Tabs>
             <Button 
               onClick={() => setModalOpen(true)}
-              className="bg-[#5E6AD2] hover:bg-[#5E6AD2]/90 text-white shadow-sm hover:shadow-md transition-all"
+              variant="primary"
             >
               <Plus className="w-4 h-4 mr-2" />
               New Operation

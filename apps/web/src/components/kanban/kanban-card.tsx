@@ -53,9 +53,9 @@ export function KanbanCard({ task, onClick }: KanbanCardProps) {
   }
 
   const priorityColor = {
-    planning: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    active: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-    on_hold: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
+    planning: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    active: 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/20',
+    on_hold: 'bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/20',
     completed: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
     archived: 'bg-slate-500/10 text-slate-500 border-slate-500/20',
   }[task.status]

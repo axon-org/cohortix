@@ -13,7 +13,7 @@ export default function CohortsPage() {
             Manage and monitor your cohorts performance.
           </p>
         </div>
-        <Button>
+        <Button variant="primary">
           <Plus className="w-4 h-4 mr-2" />
           New Cohort
         </Button>
