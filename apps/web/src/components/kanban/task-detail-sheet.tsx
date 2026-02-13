@@ -83,10 +83,10 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                 <span className="text-muted-foreground w-16">Owner</span>
                 <div className="flex items-center gap-1.5 font-medium">
                   <Avatar className="w-5 h-5">
-                    <AvatarImage src={`https://avatar.vercel.sh/${task.ownerId}`} />
-                    <AvatarFallback>{task.ownerId.slice(0, 2).toUpperCase()}</AvatarFallback>
+                    <AvatarImage src={`https://avatar.vercel.sh/${task.ownerId ?? 'unassigned'}`} />
+                    <AvatarFallback>{(task.ownerId ?? 'NA').slice(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
-                  <span>{task.ownerId.slice(0, 8)}</span>
+                  <span>{(task.ownerId ?? 'Unassigned').slice(0, 8)}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 text-sm">
@@ -142,12 +142,12 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                 {commentsData?.data?.map((c) => (
                   <div key={c.id} className="flex gap-3">
                     <Avatar className="w-8 h-8">
-                      <AvatarImage src={c.author_avatar_url} />
-                      <AvatarFallback>{c.author_name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                      <AvatarImage src={c.author_avatar_url ?? undefined} />
+                      <AvatarFallback>{(c.author_name ?? 'Unknown').slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{c.author_name}</span>
+                        <span className="text-sm font-medium">{c.author_name ?? 'Unknown'}</span>
                         <span className="text-[11px] text-muted-foreground">
                           {format(new Date(c.created_at), 'MMM d, h:mm a')}
                         </span>
@@ -170,11 +170,11 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                     <div className="mt-1 w-2 h-2 rounded-full bg-border relative z-10" />
                     <div className="flex-1 space-y-0.5">
                       <div className="flex items-center gap-1.5 text-xs">
-                        <span className="font-medium text-foreground">{a.actor_name}</span>
-                        <span className="text-muted-foreground">{a.action}</span>
+                        <span className="font-medium text-foreground">{a.actor_name ?? 'System'}</span>
+                        <span className="text-muted-foreground">{a.action ?? 'updated'}</span>
                       </div>
                       <p className="text-[13px] text-muted-foreground">
-                        {a.description}
+                        {a.description ?? 'No description'}
                       </p>
                       <p className="text-[10px] text-muted-foreground/60">
                         {format(new Date(a.created_at), 'MMM d, h:mm a')}

@@ -88,7 +88,7 @@ export function KanbanCard({ task, onClick }: KanbanCardProps) {
           </Badge>
           {task.missionId && (
             <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">
-              Mission: {task.missionId.slice(0, 8)}
+              Mission: {task.missionId?.slice(0, 8) ?? 'Unknown'}
             </span>
           )}
         </div>

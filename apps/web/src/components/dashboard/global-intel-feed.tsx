@@ -64,8 +64,8 @@ export function GlobalIntelFeed() {
           >
             <div className="flex items-start gap-3">
               <Avatar className="w-8 h-8 flex-shrink-0 border border-border/50">
-                <AvatarImage src={insight.ally_avatar_url} />
-                <AvatarFallback className="text-[10px]">{insight.ally_name?.slice(0, 2).toUpperCase() || 'AI'}</AvatarFallback>
+                <AvatarImage src={insight.ally_avatar_url ?? undefined} />
+                <AvatarFallback className="text-[10px]">{(insight.ally_name ?? 'AI').slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0 space-y-1">
                 <div className="flex items-center justify-between gap-2">

@@ -59,7 +59,7 @@ export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardPro
     
     return uniqueIds.map(id => ({
       id: id as any,
-      title: id === 'unassigned' ? 'No Mission' : (id.length > 8 ? id.slice(0, 8) : id)
+      title: id === 'unassigned' ? 'No Mission' : ((id?.length ?? 0) > 8 ? id?.slice(0, 8) ?? id : id ?? 'Unassigned')
     }))
   }, [groupBy, tasks])
 
