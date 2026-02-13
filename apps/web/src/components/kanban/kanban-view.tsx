@@ -16,18 +16,26 @@ import { type Operation } from '@/lib/api/client'
 
 interface KanbanViewProps {
   initialTasks: Operation[]
+  viewType?: 'tasks' | 'operations'
 }
 
-export function KanbanView({ initialTasks }: KanbanViewProps) {
+export function KanbanView({ initialTasks, viewType = 'operations' }: KanbanViewProps) {
   const [groupBy, setGroupBy] = useState<GroupBy>('status')
+
+  const isTasksView = viewType === 'tasks'
+  const title = isTasksView ? 'Tasks' : 'Kanban'
+  const subtitle = isTasksView 
+    ? 'Manage your tasks across the workflow.'
+    : 'Manage your operations across the workflow.'
+  const buttonText = isTasksView ? 'New Task' : 'New Operation'
 
   return (
     <div className="flex flex-col h-full space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Kanban</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your operations across the workflow.
+            {subtitle}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -53,9 +61,12 @@ export function KanbanView({ initialTasks }: KanbanViewProps) {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button size="sm" className="gap-2 bg-primary hover:bg-primary/90">
+          <Button 
+            size="sm" 
+            className="gap-2 bg-[#5E6AD2] hover:bg-[#5E6AD2]/90 text-white shadow-sm hover:shadow-md transition-all"
+          >
             <Plus className="w-4 h-4" />
-            New Operation
+            {buttonText}
           </Button>
         </div>
       </div>
