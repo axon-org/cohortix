@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-helper'
 import { logger } from '@/lib/logger'
 import {
   withErrorHandler,
@@ -34,31 +34,8 @@ export const GET = withMiddleware(standardRateLimit,
     const { id } = await context.params
     const cohortId = validateData(uuidSchema, id)
 
-    // Get authenticated user
-    const supabase = await createClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      throw new UnauthorizedError('Authentication required')
-    }
-
-    const userId = user.id
-
-    // Get user's organization
-    const { data: membership, error: membershipError } = await supabase
-      .from('organization_memberships')
-      .select('organization_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (membershipError || !membership) {
-      throw new ForbiddenError('User is not associated with any organization')
-    }
-
-    const organizationId = membership.organization_id
+    // Get authenticated context
+    const { supabase, organizationId, userId } = await getAuthContext()
 
     logger.info('Fetching cohort', {
       correlationId,
@@ -109,31 +86,12 @@ export const PATCH = withMiddleware(standardRateLimit,
     const validator = validateRequest(updateCohortSchema, { target: 'body' })
     const data = (await validator(request)) as UpdateCohortInput
 
-    // Get authenticated user
-    const supabase = await createClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      throw new UnauthorizedError('Authentication required')
-    }
-
-    // Get user's organization
-    const { data: membership, error: membershipError } = await supabase
-      .from('organization_memberships')
-      .select('organization_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (membershipError || !membership) {
-      throw new ForbiddenError('User is not associated with any organization')
-    }
+    // Get authenticated context
+    const { supabase, organizationId, userId } = await getAuthContext()
 
     logger.info('Updating cohort', {
       correlationId,
-      userId: user.id,
+      userId,
       cohortId,
       updates: Object.keys(data),
     })
@@ -203,31 +161,12 @@ export const DELETE = withMiddleware(standardRateLimit,
     const { id } = await context.params
     const cohortId = validateData(uuidSchema, id)
 
-    // Get authenticated user
-    const supabase = await createClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      throw new UnauthorizedError('Authentication required')
-    }
-
-    // Get user's organization
-    const { data: membership, error: membershipError } = await supabase
-      .from('organization_memberships')
-      .select('organization_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (membershipError || !membership) {
-      throw new ForbiddenError('User is not associated with any organization')
-    }
+    // Get authenticated context
+    const { supabase, organizationId, userId } = await getAuthContext()
 
     logger.info('Deleting cohort', {
       correlationId,
-      userId: user.id,
+      userId,
       cohortId,
     })
 

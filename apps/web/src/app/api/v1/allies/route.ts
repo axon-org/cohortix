@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-helper'
 import { logger } from '@/lib/logger'
 import {
   withErrorHandler,
@@ -33,18 +33,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries())
   const query = validateData(allyQuerySchema, searchParams) as AllyQueryParams
 
-  const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) throw new UnauthorizedError('Authentication required')
-  const userId = user.id
-
-  const { data: membership, error: membershipError } = await supabase
-    .from('organization_memberships')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .single()
-  if (membershipError || !membership) throw new ForbiddenError('User is not associated with any organization')
-  const organizationId = membership.organization_id
+  const { supabase, organizationId, userId } = await getAuthContext()
 
   logger.info('Fetching allies', { correlationId, userId, organizationId, query })
 
@@ -97,18 +86,7 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
   const validator = validateRequest(createAllySchema, { target: 'body' })
   const data = (await validator(request)) as CreateAllyInput
 
-  const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) throw new UnauthorizedError('Authentication required')
-
-  const { data: membership, error: membershipError } = await supabase
-    .from('organization_memberships')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .single()
-  if (membershipError || !membership) throw new ForbiddenError('User is not associated with any organization')
-
-  const organizationId = membership.organization_id
+  const { supabase, organizationId, userId } = await getAuthContext()
   const baseSlug = generateSlug(data.name)
   const timestamp = Date.now().toString().slice(-6)
   const slug = `${baseSlug}-${timestamp}`
@@ -126,7 +104,7 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
     })
   }
 
-  logger.info('Creating ally', { correlationId, userId: user.id, organizationId, allyName: data.name })
+  logger.info('Creating ally', { correlationId, userId, organizationId, allyName: data.name })
 
   const { data: ally, error } = await supabase
     .from('agents')

@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-helper'
 import { logger } from '@/lib/logger'
 import {
   withErrorHandler,
@@ -34,31 +34,8 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries())
   const query = validateData(cohortQuerySchema, searchParams) as CohortQueryParams
 
-  // Get authenticated user
-  const supabase = await createClient()
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  if (authError || !user) {
-    throw new UnauthorizedError('Authentication required')
-  }
-
-  const userId = user.id
-
-  // Get user's organization
-  const { data: membership, error: membershipError } = await supabase
-    .from('organization_memberships')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .single()
-
-  if (membershipError || !membership) {
-    throw new ForbiddenError('User is not associated with any organization')
-  }
-
-  const organizationId = membership.organization_id
+  // Get authenticated context
+  const { supabase, organizationId, userId } = await getAuthContext()
 
   logger.info('Fetching cohorts', {
     correlationId,
@@ -144,29 +121,8 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
   const validator = validateRequest(createCohortSchema, { target: 'body' })
   const data = (await validator(request)) as CreateCohortInput
 
-  // Get authenticated user
-  const supabase = await createClient()
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  if (authError || !user) {
-    throw new UnauthorizedError('Authentication required')
-  }
-
-  // Get user's organization
-  const { data: membership, error: membershipError } = await supabase
-    .from('organization_memberships')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .single()
-
-  if (membershipError || !membership) {
-    throw new ForbiddenError('User is not associated with any organization')
-  }
-
-  const organizationId = membership.organization_id
+  // Get authenticated context
+  const { supabase, organizationId, userId } = await getAuthContext()
 
   // Generate unique slug
   const baseSlug = generateSlug(data.name)
@@ -189,7 +145,7 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
 
   logger.info('Creating cohort', {
     correlationId,
-    userId: user.id,
+    userId,
     organizationId,
     cohortName: data.name,
   })
@@ -206,7 +162,7 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
       start_date: data.startDate || null,
       end_date: data.endDate || null,
       settings: data.settings || {},
-      created_by: user.id,
+      created_by: userId,
       member_count: 0,
       engagement_percent: '0',
     })

@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-helper'
 import { logger } from '@/lib/logger'
 import {
   withErrorHandler,
@@ -19,25 +19,6 @@ import { uuidSchema } from '@/lib/validation'
 
 interface RouteContext {
   params: Promise<{ id: string }>
-}
-
-// ============================================================================
-// Auth Helper
-// ============================================================================
-
-async function getAuthContext() {
-  const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) throw new UnauthorizedError('Authentication required')
-
-  const { data: membership } = await supabase
-    .from('organization_memberships')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .single()
-  if (!membership) throw new ForbiddenError('User is not associated with any organization')
-
-  return { supabase, organizationId: membership.organization_id, userId: user.id }
 }
 
 // ============================================================================

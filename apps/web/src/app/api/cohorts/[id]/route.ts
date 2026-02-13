@@ -9,25 +9,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCohortById, getCohortStats } from '@/server/db/queries/cohorts';
 import { updateCohort, deleteCohort, updateCohortSchema } from '@/server/db/mutations/cohorts';
-import { getCurrentUser, getUserOrganization } from '@/server/db/queries/dashboard';
-
-async function getAuthContext() {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
-  }
-  const membership = await getUserOrganization(user.id);
-  if (!membership) {
-    return { error: NextResponse.json({ error: 'No organization found' }, { status: 403 }) };
-  }
-  return { user, organizationId: membership.organization_id };
-}
+import { getAuthContext } from '@/lib/auth-helper';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: NextRequest, context: RouteContext) {
-  const auth = await getAuthContext();
-  if ('error' in auth && auth.error) return auth.error;
+  const { organizationId } = await getAuthContext();
 
   const { id } = await context.params;
 
@@ -49,8 +36,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
-  const auth = await getAuthContext();
-  if ('error' in auth && auth.error) return auth.error;
+  const { organizationId } = await getAuthContext();
 
   const { id } = await context.params;
 
@@ -69,8 +55,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 }
 
 export async function DELETE(_request: NextRequest, context: RouteContext) {
-  const auth = await getAuthContext();
-  if ('error' in auth && auth.error) return auth.error;
+  const { organizationId } = await getAuthContext();
 
   const { id } = await context.params;
 

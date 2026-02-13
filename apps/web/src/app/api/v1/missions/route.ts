@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-helper'
 import { logger } from '@/lib/logger'
 import {
   withErrorHandler,
@@ -34,18 +34,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries())
   const query = validateData(missionQuerySchema, searchParams) as MissionQueryParams
 
-  const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) throw new UnauthorizedError('Authentication required')
-  const userId = user.id
-
-  const { data: membership } = await supabase
-    .from('organization_memberships')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .single()
-  if (!membership) throw new ForbiddenError('User is not associated with any organization')
-  const organizationId = membership.organization_id
+  const { supabase, organizationId, userId } = await getAuthContext()
 
   logger.info('Fetching missions', { correlationId, userId, organizationId, query })
 
@@ -98,20 +87,9 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
   const validator = validateRequest(createMissionSchema, { target: 'body' })
   const data = (await validator(request)) as CreateMissionInput
 
-  const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) throw new UnauthorizedError('Authentication required')
+  const { supabase, organizationId, userId } = await getAuthContext()
 
-  const { data: membership } = await supabase
-    .from('organization_memberships')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .single()
-  if (!membership) throw new ForbiddenError('User is not associated with any organization')
-
-  const organizationId = membership.organization_id
-
-  logger.info('Creating mission', { correlationId, userId: user.id, organizationId, missionTitle: data.name })
+  logger.info('Creating mission', { correlationId, userId, organizationId, missionTitle: data.name })
 
   const { data: mission, error } = await supabase
     .from('missions')
@@ -121,7 +99,7 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
       description: data.description || null,
       status: data.status || 'active',
       owner_type: 'user',
-      owner_id: user.id,
+      owner_id: userId,
       target_date: data.targetDate || null,
       vision_id: data.visionId || null,
       progress: 0,

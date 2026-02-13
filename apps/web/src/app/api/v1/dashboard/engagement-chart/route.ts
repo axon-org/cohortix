@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth-helper'
 import { logger } from '@/lib/logger'
 import { withErrorHandler, UnauthorizedError, ForbiddenError } from '@/lib/errors'
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
@@ -21,27 +21,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   const { searchParams } = new URL(request.url)
   const days = parseInt(searchParams.get('days') || '30')
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  if (authError || !user) {
-    throw new UnauthorizedError('Authentication required')
-  }
-
-  const { data: membership } = await supabase
-    .from('organization_memberships')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .single()
-
-  if (!membership) {
-    throw new ForbiddenError('No organization found')
-  }
-
-  const organizationId = membership.organization_id
+  const { supabase, organizationId } = await getAuthContext()
 
   // Fetch cohorts engagement data
   const { data: cohorts, error } = await supabase
