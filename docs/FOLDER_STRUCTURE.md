@@ -142,10 +142,10 @@ apps/web/
 │   │   │   │   └── [entryId]/
 │   │   │   │       └── page.tsx           # Knowledge entry detail
 │   │   │   │
-│   │   │   ├── goals/
-│   │   │   │   ├── page.tsx               # Goals overview
-│   │   │   │   └── [goalId]/
-│   │   │   │       └── page.tsx           # Goal detail
+│   │   │   ├── missions/  # TODO: Rename from 'goals/' to align with terminology
+│   │   │   │   ├── page.tsx               # Missions overview (strategic outcomes)
+│   │   │   │   └── [missionId]/
+│   │   │   │       └── page.tsx           # Mission detail
 │   │   │   │
 │   │   │   ├── analytics/
 │   │   │   │   ├── page.tsx               # Analytics dashboard

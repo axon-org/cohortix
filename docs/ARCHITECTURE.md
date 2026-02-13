@@ -269,7 +269,7 @@ Daily 9 AM Evolution Session
          │
          ├──▶ Reflection + Integration (15 min)
          │    • What did I learn?
-         │    • How does this apply to my missions?
+         │    • How does this apply to my operations?
          │    • What questions remain?
          │
          ├──▶ Update Expertise Matrix
@@ -279,26 +279,26 @@ Daily 9 AM Evolution Session
          │
          └──▶ Identify Next Learning Goal
               • Analyze performance gaps
-              • Review upcoming mission requirements
+              • Review upcoming operation requirements
               • Propose next course/material
 ```
 
-#### Bidirectional Goal Flow
+#### Bidirectional Mission Flow
 
-**Architecture supports both human→agent AND agent→human goal initiation**
+**Architecture supports both human→agent AND agent→human mission initiation**
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              BIDIRECTIONAL GOAL FLOW                     │
+│           BIDIRECTIONAL MISSION FLOW                     │
 │                                                          │
 │  ┌─────────────────┐         ┌─────────────────┐        │
-│  │  Human Proposes │────────▶│  Goal Created   │        │
-│  │      Goal       │         │  (Approved)     │        │
+│  │  Human Proposes │────────▶│ Mission Created │        │
+│  │     Mission     │         │  (Approved)     │        │
 │  └─────────────────┘         └────────┬────────┘        │
 │                                       │                  │
 │                                       ▼                  │
 │  ┌─────────────────┐         ┌─────────────────┐        │
-│  │  Agent Observes │────────▶│  Goal Proposal  │        │
+│  │  Agent Observes │────────▶│ Mission Proposal│        │
 │  │  Performance    │         │  (Pending)      │        │
 │  │  Issues/Opps    │         └────────┬────────┘        │
 │  └─────────────────┘                  │                  │
@@ -326,7 +326,7 @@ Daily 9 AM Evolution Session
 ```
 
 **Key Components:**
-- **Goal Source Tracking:** Every goal tagged with `source: 'human' | 'agent'`
+- **Mission Source Tracking:** Every mission tagged with `source: 'human' | 'agent'`
 - **Approval Workflow:** Agent proposals require human review
 - **Justification System:** Agents must provide evidence for proposals
 - **Modification Support:** Humans can adjust scope/priority before approval
@@ -337,7 +337,7 @@ Daily 9 AM Evolution Session
 
 **Why PostgreSQL:**
 - Battle-tested for enterprise workloads
-- pgvector extension for semantic search (knowledge base)
+- pgvector extension for semantic search (intelligence base)
 - Row-Level Security (RLS) for multi-tenant isolation
 - ACID compliance for data integrity
 - JSON/JSONB for flexible schema where needed

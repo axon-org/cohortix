@@ -1,16 +1,7 @@
-# Cohortix Terminology Guide
+# Cohortix Terminology — Authoritative Reference
 
-> **This is the single source of truth for all Cohortix branding and terminology.**
-
-## Product Identity
-
-| Attribute | Value |
-|-----------|-------|
-| **Product Name** | Cohortix |
-| **Domain** | cohortix.ai |
-| **Tagline** | "Your AI team, ready to help" |
-| **Target Audience** | Everyday people (not just technical users) |
-| **Tone** | Warm, friendly, approachable |
+**Status:** APPROVED by Ahmad (2026-02-12)
+**Based on:** PPV Pro by August Bradley, adapted for Cohortix's dual human+agent model
 
 ---
 
@@ -99,11 +90,9 @@ Pillars (Life/Business Areas)
 
 ---
 
-## Example Copy
+## Alignment Zone (The Pyramid)
 
-### Onboarding
-- ✅ "Welcome to your Base! Let's recruit your first Ally."
-- ❌ "Welcome to your workspace. Create your first agent."
+From abstract → concrete:
 
 ### Hierarchy Navigation
 - ✅ "This Mission supports your Goal: 'Launch AI consulting practice'"
@@ -134,7 +123,7 @@ Pillars (Life/Business Areas)
 
 ---
 
-## Voice & Tone Guidelines
+## Knowledge Zone
 
 ### Do ✅
 - Use "you" and "your" — speak directly to the person
@@ -157,7 +146,7 @@ Pillars (Life/Business Areas)
 
 ---
 
-## Quick Reference Card
+## Rhythm Zone (Review Cadences)
 
 ```
 ┌─────────────────────────────────────────────────┐
