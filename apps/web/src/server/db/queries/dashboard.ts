@@ -5,49 +5,30 @@
  * Uses Supabase client with RLS for automatic tenant isolation.
  */
 
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getAuthContext } from '@/lib/auth-helper';
 
 /**
- * Create Supabase client with server-side cookies
+ * Create Supabase client — delegates to centralized auth helper
+ * which handles BYPASS_AUTH for dev mode
  */
 async function createClient() {
-  // Production: Use SSR client with cookies for auth
-  const cookieStore = await cookies();
-  
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
+  const { supabase } = await getAuthContext();
+  return supabase;
 }
 
 /**
- * Get current authenticated user
+ * Get current authenticated user (simplified — auth handled by getAuthContext)
  */
 export async function getCurrentUser() {
-  const supabase = await createClient();
+  const { supabase, userId } = await getAuthContext();
   
-  const { data: { user }, error } = await supabase.auth.getUser();
-  
-  if (error || !user) {
-    return null;
-  }
-  
-  // Fetch user profile
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', user.id)
+    .eq('id', userId)
     .single();
   
-  return { ...user, profile };
+  return { id: userId, profile };
 }
 
 /**

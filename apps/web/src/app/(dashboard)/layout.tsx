@@ -1,17 +1,18 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/dashboard/sidebar'
 import { Header } from '@/components/dashboard/header'
 import { getCurrentUser } from '@/server/db/queries/dashboard'
+import { getAuthContext } from '@/lib/auth-helper'
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
+  let authContext;
+  try {
+    authContext = await getAuthContext()
+  } catch {
     redirect('/sign-in')
   }
   const currentUser = await getCurrentUser()

@@ -4,59 +4,14 @@
  * Operations are bounded initiatives stored in the 'projects' table
  */
 
-import { createClient } from '@supabase/supabase-js'
-
-/**
- * Create Supabase client with service role for server-side queries
- */
-async function createServerClient() {
-  // Production: Import SSR client
-  const { createServerClient } = await import('@supabase/ssr')
-  const { cookies } = await import('next/headers')
-  const cookieStore = await cookies()
-  
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        },
-      },
-    }
-  )
-}
-
-/**
- * Get organization ID for current user
- */
-async function getOrganizationId() {
-  const supabase = await createServerClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
-
-  const { data: membership } = await supabase
-    .from('organization_memberships')
-    .select('organization_id')
-    .eq('user_id', user.id)
-    .single()
-  
-  return membership?.organization_id || null
-}
+import { getAuthContext } from '@/lib/auth-helper'
 
 /**
  * Get all operations for the current organization
  * Operations are stored in the 'projects' table
  */
 export async function getOperations() {
-  const supabase = await createServerClient()
-  const organizationId = await getOrganizationId()
-
-  if (!organizationId) {
-    return []
-  }
+  const { supabase, organizationId } = await getAuthContext()
 
   const { data: operations, error } = await supabase
     .from('projects')
@@ -90,12 +45,7 @@ export async function getOperations() {
  * Get single operation by ID
  */
 export async function getOperation(id: string) {
-  const supabase = await createServerClient()
-  const organizationId = await getOrganizationId()
-
-  if (!organizationId) {
-    return null
-  }
+  const { supabase, organizationId } = await getAuthContext()
 
   const { data: operation, error } = await supabase
     .from('projects')
@@ -126,12 +76,7 @@ export async function getOperation(id: string) {
  * Get operations by status
  */
 export async function getOperationsByStatus(status: string) {
-  const supabase = await createServerClient()
-  const organizationId = await getOrganizationId()
-
-  if (!organizationId) {
-    return []
-  }
+  const { supabase, organizationId } = await getAuthContext()
 
   const { data: operations, error } = await supabase
     .from('projects')
