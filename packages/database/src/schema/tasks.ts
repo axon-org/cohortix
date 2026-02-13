@@ -40,6 +40,7 @@ export const tasks = pgTable('tasks', {
   
   // Ordering (for Kanban)
   orderIndex: integer('order_index').default(0).notNull(),
+  position: integer('position').default(0).notNull(),
   
   // Estimation
   estimatedHours: decimal('estimated_hours', { precision: 6, scale: 2 }),

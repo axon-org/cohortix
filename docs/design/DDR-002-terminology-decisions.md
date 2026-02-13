@@ -39,7 +39,7 @@ From Ahmad's interviews with 12 target users (Jan 2026):
 |--------------|---------------|-----------|
 | **Agent** | **Ally** | • Emphasizes partnership, not tools<br>• Warm, non-technical<br>• Still professional (not "buddy" or "helper") |
 | **Agent Group** | **Cohort** | • Implies shared purpose<br>• Memorable, brand-distinctive<br>• Educational/team connotation (not military) |
-| **Task/Action** | **Mission** | • Conveys importance and clarity<br>• Narrative weight (missions have goals)<br>• Avoids "task" (chore) and "action" (vague) |
+| **Goal (measurable outcome)** | **Mission** | • Conveys importance and clarity<br>• Narrative weight (missions have purpose)<br>• Pairs with "deploy", "brief", "Mission Control" |
 | **Workflow** | **Goal** | • Higher-level than missions<br>• Outcome-oriented<br>• Familiar from OKRs, project management |
 | **Dashboard** | **Mission Control** | • Thematic consistency<br>• Implies oversight, coordination<br>• NASA reference (positive, aspirational) |
 

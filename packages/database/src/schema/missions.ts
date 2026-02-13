@@ -38,6 +38,7 @@ export const missions = pgTable('projects', {
   goalId: uuid('goal_id').references(() => goals.id, { onDelete: 'set null' }),
   
   settings: jsonb('settings').default({}).notNull(),
+  position: integer('position').default(0).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 });

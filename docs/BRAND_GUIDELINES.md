@@ -71,8 +71,8 @@ From abstract → concrete:
 |--------------|---------------|---------------|
 | Agent | **Ally** | "Add a new ally to your cohort" |
 | Agents (group) | **Cohort** | "Your cohort is ready for deployment" |
-| Action | **Mission** | "Assign this mission to your ally" |
-| Workflow / Series of actions | **Goal** | "This goal includes 5 missions" |
+| Atomic work | **Task** | "Assign this task to your ally" |
+| Bounded project | **Operation** | "This operation includes 5 tasks" |
 | Dashboard / UI | **Mission Control** | "View progress in Mission Control" |
 | Create agent | **Recruit** | "Recruit a new ally" |
 | Assign work | **Brief** | "Brief your ally on this Mission" |
@@ -82,11 +82,10 @@ From abstract → concrete:
 | Agent status: idle | **Standing by** | "Ally standing by, ready for deployment" |
 | Agent status: offline | **Off duty** | "This ally is currently off duty" |
 | Assign action | **Brief** | "Brief your ally on this mission" |
-| Complete action | **Mission accomplished** | "Mission accomplished! Learnings captured." |
-| Action queue | **Mission roster** | "5 missions in the roster" |
+| Complete task | **Complete** | "Task complete! Insights captured." |
+| Task queue | **Task roster** | "5 tasks in the roster" |
 | Organization | **HQ** | "Invite teammates to your HQ" |
-| Mission | **Goal** | "Start a new goal" |
-| Knowledge base | **Intel** | "Search past intel" |
+| Knowledge base | **Intelligence** | "Search your Intelligence" |
 
 ---
 
