@@ -53,7 +53,7 @@ export function MissionsTableClient() {
 
   const tableData: MissionRow[] = data.data.map((mission) => ({
     id: mission.id,
-    name: mission.name,
+    title: mission.title || mission.name,
     status: mission.status,
     startDate: mission.start_date || null,
     targetDate: mission.target_date || null,

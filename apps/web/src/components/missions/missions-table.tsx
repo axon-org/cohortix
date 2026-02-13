@@ -9,7 +9,8 @@ import { formatDate } from '@/lib/utils'
 
 export interface MissionRow {
   id: string
-  name: string
+  name?: string
+  title?: string
   status: MissionStatus
   startDate: string | null
   targetDate: string | null
@@ -24,9 +25,9 @@ export function MissionsTable({ data }: MissionsTableProps) {
   const columns = useMemo<ColumnDef<MissionRow>[]>(
     () => [
       {
-        accessorKey: 'name',
+        accessorKey: 'title',
         header: ({ column }) => <SortableHeader column={column}>Name</SortableHeader>,
-        cell: ({ row }) => <span className="font-medium">{row.getValue('name')}</span>,
+        cell: ({ row }) => <span className="font-medium">{row.getValue('title')}</span>,
       },
       {
         accessorKey: 'status',
@@ -66,7 +67,7 @@ export function MissionsTable({ data }: MissionsTableProps) {
     <DataTable
       columns={columns}
       data={data}
-      searchKey="name"
+      searchKey="title"
       searchPlaceholder="Search missions..."
       onRowClick={(mission) => { window.location.href = `/missions/${mission.id}` }}
       emptyMessage="No missions found."
