@@ -1,11 +1,20 @@
 'use client'
 
+import { useMemo } from 'react'
 import { useOperations } from '@/hooks/use-operations'
+import { useMissions } from '@/hooks/use-missions'
 import { OperationsTable, type Operation } from './operations-table'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export function OperationsTableClient() {
   const { data, isLoading, error } = useOperations()
+  const { data: missionsData } = useMissions({ limit: 1000 }) // Fetch all missions for lookup
+
+  // Create mission lookup map
+  const missionLookup = useMemo(() => {
+    if (!missionsData?.data) return new Map()
+    return new Map(missionsData.data.map(m => [m.id, m.name]))
+  }, [missionsData])
 
   if (isLoading) {
     return <OperationsTableSkeleton />
@@ -31,12 +40,12 @@ export function OperationsTableClient() {
     )
   }
 
-  // Transform API data to table format
+  // Transform API data to table format with mission names
   const tableData: Operation[] = data.data.map((operation) => ({
     id: operation.id,
     name: operation.name,
     status: operation.status,
-    missionName: undefined, // TODO: Add mission relationship lookup
+    missionName: operation.missionId ? missionLookup.get(operation.missionId) : undefined,
     startDate: operation.startDate,
     targetDate: operation.targetDate,
     createdAt: operation.created_at,
