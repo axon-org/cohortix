@@ -31,8 +31,14 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Skip auth redirect for API routes (they handle auth themselves)
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api')
+  const bypassAuth = process.env.BYPASS_AUTH === 'true'
+
   if (
     !user &&
+    !bypassAuth &&
+    !isApiRoute &&
     !request.nextUrl.pathname.startsWith('/sign-in') &&
     !request.nextUrl.pathname.startsWith('/sign-up') &&
     !request.nextUrl.pathname.startsWith('/auth') &&
