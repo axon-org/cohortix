@@ -103,7 +103,7 @@ describe('Validation Schemas', () => {
       const result = createMissionSchema.safeParse(invalidMission)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].message).toContain('at least 3 characters')
+        expect(result.error.errors[0]?.message).toContain('at least 3 characters')
       }
     })
 

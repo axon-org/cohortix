@@ -218,7 +218,7 @@ export async function getCohortEngagementTimeline(
       const date = new Date();
       date.setDate(date.getDate() - (daysBack - i - 1));
       timeline.push({
-        date: date.toISOString().split('T')[0],
+        date: date.toISOString().split('T')[0]!,
         interaction_count: 0,
       });
     }

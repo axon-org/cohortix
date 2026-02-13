@@ -25,11 +25,11 @@ async function createServerClient() {
   }
 
   // Production: Import SSR client
-  const { createClient: createSSRClient } = await import('@supabase/ssr')
+  const { createServerClient } = await import('@supabase/ssr')
   const { cookies } = await import('next/headers')
   const cookieStore = await cookies()
   
-  return createSSRClient(
+  return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -81,11 +81,6 @@ export async function getOperations() {
     .from('projects')
     .select(`
       *,
-      assignee:agents!projects_owner_id_fkey(
-        id,
-        name,
-        avatar_url
-      ),
       tasks(
         id,
         status
@@ -125,24 +120,13 @@ export async function getOperation(id: string) {
     .from('projects')
     .select(`
       *,
-      assignee:agents!projects_owner_id_fkey(
-        id,
-        name,
-        avatar_url,
-        role
-      ),
       tasks(
         id,
         title,
         description,
         status,
         priority,
-        order_index,
-        assignee:agents!tasks_assignee_id_fkey(
-          id,
-          name,
-          avatar_url
-        )
+        order_index
       )
     `)
     .eq('id', id)
