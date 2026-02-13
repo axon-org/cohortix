@@ -34,62 +34,31 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries())
   const query = validateData(cohortQuerySchema, searchParams) as CohortQueryParams
 
-  let supabase: any
-  let organizationId: string
-  let userId: string | undefined = undefined
+  // Get authenticated user
+  const supabase = await createClient()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
 
-  // DEV MODE: Bypass auth for testing
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    // Use service role key to bypass RLS
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
-    supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
-    
-    // Use first available organization for testing
-    const { data: org } = await supabase
-      .from('organizations')
-      .select('id')
-      .limit(1)
-      .single()
-    
-    organizationId = org?.id || ''
-    userId = 'dev-bypass'
-    logger.info('DEV MODE: Using test organization', { organizationId })
-  } else {
-    supabase = await createClient()
-    // Get authenticated user
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      throw new UnauthorizedError('Authentication required')
-    }
-
-    userId = user.id
-
-    // Get user's organization
-    const { data: membership, error: membershipError } = await supabase
-      .from('organization_memberships')
-      .select('organization_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (membershipError || !membership) {
-      throw new ForbiddenError('User is not associated with any organization')
-    }
-
-    organizationId = membership.organization_id
+  if (authError || !user) {
+    throw new UnauthorizedError('Authentication required')
   }
+
+  const userId = user.id
+
+  // Get user's organization
+  const { data: membership, error: membershipError } = await supabase
+    .from('organization_memberships')
+    .select('organization_id')
+    .eq('user_id', user.id)
+    .single()
+
+  if (membershipError || !membership) {
+    throw new ForbiddenError('User is not associated with any organization')
+  }
+
+  const organizationId = membership.organization_id
 
   logger.info('Fetching cohorts', {
     correlationId,

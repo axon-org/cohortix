@@ -26,28 +26,6 @@ interface RouteContext {
 // ============================================================================
 
 async function getAuthContext() {
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
-    const supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
-    
-    const { data: org } = await supabase
-      .from('organizations')
-      .select('id')
-      .limit(1)
-      .single()
-    
-    return { supabase, organizationId: org?.id || '', userId: 'dev-bypass' }
-  }
-
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) throw new UnauthorizedError('Authentication required')
