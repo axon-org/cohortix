@@ -133,9 +133,14 @@ export function KanbanCard({ task, onClick }: KanbanCardProps) {
               {task.projects.name}
             </span>
           )}
-          {!isTask && task.missionId && (
-            <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">
-              Mission: {task.missionId?.slice(0, 8) ?? 'Unknown'}
+          {!isTask && (task as any).missions && (
+            <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">
+              {(task as any).missions.title}
+            </span>
+          )}
+          {!isTask && (task as any).task_count?.[0]?.count > 0 && (
+            <span className="text-[10px] text-muted-foreground">
+              {(task as any).task_count[0].count} tasks
             </span>
           )}
         </div>

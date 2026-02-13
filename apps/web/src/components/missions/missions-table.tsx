@@ -15,6 +15,8 @@ export interface MissionRow {
   startDate: string | null
   targetDate: string | null
   completedAt: string | null
+  operationCount?: number
+  progress?: number
 }
 
 interface MissionsTableProps {
@@ -34,6 +36,29 @@ export function MissionsTable({ data }: MissionsTableProps) {
         header: 'Status',
         cell: ({ row }) => <MissionStatusChip status={row.getValue('status')} />,
         filterFn: (row, id, value) => value.includes(row.getValue(id)),
+      },
+      {
+        accessorKey: 'operationCount',
+        header: 'Operations',
+        cell: ({ row }) => {
+          const count = row.getValue<number>('operationCount')
+          return <span className="text-muted-foreground">{count ?? 0}</span>
+        },
+      },
+      {
+        accessorKey: 'progress',
+        header: 'Progress',
+        cell: ({ row }) => {
+          const progress = row.getValue<number>('progress')
+          return (
+            <div className="flex items-center gap-2">
+              <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-foreground rounded-full" style={{ width: `${progress ?? 0}%` }} />
+              </div>
+              <span className="text-[11px] text-muted-foreground">{progress ?? 0}%</span>
+            </div>
+          )
+        },
       },
       {
         accessorKey: 'startDate',

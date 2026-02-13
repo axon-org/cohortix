@@ -52,7 +52,7 @@ export function OperationsTableClient() {
     id: operation.id,
     name: operation.name,
     status: operation.status,
-    missionName: operation.missionId ? missionLookup.get(operation.missionId) : undefined,
+    missionName: (operation as any).missions?.title || (operation.missionId ? missionLookup.get(operation.missionId) : undefined),
     ownerName: operation.ownerId ? allyLookup.get(operation.ownerId) : 'Unassigned',
     startDate: operation.startDate,
     targetDate: operation.targetDate,

@@ -51,13 +51,15 @@ export function MissionsTableClient() {
     )
   }
 
-  const tableData: MissionRow[] = data.data.map((mission) => ({
+  const tableData: MissionRow[] = data.data.map((mission: any) => ({
     id: mission.id,
     title: mission.title || mission.name,
     status: mission.status,
     startDate: mission.start_date || null,
     targetDate: mission.target_date || null,
     completedAt: mission.completed_at || null,
+    operationCount: mission.operation_count?.[0]?.count ?? 0,
+    progress: mission.progress ?? 0,
   }))
 
   return <MissionsTable data={tableData} />
