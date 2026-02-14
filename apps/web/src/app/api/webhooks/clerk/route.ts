@@ -16,11 +16,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import type { WebhookEvent } from '@clerk/nextjs/server';
 
-const webhookSecret = process.env.CLERK_WEBHOOK_SECRET || '';
-
-if (!webhookSecret) {
-  throw new Error('CLERK_WEBHOOK_SECRET is not set');
-}
+const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 
 /**
  * Create Supabase service client (bypasses RLS for admin operations)
@@ -39,6 +35,12 @@ function createServiceClient() {
 }
 
 export async function POST(req: Request) {
+  // Check webhook secret is configured
+  if (!webhookSecret) {
+    console.error('CLERK_WEBHOOK_SECRET is not set');
+    return new NextResponse('Webhook secret not configured', { status: 500 });
+  }
+
   // Get webhook headers
   const headerPayload = await headers();
   const svix_id = headerPayload.get('svix-id');
