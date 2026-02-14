@@ -111,7 +111,6 @@ jobs:
   secret-scan:
     name: Secret Scan
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     timeout-minutes: 5
     steps:
       - name: Checkout code
@@ -137,7 +136,6 @@ jobs:
     name: Full Test Suite
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: github.event_name == 'pull_request'
     needs: [lint, type-check, unit-test]
     steps:
       - name: Checkout code
@@ -185,7 +183,6 @@ jobs:
     name: SAST Scan
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event_name == 'pull_request'
     needs: [lint, type-check, unit-test]
     steps:
       - name: Checkout code
@@ -202,7 +199,6 @@ jobs:
     name: Dependency Audit
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: github.event_name == 'pull_request'
     needs: [lint, type-check, unit-test]
     steps:
       - name: Checkout code
@@ -229,7 +225,6 @@ jobs:
     name: Snyk Security Scan
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event_name == 'pull_request'
     needs: [lint, type-check, unit-test]
     steps:
       - name: Checkout code
