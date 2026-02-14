@@ -3,6 +3,7 @@
 ## Pre-Deployment
 
 ### 1. Environment Variables
+
 - [ ] Copy `.env.example` to `.env.local`
 - [ ] Set Supabase URL (`NEXT_PUBLIC_SUPABASE_URL`)
 - [ ] Set Supabase Anon Key (`NEXT_PUBLIC_SUPABASE_ANON_KEY`)
@@ -11,6 +12,7 @@
 - [ ] Verify environment variables on Vercel/hosting platform
 
 ### 2. Database Setup
+
 - [ ] Create Supabase project
 - [ ] Enable required PostgreSQL extensions:
   - [ ] `uuid-ossp`
@@ -31,6 +33,7 @@
 - [ ] Set up Row-Level Security (RLS) policies
 
 ### 3. Testing
+
 - [ ] Type-check passes: `pnpm type-check`
 - [ ] Lint passes: `pnpm lint`
 - [ ] Dev server starts: `pnpm dev`
@@ -42,6 +45,7 @@
 - [ ] Dark theme applies correctly
 
 ### 4. Code Quality
+
 - [ ] All TypeScript errors resolved
 - [ ] No console.error or console.warn in production code
 - [ ] Components follow project conventions (see CLAUDE.md)
@@ -53,13 +57,14 @@
 ### Option 1: Vercel (Recommended)
 
 1. **Connect Repository**
+
    ```bash
    # Install Vercel CLI
    npm i -g vercel
-   
+
    # Login
    vercel login
-   
+
    # Deploy
    cd /Users/alimai/Projects/cohortix
    vercel
@@ -83,22 +88,25 @@
 ### Option 2: Self-Hosted
 
 1. **Build**
+
    ```bash
    cd /Users/alimai/Projects/cohortix/apps/web
    pnpm build
    ```
 
 2. **Run Production Server**
+
    ```bash
    pnpm start
    ```
 
 3. **Nginx Configuration** (example)
+
    ```nginx
    server {
        listen 80;
        server_name cohortix.ai;
-       
+
        location / {
            proxy_pass http://localhost:3000;
            proxy_http_version 1.1;
@@ -121,6 +129,7 @@
 ## Post-Deployment
 
 ### 1. Verification
+
 - [ ] Dashboard loads at production URL
 - [ ] Authentication works
 - [ ] All API calls succeed
@@ -129,12 +138,14 @@
 - [ ] Analytics configured (Vercel Analytics, etc.)
 
 ### 2. Monitoring
+
 - [ ] Set up uptime monitoring
 - [ ] Configure error alerts
 - [ ] Set up performance monitoring
 - [ ] Enable logging
 
 ### 3. Documentation
+
 - [ ] Update README with production URL
 - [ ] Document deployment process
 - [ ] Create runbook for common issues
@@ -143,6 +154,7 @@
 ## Rollback Plan
 
 If issues occur:
+
 1. **Vercel:** Revert to previous deployment via dashboard
 2. **Self-hosted:** Restore previous git commit and rebuild
    ```bash
@@ -154,6 +166,7 @@ If issues occur:
 ## Future Enhancements
 
 After initial deployment:
+
 - [ ] Connect real KPI data from database
 - [ ] Implement real-time activity feed
 - [ ] Add mobile sidebar (hamburger menu)

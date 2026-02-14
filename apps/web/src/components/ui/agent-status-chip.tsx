@@ -1,10 +1,10 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
-export type AgentStatus = 'active' | 'idle' | 'busy' | 'offline' | 'error'
+export type AgentStatus = 'active' | 'idle' | 'busy' | 'offline' | 'error';
 
 interface AgentStatusChipProps {
-  status: AgentStatus
-  className?: string
+  status: AgentStatus;
+  className?: string;
 }
 
 const statusConfig: Record<AgentStatus, { label: string; className: string }> = {
@@ -13,13 +13,19 @@ const statusConfig: Record<AgentStatus, { label: string; className: string }> = 
   busy: { label: 'Busy', className: 'bg-[#F59E0B] text-background' },
   offline: { label: 'Offline', className: 'bg-muted text-muted-foreground' },
   error: { label: 'Error', className: 'bg-[#EF4444] text-white' },
-}
+};
 
 export function AgentStatusChip({ status, className }: AgentStatusChipProps) {
-  const config = statusConfig[status]
+  const config = statusConfig[status];
   return (
-    <span className={cn('inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold', config.className, className)}>
+    <span
+      className={cn(
+        'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold',
+        config.className,
+        className
+      )}
+    >
       {config.label}
     </span>
-  )
+  );
 }

@@ -8,14 +8,18 @@
 
 ## Overview
 
-This directory contains **design tokens** for the Cohortix UI design system. Tokens are the atomic design decisions (colors, spacing, typography) extracted from the Tailwind configuration into structured, type-safe TypeScript constants.
+This directory contains **design tokens** for the Cohortix UI design system.
+Tokens are the atomic design decisions (colors, spacing, typography) extracted
+from the Tailwind configuration into structured, type-safe TypeScript constants.
 
 ---
 
 ## Why Design Tokens?
 
 **Problems they solve:**
-1. **Single source of truth** — No more hardcoded `#5E6AD2` scattered across components
+
+1. **Single source of truth** — No more hardcoded `#5E6AD2` scattered across
+   components
 2. **Type safety** — TypeScript ensures valid token references at compile-time
 3. **Platform-agnostic** — Export to JSON for iOS, Android, Figma plugins
 4. **Semantic naming** — `colors.dark.primary` is clearer than raw hex values
@@ -25,12 +29,12 @@ This directory contains **design tokens** for the Cohortix UI design system. Tok
 
 ## Token Files
 
-| File | Purpose |
-|------|---------|
-| **`colors.ts`** | Color palette, semantic colors, status colors, contrast ratios |
-| **`spacing.ts`** | Spacing scale (8px grid), layout values, touch targets, z-index |
-| **`typography.ts`** | Font families, sizes, weights, line heights, text styles |
-| **`index.ts`** | Exports all tokens + metadata (version, changelog) |
+| File                | Purpose                                                         |
+| ------------------- | --------------------------------------------------------------- |
+| **`colors.ts`**     | Color palette, semantic colors, status colors, contrast ratios  |
+| **`spacing.ts`**    | Spacing scale (8px grid), layout values, touch targets, z-index |
+| **`typography.ts`** | Font families, sizes, weights, line heights, text styles        |
+| **`index.ts`**      | Exports all tokens + metadata (version, changelog)              |
 
 ---
 
@@ -39,7 +43,7 @@ This directory contains **design tokens** for the Cohortix UI design system. Tok
 ### In React Components
 
 ```tsx
-import { colors, spacing, typography } from '@cohortix/ui/tokens'
+import { colors, spacing, typography } from '@cohortix/ui/tokens';
 
 export function MissionCard() {
   return (
@@ -54,7 +58,7 @@ export function MissionCard() {
       <h3 style={typography.textStyles.h3}>Mission Title</h3>
       <p style={typography.textStyles.body}>Mission description...</p>
     </div>
-  )
+  );
 }
 ```
 
@@ -62,9 +66,9 @@ export function MissionCard() {
 
 ```ts
 // tailwind.config.ts
-import colors from './packages/ui/tokens/colors'
-import spacing from './packages/ui/tokens/spacing'
-import fontSize from './packages/ui/tokens/typography'
+import colors from './packages/ui/tokens/colors';
+import spacing from './packages/ui/tokens/spacing';
+import fontSize from './packages/ui/tokens/typography';
 
 export default {
   theme: {
@@ -74,14 +78,14 @@ export default {
       fontSize,
     },
   },
-}
+};
 ```
 
 ### In Styled Components (if needed)
 
 ```tsx
-import styled from 'styled-components'
-import { colors, spacing } from '@cohortix/ui/tokens'
+import styled from 'styled-components';
+import { colors, spacing } from '@cohortix/ui/tokens';
 
 const Button = styled.button`
   background-color: ${colors.dark.primary.DEFAULT};
@@ -89,11 +93,11 @@ const Button = styled.button`
   padding: ${spacing[4]} ${spacing[6]};
   border-radius: ${spacing.borderRadius.lg};
   font-weight: ${typography.fontWeight.medium};
-  
+
   &:hover {
     background-color: ${colors.dark.primary.DEFAULT}e6; /* 90% opacity */
   }
-`
+`;
 ```
 
 ---
@@ -103,30 +107,30 @@ const Button = styled.button`
 ### Colors
 
 ```ts
-colors.dark.primary.DEFAULT    // #5E6AD2
-colors.dark.primary.foreground // #FFFFFF
-colors.dark.success            // #10B981
-statusColors.mission.active    // Green (On Mission)
-statusColors.ally.standingBy   // Gray (Standing By)
+colors.dark.primary.DEFAULT; // #5E6AD2
+colors.dark.primary.foreground; // #FFFFFF
+colors.dark.success; // #10B981
+statusColors.mission.active; // Green (On Mission)
+statusColors.ally.standingBy; // Gray (Standing By)
 ```
 
 ### Spacing
 
 ```ts
-spacing[4]           // 16px (1rem)
-spacing[6]           // 24px (1.5rem)
-layout.sidebarWidth  // 240px
-touchTarget.minimum  // 44px (WCAG requirement)
-borderRadius.lg      // 8px
+spacing[4]; // 16px (1rem)
+spacing[6]; // 24px (1.5rem)
+layout.sidebarWidth; // 240px
+touchTarget.minimum; // 44px (WCAG requirement)
+borderRadius.lg; // 8px
 ```
 
 ### Typography
 
 ```ts
-typography.fontSize.base       // [16px, { lineHeight: 24px }]
-typography.fontWeight.medium   // 500
-typography.textStyles.h1       // Complete heading style
-typography.componentTypography.card.title // Mission card title style
+typography.fontSize.base; // [16px, { lineHeight: 24px }]
+typography.fontWeight.medium; // 500
+typography.textStyles.h1; // Complete heading style
+typography.componentTypography.card.title; // Mission card title style
 ```
 
 ---
@@ -135,14 +139,15 @@ typography.componentTypography.card.title // Mission card title style
 
 Tokens use **semantic names** instead of raw values:
 
-| ❌ Bad | ✅ Good |
-|--------|---------|
+| ❌ Bad    | ✅ Good                       |
+| --------- | ----------------------------- |
 | `#5E6AD2` | `colors.dark.primary.DEFAULT` |
-| `16px` | `spacing[4]` |
-| `20px` | `spacing[5]` |
-| `14px` | `typography.fontSize.sm` |
+| `16px`    | `spacing[4]`                  |
+| `20px`    | `spacing[5]`                  |
+| `14px`    | `typography.fontSize.sm`      |
 
 **Why?** Semantic names:
+
 - Survive design updates (change primary color, references stay valid)
 - Self-document ("primary" is clearer than "#5E6AD2")
 - Enable theming (light/dark modes use same token names)
@@ -180,11 +185,11 @@ Tokens use **semantic names** instead of raw values:
 
 ```ts
 // scripts/export-tokens.ts
-import * as tokens from './packages/ui/tokens'
-import fs from 'fs'
+import * as tokens from './packages/ui/tokens';
+import fs from 'fs';
 
-const json = JSON.stringify(tokens, null, 2)
-fs.writeFileSync('./design-tokens.json', json)
+const json = JSON.stringify(tokens, null, 2);
+fs.writeFileSync('./design-tokens.json', json);
 ```
 
 ### To CSS Variables (for legacy support)
@@ -192,8 +197,8 @@ fs.writeFileSync('./design-tokens.json', json)
 ```css
 /* generated.css */
 :root {
-  --color-primary: #5E6AD2;
-  --color-foreground: #FAFAFA;
+  --color-primary: #5e6ad2;
+  --color-foreground: #fafafa;
   --spacing-4: 1rem;
   --spacing-6: 1.5rem;
   --font-size-base: 1rem;
@@ -227,13 +232,14 @@ fs.writeFileSync('./design-tokens.json', json)
 
 ```ts
 // colors.ts exports contrast ratios
-contrastRatios.foregroundOnBackground // 17.8:1 (AAA)
-contrastRatios.primaryOnBackground    // 9.2:1 (AAA)
+contrastRatios.foregroundOnBackground; // 17.8:1 (AAA)
+contrastRatios.primaryOnBackground; // 9.2:1 (AAA)
 ```
 
 ### Type Safety
 
 TypeScript ensures:
+
 - Valid token references (`colors.dark.primary.DEFAULT` is correct)
 - No typos (`colors.dark.primry` fails at compile-time)
 - Auto-complete in IDEs
@@ -277,4 +283,5 @@ TypeScript ensures:
 
 ---
 
-*This directory is the single source of truth for design decisions. Update tokens, not hardcoded values.*
+_This directory is the single source of truth for design decisions. Update
+tokens, not hardcoded values._

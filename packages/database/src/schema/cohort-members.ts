@@ -4,7 +4,7 @@ import { agents } from './agents';
 
 /**
  * Cohort Members Table
- * 
+ *
  * Links agents (allies) to cohorts with engagement tracking.
  * This is a many-to-many join table with additional metrics.
  */
@@ -18,15 +18,13 @@ export const cohortMembers = pgTable(
     cohortId: uuid('cohort_id')
       .notNull()
       .references(() => cohorts.id, { onDelete: 'cascade' }),
-    
+
     agentId: uuid('agent_id')
       .notNull()
       .references(() => agents.id, { onDelete: 'cascade' }),
 
     // Engagement metrics
-    engagementScore: numeric('engagement_score', { precision: 5, scale: 2 })
-      .default('0')
-      .notNull(),
+    engagementScore: numeric('engagement_score', { precision: 5, scale: 2 }).default('0').notNull(),
 
     // Timestamps
     joinedAt: timestamp('joined_at', { withTimezone: true }).defaultNow().notNull(),

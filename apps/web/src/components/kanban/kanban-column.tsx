@@ -1,35 +1,32 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { useDroppable } from '@dnd-kit/core'
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
-import { KanbanCard } from './kanban-card'
-import { type Operation } from '@/lib/api/client'
-import { type KanbanStatus } from './kanban-board'
-import { cn } from '@/lib/utils'
+import React from 'react';
+import { useDroppable } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { KanbanCard } from './kanban-card';
+import { type Operation } from '@/lib/api/client';
+import { type KanbanStatus } from './kanban-board';
+import { cn } from '@/lib/utils';
 
 type Task = {
-  id: string
-  title: string
-  description?: string
-  status: string
-  priority?: string
-  dueDate?: string
-  assigneeId?: string
-  projectId?: string
-  projects?: { id: string; name: string; status: string }
-  createdAt: string
-  updatedAt?: string
-}
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  priority?: string;
+  dueDate?: string;
+  assigneeId?: string;
+  projectId?: string;
+  projects?: { id: string; name: string; status: string };
+  createdAt: string;
+  updatedAt?: string;
+};
 
 interface KanbanColumnProps {
-  id: string
-  title: string
-  tasks: (Operation | Task)[]
-  onCardClick?: (task: Operation | Task) => void
+  id: string;
+  title: string;
+  tasks: (Operation | Task)[];
+  onCardClick?: (task: Operation | Task) => void;
 }
 
 export function KanbanColumn({ id, title, tasks, onCardClick }: KanbanColumnProps) {
@@ -39,9 +36,9 @@ export function KanbanColumn({ id, title, tasks, onCardClick }: KanbanColumnProp
       type: 'Column',
       id,
     },
-  })
+  });
 
-  const taskIds = tasks.map((t) => t.id)
+  const taskIds = tasks.map((t) => t.id);
 
   return (
     <div className="flex flex-col w-[320px] bg-muted/30 rounded-lg border border-border/50 max-h-full">
@@ -59,8 +56,8 @@ export function KanbanColumn({ id, title, tasks, onCardClick }: KanbanColumnProp
       <div
         ref={setNodeRef}
         className={cn(
-          "flex-1 p-2 space-y-3 overflow-y-auto min-h-[150px] transition-colors",
-          isOver && "bg-muted/50"
+          'flex-1 p-2 space-y-3 overflow-y-auto min-h-[150px] transition-colors',
+          isOver && 'bg-muted/50'
         )}
       >
         <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
@@ -70,5 +67,5 @@ export function KanbanColumn({ id, title, tasks, onCardClick }: KanbanColumnProp
         </SortableContext>
       </div>
     </div>
-  )
+  );
 }

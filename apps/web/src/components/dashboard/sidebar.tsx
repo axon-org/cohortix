@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import {
   LayoutGrid,
   Users,
@@ -13,8 +13,8 @@ import {
   ChevronLeft,
   FolderKanban,
   CheckSquare,
-} from 'lucide-react'
-import { useState } from 'react'
+} from 'lucide-react';
+import { useState } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutGrid },
@@ -23,20 +23,20 @@ const navigation = [
   { name: 'Missions', href: '/missions', icon: Rocket },
   { name: 'Operations', href: '/operations', icon: FolderKanban },
   { name: 'Tasks', href: '/tasks', icon: CheckSquare },
-]
+];
 
 interface SidebarProps {
-  user: any
+  user: any;
 }
 
 export function Sidebar({ user }: SidebarProps) {
-  const pathname = usePathname()
-  const [collapsed, setCollapsed] = useState(false)
+  const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
 
-  const displayName = user?.profile?.display_name || user?.email?.split('@')[0] || 'User'
-  const userEmail = user?.email || ''
-  const avatarUrl = user?.profile?.avatar_url
-  const orgName = user?.profile?.organization_name || 'Cohortix'
+  const displayName = user?.profile?.display_name || user?.email?.split('@')[0] || 'User';
+  const userEmail = user?.email || '';
+  const avatarUrl = user?.profile?.avatar_url;
+  const orgName = user?.profile?.organization_name || 'Cohortix';
 
   return (
     <div
@@ -50,9 +50,7 @@ export function Sidebar({ user }: SidebarProps) {
         <div className="w-7 h-7 bg-foreground rounded-md flex items-center justify-center flex-shrink-0">
           <Rocket className="w-4 h-4 text-background" />
         </div>
-        {!collapsed && (
-          <span className="text-sm font-semibold truncate">{orgName}</span>
-        )}
+        {!collapsed && <span className="text-sm font-semibold truncate">{orgName}</span>}
         <button
           onClick={() => setCollapsed(!collapsed)}
           className={cn(
@@ -60,23 +58,15 @@ export function Sidebar({ user }: SidebarProps) {
             collapsed && 'ml-0'
           )}
         >
-          <ChevronLeft
-            className={cn(
-              'w-4 h-4 transition-transform',
-              collapsed && 'rotate-180'
-            )}
-          />
+          <ChevronLeft className={cn('w-4 h-4 transition-transform', collapsed && 'rotate-180')} />
         </button>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-3 space-y-0.5">
         {navigation.map((item) => {
-          const isActive =
-            item.href === '/'
-              ? pathname === '/'
-              : pathname.startsWith(item.href)
-          const Icon = item.icon
+          const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+          const Icon = item.icon;
 
           return (
             <Link
@@ -96,7 +86,7 @@ export function Sidebar({ user }: SidebarProps) {
               <Icon className="w-4 h-4 flex-shrink-0" />
               {!collapsed && <span>{item.name}</span>}
             </Link>
-          )
+          );
         })}
       </nav>
 
@@ -129,13 +119,11 @@ export function Sidebar({ user }: SidebarProps) {
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-medium truncate">{displayName}</p>
-              <p className="text-[11px] text-muted-foreground truncate">
-                {userEmail}
-              </p>
+              <p className="text-[11px] text-muted-foreground truncate">{userEmail}</p>
             </div>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }

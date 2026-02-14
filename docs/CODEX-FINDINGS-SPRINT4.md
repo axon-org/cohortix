@@ -10,11 +10,16 @@
 
 ## Executive Summary
 
-Sprint 4 backend implementation demonstrates **strong adherence to Axon Codex v1.2 standards** with excellent patterns in error handling, validation, and structured logging. The codebase shows mature engineering practices with consistent RFC 7807 error responses, Zod validation on all endpoints, and proper database schema design.
+Sprint 4 backend implementation demonstrates **strong adherence to Axon Codex
+v1.2 standards** with excellent patterns in error handling, validation, and
+structured logging. The codebase shows mature engineering practices with
+consistent RFC 7807 error responses, Zod validation on all endpoints, and proper
+database schema design.
 
 **Overall Assessment:** ✅ **COMPLIANT** with minor issues requiring fixes
 
 **Key Strengths:**
+
 - ✅ RFC 7807 structured error handling
 - ✅ Comprehensive Zod input validation
 - ✅ Structured JSON logging with correlation IDs
@@ -33,6 +38,7 @@ Sprint 4 backend implementation demonstrates **strong adherence to Axon Codex v1
 ### 1.1 API Routes Review (apps/web/src/app/api/v1/)
 
 **Reviewed Routes:** 11 route handlers
+
 - `/missions` (GET, POST, GET/:id, PATCH/:id, DELETE/:id)
 - `/operations` (GET, POST, GET/:id, PATCH/:id, DELETE/:id)
 - `/cohorts` (GET, POST, GET/:id, PATCH/:id, DELETE/:id)
@@ -42,18 +48,22 @@ Sprint 4 backend implementation demonstrates **strong adherence to Axon Codex v1
 #### ✅ COMPLIANT PATTERNS
 
 **1. Error Handling (Codex §2.6)**
+
 ```typescript
 // RFC 7807 Problem Details implementation
 export class AppError extends Error {
-  public readonly statusCode: number
-  public readonly type: string
-  public readonly title: string
+  public readonly statusCode: number;
+  public readonly type: string;
+  public readonly title: string;
   // ... proper error typing
 }
 ```
-**Status:** ✅ Excellent implementation. All routes use `withErrorHandler` wrapper.
+
+**Status:** ✅ Excellent implementation. All routes use `withErrorHandler`
+wrapper.
 
 **2. Input Validation (Codex §2.5.1)**
+
 ```typescript
 // Zod schemas with proper constraints
 export const createMissionSchema = z.object({
@@ -61,19 +71,28 @@ export const createMissionSchema = z.object({
   description: z.string().max(10000).optional(),
   status: missionStatusEnum.default('planning'),
   // ... comprehensive validation
-})
+});
 ```
+
 **Status:** ✅ All endpoints validate inputs. Custom refinements for date logic.
 
 **3. Structured Logging (Codex §2.7)**
+
 ```typescript
-const correlationId = logger.generateCorrelationId()
-logger.setContext({ correlationId })
-logger.info('Fetching missions', { correlationId, userId, organizationId, query })
+const correlationId = logger.generateCorrelationId();
+logger.setContext({ correlationId });
+logger.info('Fetching missions', {
+  correlationId,
+  userId,
+  organizationId,
+  query,
+});
 ```
+
 **Status:** ✅ JSON structured logs with correlation IDs on all routes.
 
 **4. HTTP Status Codes (Codex §2.1.1.3)**
+
 - `200 OK` for successful GET, PATCH
 - `201 Created` for successful POST
 - `204 No Content` for successful DELETE
@@ -85,18 +104,22 @@ logger.info('Fetching missions', { correlationId, userId, organizationId, query 
 **Status:** ✅ Correct status codes used consistently.
 
 **5. Authorization (Codex §2.3.2)**
+
 ```typescript
 // Organization-scoped queries
 const { data: membership } = await supabase
   .from('organization_memberships')
   .select('organization_id')
   .eq('user_id', user.id)
-  .single()
-if (!membership) throw new ForbiddenError('User is not associated with any organization')
+  .single();
+if (!membership)
+  throw new ForbiddenError('User is not associated with any organization');
 ```
+
 **Status:** ✅ All routes verify user belongs to organization.
 
 **6. Response Format (Codex §2.1.3)**
+
 ```typescript
 // Consistent pagination format
 return NextResponse.json({
@@ -107,8 +130,9 @@ return NextResponse.json({
     total: count || 0,
     totalPages: Math.ceil(count / query.limit),
   },
-})
+});
 ```
+
 **Status:** ✅ Consistent format across list endpoints.
 
 #### ❌ CRITICAL ISSUES
@@ -117,41 +141,53 @@ return NextResponse.json({
 
 **Severity:** 🔴 Critical (DRY violation, maintainability risk)
 
-**Location:** 8+ routes (`missions/route.ts`, `operations/route.ts`, `cohorts/route.ts`, etc.)
+**Location:** 8+ routes (`missions/route.ts`, `operations/route.ts`,
+`cohorts/route.ts`, etc.)
 
 **Problem:**
+
 ```typescript
 // Duplicated in EVERY route handler
-if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
-  const { createClient: createSupabaseClient } = await import('@supabase/supabase-js')
+if (
+  process.env.NODE_ENV === 'development' &&
+  process.env.BYPASS_AUTH === 'true'
+) {
+  const { createClient: createSupabaseClient } =
+    await import('@supabase/supabase-js');
   supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } }
-  )
+  );
   // ... 20 more lines
 }
 ```
 
 **Codex Reference:** §1.2 (DRY Principle), §2.3 (Auth Patterns)
 
-**Impact:** 
+**Impact:**
+
 - Code duplication across 8+ files (~160 lines duplicated)
 - Inconsistent auth bypass behavior if one file is updated
 - Violates DRY principle
 
 **Recommendation:** Extract to `lib/auth.ts` helper:
+
 ```typescript
 // lib/auth.ts
 export async function getAuthContext() {
-  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+  if (
+    process.env.NODE_ENV === 'development' &&
+    process.env.BYPASS_AUTH === 'true'
+  ) {
     // Dev bypass logic (once)
   }
   // Production auth logic
 }
 ```
 
-**Fix Applied:** ✅ Created `lib/auth-helper.ts` with `getAuthContext()` function
+**Fix Applied:** ✅ Created `lib/auth-helper.ts` with `getAuthContext()`
+function
 
 ---
 
@@ -162,14 +198,25 @@ export async function getAuthContext() {
 **Location:** `packages/database/src/schema/missions.ts`
 
 **Problem:**
+
 ```typescript
 // Uses 'integer' but doesn't import it
 position: integer('position').default(0).notNull(),
 ```
 
 **Missing Import:**
+
 ```typescript
-import { pgTable, uuid, varchar, text, timestamp, date, jsonb, pgEnum } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  uuid,
+  varchar,
+  text,
+  timestamp,
+  date,
+  jsonb,
+  pgEnum,
+} from 'drizzle-orm/pg-core';
 // Missing: integer
 ```
 
@@ -194,25 +241,26 @@ import { pgTable, uuid, varchar, text, timestamp, date, jsonb, pgEnum } from 'dr
 **Codex Reference:** §2.5.5 (Rate Limiting), §4.9 (Security Gates)
 
 **Recommendation:** Implement rate limiting middleware:
+
 ```typescript
 // middleware.ts
-import { Ratelimit } from '@upstash/ratelimit'
-import { Redis } from '@upstash/redis'
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(100, '1 m'), // 100 requests/minute
-})
+});
 
 export async function middleware(request: NextRequest) {
-  const ip = request.ip ?? '127.0.0.1'
-  const { success } = await ratelimit.limit(ip)
-  
+  const ip = request.ip ?? '127.0.0.1';
+  const { success } = await ratelimit.limit(ip);
+
   if (!success) {
-    return new NextResponse('Rate limit exceeded', { status: 429 })
+    return new NextResponse('Rate limit exceeded', { status: 429 });
   }
-  
-  return await updateSession(request)
+
+  return await updateSession(request);
 }
 ```
 
@@ -229,6 +277,7 @@ export async function middleware(request: NextRequest) {
 **Problem:** No explicit connection pool configuration
 
 **Current:**
+
 ```typescript
 const queryClient = postgres(connectionString);
 ```
@@ -236,16 +285,18 @@ const queryClient = postgres(connectionString);
 **Codex Reference:** §2.2.3 (Connection Pooling)
 
 **Recommendation:**
+
 ```typescript
 const queryClient = postgres(connectionString, {
-  max: 20,                    // Maximum pool size
-  idle_timeout: 30,           // Close idle connections after 30s
-  connect_timeout: 10,        // Connection timeout 10s
-  max_lifetime: 60 * 30,      // Close connections after 30 min
-})
+  max: 20, // Maximum pool size
+  idle_timeout: 30, // Close idle connections after 30s
+  connect_timeout: 10, // Connection timeout 10s
+  max_lifetime: 60 * 30, // Close connections after 30 min
+});
 ```
 
-**Fix Applied:** ✅ Added explicit pool configuration with Codex-compliant defaults
+**Fix Applied:** ✅ Added explicit pool configuration with Codex-compliant
+defaults
 
 ---
 
@@ -260,19 +311,20 @@ const queryClient = postgres(connectionString, {
 **Codex Reference:** §2.7.4 (Health Checks), §4.12 (Monitoring)
 
 **Recommendation:**
+
 ```typescript
 // app/api/health/route.ts
 export async function GET() {
-  return NextResponse.json({ status: 'ok' })
+  return NextResponse.json({ status: 'ok' });
 }
 
 // app/api/ready/route.ts
 export async function GET() {
   try {
-    await db.select().from(organizations).limit(1) // DB check
-    return NextResponse.json({ status: 'ready' })
+    await db.select().from(organizations).limit(1); // DB check
+    return NextResponse.json({ status: 'ready' });
   } catch {
-    return NextResponse.json({ status: 'not ready' }, { status: 503 })
+    return NextResponse.json({ status: 'not ready' }, { status: 503 });
   }
 }
 ```
@@ -290,21 +342,23 @@ export async function GET() {
 **Problem:** No eager loading for related entities
 
 **Example:**
+
 ```typescript
 // Current: Could cause N+1 if we add relationships
-const { data: missions } = await supabase.from('projects').select('*')
+const { data: missions } = await supabase.from('projects').select('*');
 
 // Better: Explicit joins
 const { data: missions } = await supabase
   .from('projects')
-  .select('*, owner:users(name, email)')
+  .select('*, owner:users(name, email)');
 ```
 
 **Codex Reference:** §2.2.4.1 (N+1 Query Prevention)
 
 **Recommendation:** Document eager loading pattern in AGENTS.md
 
-**Fix Applied:** ✅ Added N+1 prevention guidelines to `/apps/web/BACKEND-PATTERNS.md`
+**Fix Applied:** ✅ Added N+1 prevention guidelines to
+`/apps/web/BACKEND-PATTERNS.md`
 
 ---
 
@@ -319,6 +373,7 @@ const { data: missions } = await supabase
 **Codex Reference:** §2.4.2 (Retry Strategies)
 
 **Recommendation:** Create reusable retry utility:
+
 ```typescript
 // lib/resilience.ts
 export async function withRetry<T>(
@@ -327,17 +382,20 @@ export async function withRetry<T>(
 ): Promise<T> {
   for (let i = 0; i < options.attempts; i++) {
     try {
-      return await fn()
+      return await fn();
     } catch (error) {
-      if (i === options.attempts - 1) throw error
-      await new Promise(resolve => setTimeout(resolve, options.delay * Math.pow(2, i)))
+      if (i === options.attempts - 1) throw error;
+      await new Promise((resolve) =>
+        setTimeout(resolve, options.delay * Math.pow(2, i))
+      );
     }
   }
-  throw new Error('Unreachable')
+  throw new Error('Unreachable');
 }
 ```
 
-**Fix Applied:** ✅ Created `lib/resilience.ts` with retry and circuit breaker helpers
+**Fix Applied:** ✅ Created `lib/resilience.ts` with retry and circuit breaker
+helpers
 
 ---
 
@@ -352,12 +410,16 @@ export async function withRetry<T>(
 **Problem:** Some routes log full error objects, others only message/code
 
 **Example:**
+
 ```typescript
 // Inconsistent
-logger.error('Failed to fetch missions', { correlationId, error: { message: error.message, code: error.code } })
+logger.error('Failed to fetch missions', {
+  correlationId,
+  error: { message: error.message, code: error.code },
+});
 
 // Better (consistent)
-logger.error('Failed to fetch missions', { correlationId, error })
+logger.error('Failed to fetch missions', { correlationId, error });
 ```
 
 **Recommendation:** Standardize to always log full error object
@@ -377,6 +439,7 @@ logger.error('Failed to fetch missions', { correlationId, error })
 **Codex Reference:** §2.1.2 (API Versioning)
 
 **Recommendation:** Add to AGENTS.md:
+
 ```markdown
 ## API Versioning
 
@@ -416,7 +479,8 @@ logger.error('Failed to fetch missions', { correlationId, error })
 
 **Codex Reference:** §2.1.5 (OpenAPI Documentation)
 
-**Recommendation:** Generate OpenAPI schema from Zod schemas using `zod-to-openapi`
+**Recommendation:** Generate OpenAPI schema from Zod schemas using
+`zod-to-openapi`
 
 **Fix Applied:** ⏭️ Deferred — add to backlog (non-blocking)
 
@@ -425,47 +489,57 @@ logger.error('Failed to fetch missions', { correlationId, error })
 ### 1.2 Database Schema Review
 
 **Reviewed Files:**
+
 - `packages/database/src/schema/*.ts` (28 files)
 - `supabase/migrations/*.sql` (2 files)
 
 #### ✅ COMPLIANT PATTERNS
 
 **1. UUID Primary Keys (Codex §2.2.1.1)**
+
 ```typescript
 export const missions = pgTable('projects', {
   id: uuid('id').primaryKey().defaultRandom(),
   // ✅ NOT auto-increment integers
-})
+});
 ```
+
 **Status:** ✅ All tables use UUID primary keys
 
 **2. Timestamp Fields (Codex §2.2.1.2)**
+
 ```typescript
 createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 ```
+
 **Status:** ✅ All tables have proper timestamp fields with timezone
 
 **3. Indexes (Codex §2.2.4.2)**
+
 ```typescript
 (table) => ({
   entityIdx: index('idx_comments_entity').on(table.entityType, table.entityId),
   orgIdx: index('idx_comments_org').on(table.organizationId),
-})
+});
 ```
+
 **Status:** ✅ Proper indexes on foreign keys and query filters
 
 **4. Cascade Deletes (Codex §2.2.1.3)**
+
 ```typescript
 organizationId: uuid('organization_id')
   .notNull()
   .references(() => organizations.id, { onDelete: 'cascade' }),
 ```
+
 **Status:** ✅ Proper cascade deletes throughout schema
 
 **5. Sprint 4 Tables (New)**
 
 **Comments Table:**
+
 ```sql
 CREATE TABLE comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -478,9 +552,11 @@ CREATE TABLE comments (
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 ```
+
 **Status:** ✅ Well-designed polymorphic pattern
 
 **Activity Log Table:**
+
 ```sql
 CREATE TABLE activity_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -493,9 +569,11 @@ CREATE TABLE activity_log (
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 ```
+
 **Status:** ✅ Excellent audit log design
 
 **Insights Table:**
+
 ```sql
 CREATE TABLE insights (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -508,19 +586,22 @@ CREATE TABLE insights (
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
-CREATE INDEX idx_insights_embedding ON insights 
+CREATE INDEX idx_insights_embedding ON insights
   USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
 ```
+
 **Status:** ✅ Proper vector embedding support with appropriate index
 
 #### ⚠️ OBSERVATIONS
 
 **1. Migration Strategy**
+
 - Only 2 migrations exist (cohorts + sprint 4)
 - Clean, focused migrations
 - ✅ Zero-downtime compatible (additive changes only)
 
 **2. RLS Policies**
+
 - Not visible in migrations (likely handled by Supabase dashboard)
 - ⚠️ Recommendation: Add RLS policies to migrations for version control
 
@@ -533,31 +614,39 @@ CREATE INDEX idx_insights_embedding ON insights
 **What:** Environment-based auth bypass for development
 
 **Pattern:**
+
 ```typescript
-if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+if (
+  process.env.NODE_ENV === 'development' &&
+  process.env.BYPASS_AUTH === 'true'
+) {
   // Use service role key
   supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } }
-  )
+  );
 }
 ```
 
 **Evaluation:**
+
 - ✅ **Good:** Enables testing without full auth setup
 - ⚠️ **Risk:** Must NEVER be enabled in production
 - ❌ **Issue:** Duplicated across files (see Issue #1)
 
 **Recommendation for Codex v1.3:**
+
 ```markdown
 ## Development Auth Bypass (Optional Pattern)
 
 **Use Case:** Local development and testing
 
 **Implementation:**
+
 1. Create centralized helper: `lib/auth-helper.ts`
-2. Guard with environment check: `NODE_ENV === 'development' AND BYPASS_AUTH === 'true'`
+2. Guard with environment check:
+   `NODE_ENV === 'development' AND BYPASS_AUTH === 'true'`
 3. **CRITICAL:** Add CI check to fail if `BYPASS_AUTH=true` in production builds
 
 **Anti-Pattern:** Duplicating bypass logic in every route
@@ -570,45 +659,61 @@ if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true'
 **What:** Generic entity_type + entity_id pattern for cross-entity relationships
 
 **Pattern:**
+
 ```typescript
 // Comments can attach to tasks, operations, or missions
-export const comments = pgTable('comments', {
-  entityType: varchar('entity_type', { length: 50 }).notNull(),
-  entityId: uuid('entity_id').notNull(),
-  // ...
-}, (table) => ({
-  entityIdx: index('idx_comments_entity').on(table.entityType, table.entityId),
-}))
+export const comments = pgTable(
+  'comments',
+  {
+    entityType: varchar('entity_type', { length: 50 }).notNull(),
+    entityId: uuid('entity_id').notNull(),
+    // ...
+  },
+  (table) => ({
+    entityIdx: index('idx_comments_entity').on(
+      table.entityType,
+      table.entityId
+    ),
+  })
+);
 ```
 
 **Evaluation:**
+
 - ✅ **Good:** Flexible, avoids multiple junction tables
 - ✅ **Good:** Proper composite index for queries
 - ⚠️ **Risk:** No foreign key constraint (data integrity)
 
 **Recommendation for Codex v1.3:**
-```markdown
+
+````markdown
 ## Polymorphic Relationships (Database Pattern)
 
-**Use Case:** Entity belongs to multiple parent types (e.g., comments on tasks/operations/missions)
+**Use Case:** Entity belongs to multiple parent types (e.g., comments on
+tasks/operations/missions)
 
 **Pattern:**
+
 ```sql
 entity_type VARCHAR(50) NOT NULL,  -- 'task', 'operation', 'mission'
 entity_id UUID NOT NULL,
 INDEX idx_entity (entity_type, entity_id)
 ```
+````
 
 **Trade-offs:**
+
 - ✅ Flexible schema, fewer tables
 - ❌ No foreign key constraint
 - ❌ Requires application-level integrity checks
 
 **Best Practice:** Add CHECK constraint to limit entity_type values:
+
 ```sql
 CHECK (entity_type IN ('task', 'operation', 'mission'))
 ```
-```
+
+````
 
 ---
 
@@ -625,27 +730,32 @@ CREATE TABLE insights (
   -- ...
 );
 
-CREATE INDEX idx_insights_embedding ON insights 
+CREATE INDEX idx_insights_embedding ON insights
   USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
-```
+````
 
 **Evaluation:**
+
 - ✅ **Good:** Production-ready vector search
 - ✅ **Good:** Appropriate index (IVFFlat for cosine similarity)
 - ✅ **Good:** Dimension matches OpenAI embeddings
 
 **Recommendation for Codex v1.3:**
-```markdown
+
+````markdown
 ## Vector Embeddings (AI/ML Pattern)
 
 **Use Case:** Semantic search, similarity matching
 
 **Setup:**
+
 ```sql
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
+````
 
 **Schema:**
+
 ```sql
 embedding VECTOR(1536),  -- OpenAI text-embedding-3-small
 -- OR
@@ -653,6 +763,7 @@ embedding VECTOR(768),   -- all-MiniLM-L6-v2
 ```
 
 **Indexing:**
+
 ```sql
 -- For cosine similarity (recommended for normalized embeddings)
 CREATE INDEX ON table USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
@@ -662,16 +773,19 @@ CREATE INDEX ON table USING ivfflat (embedding vector_l2_ops) WITH (lists = 100)
 ```
 
 **Query:**
+
 ```sql
-SELECT * FROM insights 
-ORDER BY embedding <-> $1::vector 
+SELECT * FROM insights
+ORDER BY embedding <-> $1::vector
 LIMIT 10;
 ```
 
 **Index Tuning:**
+
 - lists = sqrt(total_rows) is a good starting point
 - Increase for better recall, decrease for speed
-```
+
+````
 
 ---
 
@@ -685,23 +799,26 @@ LIMIT 10;
 if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
   // 20 lines of setup
 }
-```
+````
 
 **Better:**
+
 ```typescript
 // ✅ GOOD: Centralized helper
-import { getAuthContext } from '@/lib/auth-helper'
+import { getAuthContext } from '@/lib/auth-helper';
 
-const { supabase, organizationId, userId } = await getAuthContext()
+const { supabase, organizationId, userId } = await getAuthContext();
 ```
 
-**Codex Addition:** "Never duplicate auth logic across routes. Extract to shared helper."
+**Codex Addition:** "Never duplicate auth logic across routes. Extract to shared
+helper."
 
 ---
 
 ### 3.2 Unsafe Polymorphic Foreign Keys
 
 **What we found:**
+
 ```typescript
 // ⚠️ Risk: No foreign key constraint
 entityType: varchar('entity_type', { length: 50 }).notNull(),
@@ -709,34 +826,39 @@ entityId: uuid('entity_id').notNull(),
 ```
 
 **Better:**
+
 ```sql
 -- Add CHECK constraint
 entity_type VARCHAR(50) NOT NULL CHECK (entity_type IN ('task', 'operation', 'mission')),
 ```
 
-**Codex Addition:** "Polymorphic relationships MUST include CHECK constraints to limit allowed types."
+**Codex Addition:** "Polymorphic relationships MUST include CHECK constraints to
+limit allowed types."
 
 ---
 
 ### 3.3 Missing Connection Pool Limits
 
 **What we found:**
+
 ```typescript
 // ❌ BAD: No pool configuration
 const client = postgres(connectionString);
 ```
 
 **Better:**
+
 ```typescript
 // ✅ GOOD: Explicit pool limits
 const client = postgres(connectionString, {
-  max: 20,               // Prevent connection exhaustion
-  idle_timeout: 30,      // Close idle connections
-  connect_timeout: 10,   // Fail fast on connection issues
+  max: 20, // Prevent connection exhaustion
+  idle_timeout: 30, // Close idle connections
+  connect_timeout: 10, // Fail fast on connection issues
 });
 ```
 
-**Codex Addition:** "Always configure connection pool limits explicitly. Default pools can exhaust database connections."
+**Codex Addition:** "Always configure connection pool limits explicitly. Default
+pools can exhaust database connections."
 
 ---
 
@@ -747,6 +869,7 @@ const client = postgres(connectionString, {
 **Section 2.15: Development Environment Patterns**
 
 Topics to add:
+
 1. **Auth Bypass for Testing** (see 2.1 above)
 2. **Seed Data Management** (not found in current codebase, should be added)
 3. **Environment-Specific Configuration** (document .env patterns)
@@ -759,6 +882,7 @@ Topics to add:
 **Section 2.2.5: Advanced Schema Patterns**
 
 Add subsections:
+
 1. **Polymorphic Relationships** (see 2.2 above)
 2. **Vector Embeddings** (see 2.3 above)
 3. **Audit Logging Tables** (activity_log pattern is excellent)
@@ -771,6 +895,7 @@ Add subsections:
 **Section 2.1.6: Pagination Standards**
 
 Current implementation is good but should be documented:
+
 ```typescript
 export const paginationSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
@@ -789,7 +914,8 @@ export const paginationSchema = z.object({
 }
 ```
 
-Add to Codex: "Pagination MUST include totalPages for client-side page controls."
+Add to Codex: "Pagination MUST include totalPages for client-side page
+controls."
 
 ---
 
@@ -798,6 +924,7 @@ Add to Codex: "Pagination MUST include totalPages for client-side page controls.
 **Section 2.4.3: Retry with Exponential Backoff**
 
 Add implementation pattern:
+
 ```typescript
 export async function withRetry<T>(
   fn: () => Promise<T>,
@@ -805,12 +932,12 @@ export async function withRetry<T>(
 ): Promise<T> {
   for (let i = 0; i < options.attempts; i++) {
     try {
-      return await fn()
+      return await fn();
     } catch (error) {
-      if (i === options.attempts - 1) throw error
-      await new Promise(resolve => 
+      if (i === options.attempts - 1) throw error;
+      await new Promise((resolve) =>
         setTimeout(resolve, options.delay * Math.pow(2, i))
-      )
+      );
     }
   }
 }
@@ -852,16 +979,21 @@ export async function withRetry<T>(
 
 ## 6. Conclusion
 
-The Cohortix Sprint 4 backend implementation demonstrates **mature engineering practices** and strong Codex compliance. The error handling, validation, and logging infrastructure are production-ready.
+The Cohortix Sprint 4 backend implementation demonstrates **mature engineering
+practices** and strong Codex compliance. The error handling, validation, and
+logging infrastructure are production-ready.
 
 **Key Achievements:**
+
 1. ✅ RFC 7807 error handling (best-in-class)
 2. ✅ Comprehensive Zod validation
 3. ✅ Structured JSON logging with correlation IDs
 4. ✅ Clean database schema with proper constraints
-5. ✅ Sprint 4 tables (comments, activity_log, insights) follow existing patterns
+5. ✅ Sprint 4 tables (comments, activity_log, insights) follow existing
+   patterns
 
 **Critical Fixes Applied:**
+
 1. ✅ Centralized auth bypass helper
 2. ✅ Fixed schema import bug
 3. ✅ Added connection pool configuration
@@ -869,10 +1001,12 @@ The Cohortix Sprint 4 backend implementation demonstrates **mature engineering p
 5. ✅ Added resilience patterns (retry, circuit breaker)
 
 **Deferred Items:**
+
 1. Rate limiting (requires infrastructure)
 2. OpenAPI documentation (future sprint)
 
 **Next Steps:**
+
 1. Commit fixes to `feature/sprint-4-mission-control`
 2. Push changes
 3. Post summary to Discord #cohortix

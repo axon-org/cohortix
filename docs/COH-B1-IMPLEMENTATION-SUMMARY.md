@@ -10,6 +10,7 @@
 ## 🎯 What Was Delivered
 
 ### 1. Database Schema ✅
+
 **Location:** `packages/database/src/schema/cohorts.ts`
 
 - Cohorts table with all required fields:
@@ -21,24 +22,31 @@
   - `settings` (JSONB for extensibility)
 
 **Migration Files:**
+
 - `packages/database/src/migrations/0001_thin_hardball.sql` - Table creation
-- `packages/database/src/migrations/0002_cohorts_rls_policies.sql` - RLS policies + indexes
+- `packages/database/src/migrations/0002_cohorts_rls_policies.sql` - RLS
+  policies + indexes
 
 ### 2. API Routes ✅
+
 **Base Path:** `/api/v1/cohorts`
 
 #### Cohort CRUD Routes
-- **GET `/api/v1/cohorts`** - List cohorts (pagination, filtering, sorting, search)
+
+- **GET `/api/v1/cohorts`** - List cohorts (pagination, filtering, sorting,
+  search)
 - **POST `/api/v1/cohorts`** - Create new cohort
 - **GET `/api/v1/cohorts/:id`** - Get single cohort
 - **PATCH `/api/v1/cohorts/:id`** - Update cohort
 - **DELETE `/api/v1/cohorts/:id`** - Delete cohort
 
 #### Dashboard Routes
+
 - **GET `/api/v1/dashboard/mission-control`** - KPI aggregations
 - **GET `/api/v1/dashboard/health-trends`** - Engagement trends over time
 
 **Features:**
+
 - ✅ Zod validation on all inputs
 - ✅ RFC 7807 error handling
 - ✅ Structured JSON logging with correlation IDs
@@ -48,6 +56,7 @@
 - ✅ Query filtering and sorting
 
 ### 3. Validation Schemas ✅
+
 **Location:** `apps/web/src/lib/validations/cohort.ts`
 
 - `createCohortSchema` - Create validation
@@ -56,6 +65,7 @@
 - `healthTrendsQuerySchema` - Dashboard query validation
 
 ### 4. Utility Functions ✅
+
 **Location:** `apps/web/src/lib/utils/cohort.ts`
 
 - `generateSlug()` - URL-safe slug generation
@@ -66,6 +76,7 @@
 - `getDaysRemaining()` - Calculate days until end date
 
 ### 5. Row-Level Security (RLS) Policies ✅
+
 **Location:** `packages/database/src/migrations/0002_cohorts_rls_policies.sql`
 
 - SELECT policy: Users can only see cohorts in their organization
@@ -74,15 +85,18 @@
 - DELETE policy: Users can only delete cohorts in their organization
 
 **Indexes for Performance:**
+
 - `idx_cohorts_organization` - Organization filtering
 - `idx_cohorts_status` - Status filtering
 - `idx_cohorts_created_at` - Sorting by creation date
 - `idx_cohorts_slug` - Unique slug per organization
 
 ### 6. Tests ✅
+
 **Location:** `apps/web/src/lib/__tests/`
 
 #### Unit Tests
+
 - `cohort.test.ts` - Utility function tests (100% coverage)
   - Slug generation (7 test cases)
   - Engagement calculation (6 test cases)
@@ -106,9 +120,11 @@
 
 ### ⚠️ CRITICAL: Apply Database Migrations
 
-The migrations were generated but **not yet applied** to the database due to connection issues.
+The migrations were generated but **not yet applied** to the database due to
+connection issues.
 
 **Option 1: Supabase SQL Editor (Recommended)**
+
 1. Go to Supabase Dashboard: https://supabase.com/dashboard
 2. Select project: `cohortix` (ID: rfwscvklcokzuofyzqwx)
 3. Navigate to SQL Editor
@@ -121,6 +137,7 @@ The migrations were generated but **not yet applied** to the database due to con
    ```
 
 **Option 2: Drizzle Kit Push (If Connection Fixed)**
+
 ```bash
 cd /Users/alimai/Projects/cohortix
 export DATABASE_URL="<actual connection string>"
@@ -133,13 +150,13 @@ After applying migrations, verify RLS is active:
 
 ```sql
 -- Check RLS is enabled
-SELECT tablename, rowsecurity 
-FROM pg_tables 
+SELECT tablename, rowsecurity
+FROM pg_tables
 WHERE tablename = 'cohorts';
 
 -- Check policies exist
-SELECT policyname, cmd 
-FROM pg_policies 
+SELECT policyname, cmd
+FROM pg_policies
 WHERE tablename = 'cohorts';
 ```
 
@@ -152,6 +169,7 @@ Expected output: 4 policies (SELECT, INSERT, UPDATE, DELETE)
 Once migrations are applied, test the APIs:
 
 ### 1. Create Cohort
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/cohorts \
   -H "Content-Type: application/json" \
@@ -168,6 +186,7 @@ curl -X POST http://localhost:3000/api/v1/cohorts \
 Expected: `201 Created` with cohort data
 
 ### 2. List Cohorts
+
 ```bash
 curl "http://localhost:3000/api/v1/cohorts?page=1&limit=20&status=active" \
   -H "Cookie: <session-cookie>"
@@ -176,6 +195,7 @@ curl "http://localhost:3000/api/v1/cohorts?page=1&limit=20&status=active" \
 Expected: `200 OK` with array of cohorts + metadata
 
 ### 3. Get Single Cohort
+
 ```bash
 curl "http://localhost:3000/api/v1/cohorts/<cohort-id>" \
   -H "Cookie: <session-cookie>"
@@ -184,6 +204,7 @@ curl "http://localhost:3000/api/v1/cohorts/<cohort-id>" \
 Expected: `200 OK` with cohort data
 
 ### 4. Update Cohort
+
 ```bash
 curl -X PATCH "http://localhost:3000/api/v1/cohorts/<cohort-id>" \
   -H "Content-Type: application/json" \
@@ -197,6 +218,7 @@ curl -X PATCH "http://localhost:3000/api/v1/cohorts/<cohort-id>" \
 Expected: `200 OK` with updated cohort
 
 ### 5. Delete Cohort
+
 ```bash
 curl -X DELETE "http://localhost:3000/api/v1/cohorts/<cohort-id>" \
   -H "Cookie: <session-cookie>"
@@ -205,6 +227,7 @@ curl -X DELETE "http://localhost:3000/api/v1/cohorts/<cohort-id>" \
 Expected: `204 No Content`
 
 ### 6. Mission Control KPIs
+
 ```bash
 curl "http://localhost:3000/api/v1/dashboard/mission-control" \
   -H "Cookie: <session-cookie>"
@@ -213,6 +236,7 @@ curl "http://localhost:3000/api/v1/dashboard/mission-control" \
 Expected: `200 OK` with KPI data
 
 ### 7. Health Trends
+
 ```bash
 curl "http://localhost:3000/api/v1/dashboard/health-trends?period=30d&interval=day" \
   -H "Cookie: <session-cookie>"
@@ -225,9 +249,12 @@ Expected: `200 OK` with trend data points
 ## 🐛 Known Issues & Fixes
 
 ### 1. Import Path Issues (✅ Fixed)
-**Problem:** Several schema files imported from `'./projects'` and `'./tasks'` which don't exist.
+
+**Problem:** Several schema files imported from `'./projects'` and `'./tasks'`
+which don't exist.
 
 **Fixed Files:**
+
 - `agent-assignments.ts` - Now imports from `'./missions'`
 - `milestones.ts` - Now imports from `'./missions'`
 - `knowledge-entries.ts` - Now imports from `'./missions'`
@@ -235,16 +262,21 @@ Expected: `200 OK` with trend data points
 - `time-entries.ts` - Now imports from `'./actions'`
 
 ### 2. Drizzle Config (✅ Fixed)
+
 **Problem:** Old drizzle-kit version (0.20.x) uses different config format.
 
 **Fixed:**
+
 - Updated `drizzle.config.ts` to use `driver: 'pg'`
 - Updated `package.json` scripts to use `generate:pg` and `push:pg`
 
 ### 3. Supabase Server Client Import (✅ Fixed)
-**Problem:** API routes import `createClient` but actual export was `createServerSupabaseClient`.
+
+**Problem:** API routes import `createClient` but actual export was
+`createServerSupabaseClient`.
 
 **Fixed:**
+
 - Created `apps/web/src/lib/supabase/index.ts` that exports both names
 
 ---
@@ -270,6 +302,7 @@ pnpm test:coverage
 ```
 
 **Expected Results:**
+
 - All 72 test cases pass ✅
 - Coverage >= 70% overall
 - Coverage >= 80% for critical paths (CRUD operations)
@@ -279,6 +312,7 @@ pnpm test:coverage
 ## 🎓 Learnings & Improvements
 
 ### What Worked Well
+
 1. **Axon Codex Methodology** - Spec before code caught many edge cases early
 2. **Zod Validation** - Type-safe validation with great error messages
 3. **RFC 7807 Errors** - Standardized error format improves API consistency
@@ -286,7 +320,9 @@ pnpm test:coverage
 5. **Drizzle ORM** - Clean TypeScript types inferred from schema
 
 ### Challenges Encountered
-1. **Database Connection Issues** - Couldn't run `db:push` due to connection errors
+
+1. **Database Connection Issues** - Couldn't run `db:push` due to connection
+   errors
    - **Mitigation:** Generated SQL files for manual execution
 2. **Legacy Import Paths** - Multiple files had stale imports
    - **Mitigation:** Fixed all import paths systematically
@@ -294,6 +330,7 @@ pnpm test:coverage
    - **Mitigation:** Updated config and package.json scripts
 
 ### Future Enhancements (Not in This Sprint)
+
 1. **Cohort Members Table** - Many-to-many relationship with agents
 2. **Real-time Updates** - Supabase Realtime for live dashboard
 3. **Advanced Analytics** - Engagement breakdowns, trend predictions
@@ -308,6 +345,7 @@ pnpm test:coverage
 ## 📝 Documentation Updates
 
 Updated files:
+
 - ✅ `docs/specs/COH-B1-COHORTS-SCHEMA-API.md` - Full specification
 - ✅ `docs/COH-B1-IMPLEMENTATION-SUMMARY.md` - This document
 - ✅ Added cohorts to `packages/database/src/schema/index.ts`
@@ -343,6 +381,7 @@ Updated files:
 ## 📞 Support
 
 If issues arise during migration or testing:
+
 - **Database Issues:** Check Supabase dashboard logs
 - **API Errors:** Check structured logs (correlation ID)
 - **Test Failures:** Run `pnpm test:watch` for detailed errors

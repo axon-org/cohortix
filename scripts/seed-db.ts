@@ -2,7 +2,7 @@
 
 /**
  * Unified Database Seed Script
- * 
+ *
  * Seeds the database with comprehensive test data:
  * ✅ Organizations
  * ✅ Agents (Allies)
@@ -13,7 +13,7 @@
  * ✅ Tasks/Actions
  * ✅ Knowledge Entries
  * ✅ Audit Logs & Activity Logs (comprehensive)
- * 
+ *
  * Run: pnpm seed (or pnpm db:seed)
  * Reset: pnpm db:reset && pnpm seed
  */
@@ -21,7 +21,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rfwscvklcokzuofyzqwx.supabase.co';
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rfwscvklcokzuofyzqwx.supabase.co';
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!serviceRoleKey) {
@@ -42,7 +43,7 @@ async function seed() {
     // 1. CREATE DEMO ORGANIZATION
     // =======================================================================
     console.log('📦 Creating organization: Axon HQ');
-    
+
     const { data: org, error: orgError } = await supabase
       .from('organizations')
       .insert({
@@ -70,7 +71,7 @@ async function seed() {
     // 2. CREATE SAMPLE AI ALLIES (AGENTS)
     // =======================================================================
     console.log('🤖 Creating AI allies...');
-    
+
     const allies = [
       {
         organization_id: org.id,
@@ -78,7 +79,8 @@ async function seed() {
         name: 'Devi',
         slug: 'devi',
         role: 'AI Developer Specialist',
-        description: 'Expert in LLM integration, RAG systems, and autonomous agent development. Specializes in Python, TypeScript, and AI frameworks.',
+        description:
+          'Expert in LLM integration, RAG systems, and autonomous agent development. Specializes in Python, TypeScript, and AI frameworks.',
         avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=devi',
         status: 'active',
         capabilities: ['coding', 'architecture', 'ai-integration', 'testing'],
@@ -94,7 +96,8 @@ async function seed() {
         name: 'Lubna',
         slug: 'lubna',
         role: 'UI/UX Designer',
-        description: 'Crafts beautiful, intuitive interfaces with deep expertise in design systems, accessibility, and user research.',
+        description:
+          'Crafts beautiful, intuitive interfaces with deep expertise in design systems, accessibility, and user research.',
         avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=lubna',
         status: 'active',
         capabilities: ['design', 'prototyping', 'user-research', 'figma'],
@@ -110,7 +113,8 @@ async function seed() {
         name: 'Zara',
         slug: 'zara',
         role: 'Content Strategist',
-        description: 'Creates compelling narratives and strategic content. Expert in technical writing, SEO, and content operations.',
+        description:
+          'Creates compelling narratives and strategic content. Expert in technical writing, SEO, and content operations.',
         avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=zara',
         status: 'active',
         capabilities: ['writing', 'content-strategy', 'seo', 'documentation'],
@@ -126,7 +130,8 @@ async function seed() {
         name: 'Khalid',
         slug: 'khalid',
         role: 'DevOps Engineer',
-        description: 'Builds reliable infrastructure with expertise in cloud platforms, CI/CD, and monitoring systems.',
+        description:
+          'Builds reliable infrastructure with expertise in cloud platforms, CI/CD, and monitoring systems.',
         avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=khalid',
         status: 'idle',
         capabilities: ['devops', 'cloud-infrastructure', 'ci-cd', 'monitoring'],
@@ -158,7 +163,7 @@ async function seed() {
     // 3. CREATE SAMPLE CLIENT
     // =======================================================================
     console.log('🏢 Creating sample client...');
-    
+
     const { data: client, error: clientError } = await supabase
       .from('clients')
       .insert({
@@ -237,9 +242,7 @@ async function seed() {
 
     if (cohortsError) throw new Error(`Failed to create cohorts: ${cohortsError.message}`);
     console.log(`✅ Created ${createdCohorts.length} cohorts:\n`);
-    createdCohorts.forEach((cohort: any) => 
-      console.log(`   - ${cohort.name} (${cohort.status})`)
-    );
+    createdCohorts.forEach((cohort: any) => console.log(`   - ${cohort.name} (${cohort.status})`));
     console.log();
 
     // Cohort quick reference
@@ -258,64 +261,64 @@ async function seed() {
       {
         cohort_id: aiTeam.id,
         agent_id: devi.id,
-        engagement_score: 95.00,
+        engagement_score: 95.0,
         joined_at: new Date('2026-01-01T10:00:00Z').toISOString(),
       },
       {
         cohort_id: aiTeam.id,
         agent_id: khalid.id,
-        engagement_score: 87.00,
+        engagement_score: 87.0,
         joined_at: new Date('2026-01-01T11:00:00Z').toISOString(),
       },
       {
         cohort_id: aiTeam.id,
         agent_id: zara.id,
-        engagement_score: 80.00,
+        engagement_score: 80.0,
         joined_at: new Date('2026-01-02T09:00:00Z').toISOString(),
       },
       // Product Design Squad (2 members: Lubna, Zara)
       {
         cohort_id: designSquad.id,
         agent_id: lubna.id,
-        engagement_score: 98.00,
+        engagement_score: 98.0,
         joined_at: new Date('2026-01-15T10:00:00Z').toISOString(),
       },
       {
         cohort_id: designSquad.id,
         agent_id: zara.id,
-        engagement_score: 86.00,
+        engagement_score: 86.0,
         joined_at: new Date('2026-01-15T14:00:00Z').toISOString(),
       },
       // Content Strategy Team (3 members: Zara, Lubna, Devi)
       {
         cohort_id: contentTeam.id,
         agent_id: zara.id,
-        engagement_score: 93.00,
+        engagement_score: 93.0,
         joined_at: new Date('2026-02-01T10:00:00Z').toISOString(),
       },
       {
         cohort_id: contentTeam.id,
         agent_id: lubna.id,
-        engagement_score: 75.00,
+        engagement_score: 75.0,
         joined_at: new Date('2026-02-01T11:00:00Z').toISOString(),
       },
       {
         cohort_id: contentTeam.id,
         agent_id: devi.id,
-        engagement_score: 68.00,
+        engagement_score: 68.0,
         joined_at: new Date('2026-02-02T09:00:00Z').toISOString(),
       },
       // DevOps Infrastructure (2 members: Khalid, Devi) - at-risk cohort
       {
         cohort_id: devopsTeam.id,
         agent_id: khalid.id,
-        engagement_score: 52.00,
+        engagement_score: 52.0,
         joined_at: new Date('2026-01-10T10:00:00Z').toISOString(),
       },
       {
         cohort_id: devopsTeam.id,
         agent_id: devi.id,
-        engagement_score: 38.00,
+        engagement_score: 38.0,
         joined_at: new Date('2026-01-11T09:00:00Z').toISOString(),
       },
     ];
@@ -353,7 +356,8 @@ async function seed() {
         client_id: client.id,
         name: 'Agent Evolution System',
         slug: 'agent-evolution-system',
-        description: 'Build autonomous learning system for AI allies with knowledge graphs and skill tracking',
+        description:
+          'Build autonomous learning system for AI allies with knowledge graphs and skill tracking',
         status: 'active',
         color: '#8B5CF6',
         icon: '🧠',
@@ -385,7 +389,9 @@ async function seed() {
 
     if (projectsError) throw new Error(`Failed to create projects: ${projectsError.message}`);
     console.log(`✅ Created ${createdProjects.length} projects:\n`);
-    createdProjects.forEach((project: any) => console.log(`   - ${project.name} (${project.status})`));
+    createdProjects.forEach((project: any) =>
+      console.log(`   - ${project.name} (${project.status})`)
+    );
     console.log();
 
     const dashboardProject = createdProjects.find((p: any) => p.slug === 'ai-dashboard-redesign')!;
@@ -459,7 +465,8 @@ async function seed() {
         organization_id: org.id,
         project_id: evolutionProject.id,
         title: 'Build skill progression framework',
-        description: 'Design leveling system (beginner → intermediate → expert) with measurable milestones',
+        description:
+          'Design leveling system (beginner → intermediate → expert) with measurable milestones',
         status: 'in_progress',
         priority: 'urgent',
         assignee_type: 'agent',
@@ -537,7 +544,8 @@ async function seed() {
       .insert(knowledgeData)
       .select();
 
-    if (knowledgeError) throw new Error(`Failed to create knowledge entries: ${knowledgeError.message}`);
+    if (knowledgeError)
+      throw new Error(`Failed to create knowledge entries: ${knowledgeError.message}`);
     console.log(`✅ Created ${createdKnowledge.length} knowledge entries\n`);
 
     // =======================================================================
@@ -584,9 +592,9 @@ async function seed() {
         action: 'contributed',
         resource_type: 'cohort',
         resource_id: aiTeam.id,
-        new_values: { 
+        new_values: {
           contribution: 'Updated AI model architecture',
-          cohortSlug: aiTeam.slug 
+          cohortSlug: aiTeam.slug,
         },
         ip_address: '127.0.0.1',
         user_agent: 'Cohortix/1.0',
@@ -599,9 +607,9 @@ async function seed() {
         action: 'contributed',
         resource_type: 'cohort',
         resource_id: aiTeam.id,
-        new_values: { 
+        new_values: {
           contribution: 'Completed agent integration testing',
-          cohortSlug: aiTeam.slug 
+          cohortSlug: aiTeam.slug,
         },
         ip_address: '127.0.0.1',
         user_agent: 'Cohortix/1.0',
@@ -614,9 +622,9 @@ async function seed() {
         action: 'contributed',
         resource_type: 'cohort',
         resource_id: aiTeam.id,
-        new_values: { 
+        new_values: {
           contribution: 'Documented AI workflows',
-          cohortSlug: aiTeam.slug 
+          cohortSlug: aiTeam.slug,
         },
         ip_address: '127.0.0.1',
         user_agent: 'Cohortix/1.0',
@@ -643,9 +651,9 @@ async function seed() {
         action: 'contributed',
         resource_type: 'cohort',
         resource_id: designSquad.id,
-        new_values: { 
+        new_values: {
           contribution: 'Created new design system components',
-          cohortSlug: designSquad.slug 
+          cohortSlug: designSquad.slug,
         },
         ip_address: '127.0.0.1',
         user_agent: 'Cohortix/1.0',
@@ -658,9 +666,9 @@ async function seed() {
         action: 'contributed',
         resource_type: 'cohort',
         resource_id: designSquad.id,
-        new_values: { 
+        new_values: {
           contribution: 'Reviewed UI mockups',
-          cohortSlug: designSquad.slug 
+          cohortSlug: designSquad.slug,
         },
         ip_address: '127.0.0.1',
         user_agent: 'Cohortix/1.0',
@@ -687,9 +695,9 @@ async function seed() {
         action: 'contributed',
         resource_type: 'cohort',
         resource_id: contentTeam.id,
-        new_values: { 
+        new_values: {
           contribution: 'Published 3 blog posts',
-          cohortSlug: contentTeam.slug 
+          cohortSlug: contentTeam.slug,
         },
         ip_address: '127.0.0.1',
         user_agent: 'Cohortix/1.0',
@@ -716,9 +724,9 @@ async function seed() {
         action: 'contributed',
         resource_type: 'cohort',
         resource_id: devopsTeam.id,
-        new_values: { 
+        new_values: {
           contribution: 'Fixed CI pipeline issue',
-          cohortSlug: devopsTeam.slug 
+          cohortSlug: devopsTeam.slug,
         },
         ip_address: '127.0.0.1',
         user_agent: 'Cohortix/1.0',
@@ -822,9 +830,7 @@ async function seed() {
       },
     ];
 
-    const { error: auditError } = await supabase
-      .from('audit_logs')
-      .insert(auditData);
+    const { error: auditError } = await supabase.from('audit_logs').insert(auditData);
 
     if (auditError) throw new Error(`Failed to create audit logs: ${auditError.message}`);
     console.log(`✅ Created ${auditData.length} audit/activity log entries\n`);

@@ -1,12 +1,12 @@
 /**
  * Color Design Tokens
- * 
+ *
  * Extracted from tailwind.config.ts
  * Based on Linear-inspired dark theme with #5E6AD2 primary
- * 
+ *
  * All colors meet WCAG 2.2 AA contrast requirements
  * See: docs/design/DDR-001-color-palette-and-accessibility.md
- * 
+ *
  * @packageDocumentation
  */
 
@@ -87,7 +87,7 @@ export const colors = {
     warning: '#F59E0B',
     info: '#3B82F6',
   },
-} as const
+} as const;
 
 /**
  * Semantic color mappings for mission/ally statuses
@@ -97,9 +97,9 @@ export const statusColors = {
    * Mission statuses
    */
   mission: {
-    active: colors.dark.success,      // Green - "On Mission"
-    backlog: colors.dark.warning,     // Amber - "Planned"
-    completed: colors.dark.info,      // Blue - "Mission Accomplished"
+    active: colors.dark.success, // Green - "On Mission"
+    backlog: colors.dark.warning, // Amber - "Planned"
+    completed: colors.dark.info, // Blue - "Mission Accomplished"
     planned: colors.dark.muted.foreground, // Gray - "Standing By"
   },
 
@@ -107,7 +107,7 @@ export const statusColors = {
    * Ally statuses
    */
   ally: {
-    onMission: colors.dark.success,   // Green ring
+    onMission: colors.dark.success, // Green ring
     standingBy: colors.dark.muted.foreground, // Gray ring
     offDuty: colors.dark.destructive, // Red ring
   },
@@ -116,9 +116,9 @@ export const statusColors = {
    * Priority levels
    */
   priority: {
-    high: colors.dark.destructive,    // Red
-    medium: colors.dark.warning,      // Amber
-    low: colors.dark.info,            // Blue
+    high: colors.dark.destructive, // Red
+    medium: colors.dark.warning, // Amber
+    low: colors.dark.info, // Blue
     none: colors.dark.muted.foreground, // Gray
   },
 
@@ -126,26 +126,26 @@ export const statusColors = {
    * Goal health indicators
    */
   health: {
-    onTrack: colors.dark.success,     // Green
-    atRisk: colors.dark.warning,      // Amber
+    onTrack: colors.dark.success, // Green
+    atRisk: colors.dark.warning, // Amber
     offTrack: colors.dark.destructive, // Red
   },
-} as const
+} as const;
 
 /**
  * Contrast ratios for accessibility validation
  * All values meet WCAG 2.2 AA (4.5:1 for text, 3:1 for UI)
  */
 export const contrastRatios = {
-  foregroundOnBackground: 17.8,  // AAA
-  primaryOnBackground: 9.2,      // AAA
+  foregroundOnBackground: 17.8, // AAA
+  primaryOnBackground: 9.2, // AAA
   mutedForegroundOnBackground: 4.9, // AA
-  borderOnBackground: 3.2,       // AA (UI elements)
-  successOnBackground: 6.1,      // AA
-  warningOnBackground: 7.2,      // AAA
-  destructiveOnBackground: 5.8,  // AA
-  infoOnBackground: 6.4,         // AA
-} as const
+  borderOnBackground: 3.2, // AA (UI elements)
+  successOnBackground: 6.1, // AA
+  warningOnBackground: 7.2, // AAA
+  destructiveOnBackground: 5.8, // AA
+  infoOnBackground: 6.4, // AA
+} as const;
 
 /**
  * Color utility functions
@@ -155,44 +155,44 @@ export const colorUtils = {
    * Convert hex to RGB
    */
   hexToRgb: (hex: string): { r: number; g: number; b: number } => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
       ? {
           r: parseInt(result[1]!, 16),
           g: parseInt(result[2]!, 16),
           b: parseInt(result[3]!, 16),
         }
-      : { r: 0, g: 0, b: 0 }
+      : { r: 0, g: 0, b: 0 };
   },
 
   /**
    * Convert RGB to HSL
    */
   rgbToHsl: (r: number, g: number, b: number): { h: number; s: number; l: number } => {
-    r /= 255
-    g /= 255
-    b /= 255
+    r /= 255;
+    g /= 255;
+    b /= 255;
 
-    const max = Math.max(r, g, b)
-    const min = Math.min(r, g, b)
-    let h = 0
-    let s = 0
-    const l = (max + min) / 2
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0;
+    let s = 0;
+    const l = (max + min) / 2;
 
     if (max !== min) {
-      const d = max - min
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
       switch (max) {
         case r:
-          h = ((g - b) / d + (g < b ? 6 : 0)) / 6
-          break
+          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+          break;
         case g:
-          h = ((b - r) / d + 2) / 6
-          break
+          h = ((b - r) / d + 2) / 6;
+          break;
         case b:
-          h = ((r - g) / d + 4) / 6
-          break
+          h = ((r - g) / d + 4) / 6;
+          break;
       }
     }
 
@@ -200,19 +200,19 @@ export const colorUtils = {
       h: Math.round(h * 360),
       s: Math.round(s * 100),
       l: Math.round(l * 100),
-    }
+    };
   },
 
   /**
    * Apply opacity to hex color
    */
   withOpacity: (hex: string, opacity: number): string => {
-    const rgb = colorUtils.hexToRgb(hex)
-    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`
+    const rgb = colorUtils.hexToRgb(hex);
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`;
   },
-} as const
+} as const;
 
 /**
  * Export default colors object for Tailwind config
  */
-export default colors.dark
+export default colors.dark;

@@ -1,6 +1,6 @@
 /**
  * Single Cohort API Routes (COH-B4)
- * 
+ *
  * GET    /api/cohorts/:id - Get cohort details
  * PATCH  /api/cohorts/:id - Update cohort
  * DELETE /api/cohorts/:id - Archive cohort (soft delete)
@@ -19,10 +19,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   const { id } = await context.params;
 
   try {
-    const [cohort, stats] = await Promise.all([
-      getCohortById(id),
-      getCohortStats(id),
-    ]);
+    const [cohort, stats] = await Promise.all([getCohortById(id), getCohortStats(id)]);
 
     if (!cohort) {
       return NextResponse.json({ error: 'Cohort not found' }, { status: 404 });
@@ -47,7 +44,10 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     return NextResponse.json(cohort);
   } catch (error: any) {
     if (error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Validation failed', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      );
     }
     console.error(`PATCH /api/cohorts/${id} error:`, error);
     return NextResponse.json({ error: error.message }, { status: 500 });

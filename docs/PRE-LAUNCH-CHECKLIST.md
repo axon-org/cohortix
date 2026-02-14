@@ -9,7 +9,10 @@
 
 ## Purpose
 
-This checklist ensures the Cohortix platform meets all production readiness requirements before public launch. **Every item marked with 🔴 MUST be completed before launch.** Items marked with 🟡 SHOULD be completed but may be deferred with explicit justification and risk assessment.
+This checklist ensures the Cohortix platform meets all production readiness
+requirements before public launch. **Every item marked with 🔴 MUST be completed
+before launch.** Items marked with 🟡 SHOULD be completed but may be deferred
+with explicit justification and risk assessment.
 
 **Launch Approval:** CEO (Alim) + Tech Lead + Guardian (Hafiz)
 
@@ -17,17 +20,17 @@ This checklist ensures the Cohortix platform meets all production readiness requ
 
 ## Pre-Launch Status Summary
 
-| Category | Completion | Status |
-|----------|------------|--------|
-| **Security** | 0/12 | 🔴 Not Ready |
-| **Performance** | 0/8 | 🔴 Not Ready |
-| **Quality Assurance** | 0/10 | 🔴 Not Ready |
-| **Infrastructure** | 0/9 | 🔴 Not Ready |
-| **Compliance** | 0/7 | 🔴 Not Ready |
-| **Operations** | 0/8 | 🔴 Not Ready |
-| **Documentation** | 0/6 | 🔴 Not Ready |
-| **Business Readiness** | 0/5 | 🔴 Not Ready |
-| **OVERALL** | **0/65** | 🔴 Not Ready |
+| Category               | Completion | Status       |
+| ---------------------- | ---------- | ------------ |
+| **Security**           | 0/12       | 🔴 Not Ready |
+| **Performance**        | 0/8        | 🔴 Not Ready |
+| **Quality Assurance**  | 0/10       | 🔴 Not Ready |
+| **Infrastructure**     | 0/9        | 🔴 Not Ready |
+| **Compliance**         | 0/7        | 🔴 Not Ready |
+| **Operations**         | 0/8        | 🔴 Not Ready |
+| **Documentation**      | 0/6        | 🔴 Not Ready |
+| **Business Readiness** | 0/5        | 🔴 Not Ready |
+| **OVERALL**            | **0/65**   | 🔴 Not Ready |
 
 **Target Launch Date:** TBD  
 **Current Blockers:** All categories incomplete (expected at this stage)
@@ -40,26 +43,35 @@ Reference: Codex §2.5 (Security Standards), §4.9 (Security Gates)
 
 ### Authentication & Authorization
 
-- [ ] 🔴 **SEC-001:** All API endpoints implement authentication (JWT via Clerk + Supabase)
-- [ ] 🔴 **SEC-002:** RBAC implemented and tested (Admin, Manager, Member, Guest roles)
-- [ ] 🔴 **SEC-003:** Session management configured (timeout, refresh token rotation)
+- [ ] 🔴 **SEC-001:** All API endpoints implement authentication (JWT via
+      Clerk + Supabase)
+- [ ] 🔴 **SEC-002:** RBAC implemented and tested (Admin, Manager, Member, Guest
+      roles)
+- [ ] 🔴 **SEC-003:** Session management configured (timeout, refresh token
+      rotation)
 - [ ] 🔴 **SEC-004:** MFA available for admin accounts
 
 ### Input Validation & Injection Prevention
 
 - [ ] 🔴 **SEC-005:** All user inputs validated using Zod schemas
-- [ ] 🔴 **SEC-006:** SQL injection prevention verified (Drizzle ORM parameterized queries)
-- [ ] 🔴 **SEC-007:** XSS prevention implemented (React auto-escaping + CSP headers)
+- [ ] 🔴 **SEC-006:** SQL injection prevention verified (Drizzle ORM
+      parameterized queries)
+- [ ] 🔴 **SEC-007:** XSS prevention implemented (React auto-escaping + CSP
+      headers)
 - [ ] 🔴 **SEC-008:** CSRF protection enabled for state-changing operations
 
 ### Secrets & Sensitive Data
 
 - [ ] 🔴 **SEC-009:** No secrets in version control (TruffleHog scan passing)
-- [ ] 🔴 **SEC-010:** Environment variables properly configured (no defaults in production)
-- [ ] 🔴 **SEC-011:** API keys rotated and stored in secure vault (Vercel Secrets / Supabase Vault)
-- [ ] 🟡 **SEC-012:** PII encryption at rest (if handling sensitive personal data)
+- [ ] 🔴 **SEC-010:** Environment variables properly configured (no defaults in
+      production)
+- [ ] 🔴 **SEC-011:** API keys rotated and stored in secure vault (Vercel
+      Secrets / Supabase Vault)
+- [ ] 🟡 **SEC-012:** PII encryption at rest (if handling sensitive personal
+      data)
 
 **Security Verification:**
+
 ```bash
 # Run security audit
 pnpm audit --audit-level=high
@@ -80,7 +92,8 @@ Reference: Codex §3.5 (Performance Optimization)
 
 ### Core Web Vitals
 
-- [ ] 🔴 **PERF-001:** Largest Contentful Paint (LCP) <2.5s (measured via Lighthouse CI)
+- [ ] 🔴 **PERF-001:** Largest Contentful Paint (LCP) <2.5s (measured via
+      Lighthouse CI)
 - [ ] 🔴 **PERF-002:** Interaction to Next Paint (INP) <200ms
 - [ ] 🔴 **PERF-003:** Cumulative Layout Shift (CLS) <0.1
 - [ ] 🔴 **PERF-004:** Time to First Byte (TTFB) <600ms
@@ -93,6 +106,7 @@ Reference: Codex §3.5 (Performance Optimization)
 - [ ] 🟡 **PERF-008:** CDN configured for static assets
 
 **Performance Verification:**
+
 ```bash
 # Run Lighthouse CI
 pnpm build
@@ -103,6 +117,7 @@ pnpm build && du -sh apps/web/.next/static/chunks/*.js
 ```
 
 **Target Metrics:**
+
 - **Lighthouse Score:** ≥90 for Performance, Accessibility, Best Practices, SEO
 - **Load Time:** <3s on 3G connection
 
@@ -118,8 +133,10 @@ Reference: Codex §4 (Quality Assurance & DevOps)
 ### Test Coverage
 
 - [ ] 🔴 **QA-001:** Overall test coverage ≥80% (lines)
-- [ ] 🔴 **QA-002:** Testing pyramid maintained (70% unit, 20% integration, 10% E2E)
-- [ ] 🔴 **QA-003:** All critical user journeys have E2E tests (signup, login, agent creation, workspace navigation)
+- [ ] 🔴 **QA-002:** Testing pyramid maintained (70% unit, 20% integration, 10%
+      E2E)
+- [ ] 🔴 **QA-003:** All critical user journeys have E2E tests (signup, login,
+      agent creation, workspace navigation)
 - [ ] 🟡 **QA-004:** Mutation testing score ≥60% for critical modules
 
 ### Test Quality
@@ -132,9 +149,11 @@ Reference: Codex §4 (Quality Assurance & DevOps)
 ### Pre-Production Testing
 
 - [ ] 🔴 **QA-009:** Staging environment smoke tests passed
-- [ ] 🟡 **QA-010:** Load testing completed (100 concurrent users, p95 latency <500ms)
+- [ ] 🟡 **QA-010:** Load testing completed (100 concurrent users, p95 latency
+      <500ms)
 
 **Quality Verification:**
+
 ```bash
 # Run full test suite
 pnpm test:coverage
@@ -157,23 +176,30 @@ Reference: Codex §4.7-4.12 (DevOps Standards)
 
 ### CI/CD Pipeline
 
-- [ ] 🔴 **INFRA-001:** All CI stages passing (lint, test, build, security scans)
-- [ ] 🔴 **INFRA-002:** Security gates enforced (Snyk, Semgrep, TruffleHog, pnpm audit)
+- [ ] 🔴 **INFRA-001:** All CI stages passing (lint, test, build, security
+      scans)
+- [ ] 🔴 **INFRA-002:** Security gates enforced (Snyk, Semgrep, TruffleHog, pnpm
+      audit)
 - [ ] 🔴 **INFRA-003:** Automated deployment to staging on merge to `main`
-- [ ] 🔴 **INFRA-004:** Canary deployment configured for production (10% → 50% → 100% rollout)
+- [ ] 🔴 **INFRA-004:** Canary deployment configured for production (10% → 50% →
+      100% rollout)
 
 ### Monitoring & Observability
 
-- [ ] 🔴 **INFRA-005:** Structured logging implemented (JSON format, correlation IDs)
-- [ ] 🔴 **INFRA-006:** RED metrics collected (Rate, Errors, Duration for all APIs)
+- [ ] 🔴 **INFRA-005:** Structured logging implemented (JSON format, correlation
+      IDs)
+- [ ] 🔴 **INFRA-006:** RED metrics collected (Rate, Errors, Duration for all
+      APIs)
 - [ ] 🔴 **INFRA-007:** Alerting configured (error rate >1%, p95 latency >500ms)
 - [ ] 🟡 **INFRA-008:** Distributed tracing enabled (OpenTelemetry)
 
 ### Disaster Recovery
 
-- [ ] 🔴 **INFRA-009:** Database backups automated and tested (daily, 7-day retention)
+- [ ] 🔴 **INFRA-009:** Database backups automated and tested (daily, 7-day
+      retention)
 
 **Infrastructure Verification:**
+
 ```bash
 # Verify CI pipeline
 gh workflow list
@@ -195,21 +221,25 @@ Reference: Codex §2.5.6 (OWASP), §3.4 (Accessibility)
 
 ### Code Standards
 
-- [ ] 🔴 **COMP-001:** TypeScript strict mode enabled (`strict: true` in tsconfig)
+- [ ] 🔴 **COMP-001:** TypeScript strict mode enabled (`strict: true` in
+      tsconfig)
 - [ ] 🔴 **COMP-002:** ESLint passing with no errors
 - [ ] 🔴 **COMP-003:** Prettier formatting applied across entire codebase
 - [ ] 🟡 **COMP-004:** No `any` types in production code (exceptions documented)
 
 ### Security Standards
 
-- [ ] 🔴 **COMP-005:** OWASP Top 10 compliance verified (see `docs/security/OWASP-TOP10-AUDIT.md`)
+- [ ] 🔴 **COMP-005:** OWASP Top 10 compliance verified (see
+      `docs/security/OWASP-TOP10-AUDIT.md`)
 - [ ] 🟡 **COMP-006:** OWASP Agentic Top 10 compliance for AI features
 
 ### Accessibility
 
-- [ ] 🔴 **COMP-007:** WCAG 2.2 AA compliance verified (axe-core scan + manual testing)
+- [ ] 🔴 **COMP-007:** WCAG 2.2 AA compliance verified (axe-core scan + manual
+      testing)
 
 **Compliance Verification:**
+
 ```bash
 # Run linting
 pnpm lint
@@ -233,22 +263,28 @@ Reference: Codex §5 (Governance & Operations)
 
 ### Runbooks & Documentation
 
-- [ ] 🔴 **OPS-001:** Incident response runbook created (`docs/operations/INCIDENT-RESPONSE.md`)
-- [ ] 🔴 **OPS-002:** Deployment runbook created (`docs/operations/DEPLOYMENT-GUIDE.md`)
+- [ ] 🔴 **OPS-001:** Incident response runbook created
+      (`docs/operations/INCIDENT-RESPONSE.md`)
+- [ ] 🔴 **OPS-002:** Deployment runbook created
+      (`docs/operations/DEPLOYMENT-GUIDE.md`)
 - [ ] 🔴 **OPS-003:** Rollback procedures documented and tested
 - [ ] 🟡 **OPS-004:** On-call rotation defined (if 24/7 support required)
 
 ### Change Management
 
-- [ ] 🔴 **OPS-005:** Architecture Decision Records (ADRs) created for all major decisions
-- [ ] 🟡 **OPS-006:** RFC process documented and followed for significant changes
+- [ ] 🔴 **OPS-005:** Architecture Decision Records (ADRs) created for all major
+      decisions
+- [ ] 🟡 **OPS-006:** RFC process documented and followed for significant
+      changes
 
 ### Operational Readiness
 
-- [ ] 🔴 **OPS-007:** Post-launch monitoring plan defined (metrics, dashboards, alerts)
+- [ ] 🔴 **OPS-007:** Post-launch monitoring plan defined (metrics, dashboards,
+      alerts)
 - [ ] 🔴 **OPS-008:** Drift detection scheduled (weekly cron job configured)
 
 **Operations Verification:**
+
 ```bash
 # Verify cron jobs
 crontab -l | grep drift-detection
@@ -281,6 +317,7 @@ Reference: Codex §1.2.1 (Documentation Hierarchy)
 - [ ] 🔴 **DOC-006:** All ADRs archived in `docs/architecture/decisions/`
 
 **Documentation Verification:**
+
 ```bash
 # Check documentation freshness
 find docs -name "*.md" -mtime +90
@@ -310,6 +347,7 @@ Reference: Product & Business Requirements
 - [ ] 🟡 **BIZ-005:** Onboarding email sequence configured
 
 **Business Verification:**
+
 - Test signup → payment → activation flow
 - Verify legal docs accessible at `/terms` and `/privacy`
 - Test support email responsiveness
@@ -323,14 +361,14 @@ Reference: Product & Business Requirements
 
 ### Go / No-Go Criteria
 
-| Criteria | Threshold | Current | Status |
-|----------|-----------|---------|--------|
-| **Critical Items (🔴)** | 100% complete | 0% | 🔴 BLOCK |
-| **Should Items (🟡)** | ≥80% complete | 0% | 🔴 BLOCK |
-| **Test Coverage** | ≥80% | ~65% | 🔴 BLOCK |
-| **Security Vulnerabilities** | 0 high/critical | TBD | 🔴 BLOCK |
-| **Performance Score** | ≥90 Lighthouse | TBD | 🔴 BLOCK |
-| **Uptime (Staging)** | ≥99.5% (7 days) | TBD | 🔴 BLOCK |
+| Criteria                     | Threshold       | Current | Status   |
+| ---------------------------- | --------------- | ------- | -------- |
+| **Critical Items (🔴)**      | 100% complete   | 0%      | 🔴 BLOCK |
+| **Should Items (🟡)**        | ≥80% complete   | 0%      | 🔴 BLOCK |
+| **Test Coverage**            | ≥80%            | ~65%    | 🔴 BLOCK |
+| **Security Vulnerabilities** | 0 high/critical | TBD     | 🔴 BLOCK |
+| **Performance Score**        | ≥90 Lighthouse  | TBD     | 🔴 BLOCK |
+| **Uptime (Staging)**         | ≥99.5% (7 days) | TBD     | 🔴 BLOCK |
 
 **Launch Readiness:** 🔴 **NOT READY**
 
@@ -339,16 +377,19 @@ Reference: Product & Business Requirements
 ## Staged Launch Strategy
 
 ### Phase 1: Private Beta (Week 1)
+
 - [ ] 10-20 internal users
 - [ ] Daily monitoring and bug triage
 - [ ] Rollback plan ready (can revert in <5 minutes)
 
 ### Phase 2: Public Beta (Week 2-4)
+
 - [ ] 100-500 users (waitlist)
 - [ ] Feature flags for gradual rollout
 - [ ] Weekly retrospectives and iteration
 
 ### Phase 3: General Availability (Month 2)
+
 - [ ] Open to public
 - [ ] Marketing campaign launch
 - [ ] 24/7 monitoring and on-call support
@@ -359,13 +400,13 @@ Reference: Product & Business Requirements
 
 ### Critical Metrics to Watch
 
-| Metric | Target | Alert Threshold |
-|--------|--------|-----------------|
-| **Error Rate** | <0.1% | >1% |
-| **API Latency (p95)** | <500ms | >1000ms |
-| **Signup Success Rate** | >95% | <90% |
-| **Payment Success Rate** | >98% | <95% |
-| **Uptime** | 99.9% | <99.5% |
+| Metric                   | Target | Alert Threshold |
+| ------------------------ | ------ | --------------- |
+| **Error Rate**           | <0.1%  | >1%             |
+| **API Latency (p95)**    | <500ms | >1000ms         |
+| **Signup Success Rate**  | >95%   | <90%            |
+| **Payment Success Rate** | >98%   | <95%            |
+| **Uptime**               | 99.9%  | <99.5%          |
 
 ### Incident Response Protocol
 
@@ -377,6 +418,7 @@ Reference: Product & Business Requirements
 6. **Post-Mortem:** Document learnings within 24h (blameless)
 
 **Escalation Path:**
+
 - **P0 (Critical):** Immediate rollback, CEO notified
 - **P1 (High):** Fix within 4h, Tech Lead notified
 - **P2 (Medium):** Fix within 24h
@@ -386,26 +428,27 @@ Reference: Product & Business Requirements
 
 ## Approval Sign-Off
 
-This checklist must be reviewed and approved by the following stakeholders before launch:
+This checklist must be reviewed and approved by the following stakeholders
+before launch:
 
-| Role | Name | Signature | Date |
-|------|------|-----------|------|
-| **CEO** | Alim (AI CEO Agent) | ________________ | ________ |
-| **Tech Lead** | [Name] | ________________ | ________ |
-| **Guardian (Ops)** | Hafiz | ________________ | ________ |
-| **QA Lead** | [Name] | ________________ | ________ |
-| **DevOps Lead** | [Name] | ________________ | ________ |
-| **Product Manager** | [Name] | ________________ | ________ |
+| Role                | Name                | Signature                | Date         |
+| ------------------- | ------------------- | ------------------------ | ------------ |
+| **CEO**             | Alim (AI CEO Agent) | **\*\***\_\_\_\_**\*\*** | **\_\_\_\_** |
+| **Tech Lead**       | [Name]              | **\*\***\_\_\_\_**\*\*** | **\_\_\_\_** |
+| **Guardian (Ops)**  | Hafiz               | **\*\***\_\_\_\_**\*\*** | **\_\_\_\_** |
+| **QA Lead**         | [Name]              | **\*\***\_\_\_\_**\*\*** | **\_\_\_\_** |
+| **DevOps Lead**     | [Name]              | **\*\***\_\_\_\_**\*\*** | **\_\_\_\_** |
+| **Product Manager** | [Name]              | **\*\***\_\_\_\_**\*\*** | **\_\_\_\_** |
 
-**Final Approval Date:** _______________  
-**Actual Launch Date:** _______________
+**Final Approval Date:** **\*\***\_\_\_**\*\***  
+**Actual Launch Date:** **\*\***\_\_\_**\*\***
 
 ---
 
 ## Revision History
 
-| Date | Change | Author |
-|------|--------|--------|
+| Date       | Change                    | Author           |
+| ---------- | ------------------------- | ---------------- |
 | 2026-02-11 | Initial checklist created | Guardian (Hafiz) |
 
 ---
@@ -421,4 +464,4 @@ This checklist must be reviewed and approved by the following stakeholders befor
 
 ---
 
-*For questions or clarifications, contact Guardian (Hafiz) or Tech Lead.*
+_For questions or clarifications, contact Guardian (Hafiz) or Tech Lead._

@@ -1,13 +1,13 @@
-import { Suspense } from 'react'
-import { KpiCardsClient } from '@/components/dashboard/kpi-cards-client'
-import { RecentActivity } from '@/components/dashboard/recent-activity'
-import { UrgentAlerts } from '@/components/dashboard/urgent-alerts'
-import { GlobalIntelFeed } from '@/components/dashboard/global-intel-feed'
-import { getDashboardData } from '@/server/db/queries/dashboard'
-import { redirect } from 'next/navigation'
-import { Skeleton } from '@/components/ui/skeleton'
-import Link from 'next/link'
-import { ArrowRight, Users, Bot, Rocket } from 'lucide-react'
+import { Suspense } from 'react';
+import { KpiCardsClient } from '@/components/dashboard/kpi-cards-client';
+import { RecentActivity } from '@/components/dashboard/recent-activity';
+import { UrgentAlerts } from '@/components/dashboard/urgent-alerts';
+import { GlobalIntelFeed } from '@/components/dashboard/global-intel-feed';
+import { getDashboardData } from '@/server/db/queries/dashboard';
+import { redirect } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
+import { ArrowRight, Users, Bot, Rocket } from 'lucide-react';
 
 function SectionSkeleton() {
   return (
@@ -19,17 +19,17 @@ function SectionSkeleton() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export default async function DashboardPage() {
-  const dashboardData = await getDashboardData()
+  const dashboardData = await getDashboardData();
 
   if (!dashboardData) {
-    redirect('/sign-in')
+    redirect('/sign-in');
   }
 
-  const { activity, alerts, missions, allies } = dashboardData
+  const { activity, alerts, missions, allies } = dashboardData;
 
   return (
     <div className="space-y-6">
@@ -37,9 +37,7 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Overview of your ecosystem
-          </p>
+          <p className="text-sm text-muted-foreground mt-0.5">Overview of your ecosystem</p>
         </div>
         <div className="text-xs font-mono bg-secondary/50 px-2.5 py-1 rounded border border-border text-muted-foreground">
           STABLE · FEB 13 2026
@@ -138,7 +136,7 @@ export default async function DashboardPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function QuickStatCard({
@@ -147,10 +145,10 @@ function QuickStatCard({
   count,
   href,
 }: {
-  icon: React.ReactNode
-  label: string
-  count: number
-  href: string
+  icon: React.ReactNode;
+  label: string;
+  count: number;
+  href: string;
 }) {
   return (
     <Link
@@ -168,5 +166,5 @@ function QuickStatCard({
       </div>
       <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
     </Link>
-  )
+  );
 }

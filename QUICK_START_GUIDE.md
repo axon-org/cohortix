@@ -1,7 +1,8 @@
 # 🚀 Quick Start Guide: Complete Cohortix Database Setup
 
 **Time Required:** ~15 minutes  
-**Current Status:** Schema ready, seed ready, queries ready → Just needs manual push
+**Current Status:** Schema ready, seed ready, queries ready → Just needs manual
+push
 
 ---
 
@@ -17,7 +18,8 @@
    - Click **New Query** button
 
 3. **Copy Migration SQL:**
-   - Open: `/Users/alimai/Projects/cohortix/packages/database/src/migrations/0000_initial_with_rls.sql`
+   - Open:
+     `/Users/alimai/Projects/cohortix/packages/database/src/migrations/0000_initial_with_rls.sql`
    - Select All (Cmd+A)
    - Copy (Cmd+C)
 
@@ -65,6 +67,7 @@ pnpm tsx scripts/seed-supabase.ts
 ```
 
 **Expected Output:**
+
 ```
 🌱 Seeding database with Supabase client...
 📦 Creating organization: Axon HQ
@@ -76,6 +79,7 @@ pnpm tsx scripts/seed-supabase.ts
 ```
 
 **What you'll get:**
+
 - 1 demo organization (Axon HQ)
 - 4 AI allies (Devi, Lubna, Zara, Khalid)
 - 1 sample client (TechCorp Inc.)
@@ -90,6 +94,7 @@ pnpm tsx scripts/seed-supabase.ts
 ### Import Dashboard Queries
 
 The queries are already created at:
+
 ```
 apps/web/src/server/db/queries/dashboard.ts
 ```
@@ -105,31 +110,31 @@ import { redirect } from 'next/navigation';
 export default async function DashboardPage() {
   // Fetch all dashboard data
   const data = await getDashboardData();
-  
+
   if (!data) {
     redirect('/sign-in');
   }
-  
+
   return (
     <div className="dashboard">
       {/* Update these components to use real data */}
-      <DashboardHeader 
-        user={data.user} 
-        organization={data.organization} 
+      <DashboardHeader
+        user={data.user}
+        organization={data.organization}
       />
-      
+
       <KPICards kpis={data.kpis} />
       {/* kpis = { activeCohorts, missionsInProgress, activeAllies, completionRate } */}
-      
+
       <ActivityFeed activity={data.activity} />
       {/* activity = array of recent audit log entries */}
-      
+
       <AlertsBanner alerts={data.alerts} />
       {/* alerts = array of warnings/errors/info */}
-      
+
       <CohortsGrid cohorts={data.cohorts} />
       {/* cohorts = active projects with task stats */}
-      
+
       <AlliesSidebar allies={data.allies} />
       {/* allies = agents with workload info */}
     </div>
@@ -140,6 +145,7 @@ export default async function DashboardPage() {
 ### Fix Hardcoded User Name
 
 **Find and replace:**
+
 ```typescript
 // OLD (hardcoded)
 <span>Alex Chen</span>
@@ -197,6 +203,7 @@ http://localhost:3000/dashboard
 
 **Problem:** Supabase credentials wrong  
 **Fix:** Verify `.env.local` has correct keys:
+
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://rfwscvklcokzuofyzqwx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -208,23 +215,27 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ## What's Ready to Use
 
 ### ✅ Database Schema
+
 - All tables designed
 - RLS policies configured
 - Indexes optimized
 - Enums defined
 
 ### ✅ Seed Script
+
 - Location: `scripts/seed-supabase.ts`
 - Uses Supabase client (HTTPS)
 - Creates realistic demo data
 
 ### ✅ Dashboard Queries
+
 - Location: `apps/web/src/server/db/queries/dashboard.ts`
 - TypeScript typed
 - RLS-aware (auto tenant filtering)
 - Optimized with parallel fetching
 
 ### ✅ Documentation
+
 - **DATA_WIRING_BUILD.md** — Full technical report
 - **QUICK_START_GUIDE.md** — This file
 - **DB_SCHEMA_BUILD.md** — Original schema docs
@@ -283,6 +294,7 @@ pnpm build
 ## Support
 
 **Detailed Documentation:** See `DATA_WIRING_BUILD.md` for:
+
 - Full query API reference
 - Security notes (RLS policies)
 - Performance optimization tips

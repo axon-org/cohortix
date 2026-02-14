@@ -9,28 +9,35 @@
 
 ## Overview
 
-The Cohortix Design System is a comprehensive set of design standards, components, and tokens that ensure consistency, accessibility, and maintainability across the product. This document serves as the **single source of truth** for all UI/UX design decisions.
+The Cohortix Design System is a comprehensive set of design standards,
+components, and tokens that ensure consistency, accessibility, and
+maintainability across the product. This document serves as the **single source
+of truth** for all UI/UX design decisions.
 
 ---
 
 ## Design Principles
 
 ### 1. Agent-First, Human-Friendly
+
 - AI coordination interfaces require clarity, not cleverness
 - Every ally status, mission state visible at a glance
 - Warm, approachable language (not enterprise jargon)
 
 ### 2. Dark Mode by Design
+
 - Optimized for extended screen time (hours of monitoring)
 - Not an afterthought — dark is the primary experience
 - Light mode available but secondary
 
 ### 3. Accessibility Non-Negotiable
+
 - WCAG 2.2 AA minimum (AAA where possible)
 - Keyboard navigation, screen reader support
 - 44x44px touch targets, 4.5:1 text contrast
 
 ### 4. Linear-Inspired, Not Duplicated
+
 - Professional, modern, generous spacing
 - #5E6AD2 blue-violet (recognizable but not proprietary)
 - Card-based UI with subtle elevation
@@ -40,55 +47,59 @@ The Cohortix Design System is a comprehensive set of design standards, component
 ## Component Hierarchy
 
 ### Foundation Layer
+
 **Base building blocks (atomic)**
 
-| Component | Purpose | shadcn/ui Base |
-|-----------|---------|----------------|
-| Button | Primary actions, CTAs | ✅ Yes |
-| Input | Text fields, search | ✅ Yes |
-| Select | Dropdowns, pickers | ✅ Yes |
-| Checkbox | Multi-select options | ✅ Yes |
-| Radio | Single-select options | ✅ Yes |
-| Switch | Toggle states | ✅ Yes |
-| Avatar | User/ally profiles | ✅ Yes |
-| Badge | Status indicators | ✅ Yes |
-| Progress | Mission completion | ✅ Yes |
-| Tooltip | Help text, explanations | ✅ Yes |
+| Component | Purpose                 | shadcn/ui Base |
+| --------- | ----------------------- | -------------- |
+| Button    | Primary actions, CTAs   | ✅ Yes         |
+| Input     | Text fields, search     | ✅ Yes         |
+| Select    | Dropdowns, pickers      | ✅ Yes         |
+| Checkbox  | Multi-select options    | ✅ Yes         |
+| Radio     | Single-select options   | ✅ Yes         |
+| Switch    | Toggle states           | ✅ Yes         |
+| Avatar    | User/ally profiles      | ✅ Yes         |
+| Badge     | Status indicators       | ✅ Yes         |
+| Progress  | Mission completion      | ✅ Yes         |
+| Tooltip   | Help text, explanations | ✅ Yes         |
 
 ### Pattern Layer
+
 **Composed components (molecules)**
 
-| Component | Composition | Status |
-|-----------|-------------|--------|
-| Card | Container + Shadow + Border | ✅ Implemented |
-| Form Field | Label + Input + Error | ✅ Implemented |
-| Dialog | Modal + Backdrop + Focus Trap | ✅ Implemented |
-| Dropdown Menu | Trigger + Menu + Items | ✅ Implemented |
-| Tabs | Tab List + Tab Panels | ✅ Implemented |
-| Toast | Notification + Auto-dismiss | ✅ Implemented |
+| Component     | Composition                   | Status         |
+| ------------- | ----------------------------- | -------------- |
+| Card          | Container + Shadow + Border   | ✅ Implemented |
+| Form Field    | Label + Input + Error         | ✅ Implemented |
+| Dialog        | Modal + Backdrop + Focus Trap | ✅ Implemented |
+| Dropdown Menu | Trigger + Menu + Items        | ✅ Implemented |
+| Tabs          | Tab List + Tab Panels         | ✅ Implemented |
+| Toast         | Notification + Auto-dismiss   | ✅ Implemented |
 
 ### Feature Layer
+
 **Domain-specific components (organisms)**
 
-| Component | Purpose | Status |
-|-----------|---------|--------|
-| MissionCard | Displays mission summary | 🟡 In Progress |
-| AllyCard | Shows ally profile + status | 🟡 In Progress |
-| GoalCard | Goal hierarchy display | 📝 Planned |
-| WorkloadMeter | Ally capacity visualization | 📝 Planned |
-| StatusRing | Ally availability indicator | 📝 Planned |
-| MissionTimeline | Chronological mission view | 📝 Planned |
-| IntelCard | Captured learnings display | 📝 Planned |
+| Component       | Purpose                     | Status         |
+| --------------- | --------------------------- | -------------- |
+| MissionCard     | Displays mission summary    | 🟡 In Progress |
+| AllyCard        | Shows ally profile + status | 🟡 In Progress |
+| GoalCard        | Goal hierarchy display      | 📝 Planned     |
+| WorkloadMeter   | Ally capacity visualization | 📝 Planned     |
+| StatusRing      | Ally availability indicator | 📝 Planned     |
+| MissionTimeline | Chronological mission view  | 📝 Planned     |
+| IntelCard       | Captured learnings display  | 📝 Planned     |
 
 ### Layout Layer
+
 **Page-level structure (templates)**
 
-| Layout | Purpose | Responsive Strategy |
-|--------|---------|---------------------|
-| Sidebar + Main | Primary app layout | Collapsible sidebar on mobile |
-| Three-Column Grid | Mission/goal browsing | 3 → 2 → 1 columns |
-| Split Screen | Detail view + properties | Stack on mobile |
-| Modal Overlay | Focused actions | Full-screen on mobile |
+| Layout            | Purpose                  | Responsive Strategy           |
+| ----------------- | ------------------------ | ----------------------------- |
+| Sidebar + Main    | Primary app layout       | Collapsible sidebar on mobile |
+| Three-Column Grid | Mission/goal browsing    | 3 → 2 → 1 columns             |
+| Split Screen      | Detail view + properties | Stack on mobile               |
+| Modal Overlay     | Focused actions          | Full-screen on mobile         |
 
 ---
 
@@ -98,22 +109,22 @@ The Cohortix Design System is a comprehensive set of design standards, component
 
 ### Common Values
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `spacing[2]` | 8px | Compact spacing (icon gaps) |
-| `spacing[4]` | 16px | Default spacing (card padding mobile) |
-| `spacing[6]` | 24px | Generous spacing (card padding desktop) |
-| `spacing[8]` | 32px | Section spacing |
-| `spacing[12]` | 48px | Large section gaps |
+| Token         | Value | Usage                                   |
+| ------------- | ----- | --------------------------------------- |
+| `spacing[2]`  | 8px   | Compact spacing (icon gaps)             |
+| `spacing[4]`  | 16px  | Default spacing (card padding mobile)   |
+| `spacing[6]`  | 24px  | Generous spacing (card padding desktop) |
+| `spacing[8]`  | 32px  | Section spacing                         |
+| `spacing[12]` | 48px  | Large section gaps                      |
 
 ### Layout-Specific
 
-| Context | Mobile | Tablet | Desktop |
-|---------|--------|--------|---------|
-| **Card Padding** | 16px | 20px | 24px |
-| **Content Padding** | 16px | 24px | 32px |
-| **Card Gap** | 16px | 16px | 24px |
-| **Sidebar Width** | — | 200px | 240px |
+| Context             | Mobile | Tablet | Desktop |
+| ------------------- | ------ | ------ | ------- |
+| **Card Padding**    | 16px   | 20px   | 24px    |
+| **Content Padding** | 16px   | 24px   | 32px    |
+| **Card Gap**        | 16px   | 16px   | 24px    |
+| **Sidebar Width**   | —      | 200px  | 240px   |
 
 ### Touch Targets (WCAG 2.5.5)
 
@@ -131,39 +142,42 @@ The Cohortix Design System is a comprehensive set of design standards, component
 
 ### Sizes with Line Heights
 
-| Size | Pixels | Line Height | Usage |
-|------|--------|-------------|-------|
-| `xs` | 12px | 16px | Metadata, timestamps |
-| `sm` | 14px | 20px | Secondary text, labels |
-| `base` | 16px | 24px | Body text (default) |
-| `lg` | 18px | 28px | Emphasized body, card titles |
-| `xl` | 20px | 28px | Small headings |
-| `2xl` | 24px | 32px | Medium headings (H3) |
-| `3xl` | 30px | 36px | Large headings (H2) |
-| `4xl` | 36px | 40px | Page headings (H1) |
+| Size   | Pixels | Line Height | Usage                        |
+| ------ | ------ | ----------- | ---------------------------- |
+| `xs`   | 12px   | 16px        | Metadata, timestamps         |
+| `sm`   | 14px   | 20px        | Secondary text, labels       |
+| `base` | 16px   | 24px        | Body text (default)          |
+| `lg`   | 18px   | 28px        | Emphasized body, card titles |
+| `xl`   | 20px   | 28px        | Small headings               |
+| `2xl`  | 24px   | 32px        | Medium headings (H3)         |
+| `3xl`  | 30px   | 36px        | Large headings (H2)          |
+| `4xl`  | 36px   | 40px        | Page headings (H1)           |
 
 ### Font Weights
 
-| Weight | Value | Usage |
-|--------|-------|-------|
-| Normal | 400 | Body text |
-| Medium | 500 | Labels, emphasis |
-| Semibold | 600 | Headings, buttons |
-| Bold | 700 | Strong emphasis |
+| Weight   | Value | Usage             |
+| -------- | ----- | ----------------- |
+| Normal   | 400   | Body text         |
+| Medium   | 500   | Labels, emphasis  |
+| Semibold | 600   | Headings, buttons |
+| Bold     | 700   | Strong emphasis   |
 
 ### Component Typography
 
 **Mission Card:**
+
 - Title: 18px semibold (lg)
 - Description: 14px normal (sm)
 - Metadata: 12px normal (xs)
 
 **Ally Card:**
+
 - Name: 18px semibold (lg)
 - Role: 14px normal (sm)
 - Status: 14px medium (sm)
 
 **Navigation:**
+
 - Items: 14px medium (sm)
 - Section headers: 12px semibold uppercase (xs)
 
@@ -174,6 +188,7 @@ The Cohortix Design System is a comprehensive set of design standards, component
 ### Dark Theme (Primary)
 
 **Base Colors:**
+
 ```
 Background: #0A0A0B (near-black)
 Foreground: #FAFAFA (off-white)
@@ -182,6 +197,7 @@ Border: #27282D (subtle dividers)
 ```
 
 **Brand Colors:**
+
 ```
 Primary: #5E6AD2 (blue-violet)
   Foreground: #FFFFFF
@@ -198,6 +214,7 @@ Destructive: #EF4444 (red)
 ```
 
 **Semantic Status Colors:**
+
 ```
 Mission Active: #10B981 (green)
 Mission Backlog: #F59E0B (amber)
@@ -209,14 +226,14 @@ Ally Off Duty: #EF4444 (red ring)
 
 ### Contrast Ratios (WCAG 2.2)
 
-| Combination | Ratio | Standard |
-|-------------|-------|----------|
-| Foreground / Background | 17.8:1 | AAA |
-| Primary / Background | 9.2:1 | AAA |
-| Muted Foreground / Background | 4.9:1 | AA |
-| Border / Background | 3.2:1 | AA (UI) |
-| Success / Background | 6.1:1 | AA |
-| Destructive / Background | 5.8:1 | AA |
+| Combination                   | Ratio  | Standard |
+| ----------------------------- | ------ | -------- |
+| Foreground / Background       | 17.8:1 | AAA      |
+| Primary / Background          | 9.2:1  | AAA      |
+| Muted Foreground / Background | 4.9:1  | AA       |
+| Border / Background           | 3.2:1  | AA (UI)  |
+| Success / Background          | 6.1:1  | AA       |
+| Destructive / Background      | 5.8:1  | AA       |
 
 **All text meets 4.5:1 minimum (WCAG AA)**  
 **All UI components meet 3:1 minimum (WCAG AA)**
@@ -229,27 +246,30 @@ Ally Off Duty: #EF4444 (red ring)
 
 ### Breakpoints (Tailwind Defaults)
 
-| Name | Min Width | Device | Usage |
-|------|-----------|--------|-------|
-| `sm` | 640px | Large phones | Single column |
-| `md` | 768px | Tablets | 2-column layouts |
-| `lg` | 1024px | Laptops | 3-column grids, full sidebar |
-| `xl` | 1280px | Desktops | Optimal experience |
-| `2xl` | 1440px | Large screens | Max content width |
+| Name  | Min Width | Device        | Usage                        |
+| ----- | --------- | ------------- | ---------------------------- |
+| `sm`  | 640px     | Large phones  | Single column                |
+| `md`  | 768px     | Tablets       | 2-column layouts             |
+| `lg`  | 1024px    | Laptops       | 3-column grids, full sidebar |
+| `xl`  | 1280px    | Desktops      | Optimal experience           |
+| `2xl` | 1440px    | Large screens | Max content width            |
 
 ### Layout Transformations
 
 **Mission Grid:**
+
 - Mobile: 1 column, full-width cards
 - Tablet: 2 columns, 16px gap
 - Desktop: 3 columns, 24px gap
 
 **Sidebar:**
+
 - Mobile: Hamburger menu (overlay)
 - Tablet: Collapsible (icon-only mode)
 - Desktop: Persistent 240px
 
 **Forms:**
+
 - Mobile: 1 field per row
 - Tablet: 2 columns for related fields
 - Desktop: Flexible 3-4 column grid
@@ -273,22 +293,22 @@ Disabled: opacity-50 cursor-not-allowed
 
 ### Mission Card States
 
-| State | Badge Color | Border | Shadow |
-|-------|-------------|--------|--------|
-| Active | Green | None | sm |
-| Hover | Green | None | md + translate-y-[-2px] |
-| Backlog | Amber | None | sm |
-| Completed | Blue | None | sm (muted) |
+| State     | Badge Color | Border | Shadow                  |
+| --------- | ----------- | ------ | ----------------------- |
+| Active    | Green       | None   | sm                      |
+| Hover     | Green       | None   | md + translate-y-[-2px] |
+| Backlog   | Amber       | None   | sm                      |
+| Completed | Blue        | None   | sm (muted)              |
 
 ### Form Field States
 
-| State | Border | Background | Icon |
-|-------|--------|------------|------|
-| Default | `border-input` | Transparent | None |
-| Focus | `border-primary` | Transparent | None |
-| Error | `border-destructive` | `destructive/10` | ❌ |
-| Success | `border-success` | `success/10` | ✅ |
-| Disabled | `border-muted` | `muted/50` | None |
+| State    | Border               | Background       | Icon |
+| -------- | -------------------- | ---------------- | ---- |
+| Default  | `border-input`       | Transparent      | None |
+| Focus    | `border-primary`     | Transparent      | None |
+| Error    | `border-destructive` | `destructive/10` | ❌   |
+| Success  | `border-success`     | `success/10`     | ✅   |
+| Disabled | `border-muted`       | `muted/50`       | None |
 
 ---
 
@@ -297,6 +317,7 @@ Disabled: opacity-50 cursor-not-allowed
 ### WCAG 2.2 AA Compliance
 
 **✅ Implemented:**
+
 - [x] Text contrast 4.5:1 minimum
 - [x] UI component contrast 3:1 minimum
 - [x] Touch targets 44x44px minimum
@@ -308,11 +329,13 @@ Disabled: opacity-50 cursor-not-allowed
 ### Testing Checklist
 
 **Automated:**
+
 - axe DevTools (0 violations)
 - Lighthouse accessibility score (95+)
 - WAVE browser extension (0 errors)
 
 **Manual:**
+
 - VoiceOver (macOS) navigation
 - NVDA (Windows) screen reader
 - Keyboard-only navigation
@@ -326,12 +349,14 @@ Disabled: opacity-50 cursor-not-allowed
 ### Technology: shadcn/ui
 
 **Why shadcn/ui:**
+
 - Copy-paste components (full ownership)
 - Built on Radix UI (accessible primitives)
 - Tailwind CSS integration (no CSS-in-JS)
 - TypeScript-first (AI developer friendly)
 
-**See:** [DDR-004: Component Library Selection](./DDR-004-component-library-selection.md)
+**See:**
+[DDR-004: Component Library Selection](./DDR-004-component-library-selection.md)
 
 ### Installation
 
@@ -348,9 +373,7 @@ Components copied to: `packages/ui/src/components/ui/`
 All components use design tokens:
 
 ```tsx
-<Button className="bg-primary text-primary-foreground">
-  Deploy Cohort
-</Button>
+<Button className="bg-primary text-primary-foreground">Deploy Cohort</Button>
 ```
 
 Tokens defined in: `packages/ui/tokens/`
@@ -363,23 +386,23 @@ Tokens defined in: `packages/ui/tokens/`
 
 ### Token Files
 
-| File | Purpose |
-|------|---------|
-| `colors.ts` | Color palette, status colors, contrast ratios |
-| `spacing.ts` | Spacing scale, layout values, z-index |
-| `typography.ts` | Font families, sizes, weights, line heights |
-| `index.ts` | Exports + metadata |
+| File            | Purpose                                       |
+| --------------- | --------------------------------------------- |
+| `colors.ts`     | Color palette, status colors, contrast ratios |
+| `spacing.ts`    | Spacing scale, layout values, z-index         |
+| `typography.ts` | Font families, sizes, weights, line heights   |
+| `index.ts`      | Exports + metadata                            |
 
 ### Usage
 
 ```ts
-import { colors, spacing, typography } from '@cohortix/ui/tokens'
+import { colors, spacing, typography } from '@cohortix/ui/tokens';
 
 const cardStyle = {
   backgroundColor: colors.dark.card.DEFAULT,
   padding: spacing[6],
   fontSize: typography.fontSize.base[0],
-}
+};
 ```
 
 **See:** `packages/ui/tokens/README.md` for complete documentation
@@ -390,19 +413,19 @@ const cardStyle = {
 
 ### Timing
 
-| Duration | ms | Usage |
-|----------|-----|-------|
-| `duration-75` | 75ms | Micro-interactions (hover) |
-| `duration-150` | 150ms | Default UI transitions |
+| Duration       | ms    | Usage                          |
+| -------------- | ----- | ------------------------------ |
+| `duration-75`  | 75ms  | Micro-interactions (hover)     |
+| `duration-150` | 150ms | Default UI transitions         |
 | `duration-300` | 300ms | Deliberate animations (modals) |
-| `duration-500` | 500ms | Emphasis (page transitions) |
+| `duration-500` | 500ms | Emphasis (page transitions)    |
 
 ### Easing
 
-| Curve | CSS | Usage |
-|-------|-----|-------|
-| `ease-out` | `cubic-bezier(0, 0, 0.2, 1)` | Entering elements |
-| `ease-in` | `cubic-bezier(0.4, 0, 1, 1)` | Exiting elements |
+| Curve         | CSS                            | Usage             |
+| ------------- | ------------------------------ | ----------------- |
+| `ease-out`    | `cubic-bezier(0, 0, 0.2, 1)`   | Entering elements |
+| `ease-in`     | `cubic-bezier(0.4, 0, 1, 1)`   | Exiting elements  |
 | `ease-in-out` | `cubic-bezier(0.4, 0, 0.2, 1)` | Continuous motion |
 
 ### Reduced Motion
@@ -422,13 +445,13 @@ const cardStyle = {
 
 **Cohortix uses mission-based language (not generic PM jargon)**
 
-| Generic | Cohortix | Why |
-|---------|----------|-----|
-| Agent | **Ally** | Partnership, not tools |
-| Task | **Mission** | Purpose-driven, important |
-| Workflow | **Goal** | Outcome-oriented |
-| Dashboard | **Mission Control** | Thematic consistency |
-| Running | **On Mission** | Human, narrative |
+| Generic   | Cohortix            | Why                       |
+| --------- | ------------------- | ------------------------- |
+| Agent     | **Ally**            | Partnership, not tools    |
+| Task      | **Mission**         | Purpose-driven, important |
+| Workflow  | **Goal**            | Outcome-oriented          |
+| Dashboard | **Mission Control** | Thematic consistency      |
+| Running   | **On Mission**      | Human, narrative          |
 
 **See:** [DDR-002: Terminology Decisions](./DDR-002-terminology-decisions.md)
 
@@ -437,6 +460,7 @@ const cardStyle = {
 ## File Locations
 
 ### Design Documentation
+
 ```
 ~/Projects/cohortix/docs/design/
 ├── DDR-001-color-palette-and-accessibility.md
@@ -447,6 +471,7 @@ const cardStyle = {
 ```
 
 ### Design Tokens
+
 ```
 ~/Projects/cohortix/packages/ui/tokens/
 ├── colors.ts
@@ -457,6 +482,7 @@ const cardStyle = {
 ```
 
 ### UI Components
+
 ```
 ~/Projects/cohortix/packages/ui/src/components/
 ├── ui/ (shadcn/ui base components)
@@ -464,6 +490,7 @@ const cardStyle = {
 ```
 
 ### Tailwind Config
+
 ```
 ~/Projects/cohortix/apps/web/tailwind.config.ts
 ```
@@ -482,6 +509,7 @@ const cardStyle = {
 ## Change Log
 
 ### Version 1.0 (2026-02-11)
+
 - ✅ Created DDRs (001-004)
 - ✅ Extracted design tokens to TypeScript
 - ✅ Documented component hierarchy
@@ -517,4 +545,4 @@ const cardStyle = {
 
 ---
 
-*This design system is a living document. Update as patterns evolve.*
+_This design system is a living document. Update as patterns evolve._

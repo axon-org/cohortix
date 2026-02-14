@@ -12,12 +12,14 @@
 All 5 Week 3 Codex compliance tasks have been successfully completed:
 
 ### ✅ 1. Snyk Dependency Scanning
+
 - **Added to CI/CD:** PR stage security gate
 - **Configuration:** High/Critical vulnerabilities block merge (upgradable only)
 - **Integration:** SARIF upload to GitHub Code Scanning
 - **Bonus:** Enhanced Semgrep with OWASP + supply-chain rules
 
 **Files:**
+
 - Modified: `.github/workflows/ci.yml`
 
 **Next Step:** Add `SNYK_TOKEN` to GitHub Secrets (requires Snyk account signup)
@@ -25,6 +27,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 ---
 
 ### ✅ 2. Performance Budgets (Lighthouse CI)
+
 - **Core Web Vitals Enforced:**
   - LCP <2.5s ✓
   - INP <200ms ✓
@@ -34,6 +37,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 - **Runs:** 3x per PR for consistency
 
 **Files:**
+
 - Created: `.github/workflows/lighthouse.yml`
 - Created: `lighthouserc.json`
 
@@ -42,6 +46,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 ---
 
 ### ✅ 3. Drift Prevention & Detection
+
 - **Automated Script:** `scripts/drift-detection.sh`
   - Checks: Dependencies, Config, Architecture, Docs, Testing
   - Output: Color-coded (🟢/🟡/🔴) with actionable recommendations
@@ -50,6 +55,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
   - Covers all 5 drift categories
 
 **Files:**
+
 - Created: `scripts/drift-detection.sh` (executable)
 - Created: `docs/DRIFT-PREVENTION-CHECKLIST.md`
 
@@ -58,6 +64,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 ---
 
 ### ✅ 4. Technical Debt Log
+
 - **11 Debt Items Cataloged:**
   - 🔴 Critical: 3 (rate limiting, observability, test coverage)
   - 🟡 High: 3 (config, OpenAPI, backups)
@@ -67,6 +74,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 - **Tracking:** Category, impact, owner, target dates
 
 **Files:**
+
 - Created: `docs/TECH-DEBT.md`
 
 **Next Step:** Review in sprint planning, allocate remediation work
@@ -74,6 +82,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 ---
 
 ### ✅ 5. Pre-Launch Readiness Checklist
+
 - **65 Items Across 8 Categories:**
   - Security (12), Performance (8), QA (10), Infrastructure (9)
   - Compliance (7), Operations (8), Documentation (6), Business (5)
@@ -82,6 +91,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 - **Post-Launch Monitoring:** First 48 hours critical metrics
 
 **Files:**
+
 - Created: `docs/PRE-LAUNCH-CHECKLIST.md`
 
 **Next Step:** Allocate checklist items to sprints over next 6-8 weeks
@@ -90,19 +100,20 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 
 ## 📈 Impact Summary
 
-| Improvement | Before | After |
-|-------------|--------|-------|
-| **Security Gates** | 3 (TruffleHog, Semgrep, pnpm audit) | 4 (+ Snyk) |
-| **Performance Monitoring** | None | Lighthouse CI with budgets |
-| **Drift Detection** | Manual | Automated + weekly checklist |
-| **Technical Debt Tracking** | Ad-hoc | 11 items cataloged, 4-tier system |
-| **Launch Readiness** | Undefined | 65-item checklist |
+| Improvement                 | Before                              | After                             |
+| --------------------------- | ----------------------------------- | --------------------------------- |
+| **Security Gates**          | 3 (TruffleHog, Semgrep, pnpm audit) | 4 (+ Snyk)                        |
+| **Performance Monitoring**  | None                                | Lighthouse CI with budgets        |
+| **Drift Detection**         | Manual                              | Automated + weekly checklist      |
+| **Technical Debt Tracking** | Ad-hoc                              | 11 items cataloged, 4-tier system |
+| **Launch Readiness**        | Undefined                           | 65-item checklist                 |
 
 ---
 
 ## 📁 Deliverables
 
 ### New Files (6)
+
 1. `.github/workflows/lighthouse.yml` — Performance testing workflow
 2. `lighthouserc.json` — Lighthouse CI configuration
 3. `scripts/drift-detection.sh` — Automated drift detection
@@ -111,9 +122,11 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 6. `docs/PRE-LAUNCH-CHECKLIST.md` — Pre-launch readiness checklist
 
 ### Modified Files (1)
+
 1. `.github/workflows/ci.yml` — Added Snyk scan + enhanced Semgrep
 
 ### Documentation (1)
+
 - `docs/WEEK3-CODEX-COMPLIANCE-COMPLETE.md` — Full completion report
 
 **Total:** 8 files
@@ -123,6 +136,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 ## 🚀 Next Steps
 
 ### This Sprint (Week 4)
+
 - [ ] Set up Snyk account + add `SNYK_TOKEN` secret
 - [ ] Test Lighthouse CI on a sample PR
 - [ ] Run drift detection script manually
@@ -130,6 +144,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 - [ ] Begin addressing Critical debt items (TD-001, TD-002, TD-003)
 
 ### Month 2
+
 - [ ] Configure weekly cron for drift detection (Mondays 9 AM)
 - [ ] Complete all Critical and High-priority debt items
 - [ ] Achieve 80%+ test coverage (currently ~65%)
@@ -141,13 +156,13 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 
 **Codex v1.2 Alignment:**
 
-| Section | Requirement | Status |
-|---------|-------------|--------|
-| **§4.9** | Security gates (Snyk, SAST) | ✅ Complete |
-| **§3.5.1** | Core Web Vitals budgets | ✅ Complete |
-| **§5.3** | Drift prevention | ✅ Complete |
-| **§5.4** | Technical debt management | ✅ Complete |
-| **§5.7** | Production readiness | ✅ Complete |
+| Section    | Requirement                 | Status      |
+| ---------- | --------------------------- | ----------- |
+| **§4.9**   | Security gates (Snyk, SAST) | ✅ Complete |
+| **§3.5.1** | Core Web Vitals budgets     | ✅ Complete |
+| **§5.3**   | Drift prevention            | ✅ Complete |
+| **§5.4**   | Technical debt management   | ✅ Complete |
+| **§5.7**   | Production readiness        | ✅ Complete |
 
 **Week 3 Compliance Score:** 5/5 (100%)
 
@@ -155,11 +170,16 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 
 ## 🎓 Key Learnings
 
-1. **Snyk Integration:** Start with `continue-on-error: true` for gradual rollout, upload SARIF to GitHub Code Scanning for centralized tracking
-2. **Lighthouse CI:** Run 3+ tests per URL for consistency, separate warnings from errors
-3. **Drift Detection:** Automate where possible (script), supplement with manual review (checklist)
-4. **Debt Management:** 4-tier classification + enforce debt budget (max 3 critical, max 5 high)
-5. **Pre-Launch:** Separate MUST (🔴) from SHOULD (🟡), distribute across sprints
+1. **Snyk Integration:** Start with `continue-on-error: true` for gradual
+   rollout, upload SARIF to GitHub Code Scanning for centralized tracking
+2. **Lighthouse CI:** Run 3+ tests per URL for consistency, separate warnings
+   from errors
+3. **Drift Detection:** Automate where possible (script), supplement with manual
+   review (checklist)
+4. **Debt Management:** 4-tier classification + enforce debt budget (max 3
+   critical, max 5 high)
+5. **Pre-Launch:** Separate MUST (🔴) from SHOULD (🟡), distribute across
+   sprints
 
 ---
 

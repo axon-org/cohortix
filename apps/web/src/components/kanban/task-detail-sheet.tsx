@@ -1,78 +1,81 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetDescription,
-} from '@/components/ui/sheet'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { type Operation } from '@/lib/api/client'
-import { format } from 'date-fns'
-import { 
-  Calendar, 
-  User, 
-  Tag, 
-  Clock, 
-  MessageSquare, 
+} from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { type Operation } from '@/lib/api/client';
+import { format } from 'date-fns';
+import {
+  Calendar,
+  User,
+  Tag,
+  Clock,
+  MessageSquare,
   Activity as ActivityIcon,
-  Send
-} from 'lucide-react'
-import { useComments, useCreateComment, useActivity } from '@/hooks/use-comments'
+  Send,
+} from 'lucide-react';
+import { useComments, useCreateComment, useActivity } from '@/hooks/use-comments';
 
 type Task = {
-  id: string
-  title: string
-  description?: string
-  status: string
-  priority?: string
-  dueDate?: string
-  assigneeId?: string
-  projectId?: string
-  projects?: { id: string; name: string; status: string }
-  createdAt: string
-  updatedAt?: string
-}
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  priority?: string;
+  dueDate?: string;
+  assigneeId?: string;
+  projectId?: string;
+  projects?: { id: string; name: string; status: string };
+  createdAt: string;
+  updatedAt?: string;
+};
 
 interface TaskDetailSheetProps {
-  task: Operation | Task | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  task: Operation | Task | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetProps) {
-  const [comment, setComment] = useState('')
-  const { data: commentsData } = useComments('operation', task?.id || '')
-  const { data: activityData } = useActivity('operation', task?.id || '')
-  const createCommentMutation = useCreateComment()
+  const [comment, setComment] = useState('');
+  const { data: commentsData } = useComments('operation', task?.id || '');
+  const { data: activityData } = useActivity('operation', task?.id || '');
+  const createCommentMutation = useCreateComment();
 
-  if (!task) return null
-  
+  if (!task) return null;
+
   // Type guard to check if task is an Operation
   const isOperation = (t: Operation | Task): t is Operation => {
-    return 'name' in t && 'ownerId' in t
-  }
-  
-  const taskIsOperation = isOperation(task)
+    return 'name' in t && 'ownerId' in t;
+  };
+
+  const taskIsOperation = isOperation(task);
 
   const handleAddComment = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!comment.trim()) return
+    e.preventDefault();
+    if (!comment.trim()) return;
 
-    createCommentMutation.mutate({
-      content: comment,
-      entityType: 'operation',
-      entityId: task.id,
-    }, {
-      onSuccess: () => setComment(''),
-    })
-  }
+    createCommentMutation.mutate(
+      {
+        content: comment,
+        entityType: 'operation',
+        entityId: task.id,
+      },
+      {
+        onSuccess: () => setComment(''),
+      }
+    );
+  };
 
   const priorityColor = {
     planning: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
@@ -80,7 +83,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
     on_hold: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
     completed: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
     archived: 'bg-slate-500/10 text-slate-500 border-slate-500/20',
-  }[task.status]
+  }[task.status];
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -91,9 +94,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
               <Badge variant="outline" className={priorityColor}>
                 {task.status.replace('_', ' ')}
               </Badge>
-              <span className="text-xs text-muted-foreground">
-                {task.id.slice(0, 8)}
-              </span>
+              <span className="text-xs text-muted-foreground">{task.id.slice(0, 8)}</span>
             </div>
             <SheetTitle className="text-2xl font-semibold leading-tight">
               {taskIsOperation ? task.name : task.title}
@@ -104,17 +105,32 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                 <span className="text-muted-foreground w-16">Owner</span>
                 <div className="flex items-center gap-1.5 font-medium">
                   <Avatar className="w-5 h-5">
-                    <AvatarImage src={`https://avatar.vercel.sh/${taskIsOperation ? task.ownerId : (task.assigneeId ?? 'unassigned')}`} />
-                    <AvatarFallback>{(taskIsOperation ? task.ownerId : (task.assigneeId ?? 'NA')).slice(0, 2).toUpperCase()}</AvatarFallback>
+                    <AvatarImage
+                      src={`https://avatar.vercel.sh/${taskIsOperation ? task.ownerId : (task.assigneeId ?? 'unassigned')}`}
+                    />
+                    <AvatarFallback>
+                      {(taskIsOperation ? task.ownerId : (task.assigneeId ?? 'NA'))
+                        .slice(0, 2)
+                        .toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
-                  <span>{(taskIsOperation ? task.ownerId : (task.assigneeId ?? 'Unassigned')).slice(0, 8)}</span>
+                  <span>
+                    {(taskIsOperation ? task.ownerId : (task.assigneeId ?? 'Unassigned')).slice(
+                      0,
+                      8
+                    )}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="w-4 h-4 text-muted-foreground" />
                 <span className="text-muted-foreground w-16">Due</span>
                 <span className="font-medium">
-                  {taskIsOperation && task.targetDate ? format(new Date(task.targetDate), 'PPP') : (!taskIsOperation && task.dueDate ? format(new Date(task.dueDate), 'PPP') : 'No date')}
+                  {taskIsOperation && task.targetDate
+                    ? format(new Date(task.targetDate), 'PPP')
+                    : !taskIsOperation && task.dueDate
+                      ? format(new Date(task.dueDate), 'PPP')
+                      : 'No date'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
@@ -128,14 +144,19 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                 <Clock className="w-4 h-4 text-muted-foreground" />
                 <span className="text-muted-foreground w-16">Created</span>
                 <span className="font-medium">
-                  {format(new Date(taskIsOperation ? task.created_at : task.createdAt), 'MMM d, yyyy')}
+                  {format(
+                    new Date(taskIsOperation ? task.created_at : task.createdAt),
+                    'MMM d, yyyy'
+                  )}
                 </span>
               </div>
             </div>
           </SheetHeader>
 
           <div className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Description</h3>
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              Description
+            </h3>
             <div className="text-sm leading-relaxed prose prose-invert max-w-none bg-secondary/20 rounded-lg p-4 min-h-[100px] border border-border/50">
               {task.description || 'No description provided.'}
             </div>
@@ -143,15 +164,15 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
 
           <Tabs defaultValue="comments" className="w-full">
             <TabsList className="w-full justify-start bg-transparent border-b border-border rounded-none h-auto p-0 gap-6">
-              <TabsTrigger 
-                value="comments" 
+              <TabsTrigger
+                value="comments"
                 className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-foreground rounded-none px-0 py-2 text-sm flex gap-2"
               >
                 <MessageSquare className="w-4 h-4" />
                 Comments
               </TabsTrigger>
-              <TabsTrigger 
-                value="activity" 
+              <TabsTrigger
+                value="activity"
                 className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-foreground rounded-none px-0 py-2 text-sm flex gap-2"
               >
                 <ActivityIcon className="w-4 h-4" />
@@ -164,7 +185,9 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                   <div key={c.id} className="flex gap-3">
                     <Avatar className="w-8 h-8">
                       <AvatarImage src={c.author_avatar_url ?? undefined} />
-                      <AvatarFallback>{(c.author_name ?? 'Unknown').slice(0, 2).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback>
+                        {(c.author_name ?? 'Unknown').slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between">
@@ -173,9 +196,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                           {format(new Date(c.created_at), 'MMM d, h:mm a')}
                         </span>
                       </div>
-                      <p className="text-sm text-foreground/80 leading-relaxed">
-                        {c.content}
-                      </p>
+                      <p className="text-sm text-foreground/80 leading-relaxed">{c.content}</p>
                     </div>
                   </div>
                 ))}
@@ -191,7 +212,9 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                     <div className="mt-1 w-2 h-2 rounded-full bg-border relative z-10" />
                     <div className="flex-1 space-y-0.5">
                       <div className="flex items-center gap-1.5 text-xs">
-                        <span className="font-medium text-foreground">{a.actor_name ?? 'System'}</span>
+                        <span className="font-medium text-foreground">
+                          {a.actor_name ?? 'System'}
+                        </span>
                         <span className="text-muted-foreground">{a.action ?? 'updated'}</span>
                       </div>
                       <p className="text-[13px] text-muted-foreground">
@@ -204,7 +227,9 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                   </div>
                 ))}
                 {(!activityData?.data || activityData.data.length === 0) && (
-                  <p className="text-sm text-muted-foreground text-center py-4">No activity logged.</p>
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No activity logged.
+                  </p>
                 )}
               </div>
             </TabsContent>
@@ -219,9 +244,9 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
               placeholder="Add a comment..."
               className="min-h-[100px] pr-12 resize-none bg-background focus:ring-1 focus:ring-primary/20"
             />
-            <Button 
-              type="submit" 
-              size="sm" 
+            <Button
+              type="submit"
+              size="sm"
               className="absolute bottom-3 right-3 h-8 w-8 rounded-md p-0"
               disabled={!comment.trim() || createCommentMutation.isPending}
             >
@@ -231,5 +256,5 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
         </div>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

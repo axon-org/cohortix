@@ -1,7 +1,23 @@
-import { pgTable, uuid, varchar, text, timestamp, jsonb, integer, bigint, pgEnum } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  uuid,
+  varchar,
+  text,
+  timestamp,
+  jsonb,
+  integer,
+  bigint,
+  pgEnum,
+} from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
 
-export const agentStatusEnum = pgEnum('agent_status', ['active', 'idle', 'busy', 'offline', 'error']);
+export const agentStatusEnum = pgEnum('agent_status', [
+  'active',
+  'idle',
+  'busy',
+  'offline',
+  'error',
+]);
 
 export const agents = pgTable('agents', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -16,16 +32,16 @@ export const agents = pgTable('agents', {
   description: text('description'),
   status: agentStatusEnum('status').default('idle').notNull(),
   capabilities: jsonb('capabilities').default([]).notNull(), // ["coding", "design", "research"]
-  
+
   // Runtime configuration (Clawdbot now, custom later)
   runtimeType: varchar('runtime_type', { length: 50 }).default('clawdbot').notNull(),
   runtimeConfig: jsonb('runtime_config').default({}).notNull(),
-  
+
   // Metrics
   totalTasksCompleted: integer('total_tasks_completed').default(0).notNull(),
   totalTimeWorkedMs: bigint('total_time_worked_ms', { mode: 'number' }).default(0).notNull(),
   lastActiveAt: timestamp('last_active_at', { withTimezone: true }),
-  
+
   settings: jsonb('settings').default({}).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),

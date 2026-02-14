@@ -1,44 +1,44 @@
-'use client'
+'use client';
 
-import { useMemo, useState } from 'react'
-import { type ColumnDef } from '@tanstack/react-table'
-import { DataTable, SortableHeader } from '@/components/ui/data-table'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
+import { useMemo, useState } from 'react';
+import { type ColumnDef } from '@tanstack/react-table';
+import { DataTable, SortableHeader } from '@/components/ui/data-table';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   DropdownMenuLabel,
-} from '@/components/ui/dropdown-menu'
-import { OperationStatusChip, type OperationStatus } from '@/components/ui/operation-status-chip'
-import { formatDate } from '@/lib/utils'
-import { type Mission, type Ally } from '@/lib/api/client'
-import { ChevronDown, Filter, MoreVertical } from 'lucide-react'
-import { useUpdateOperation } from '@/hooks/use-operations'
+} from '@/components/ui/dropdown-menu';
+import { OperationStatusChip, type OperationStatus } from '@/components/ui/operation-status-chip';
+import { formatDate } from '@/lib/utils';
+import { type Mission, type Ally } from '@/lib/api/client';
+import { ChevronDown, Filter, MoreVertical } from 'lucide-react';
+import { useUpdateOperation } from '@/hooks/use-operations';
 
 export interface Operation {
-  id: string
-  name: string
-  status: OperationStatus
-  missionName?: string
-  ownerName?: string
-  startDate?: string
-  targetDate?: string
-  createdAt: string
+  id: string;
+  name: string;
+  status: OperationStatus;
+  missionName?: string;
+  ownerName?: string;
+  startDate?: string;
+  targetDate?: string;
+  createdAt: string;
 }
 
 interface OperationsTableProps {
-  data: Operation[]
-  missions: Mission[]
-  allies: Ally[]
+  data: Operation[];
+  missions: Mission[];
+  allies: Ally[];
 }
 
 export function OperationsTable({ data, missions, allies }: OperationsTableProps) {
-  const updateOperation = useUpdateOperation()
-  const [rowSelection, setRowSelection] = useState({})
+  const updateOperation = useUpdateOperation();
+  const [rowSelection, setRowSelection] = useState({});
 
   const columns = useMemo<ColumnDef<Operation>[]>(
     () => [
@@ -76,12 +76,12 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
         accessorKey: 'missionName',
         header: 'Mission',
         cell: ({ row }) => {
-          const mission = row.getValue<string | undefined>('missionName')
+          const mission = row.getValue<string | undefined>('missionName');
           return (
             <span className="text-muted-foreground">
               {mission || <span className="text-muted-foreground/50 italic">No mission</span>}
             </span>
-          )
+          );
         },
       },
       {
@@ -95,12 +95,12 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
         accessorKey: 'targetDate',
         header: ({ column }) => <SortableHeader column={column}>Due Date</SortableHeader>,
         cell: ({ row }) => {
-          const date = row.getValue<string | undefined>('targetDate')
+          const date = row.getValue<string | undefined>('targetDate');
           return date ? (
             <span className="text-muted-foreground">{formatDate(date)}</span>
           ) : (
             <span className="text-muted-foreground/50">—</span>
-          )
+          );
         },
       },
       {
@@ -113,7 +113,9 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => window.location.href = `/operations/${row.original.id}`}>
+              <DropdownMenuItem
+                onClick={() => (window.location.href = `/operations/${row.original.id}`)}
+              >
                 View Details
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -124,18 +126,18 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
       },
     ],
     []
-  )
+  );
 
   const handleBulkStatusChange = (status: OperationStatus, table: any) => {
-    const selectedRows = table.getFilteredSelectedRowModel().rows
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
     selectedRows.forEach((row: any) => {
       updateOperation.mutate({
         id: row.original.id,
         data: { status },
-      })
-    })
-    table.resetRowSelection()
-  }
+      });
+    });
+    table.resetRowSelection();
+  };
 
   return (
     <DataTable
@@ -149,14 +151,18 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
         // window.location.href = `/operations/${operation.id}`
       }}
       toolbar={(table) => {
-        const selectedCount = table.getFilteredSelectedRowModel().rows.length
-        
+        const selectedCount = table.getFilteredSelectedRowModel().rows.length;
+
         return (
           <div className="flex items-center gap-2">
             {selectedCount > 0 ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2 border-primary/50 bg-primary/5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 border-primary/50 bg-primary/5"
+                  >
                     Update {selectedCount} Selected
                     <ChevronDown className="w-4 h-4" />
                   </Button>
@@ -185,17 +191,25 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
-                    <DropdownMenuItem onClick={() => table.getColumn('status')?.setFilterValue(['active'])}>
+                    <DropdownMenuItem
+                      onClick={() => table.getColumn('status')?.setFilterValue(['active'])}
+                    >
                       Active
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => table.getColumn('status')?.setFilterValue(['planning'])}>
+                    <DropdownMenuItem
+                      onClick={() => table.getColumn('status')?.setFilterValue(['planning'])}
+                    >
                       Planning
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => table.getColumn('status')?.setFilterValue(['completed'])}>
+                    <DropdownMenuItem
+                      onClick={() => table.getColumn('status')?.setFilterValue(['completed'])}
+                    >
                       Completed
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => table.getColumn('status')?.setFilterValue(undefined)}>
+                    <DropdownMenuItem
+                      onClick={() => table.getColumn('status')?.setFilterValue(undefined)}
+                    >
                       All Statuses
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -209,16 +223,18 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="max-h-60 overflow-y-auto">
-                    {missions.map(m => (
-                      <DropdownMenuItem 
-                        key={m.id} 
+                    {missions.map((m) => (
+                      <DropdownMenuItem
+                        key={m.id}
                         onClick={() => table.getColumn('missionName')?.setFilterValue(m.name)}
                       >
                         {m.name}
                       </DropdownMenuItem>
                     ))}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => table.getColumn('missionName')?.setFilterValue(undefined)}>
+                    <DropdownMenuItem
+                      onClick={() => table.getColumn('missionName')?.setFilterValue(undefined)}
+                    >
                       All Missions
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -232,16 +248,18 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="max-h-60 overflow-y-auto">
-                    {allies.map(a => (
-                      <DropdownMenuItem 
-                        key={a.id} 
+                    {allies.map((a) => (
+                      <DropdownMenuItem
+                        key={a.id}
                         onClick={() => table.getColumn('ownerName')?.setFilterValue(a.name)}
                       >
                         {a.name}
                       </DropdownMenuItem>
                     ))}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => table.getColumn('ownerName')?.setFilterValue(undefined)}>
+                    <DropdownMenuItem
+                      onClick={() => table.getColumn('ownerName')?.setFilterValue(undefined)}
+                    >
                       All Allies
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -249,8 +267,8 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
               </>
             )}
           </div>
-        )
+        );
       }}
     />
-  )
+  );
 }

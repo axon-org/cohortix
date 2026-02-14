@@ -1,26 +1,34 @@
 # Agent Command Center - Vision Document
 
-*A modern project management & AI agent orchestration platform*
+_A modern project management & AI agent orchestration platform_
 
 ## Overview
 
-Agent Command Center is a comprehensive dashboard for managing Ahmad's AI agent organization. Think ClickUp meets AI Agent Management - a unified interface for projects, tasks, and organizational intelligence.
+Agent Command Center is a comprehensive dashboard for managing Ahmad's AI agent
+organization. Think ClickUp meets AI Agent Management - a unified interface for
+projects, tasks, and organizational intelligence.
 
 ## Core Features
 
 ### 1. Agent Directory
-- **Agent Cards**: Visual cards showing each agent's avatar, name, role, and status
-- **Expertise Badges**: Domain expertise highlighted (AI/ML, UI/UX, Marketing, etc.)
+
+- **Agent Cards**: Visual cards showing each agent's avatar, name, role, and
+  status
+- **Expertise Badges**: Domain expertise highlighted (AI/ML, UI/UX, Marketing,
+  etc.)
 - **Activity Indicators**: Last active, current task, workload meter
 - **Quick Actions**: Direct message, assign task, view history
 
 ### 2. Project & Task Management
-- **Kanban Board View**: Drag-and-drop task cards (New → In Progress → Review → Done)
+
+- **Kanban Board View**: Drag-and-drop task cards (New → In Progress → Review →
+  Done)
 - **List View**: Dense table with filtering, sorting, grouping
 - **Timeline/Gantt View**: Project timelines and dependencies
 - **Calendar View**: Due dates and milestones
 
 ### 3. Task Features
+
 - **Rich Task Cards**: Title, description, assignee, priority, due date, tags
 - **Comments & Threads**: Ahmad can provide input, feedback, direction
 - **File Attachments**: Screenshots, documents, references
@@ -28,6 +36,7 @@ Agent Command Center is a comprehensive dashboard for managing Ahmad's AI agent 
 - **Subtasks**: Break down complex tasks
 
 ### 4. Knowledge Base
+
 - **Per-Agent Knowledge**: Each agent's learnings organized by source
   - Daily internet research
   - Task completion insights
@@ -41,18 +50,22 @@ Agent Command Center is a comprehensive dashboard for managing Ahmad's AI agent 
 ### 5. Views & Segmentation
 
 **By Agent**
+
 - Select agent → See their tasks, knowledge, activity
 - Agent dashboard: workload, performance, expertise growth
 
 **By Project**
+
 - Select project → See all tasks, all agents involved
 - Project dashboard: progress, blockers, timeline
 
 **By Domain**
+
 - Filter by domain (AI/ML, Design, Marketing, etc.)
 - Cross-agent collaboration visibility
 
 ### 6. Dashboard Widgets
+
 - **Active Tasks**: Quick view of in-progress work
 - **Recent Activity**: Timeline of agent actions
 - **Knowledge Feed**: Latest learnings added
@@ -68,6 +81,7 @@ Agent Command Center is a comprehensive dashboard for managing Ahmad's AI agent 
 5. **Mobile Responsive**: Works on tablet/phone
 
 ## Technical Stack (TBD)
+
 - Frontend: React/Next.js or Svelte
 - Backend: Node.js or Python FastAPI
 - Database: PostgreSQL + Vector DB for knowledge
@@ -83,6 +97,7 @@ Agent Command Center is a comprehensive dashboard for managing Ahmad's AI agent 
 6. As Ahmad, I want to search all organizational knowledge
 
 ## Success Metrics
+
 - Time to find information: < 5 seconds
 - Task creation: < 30 seconds
 - Agent status visibility: instant
@@ -90,5 +105,4 @@ Agent Command Center is a comprehensive dashboard for managing Ahmad's AI agent 
 
 ---
 
-*Created: 2026-02-05*
-*Status: Vision Phase - Awaiting UI Mockups*
+_Created: 2026-02-05_ _Status: Vision Phase - Awaiting UI Mockups_

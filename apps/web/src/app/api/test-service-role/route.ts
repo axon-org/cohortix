@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 export async function GET() {
   try {
@@ -10,34 +10,57 @@ export async function GET() {
       {
         auth: {
           autoRefreshToken: false,
-          persistSession: false
-        }
+          persistSession: false,
+        },
       }
-    )
-    
+    );
+
     const tests = await Promise.all([
       supabase.from('organizations').select('*'),
       supabase.from('agents').select('*'),
       supabase.from('projects').select('*'),
       supabase.from('tasks').select('*'),
       supabase.from('cohorts').select('*'),
-    ])
-    
+    ]);
+
     return NextResponse.json({
       success: true,
       results: {
-        organizations: { count: tests[0].data?.length || 0, data: tests[0].data, error: tests[0].error?.message },
-        agents: { count: tests[1].data?.length || 0, data: tests[1].data, error: tests[1].error?.message },
-        projects: { count: tests[2].data?.length || 0, data: tests[2].data, error: tests[2].error?.message },
-        tasks: { count: tests[3].data?.length || 0, data: tests[3].data, error: tests[3].error?.message },
-        cohorts: { count: tests[4].data?.length || 0, data: tests[4].data, error: tests[4].error?.message },
-      }
-    })
+        organizations: {
+          count: tests[0].data?.length || 0,
+          data: tests[0].data,
+          error: tests[0].error?.message,
+        },
+        agents: {
+          count: tests[1].data?.length || 0,
+          data: tests[1].data,
+          error: tests[1].error?.message,
+        },
+        projects: {
+          count: tests[2].data?.length || 0,
+          data: tests[2].data,
+          error: tests[2].error?.message,
+        },
+        tasks: {
+          count: tests[3].data?.length || 0,
+          data: tests[3].data,
+          error: tests[3].error?.message,
+        },
+        cohorts: {
+          count: tests[4].data?.length || 0,
+          data: tests[4].data,
+          error: tests[4].error?.message,
+        },
+      },
+    });
   } catch (error: any) {
-    return NextResponse.json({
-      success: false,
-      error: error?.message || String(error),
-      stack: error?.stack
-    }, { status: 500 })
+    return NextResponse.json(
+      {
+        success: false,
+        error: error?.message || String(error),
+        stack: error?.stack,
+      },
+      { status: 500 }
+    );
   }
 }

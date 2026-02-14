@@ -11,18 +11,22 @@
 
 ⚠️ **BUILD STATUS: FAILED** ⚠️
 
-The application has **critical build failures** that prevent production deployment. While the dev server runs, the production build fails due to:
+The application has **critical build failures** that prevent production
+deployment. While the dev server runs, the production build fails due to:
+
 1. **Missing operations query module** (now fixed)
 2. **178 TypeScript errors** across the codebase
 3. **Type safety issues** in API routes and components
 
-**Recommendation:** **DO NOT DEPLOY** until build passes and critical type errors are resolved.
+**Recommendation:** **DO NOT DEPLOY** until build passes and critical type
+errors are resolved.
 
 ---
 
 ## Test Environment Setup
 
 ### ✅ Environment Status
+
 - [x] Repository cloned and on correct branch
 - [x] Dependencies installed (`pnpm install`)
 - [x] Environment variables configured (`.env.local`)
@@ -31,6 +35,7 @@ The application has **critical build failures** that prevent production deployme
 - [x] Dev server running (`http://localhost:3000`)
 
 ### Test User Credentials
+
 ```
 Email: test@cohortix.dev
 Password: TestPass123!
@@ -51,6 +56,7 @@ $ pnpm build
 **Status:** ❌ **FAILED**
 
 **Critical Issues:**
+
 1. **Missing Module** (Fixed during QA)
    - File: `src/app/(dashboard)/kanban/page.tsx`
    - Error: `Cannot find module '@/server/db/queries/operations'`
@@ -66,6 +72,7 @@ $ pnpm build
      - Implicit `any` types in array operations
 
 **Example Error:**
+
 ```typescript
 // apps/web/src/app/api/v1/allies/route.ts:74:51
 Type error: Type 'string | null' is not assignable to type 'string | undefined'.
@@ -81,11 +88,13 @@ $ npx tsc --noEmit
 **Status:** ❌ **178 errors found**
 
 **Error Categories:**
+
 - API Routes: 24 errors (null/undefined type mismatches)
 - Component Tests: 154 errors (missing type definitions)
 - Implicit `any` types: Multiple instances
 
 **Impact:**
+
 - Type safety compromised
 - Potential runtime errors
 - Poor IDE autocomplete support
@@ -99,6 +108,7 @@ $ npx tsc --noEmit
 **Status:** ⚠️ **PARTIALLY TESTABLE**
 
 #### Sign-In Page (`/sign-in`)
+
 - ✅ Page loads successfully
 - ✅ Form renders correctly
 - ✅ Email/password fields present
@@ -106,6 +116,7 @@ $ npx tsc --noEmit
 - ⚠️ **NOT TESTED:** Actual sign-in flow (browser automation issues)
 
 #### Auth Infrastructure
+
 - ✅ Supabase client configured
 - ✅ Middleware implements auth checks
 - ✅ Test user created successfully
@@ -113,6 +124,7 @@ $ npx tsc --noEmit
 - ⚠️ Full dashboard requires authenticated session
 
 **Recommendations:**
+
 - Add E2E tests with Playwright for auth flow
 - Consider test mode that fully bypasses auth for automated testing
 - Add unit tests for auth utilities
@@ -124,6 +136,7 @@ $ npx tsc --noEmit
 **Status:** ⚠️ **NOT FULLY TESTED** (Auth blocker)
 
 **Expected Features** (Based on code review):
+
 - ✅ KPI Cards component exists
 - ✅ Recent Activity widget
 - ✅ Urgent Alerts widget
@@ -132,11 +145,13 @@ $ npx tsc --noEmit
 - ✅ Active Missions preview
 
 **Code Quality:**
+
 - ✅ Well-structured component hierarchy
 - ✅ Suspense boundaries for loading states
 - ✅ Proper data fetching with server components
 
 **Blockers:**
+
 - ⚠️ Cannot test UI without authentication
 - ⚠️ Needs manual browser testing once auth issue resolved
 
@@ -147,6 +162,7 @@ $ npx tsc --noEmit
 **Status:** ⚠️ **CODE REVIEW ONLY**
 
 #### API Routes Implemented:
+
 - ✅ `GET /api/v1/cohorts` - List cohorts
 - ✅ `POST /api/v1/cohorts` - Create cohort
 - ✅ `GET /api/v1/cohorts/[id]` - Get single cohort
@@ -154,18 +170,22 @@ $ npx tsc --noEmit
 - ✅ `DELETE /api/v1/cohorts/[id]` - Delete cohort
 
 #### Pages:
+
 - ✅ `/cohorts` - List view exists
 - ✅ `/cohorts/[id]` - Detail view exists
 
 #### Data Layer:
+
 - ✅ Query functions in `queries/cohorts.ts`
 - ✅ Query functions in `queries/cohort-members.ts`
 - ✅ RLS policies configured
 
 **Type Issues:**
+
 - ⚠️ 3 type errors in API routes (null vs undefined)
 
 **Test Coverage:**
+
 - ⚠️ Component tests exist but have type errors
 - ⚠️ No E2E tests found
 
@@ -176,16 +196,19 @@ $ npx tsc --noEmit
 **Status:** ⚠️ **CODE REVIEW ONLY**
 
 #### API Routes:
+
 - ✅ `GET /api/v1/allies` - List allies
 - ✅ `POST /api/v1/allies` - Create ally
 - ✅ `GET /api/v1/allies/[id]` - Get single ally
 - ✅ `PATCH /api/v1/allies/[id]` - Update ally (presumed)
 
 #### Pages:
+
 - ✅ `/allies` - List view exists
 - ✅ `/allies/[id]` - Detail view exists
 
 **Type Issues:**
+
 - ⚠️ 1 type error in allies API route
 
 ---
@@ -195,15 +218,18 @@ $ npx tsc --noEmit
 **Status:** ⚠️ **CODE REVIEW ONLY**
 
 #### API Routes:
+
 - ✅ `GET /api/v1/missions` - List missions
 - ✅ `POST /api/v1/missions` - Create mission
 - ✅ `GET /api/v1/missions/[id]` - Get single mission
 
 #### Pages:
+
 - ✅ `/missions` - List view exists
 - ✅ `/missions/[id]` - Detail view exists
 
-**Note:** User-facing term is "Mission", database table is `projects` (PPV hierarchy compliant)
+**Note:** User-facing term is "Mission", database table is `projects` (PPV
+hierarchy compliant)
 
 ---
 
@@ -212,6 +238,7 @@ $ npx tsc --noEmit
 **Status:** ❌ **CRITICAL ISSUES**
 
 #### Issues Found:
+
 1. ❌ **Missing Query Module** (Fixed during QA)
    - File was completely missing
    - Kanban page imported non-existent module
@@ -230,6 +257,7 @@ $ npx tsc --noEmit
    - 1 type error in operations API route
 
 **Impact:**
+
 - Build was completely broken before fix
 - Indicates incomplete Sprint 4 implementation
 - Suggests lack of build validation in CI/CD
@@ -243,6 +271,7 @@ $ npx tsc --noEmit
 #### `/kanban` Route
 
 **Issues Found:**
+
 1. ❌ **Build-Breaking Import**
    - Imported missing `operations` query module
    - Prevented entire app from building
@@ -261,12 +290,14 @@ $ npx tsc --noEmit
    - Task detail slide-over
 
 **Expected Features (Per Requirements):**
+
 - Drag-and-drop task management
 - Swimlane toggle
 - Task status updates
 - Task detail slide-over with comments and activity log
 
 **Recommendation:**
+
 - Manual testing required once auth working
 - E2E tests with Playwright for drag-and-drop
 - Visual regression tests
@@ -280,6 +311,7 @@ $ npx tsc --noEmit
 **Component:** `components/kanban/task-detail-sheet.tsx`
 
 **Expected Features:**
+
 - ✅ Component exists
 - ⚠️ Comments functionality (not verified)
 - ⚠️ Activity log (not verified)
@@ -293,6 +325,7 @@ $ npx tsc --noEmit
 **Page:** `/operations`
 
 **Expected Features:**
+
 - Filters by status, date, assignee
 - Sorting by multiple columns
 - Bulk actions
@@ -307,6 +340,7 @@ $ npx tsc --noEmit
 **Component:** `components/dashboard/global-intel-feed.tsx`
 
 **Implementation:**
+
 - ✅ Component exists on dashboard
 - ✅ Integrated into main dashboard layout
 - ⚠️ Functionality not tested
@@ -316,29 +350,34 @@ $ npx tsc --noEmit
 ## Code Quality Analysis
 
 ### Architecture
+
 - ✅ Well-organized monorepo structure
 - ✅ Clean separation of concerns (components, API routes, queries)
 - ✅ Proper use of Next.js 15 App Router
 - ✅ Server/client component split appropriate
 
 ### Type Safety
+
 - ⚠️ **178 TypeScript errors** is unacceptable for production
 - ⚠️ Null vs undefined inconsistencies throughout
 - ⚠️ Test utilities need proper type definitions
 
 ### Testing
+
 - ✅ Vitest configured for unit tests
 - ✅ Playwright configured for E2E tests
 - ⚠️ Test files have type errors preventing execution
 - ❌ No evidence of tests actually passing
 
 ### Database
+
 - ✅ Supabase schema well-defined
 - ✅ RLS policies implemented
 - ✅ Seed data comprehensive
 - ✅ Migration files present
 
 ### API Design
+
 - ✅ RESTful API structure
 - ✅ Consistent error handling patterns
 - ✅ Request validation with Zod
@@ -350,17 +389,20 @@ $ npx tsc --noEmit
 ## Security Review
 
 ### Authentication
+
 - ✅ Supabase Auth integrated
 - ✅ Middleware enforces auth on protected routes
 - ⚠️ BYPASS_AUTH flag present in code (development only)
 - ✅ Service role key properly isolated
 
 ### Authorization
+
 - ✅ RLS (Row Level Security) enabled
 - ✅ Organization-based data isolation
 - ✅ Role-based access control structure present
 
 ### Data Validation
+
 - ✅ Zod schemas for request validation
 - ✅ Input sanitization in place
 - ✅ SQL injection protection via Supabase client
@@ -370,14 +412,17 @@ $ npx tsc --noEmit
 ## Performance Considerations
 
 ### Bundle Size
+
 - ⚠️ Cannot verify (build fails)
 
 ### Rendering Strategy
+
 - ✅ Server Components used appropriately
 - ✅ Client Components properly marked
 - ✅ Suspense boundaries for progressive loading
 
 ### Database Queries
+
 - ✅ Proper use of indexes (schema review)
 - ✅ Pagination implemented in API routes
 - ⚠️ N+1 query potential in some joins (review recommended)
@@ -407,7 +452,8 @@ $ npx tsc --noEmit
    - **Severity:** High
    - **Impact:** Cannot run unit tests
    - **Files:** All `__tests__` files
-   - **Recommendation:** Install and configure `@testing-library/jest-dom` properly
+   - **Recommendation:** Install and configure `@testing-library/jest-dom`
+     properly
 
 4. **Null vs Undefined Type Inconsistencies**
    - **Severity:** High
@@ -434,6 +480,7 @@ $ npx tsc --noEmit
 Based on Sprint 4 requirements:
 
 ### ❓ Not Verified (Auth Blocker)
+
 - Kanban drag-and-drop
 - Task detail comments
 - Task activity log
@@ -443,6 +490,7 @@ Based on Sprint 4 requirements:
 - Global Intel Feed data fetching
 
 ### 🔍 Needs Investigation
+
 - Real-time updates (if any)
 - Webhook integrations
 - Email notifications
@@ -452,21 +500,21 @@ Based on Sprint 4 requirements:
 
 ## Test Results Summary
 
-| Feature Area | Status | Pass | Fail | Blocked | Not Tested |
-|-------------|--------|------|------|---------|------------|
-| Build & Compile | ❌ Failed | 0 | 2 | 0 | 0 |
-| Type Safety | ❌ Failed | 0 | 178 | 0 | 0 |
-| Auth Flow | ⚠️ Partial | 6 | 0 | 1 | 1 |
-| Dashboard | ⚠️ Blocked | 0 | 0 | 1 | 6 |
-| Cohorts CRUD | ⚠️ Code Review | 5 | 0 | 1 | 3 |
-| Allies | ⚠️ Code Review | 4 | 0 | 1 | 2 |
-| Missions | ⚠️ Code Review | 3 | 0 | 1 | 2 |
-| Operations | ⚠️ Fixed | 3 | 1 | 1 | 3 |
-| Kanban Board | ⚠️ Fixed | 2 | 1 | 1 | 3 |
-| Task Detail | ⚠️ Blocked | 1 | 0 | 1 | 2 |
-| Operations List | ⚠️ Blocked | 0 | 0 | 1 | 3 |
-| Intel Feed | ⚠️ Code Review | 2 | 0 | 1 | 1 |
-| **TOTAL** | | **26** | **182** | **11** | **26** |
+| Feature Area    | Status         | Pass   | Fail    | Blocked | Not Tested |
+| --------------- | -------------- | ------ | ------- | ------- | ---------- |
+| Build & Compile | ❌ Failed      | 0      | 2       | 0       | 0          |
+| Type Safety     | ❌ Failed      | 0      | 178     | 0       | 0          |
+| Auth Flow       | ⚠️ Partial     | 6      | 0       | 1       | 1          |
+| Dashboard       | ⚠️ Blocked     | 0      | 0       | 1       | 6          |
+| Cohorts CRUD    | ⚠️ Code Review | 5      | 0       | 1       | 3          |
+| Allies          | ⚠️ Code Review | 4      | 0       | 1       | 2          |
+| Missions        | ⚠️ Code Review | 3      | 0       | 1       | 2          |
+| Operations      | ⚠️ Fixed       | 3      | 1       | 1       | 3          |
+| Kanban Board    | ⚠️ Fixed       | 2      | 1       | 1       | 3          |
+| Task Detail     | ⚠️ Blocked     | 1      | 0       | 1       | 2          |
+| Operations List | ⚠️ Blocked     | 0      | 0       | 1       | 3          |
+| Intel Feed      | ⚠️ Code Review | 2      | 0       | 1       | 1          |
+| **TOTAL**       |                | **26** | **182** | **11**  | **26**     |
 
 ---
 
@@ -526,32 +574,40 @@ Based on Sprint 4 requirements:
 
 **Overall Status:** ⚠️ **NOT READY FOR PRODUCTION**
 
-The Cohortix application has solid architectural foundations and well-structured code, but **critical build failures and type safety issues** prevent deployment. The Sprint 4 features (Kanban, Operations, Intel Feed) were partially implemented but not fully integrated, leading to a broken build.
+The Cohortix application has solid architectural foundations and well-structured
+code, but **critical build failures and type safety issues** prevent deployment.
+The Sprint 4 features (Kanban, Operations, Intel Feed) were partially
+implemented but not fully integrated, leading to a broken build.
 
 **Positive Highlights:**
+
 - Clean code architecture
 - Comprehensive seed data
 - Well-designed API structure
 - Security best practices in place
 
 **Critical Blockers:**
+
 - 178 TypeScript errors
 - Build fails completely
 - Cannot comprehensively test due to auth limitations
 
 **Estimated Time to Production-Ready:**
+
 - Fix type errors: 2-3 days
 - Complete manual testing: 1 day
 - Write E2E tests: 2 days
 - **Total: ~1 week** (with dedicated focus)
 
-**Recommendation:** Allocate Sprint 5 Week 1 to stabilization before adding new features.
+**Recommendation:** Allocate Sprint 5 Week 1 to stabilization before adding new
+features.
 
 ---
 
 ## Appendix
 
 ### Test Data Created
+
 - Organization: Axon HQ
 - Test User: test@cohortix.dev
 - Allies: Devi, Lubna, Zara, Khalid
@@ -559,16 +615,19 @@ The Cohortix application has solid architectural foundations and well-structured
 - Tasks: 5 sample tasks
 
 ### Files Modified During QA
+
 - `scripts/create-test-user.ts` (Created)
 - `src/server/db/queries/operations.ts` (Created - CRITICAL FIX)
 
 ### Environment
+
 - Node.js: v25.5.0
 - Next.js: 15.5.12
 - pnpm: 9.0.0
 - TypeScript: 5.5.0
 
 ### Test Duration
+
 - Setup: 30 minutes
 - Testing: 45 minutes
 - Build Analysis: 30 minutes

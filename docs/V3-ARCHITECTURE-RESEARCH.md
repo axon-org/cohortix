@@ -9,14 +9,19 @@
 
 ## Executive Summary
 
-Cohortix v3.0 represents a strategic shift from a Clawdbot-dependent UI to a **fully autonomous agent runtime platform** with an integrated **Ally Marketplace**. This document presents research on state-of-the-art agent platforms and proposes a production-ready architecture supporting:
+Cohortix v3.0 represents a strategic shift from a Clawdbot-dependent UI to a
+**fully autonomous agent runtime platform** with an integrated **Ally
+Marketplace**. This document presents research on state-of-the-art agent
+platforms and proposes a production-ready architecture supporting:
 
 - **Custom agent runtime** (platform independence from OpenClaw/Clawdbot)
 - **Multi-tenant agent execution** (100s of concurrent agents per tenant)
 - **Ally Marketplace** (sell, rent, deploy pre-built agents)
 - **Scalable infrastructure** beyond Next.js/Vercel limitations
 
-**Key Finding:** The current Next.js/Vercel/Supabase stack is **insufficient** for v3's agent execution requirements. A dedicated **agent runtime backend** is required, while the Next.js frontend can remain on Vercel.
+**Key Finding:** The current Next.js/Vercel/Supabase stack is **insufficient**
+for v3's agent execution requirements. A dedicated **agent runtime backend** is
+required, while the Next.js frontend can remain on Vercel.
 
 ---
 
@@ -34,9 +39,11 @@ Cohortix v3.0 represents a strategic shift from a Clawdbot-dependent UI to a **f
 
 ### 1.1 OpenAI Platform Evolution (2025-2026)
 
-**Key Insight:** OpenAI deprecated the Assistants API (August 2026) in favor of the **Responses API** + **Conversations API**.
+**Key Insight:** OpenAI deprecated the Assistants API (August 2026) in favor of
+the **Responses API** + **Conversations API**.
 
 **Architecture Pattern:**
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │  RESPONSES API (Execution Primitive)                │
@@ -62,6 +69,7 @@ Cohortix v3.0 represents a strategic shift from a Clawdbot-dependent UI to a **f
 ```
 
 **What This Means for Cohortix:**
+
 - ✅ **Separate execution from state** (Responses vs Conversations)
 - ✅ **Structured Outputs** with JSON Schema guarantees
 - ✅ **Compaction workflow** for long-running ally conversations
@@ -71,14 +79,17 @@ Cohortix v3.0 represents a strategic shift from a Clawdbot-dependent UI to a **f
 
 ### 1.2 Anthropic Claude Agent SDK
 
-**Key Insight:** Built on **Claude Code** runtime with an **agent harness** pattern.
+**Key Insight:** Built on **Claude Code** runtime with an **agent harness**
+pattern.
 
 **Agent Loop Pattern:**
+
 ```
 Context → Thought → Action → Observation (repeat)
 ```
 
 **Agent Harness Components:**
+
 - **Tools** — Functions the agent can call
 - **Prompts** — Behavior instructions
 - **File System** — State management + persistence
@@ -87,11 +98,14 @@ Context → Thought → Action → Observation (repeat)
 - **Memory** — Cross-turn state tracking
 
 **Multi-Agent Architecture:**
-- **Orchestrator-Worker Pattern** — Lead agent coordinates, parallel workers execute
+
+- **Orchestrator-Worker Pattern** — Lead agent coordinates, parallel workers
+  execute
 - **Separate context windows** — More capacity than single-window approach
 - **Checkpoint-based resumption** — Graceful error recovery
 
 **What This Means for Cohortix:**
+
 - ✅ **Filesystem-based agent state** (not just database)
 - ✅ **Skills as reusable capabilities** (marketplace potential)
 - ✅ **Sub-agent delegation** for complex missions
@@ -101,9 +115,11 @@ Context → Thought → Action → Observation (repeat)
 
 ### 1.3 LangGraph Cloud
 
-**Key Insight:** **DAG-based orchestration** with **centralized state management**.
+**Key Insight:** **DAG-based orchestration** with **centralized state
+management**.
 
 **Architecture:**
+
 ```
 ┌──────────────────────────────────────────────────┐
 │  NODES (Python functions encoding agent logic)   │
@@ -123,6 +139,7 @@ Context → Thought → Action → Observation (repeat)
 ```
 
 **Production Features:**
+
 - **Double-texting handling** — Strategies: reject, queue, interrupt, rollback
 - **Async background jobs** — Long-running tasks with polling/webhooks
 - **Cron jobs** — Scheduled agent executions
@@ -130,6 +147,7 @@ Context → Thought → Action → Observation (repeat)
 - **Horizontal scaling** — Task queues + servers
 
 **What This Means for Cohortix:**
+
 - ✅ **Graph-based mission workflows** (vs linear pipelines)
 - ✅ **State-driven coordination** (vs direct agent-to-agent messaging)
 - ✅ **Postgres checkpointer** for reliability
@@ -139,16 +157,20 @@ Context → Thought → Action → Observation (repeat)
 
 ### 1.4 CrewAI Enterprise
 
-**Key Insight:** **Flows + Crews** architecture with **centralized management platform**.
+**Key Insight:** **Flows + Crews** architecture with **centralized management
+platform**.
 
 **Components:**
+
 - **Flows** — Deterministic, stateful, event-driven workflows (the "manager")
 - **Crews** — Autonomous teams of agents with roles/goals
-- **AMP (Agent Management Platform)** — Control plane for dev/deploy/monitor/scale
+- **AMP (Agent Management Platform)** — Control plane for
+  dev/deploy/monitor/scale
 - **Observability** — Real-time tracing (per application, model, agent)
 - **Self-hosted or SaaS** — Deployment flexibility
 
 **What This Means for Cohortix:**
+
 - ✅ **Mission Control = AMP equivalent** (centralized control plane)
 - ✅ **Flows for deterministic missions** + **Crews for autonomous work**
 - ✅ **Real-time observability** at agent/mission/org levels
@@ -186,12 +208,14 @@ Context → Thought → Action → Observation (repeat)
 ```
 
 **Pricing Models:**
+
 - **Commission-based** (20% platform fee on transactions)
 - **Enterprise licensing** (flat annual bulk access)
 - **Pay-per-mission** (usage-based execution)
 - **Subscription** (monthly access to agent)
 
 **What This Means for Cohortix:**
+
 - ✅ **Standardized ally packaging** (Docker containers + JSON manifest)
 - ✅ **API-first deployment** (rent ally = API key access)
 - ✅ **Revenue sharing model** (platform takes 20%)
@@ -202,6 +226,7 @@ Context → Thought → Action → Observation (repeat)
 ### 1.6 Agent Sandboxing & Multi-Tenant Isolation
 
 **Critical Security Threats:**
+
 - **Prompt injection** — Adversarial inputs manipulating behavior
 - **Resource exhaustion** — Compute/memory abuse
 - **Data exfiltration** — Unauthorized data access
@@ -210,17 +235,18 @@ Context → Thought → Action → Observation (repeat)
 
 **Isolation Technologies:**
 
-| Control Layer | Purpose | Implementation |
-|---------------|---------|----------------|
-| **MicroVMs** | Strongest isolation (assume escapes) | Firecracker, gVisor |
-| **Containers** | Moderate isolation (lighter than VMs) | Docker, Kubernetes |
-| **Network Segmentation** | Prevent lateral movement | VPCs, security groups |
-| **Secrets Management** | Runtime credential injection | HashiCorp Vault, AWS Secrets |
-| **Rate Limiting** | Prevent resource exhaustion | Per-agent quotas |
-| **Circuit Breakers** | Prevent cascading failures | Timeout + retry logic |
-| **RBAC/ABAC** | Enforce least privilege | Scoped API tokens |
+| Control Layer            | Purpose                               | Implementation               |
+| ------------------------ | ------------------------------------- | ---------------------------- |
+| **MicroVMs**             | Strongest isolation (assume escapes)  | Firecracker, gVisor          |
+| **Containers**           | Moderate isolation (lighter than VMs) | Docker, Kubernetes           |
+| **Network Segmentation** | Prevent lateral movement              | VPCs, security groups        |
+| **Secrets Management**   | Runtime credential injection          | HashiCorp Vault, AWS Secrets |
+| **Rate Limiting**        | Prevent resource exhaustion           | Per-agent quotas             |
+| **Circuit Breakers**     | Prevent cascading failures            | Timeout + retry logic        |
+| **RBAC/ABAC**            | Enforce least privilege               | Scoped API tokens            |
 
 **What This Means for Cohortix:**
+
 - ✅ **Container-per-agent** for multi-tenant isolation
 - ✅ **MicroVMs for high-security allies** (finance, healthcare use cases)
 - ✅ **Per-agent resource quotas** (prevent abuse)
@@ -252,6 +278,7 @@ Context → Thought → Action → Observation (repeat)
 ```
 
 **Memory Hierarchy (Computer Architecture-Inspired):**
+
 1. **Agent I/O Layer** — Modality inputs (text, images, audio)
 2. **Agent Cache** — Short-term working memory
 3. **Agent Memory Layer** — Dialogue history, long-term latents
@@ -259,6 +286,7 @@ Context → Thought → Action → Observation (repeat)
 5. **External Storage** — Databases, document stores
 
 **What This Means for Cohortix:**
+
 - ✅ **3-tier knowledge scoping** (already in PRD: company → client → mission)
 - ✅ **Embedding storage** in pgvector (already planned)
 - ✅ **Per-agent consolidation** (extract insights automatically)
@@ -270,11 +298,13 @@ Context → Thought → Action → Observation (repeat)
 ### 1.8 Agent Execution Pipeline Patterns
 
 **Sequential Pipeline:**
+
 ```
 Input → Agent1 → Agent2 → Agent3 → Output
 ```
 
 **Fanout Pipeline (Parallel):**
+
 ```
                   ┌─→ Agent1 ─┐
 Input → Splitter ─┼─→ Agent2 ─┼→ Aggregator → Output
@@ -282,6 +312,7 @@ Input → Splitter ─┼─→ Agent2 ─┼→ Aggregator → Output
 ```
 
 **State-Driven (LangGraph-style):**
+
 ```
          ┌────────────────┐
          │  Shared State  │
@@ -295,6 +326,7 @@ Input → Splitter ─┼─→ Agent2 ─┼→ Aggregator → Output
 ```
 
 **What This Means for Cohortix:**
+
 - ✅ **Missions as DAGs** (not just linear task lists)
 - ✅ **Parallel action execution** (multiple allies working simultaneously)
 - ✅ **State-driven coordination** (mission state = source of truth)
@@ -306,12 +338,14 @@ Input → Splitter ─┼─→ Agent2 ─┼→ Aggregator → Output
 **Google A2A Protocol (2025 Standard):**
 
 **Communication Patterns:**
+
 1. **Synchronous request/response** — Direct, immediate
 2. **Asynchronous polling** — Periodic check for results
 3. **Server-Sent Events (SSE)** — Push updates
 4. **Webhooks** — Callback notifications
 
 **Message Format (JSON-RPC 2.0):**
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -325,8 +359,8 @@ Input → Splitter ─┼─→ Agent2 ─┼→ Aggregator → Output
       "id": "msg_xyz",
       "threadId": "thread_123",
       "parts": [
-        {"type": "text", "content": "Research topic X"},
-        {"type": "json", "content": {"context": "..."}}
+        { "type": "text", "content": "Research topic X" },
+        { "type": "json", "content": { "context": "..." } }
       ]
     }
   },
@@ -335,12 +369,14 @@ Input → Splitter ─┼─→ Agent2 ─┼→ Aggregator → Output
 ```
 
 **Features:**
+
 - **Modality-agnostic** (text, images, audio, JSON, binary)
 - **Threaded conversations** (parent IDs, context preservation)
 - **State machines** (submitted → working → completed)
 - **Security by default** (every exchange protected)
 
 **What This Means for Cohortix:**
+
 - ✅ **A2A protocol adoption** for inter-ally communication
 - ✅ **JSON-RPC 2.0** as message format
 - ✅ **Threaded mission conversations** (ally-to-ally coordination)
@@ -505,6 +541,7 @@ Input → Splitter ─┼─→ Agent2 ─┼→ Aggregator → Output
 ### 2.2 Agent Lifecycle Management
 
 **State Machine:**
+
 ```
 created → configured → starting → ready → executing → paused → stopped → destroyed
                            ↓                ↓
@@ -513,18 +550,19 @@ created → configured → starting → ready → executing → paused → stopp
 
 **Lifecycle Operations:**
 
-| Operation | Description | API Endpoint |
-|-----------|-------------|--------------|
-| **Create** | Provision ally from template or marketplace | `POST /runtime/v1/allies` |
+| Operation     | Description                                       | API Endpoint                          |
+| ------------- | ------------------------------------------------- | ------------------------------------- |
+| **Create**    | Provision ally from template or marketplace       | `POST /runtime/v1/allies`             |
 | **Configure** | Set tools, prompts, memory scope, resource limits | `PATCH /runtime/v1/allies/:id/config` |
-| **Start** | Boot ally container, load context | `POST /runtime/v1/allies/:id/start` |
-| **Stop** | Graceful shutdown, save checkpoint | `POST /runtime/v1/allies/:id/stop` |
-| **Pause** | Suspend execution (keep state) | `POST /runtime/v1/allies/:id/pause` |
-| **Resume** | Continue from checkpoint | `POST /runtime/v1/allies/:id/resume` |
-| **Monitor** | Health checks, resource usage | `GET /runtime/v1/allies/:id/health` |
-| **Destroy** | Delete ally + cleanup resources | `DELETE /runtime/v1/allies/:id` |
+| **Start**     | Boot ally container, load context                 | `POST /runtime/v1/allies/:id/start`   |
+| **Stop**      | Graceful shutdown, save checkpoint                | `POST /runtime/v1/allies/:id/stop`    |
+| **Pause**     | Suspend execution (keep state)                    | `POST /runtime/v1/allies/:id/pause`   |
+| **Resume**    | Continue from checkpoint                          | `POST /runtime/v1/allies/:id/resume`  |
+| **Monitor**   | Health checks, resource usage                     | `GET /runtime/v1/allies/:id/health`   |
+| **Destroy**   | Delete ally + cleanup resources                   | `DELETE /runtime/v1/allies/:id`       |
 
 **Health Monitoring:**
+
 - **Heartbeat checks** (every 30s)
 - **Resource usage** (CPU, memory, network)
 - **Error rate** (failed actions per hour)
@@ -536,6 +574,7 @@ created → configured → starting → ready → executing → paused → stopp
 ### 2.3 Task Execution Pipeline
 
 **Flow (DAG-Based Workflow):**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  1. RECEIVE TASK (from Mission Control)                    │
@@ -589,12 +628,12 @@ created → configured → starting → ready → executing → paused → stopp
 
 **Double-Texting Handling (LangGraph-inspired):**
 
-| Strategy | When to Use | Implementation |
-|----------|-------------|----------------|
-| **Reject** | High-priority ongoing task | Return 429 "Ally is busy" |
-| **Queue** | Multiple tasks can be queued | Add to ally's task queue |
-| **Interrupt** | User override | Cancel current task, start new one |
-| **Rollback** | User correction | Revert to last checkpoint, re-execute |
+| Strategy      | When to Use                  | Implementation                        |
+| ------------- | ---------------------------- | ------------------------------------- |
+| **Reject**    | High-priority ongoing task   | Return 429 "Ally is busy"             |
+| **Queue**     | Multiple tasks can be queued | Add to ally's task queue              |
+| **Interrupt** | User override                | Cancel current task, start new one    |
+| **Rollback**  | User correction              | Revert to last checkpoint, re-execute |
 
 ---
 
@@ -603,6 +642,7 @@ created → configured → starting → ready → executing → paused → stopp
 **Protocol:** Google A2A (Agent-to-Agent) using JSON-RPC 2.0
 
 **Communication Flow:**
+
 ```
 ┌──────────────┐                              ┌──────────────┐
 │   Ally A     │                              │   Ally B     │
@@ -637,6 +677,7 @@ created → configured → starting → ready → executing → paused → stopp
 ```
 
 **A2A Message Format:**
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -680,6 +721,7 @@ created → configured → starting → ready → executing → paused → stopp
 ```
 
 **State Machine (Task Lifecycle):**
+
 ```
 submitted → queued → working → input_required → completed
                          ↓           ↓
@@ -687,6 +729,7 @@ submitted → queued → working → input_required → completed
 ```
 
 **Implementation:**
+
 - **Message Bus:** Redis Pub/Sub or RabbitMQ
 - **Routing:** Orchestrator routes based on ally role/capability
 - **Persistence:** All messages logged to PostgreSQL (audit trail)
@@ -728,16 +771,17 @@ submitted → queued → working → input_required → completed
 
 **Resource Quotas (Per Organization):**
 
-| Resource | Free Tier | Pro | Enterprise |
-|----------|-----------|-----|------------|
-| **Max Concurrent Allies** | 5 | 50 | 500 |
-| **CPU per Ally** | 0.5 cores | 1 core | 2 cores |
-| **Memory per Ally** | 512 MB | 1 GB | 2 GB |
-| **Storage** | 1 GB | 50 GB | Unlimited |
-| **API Calls/Hour** | 1,000 | 10,000 | Unlimited |
-| **Missions/Month** | 100 | 1,000 | Unlimited |
+| Resource                  | Free Tier | Pro    | Enterprise |
+| ------------------------- | --------- | ------ | ---------- |
+| **Max Concurrent Allies** | 5         | 50     | 500        |
+| **CPU per Ally**          | 0.5 cores | 1 core | 2 cores    |
+| **Memory per Ally**       | 512 MB    | 1 GB   | 2 GB       |
+| **Storage**               | 1 GB      | 50 GB  | Unlimited  |
+| **API Calls/Hour**        | 1,000     | 10,000 | Unlimited  |
+| **Missions/Month**        | 100       | 1,000  | Unlimited  |
 
 **Security Controls:**
+
 - ✅ **MicroVMs for high-security orgs** (finance, healthcare)
 - ✅ **Network segmentation** (VPC per org or shared VPC with security groups)
 - ✅ **Secrets injection** (HashiCorp Vault or AWS Secrets Manager)
@@ -774,15 +818,19 @@ submitted → queued → working → input_required → completed
 ```
 
 **Knowledge Retrieval (Scope Resolution):**
+
 ```typescript
-async function retrieveKnowledge(query: string, context: {
-  organizationId: string,
-  clientId?: string,
-  missionId?: string
-}): Promise<Knowledge[]> {
+async function retrieveKnowledge(
+  query: string,
+  context: {
+    organizationId: string;
+    clientId?: string;
+    missionId?: string;
+  }
+): Promise<Knowledge[]> {
   // Query in order: mission → client → company
   // Most specific knowledge surfaces first
-  
+
   const results = await vectorSearch({
     query,
     filters: {
@@ -790,17 +838,18 @@ async function retrieveKnowledge(query: string, context: {
       OR: [
         { scope: 'mission', missionId: context.missionId },
         { scope: 'client', clientId: context.clientId },
-        { scope: 'company' }
-      ]
+        { scope: 'company' },
+      ],
     },
-    limit: 10
+    limit: 10,
   });
-  
+
   return results;
 }
 ```
 
 **Per-Ally Memory (Short-Term Cache):**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  REDIS CACHE (Per Ally)                                     │
@@ -819,6 +868,7 @@ async function retrieveKnowledge(query: string, context: {
 ```
 
 **Memory Consolidation (Background Job):**
+
 ```
 Every 6 hours or on mission completion:
 1. Extract insights from ally's recent actions
@@ -829,6 +879,7 @@ Every 6 hours or on mission completion:
 ```
 
 **Memory Decay (Phase 2 - Active):**
+
 ```
 Daily background job:
 1. Calculate relevance score = f(access_count, recency, helpfulness)
@@ -842,6 +893,7 @@ Daily background job:
 ### 2.7 Marketplace Architecture
 
 **Ally Package Format:**
+
 ```
 cohortix-ally-package/
 ├── manifest.json          # Metadata, versioning, dependencies
@@ -856,6 +908,7 @@ cohortix-ally-package/
 ```
 
 **manifest.json Example:**
+
 ```json
 {
   "name": "Sales Outreach Ally",
@@ -870,7 +923,7 @@ cohortix-ally-package/
   "pricing": {
     "model": "subscription",
     "monthlyPrice": 49.99,
-    "commission": 0.20
+    "commission": 0.2
   },
   "capabilities": [
     "email-composition",
@@ -930,6 +983,7 @@ cohortix-ally-package/
 ```
 
 **Revenue Sharing Model:**
+
 ```
 Buyer pays $50/month for Sales Outreach Ally
 ├── Platform fee (20%): $10
@@ -942,6 +996,7 @@ Buyer pays $5 per mission execution
 ```
 
 **Quality Assurance:**
+
 - ✅ **Automated security scanning** (container vulnerability scan)
 - ✅ **Performance benchmarking** (latency, resource usage)
 - ✅ **Certification program** (verified badge for audited allies)
@@ -983,24 +1038,25 @@ Buyer pays $5 per mission execution
 
 **Scaling Metrics:**
 
-| Metric | Threshold | Action |
-|--------|-----------|--------|
-| **Task Queue Depth** | >100 | Scale out +10 ally containers |
-| **CPU Utilization** | >70% | Scale out runtime orchestrators |
-| **Response Time P95** | >5s | Scale out + investigate |
-| **Error Rate** | >5% | Alert + circuit breaker |
+| Metric                | Threshold | Action                          |
+| --------------------- | --------- | ------------------------------- |
+| **Task Queue Depth**  | >100      | Scale out +10 ally containers   |
+| **CPU Utilization**   | >70%      | Scale out runtime orchestrators |
+| **Response Time P95** | >5s       | Scale out + investigate         |
+| **Error Rate**        | >5%       | Alert + circuit breaker         |
 
 **Performance Targets:**
 
-| Scenario | Target | Notes |
-|----------|--------|-------|
-| **Concurrent allies per org** | 100-500 | With auto-scaling |
-| **Action assignment latency** | <500ms | From Control Plane to ally |
-| **Agent startup time** | <10s | Container boot + context load |
-| **Knowledge retrieval** | <200ms | pgvector query P95 |
-| **A2A message latency** | <100ms | Redis Pub/Sub |
+| Scenario                      | Target  | Notes                         |
+| ----------------------------- | ------- | ----------------------------- |
+| **Concurrent allies per org** | 100-500 | With auto-scaling             |
+| **Action assignment latency** | <500ms  | From Control Plane to ally    |
+| **Agent startup time**        | <10s    | Container boot + context load |
+| **Knowledge retrieval**       | <200ms  | pgvector query P95            |
+| **A2A message latency**       | <100ms  | Redis Pub/Sub                 |
 
 **Cost Optimization:**
+
 - ✅ **Spot instances** for non-critical allies (70% cost reduction)
 - ✅ **Scale to zero** for idle allies (pay only for active time)
 - ✅ **Resource quotas** prevent runaway costs
@@ -1013,24 +1069,29 @@ Buyer pays $5 per mission execution
 ### 3.1 What Stays (Next.js/Vercel/Supabase)
 
 ✅ **Next.js Frontend on Vercel:**
+
 - Mission Control UI (React Server + Client Components)
 - API routes for CRUD operations (missions, actions, allies)
 - Supabase Auth integration
 - Real-time UI updates (Supabase Realtime)
 - Edge caching for static assets
 
-**Why:** Vercel is excellent for frontend and lightweight API routes. No need to change what works.
+**Why:** Vercel is excellent for frontend and lightweight API routes. No need to
+change what works.
 
 ✅ **Supabase PostgreSQL + pgvector:**
+
 - Multi-tenant data storage (orgs, users, missions, actions)
 - RLS policies for tenant isolation
 - Vector embeddings (knowledge base)
 - Realtime subscriptions
 - Full-text search
 
-**Why:** Supabase provides managed Postgres with batteries included. Keep it for data layer.
+**Why:** Supabase provides managed Postgres with batteries included. Keep it for
+data layer.
 
 ✅ **Current Tech Stack:**
+
 - **Tailwind CSS** + **shadcn/ui** (design system)
 - **Zod** (validation)
 - **TanStack Query** (server state)
@@ -1043,13 +1104,15 @@ Buyer pays $5 per mission execution
 ❌ **Vercel Cannot Handle Agent Execution:**
 
 **Limitations:**
+
 - **Timeout:** 10s (Hobby) or 60s (Pro) — Agents need hours
 - **No persistent processes** — Agents require long-lived workers
 - **No containers** — Agents need sandboxed environments
 - **Stateless only** — Agents need stateful execution
 - **Cold starts** — Agents need warm, always-ready instances
 
-**Verdict:** Vercel is great for request-response, terrible for long-running agent execution.
+**Verdict:** Vercel is great for request-response, terrible for long-running
+agent execution.
 
 ---
 
@@ -1057,16 +1120,17 @@ Buyer pays $5 per mission execution
 
 **Options:**
 
-| Platform | Pros | Cons | Recommendation |
-|----------|------|------|----------------|
-| **AWS ECS Fargate** | Managed containers, auto-scaling, no K8s overhead | AWS complexity, vendor lock-in | ✅ **Recommended for MVP** |
-| **Kubernetes (EKS/GKE)** | Full control, portable, ecosystem | Steep learning curve, ops overhead | For later (v4.0+) |
-| **Fly.io** | Simple, global edge deployment, containers | Newer, smaller ecosystem | Alternative to ECS |
-| **Railway** | Developer-friendly, simple deployment | Less mature, pricing unclear at scale | For prototyping |
+| Platform                 | Pros                                              | Cons                                  | Recommendation             |
+| ------------------------ | ------------------------------------------------- | ------------------------------------- | -------------------------- |
+| **AWS ECS Fargate**      | Managed containers, auto-scaling, no K8s overhead | AWS complexity, vendor lock-in        | ✅ **Recommended for MVP** |
+| **Kubernetes (EKS/GKE)** | Full control, portable, ecosystem                 | Steep learning curve, ops overhead    | For later (v4.0+)          |
+| **Fly.io**               | Simple, global edge deployment, containers        | Newer, smaller ecosystem              | Alternative to ECS         |
+| **Railway**              | Developer-friendly, simple deployment             | Less mature, pricing unclear at scale | For prototyping            |
 
 **Architecture Choice: AWS ECS Fargate**
 
 **Why:**
+
 - ✅ Managed (no server management)
 - ✅ Auto-scaling (0 → 500 containers)
 - ✅ Pay-per-use (no idle costs)
@@ -1076,6 +1140,7 @@ Buyer pays $5 per mission execution
 - ✅ CloudWatch (logging/monitoring)
 
 **Stack:**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  CONTROL PLANE (Next.js on Vercel)                          │
@@ -1117,16 +1182,16 @@ Buyer pays $5 per mission execution
 
 🆕 **New Services Required:**
 
-| Service | Purpose | Technology | Hosting |
-|---------|---------|------------|---------|
-| **Runtime Orchestrator** | Route tasks to allies, manage execution | Node.js/Python | ECS Fargate |
-| **Ally Containers** | Isolated agent execution environments | Docker | ECS Fargate |
-| **Task Queue** | Async job processing | Redis or SQS | ElastiCache / AWS SQS |
-| **State Store** | Checkpoints, resumable workflows | Redis or Postgres | ElastiCache / Supabase |
-| **Secrets Manager** | Runtime credential injection | HashiCorp Vault or AWS Secrets | AWS Secrets Manager |
-| **Message Bus** | A2A communication | Redis Pub/Sub or RabbitMQ | ElastiCache |
-| **Blob Storage** | Agent artifacts | S3 or Vercel Blob | AWS S3 |
-| **Observability** | Tracing, metrics, logs | OpenTelemetry + Datadog | Datadog / CloudWatch |
+| Service                  | Purpose                                 | Technology                     | Hosting                |
+| ------------------------ | --------------------------------------- | ------------------------------ | ---------------------- |
+| **Runtime Orchestrator** | Route tasks to allies, manage execution | Node.js/Python                 | ECS Fargate            |
+| **Ally Containers**      | Isolated agent execution environments   | Docker                         | ECS Fargate            |
+| **Task Queue**           | Async job processing                    | Redis or SQS                   | ElastiCache / AWS SQS  |
+| **State Store**          | Checkpoints, resumable workflows        | Redis or Postgres              | ElastiCache / Supabase |
+| **Secrets Manager**      | Runtime credential injection            | HashiCorp Vault or AWS Secrets | AWS Secrets Manager    |
+| **Message Bus**          | A2A communication                       | Redis Pub/Sub or RabbitMQ      | ElastiCache            |
+| **Blob Storage**         | Agent artifacts                         | S3 or Vercel Blob              | AWS S3                 |
+| **Observability**        | Tracing, metrics, logs                  | OpenTelemetry + Datadog        | Datadog / CloudWatch   |
 
 ---
 
@@ -1136,15 +1201,16 @@ Buyer pays $5 per mission execution
 
 **Endpoints:**
 
-| Control Plane → Runtime | Runtime → Control Plane |
-|-------------------------|-------------------------|
-| `createAlly(config)` | `updateActionStatus(status)` |
-| `startAlly(allyId)` | `streamProgress(event)` |
-| `assignTask(allyId, actionId)` | `reportError(error)` |
-| `pauseAlly(allyId)` | `requestKnowledge(query)` |
-| `stopAlly(allyId)` | `saveArtifact(blob)` |
+| Control Plane → Runtime        | Runtime → Control Plane      |
+| ------------------------------ | ---------------------------- |
+| `createAlly(config)`           | `updateActionStatus(status)` |
+| `startAlly(allyId)`            | `streamProgress(event)`      |
+| `assignTask(allyId, actionId)` | `reportError(error)`         |
+| `pauseAlly(allyId)`            | `requestKnowledge(query)`    |
+| `stopAlly(allyId)`             | `saveArtifact(blob)`         |
 
 **Example Flow:**
+
 ```
 1. User creates mission in Mission Control (Next.js)
 2. Next.js API route calls Runtime Orchestrator via gRPC
@@ -1247,25 +1313,27 @@ CREATE TABLE marketplace_transactions (
 
 **Monthly Costs (100 Concurrent Allies):**
 
-| Service | Specification | Cost/Month |
-|---------|---------------|------------|
-| **Vercel (Frontend)** | Pro plan | $20 |
-| **Supabase (Database)** | Pro plan (50 GB, 10M queries) | $25 |
-| **AWS ECS Fargate (Orchestrator)** | 3 tasks, 1 vCPU, 2 GB each | ~$60 |
-| **AWS ECS Fargate (Allies)** | 100 tasks avg, 1 vCPU, 1 GB each | ~$2,000 |
-| **ElastiCache Redis** | cache.t4g.medium | $50 |
-| **AWS S3 (Blob Storage)** | 100 GB + requests | $10 |
-| **CloudWatch Logs** | 50 GB logs | $25 |
-| **Datadog (Observability)** | 10 hosts, 10M logs | $150 |
-| **LLM API Costs (OpenAI/Anthropic)** | Variable (est. 100M tokens) | $1,000 |
-| **Total** | | **~$3,340/month** |
+| Service                              | Specification                    | Cost/Month        |
+| ------------------------------------ | -------------------------------- | ----------------- |
+| **Vercel (Frontend)**                | Pro plan                         | $20               |
+| **Supabase (Database)**              | Pro plan (50 GB, 10M queries)    | $25               |
+| **AWS ECS Fargate (Orchestrator)**   | 3 tasks, 1 vCPU, 2 GB each       | ~$60              |
+| **AWS ECS Fargate (Allies)**         | 100 tasks avg, 1 vCPU, 1 GB each | ~$2,000           |
+| **ElastiCache Redis**                | cache.t4g.medium                 | $50               |
+| **AWS S3 (Blob Storage)**            | 100 GB + requests                | $10               |
+| **CloudWatch Logs**                  | 50 GB logs                       | $25               |
+| **Datadog (Observability)**          | 10 hosts, 10M logs               | $150              |
+| **LLM API Costs (OpenAI/Anthropic)** | Variable (est. 100M tokens)      | $1,000            |
+| **Total**                            |                                  | **~$3,340/month** |
 
 **At Scale (500 Concurrent Allies):**
+
 - ECS Fargate (Allies): ~$10,000
 - LLM API: ~$5,000
 - **Total: ~$15,500/month**
 
 **Revenue Required to Break Even (20% Commission):**
+
 - 100 allies: $16,700/month revenue
 - 500 allies: $77,500/month revenue
 
@@ -1274,6 +1342,7 @@ CREATE TABLE marketplace_transactions (
 ## 4. Implementation Roadmap
 
 ### Phase 1: Runtime Prototype (Months 1-2)
+
 **Goal:** Prove agent runtime works
 
 - [ ] Set up AWS ECS Fargate cluster
@@ -1289,6 +1358,7 @@ CREATE TABLE marketplace_transactions (
 ---
 
 ### Phase 2: Multi-Ally Execution (Months 3-4)
+
 **Goal:** Multiple allies working in parallel
 
 - [ ] Ally pool auto-scaling (ECS HPA)
@@ -1304,6 +1374,7 @@ CREATE TABLE marketplace_transactions (
 ---
 
 ### Phase 3: Marketplace MVP (Months 5-6)
+
 **Goal:** Launch Ally Marketplace
 
 - [ ] Marketplace database schema
@@ -1320,6 +1391,7 @@ CREATE TABLE marketplace_transactions (
 ---
 
 ### Phase 4: Scalability & Observability (Months 7-8)
+
 **Goal:** Production-grade reliability
 
 - [ ] Horizontal scaling (0 → 500 allies per org)
@@ -1335,6 +1407,7 @@ CREATE TABLE marketplace_transactions (
 ---
 
 ### Phase 5: Advanced Features (Months 9-12)
+
 **Goal:** Differentiation & stickiness
 
 - [ ] Advanced agent skills (code execution, browser control)
@@ -1353,21 +1426,29 @@ CREATE TABLE marketplace_transactions (
 ### 5.1 Open Questions
 
 **Technical:**
-1. **Runtime Language:** Node.js (faster to build) vs Python (better AI ecosystem)?
-2. **Container Orchestration:** ECS Fargate (simpler) vs Kubernetes (more control)?
+
+1. **Runtime Language:** Node.js (faster to build) vs Python (better AI
+   ecosystem)?
+2. **Container Orchestration:** ECS Fargate (simpler) vs Kubernetes (more
+   control)?
 3. **Message Bus:** Redis Pub/Sub (simple) vs RabbitMQ (more features)?
-4. **Secrets Management:** AWS Secrets Manager (integrated) vs HashiCorp Vault (OSS)?
+4. **Secrets Management:** AWS Secrets Manager (integrated) vs HashiCorp Vault
+   (OSS)?
 5. **Observability:** Datadog (commercial) vs OpenTelemetry + Grafana (OSS)?
 
 **Business:**
+
 1. **Marketplace Launch:** Invite-only beta or public launch?
 2. **Commission Rate:** 20% (industry standard) or higher/lower?
 3. **Certification Program:** Required for all allies or optional?
 4. **Free Tier:** How many free marketplace allies to include?
-5. **White-Label:** Offer self-hosted option for enterprises? (High margin but ops overhead)
+5. **White-Label:** Offer self-hosted option for enterprises? (High margin but
+   ops overhead)
 
 **Product:**
-1. **Ally Portability:** Can users export allies and take them to other platforms?
+
+1. **Ally Portability:** Can users export allies and take them to other
+   platforms?
 2. **Multi-Model Support:** Support OpenAI + Anthropic + OSS models?
 3. **Agent Templates:** Provide low-code ally builder for non-developers?
 4. **Live Monitoring:** Real-time "watch ally work" feature?
@@ -1418,14 +1499,14 @@ CREATE TABLE marketplace_transactions (
 
 ### 5.3 Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| **Runtime complexity underestimated** | High | High | Build prototype ASAP to de-risk |
-| **LLM costs spiral** | Medium | High | Aggressive caching, quotas, monitoring |
-| **Security breach (multi-tenant)** | Low | Critical | MicroVMs, audits, monitoring |
-| **Marketplace low adoption** | Medium | Medium | Curate high-quality allies, marketing |
-| **Scaling bottlenecks** | Medium | High | Load testing, horizontal scaling patterns |
-| **Vendor lock-in (AWS)** | Low | Medium | Abstract with Terraform, consider K8s later |
+| Risk                                  | Likelihood | Impact   | Mitigation                                  |
+| ------------------------------------- | ---------- | -------- | ------------------------------------------- |
+| **Runtime complexity underestimated** | High       | High     | Build prototype ASAP to de-risk             |
+| **LLM costs spiral**                  | Medium     | High     | Aggressive caching, quotas, monitoring      |
+| **Security breach (multi-tenant)**    | Low        | Critical | MicroVMs, audits, monitoring                |
+| **Marketplace low adoption**          | Medium     | Medium   | Curate high-quality allies, marketing       |
+| **Scaling bottlenecks**               | Medium     | High     | Load testing, horizontal scaling patterns   |
+| **Vendor lock-in (AWS)**              | Low        | Medium   | Abstract with Terraform, consider K8s later |
 
 ---
 
@@ -1434,13 +1515,19 @@ CREATE TABLE marketplace_transactions (
 **Cohortix v3.0 is architecturally feasible and strategically sound.**
 
 The research shows a clear path:
-1. **Custom agent runtime** is required (Vercel can't handle long-running agents)
-2. **AWS ECS Fargate** is the recommended platform (managed, scalable, cost-effective)
+
+1. **Custom agent runtime** is required (Vercel can't handle long-running
+   agents)
+2. **AWS ECS Fargate** is the recommended platform (managed, scalable,
+   cost-effective)
 3. **State-of-the-art patterns exist** (LangGraph, CrewAI, Claude SDK)
-4. **Marketplace architecture is proven** (standardized packaging, revenue sharing)
+4. **Marketplace architecture is proven** (standardized packaging, revenue
+   sharing)
 5. **Multi-tenant isolation is critical** (containers, RLS, secrets management)
 
-**The current Next.js/Vercel/Supabase stack remains valuable for the Control Plane (UI + API).** The new Agent Runtime backend complements it, not replaces it.
+**The current Next.js/Vercel/Supabase stack remains valuable for the Control
+Plane (UI + API).** The new Agent Runtime backend complements it, not replaces
+it.
 
 **Estimated Timeline:** 8-12 months to production-ready v3.0
 
@@ -1469,4 +1556,4 @@ The research shows a clear path:
 
 ---
 
-*End of Document*
+_End of Document_

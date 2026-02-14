@@ -2,15 +2,11 @@
 
 <!-- Provide a clear and concise description of what this PR does -->
 
-
-
 ## 🔗 Related Issues
 
 <!-- Link to related issues using keywords: Closes #123, Fixes #456, Relates to #789 -->
 
 Closes #
-
-
 
 ## 🏷️ Type of Change
 
@@ -18,7 +14,8 @@ Closes #
 
 - [ ] 🚀 **Feature** - New functionality
 - [ ] 🐛 **Bug Fix** - Non-breaking fix for an issue
-- [ ] 💥 **Breaking Change** - Fix or feature that would break existing functionality
+- [ ] 💥 **Breaking Change** - Fix or feature that would break existing
+      functionality
 - [ ] 📚 **Documentation** - Documentation only changes
 - [ ] 🎨 **Style** - Code style/formatting changes (no logic changes)
 - [ ] ♻️ **Refactor** - Code restructuring without changing functionality
@@ -27,35 +24,27 @@ Closes #
 - [ ] 🔧 **Chore** - Maintenance tasks (dependencies, tooling, etc.)
 - [ ] 🔒 **Security** - Security-related changes
 
-
-
 ## 📖 Spec Reference
 
 <!-- Link to the specification or design document this implements -->
 
 Spec: [Link to spec document or section]
 
-
-
 ## 🔄 Changes Made
 
 <!-- List the key changes in this PR -->
 
-- 
-- 
-- 
-
-
+-
+-
+-
 
 ## 📸 Screenshots / Videos (if applicable)
 
 <!-- Add screenshots or videos demonstrating the changes -->
 
 | Before | After |
-|--------|-------|
-|   -    |   -   |
-
-
+| ------ | ----- |
+| -      | -     |
 
 ## 🧪 Testing
 
@@ -72,19 +61,17 @@ Spec: [Link to spec document or section]
 
 <!-- List the test scenarios you've covered -->
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ### How to Test Manually
 
 <!-- Provide step-by-step instructions for reviewers to test this PR -->
 
-1. 
-2. 
-3. 
-
-
+1.
+2.
+3.
 
 ## ✅ Pre-Merge Checklist
 
@@ -95,9 +82,11 @@ Spec: [Link to spec document or section]
 - [ ] My code follows the project's style guidelines
 - [ ] I have performed a self-review of my code
 - [ ] I have commented my code where necessary (especially complex logic)
-- [ ] I have removed any console.logs, debugger statements, and commented-out code
+- [ ] I have removed any console.logs, debugger statements, and commented-out
+      code
 - [ ] My changes generate no new warnings or errors
-- [ ] I have updated the `.env.example` file if I added new environment variables
+- [ ] I have updated the `.env.example` file if I added new environment
+      variables
 
 ### Testing
 
@@ -141,23 +130,24 @@ Spec: [Link to spec document or section]
 - [ ] No breaking changes to existing data structures
 - [ ] Indexes are added where appropriate
 
-
-
 ## 🚀 Deployment Notes
 
 <!-- Any special considerations for deployment -->
 
 **⚠️ Pre-deployment requirements:**
+
 <!-- List any actions that need to be taken before deploying -->
 
 - [ ] None
 
 **⚠️ Post-deployment requirements:**
+
 <!-- List any actions that need to be taken after deploying -->
 
 - [ ] None
 
 **Environment Variables:**
+
 <!-- List any new or changed environment variables -->
 
 ```bash
@@ -165,16 +155,12 @@ Spec: [Link to spec document or section]
 # VARIABLE_NAME=value
 ```
 
-
-
 ## 🔍 Code Review Focus Areas
 
 <!-- Highlight specific areas where you'd like reviewers to focus -->
 
-- 
-- 
-
-
+-
+-
 
 ## 📊 Performance Impact
 
@@ -184,28 +170,20 @@ Spec: [Link to spec document or section]
 - Runtime performance: <!-- Improved/Degraded/No change -->
 - Database impact: <!-- New queries/Optimized/No change -->
 
-
-
 ## 🔗 Dependencies
 
 <!-- List any dependencies this PR has (other PRs, external services, etc.) -->
 
 - [ ] None
-<!-- - [ ] PR #123 must be merged first -->
-<!-- - [ ] External service X must be configured -->
-
-
+  <!-- - [ ] PR #123 must be merged first -->
+  <!-- - [ ] External service X must be configured -->
 
 ## 🤔 Questions for Reviewers
 
 <!-- Any specific questions or concerns you have -->
 
-- 
-- 
-
-
-
----
+-
+- ***
 
 ## 📝 Reviewer Notes
 
@@ -222,8 +200,6 @@ Spec: [Link to spec document or section]
 **Comments:**
 
 <!-- Reviewers add comments here -->
-
-
 
 ---
 

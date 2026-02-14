@@ -9,9 +9,14 @@
 
 ## Context
 
-Cohortix relies on external services (primarily Supabase) for data persistence and authentication. Network failures, service outages, and transient errors are inevitable in distributed systems. Without proper resilience patterns, these failures can cascade and degrade user experience or cause complete service unavailability.
+Cohortix relies on external services (primarily Supabase) for data persistence
+and authentication. Network failures, service outages, and transient errors are
+inevitable in distributed systems. Without proper resilience patterns, these
+failures can cascade and degrade user experience or cause complete service
+unavailability.
 
 **Current Challenges:**
+
 - Direct database calls without retry logic
 - No protection against cascading failures
 - Service outages cause immediate user-facing errors
@@ -19,6 +24,7 @@ Cohortix relies on external services (primarily Supabase) for data persistence a
 - Transient network errors treated as permanent failures
 
 **Requirements:**
+
 - Implement retry logic with exponential backoff
 - Add circuit breaker pattern to prevent cascading failures
 - Maintain service availability during partial outages
@@ -29,13 +35,15 @@ Cohortix relies on external services (primarily Supabase) for data persistence a
 
 ## Decision
 
-We will implement **resilience patterns** for all external service calls, specifically:
+We will implement **resilience patterns** for all external service calls,
+specifically:
 
 ### 1. Retry Pattern with Exponential Backoff
 
 **Implementation:** `lib/resilience.ts` - `withRetry()`
 
 **Strategy:**
+
 - Exponential backoff with jitter to prevent thundering herd
 - Configurable retry attempts (default: 3)
 - Intelligent retry decision based on error type
@@ -43,18 +51,21 @@ We will implement **resilience patterns** for all external service calls, specif
 - Maximum delay cap: 10 seconds
 
 **Retryable Errors:**
+
 - Network errors (ECONNREFUSED, ETIMEDOUT, ENOTFOUND)
 - HTTP 503 Service Unavailable
 - HTTP 504 Gateway Timeout
 - Supabase transient errors
 
 **Non-Retryable Errors:**
+
 - 4xx client errors (Bad Request, Unauthorized, etc.)
 - 500 Internal Server Error (may indicate code bug, not transient)
 - Validation errors
 - Business logic errors
 
 **Example:**
+
 ```typescript
 const user = await withRetry(
   () => supabase.from('users').select('*').eq('id', userId).single(),
@@ -64,7 +75,7 @@ const user = await withRetry(
     backoffMultiplier: 2,
     useJitter: true,
   }
-)
+);
 ```
 
 ### 2. Circuit Breaker Pattern
@@ -72,17 +83,20 @@ const user = await withRetry(
 **Implementation:** `lib/resilience.ts` - `CircuitBreaker` class
 
 **States:**
+
 - **CLOSED** (Normal): Requests flow normally
 - **OPEN** (Tripped): Requests fail fast without calling service
 - **HALF_OPEN** (Recovery): Limited requests test if service recovered
 
 **Configuration:**
+
 - Failure threshold: 5 consecutive failures → OPEN
 - Reset timeout: 60 seconds before attempting HALF_OPEN
 - Success threshold: 2 successful requests to close circuit
 - Optional request timeout: 5 seconds
 
 **State Transitions:**
+
 ```
 CLOSED --[5 failures]--> OPEN
 OPEN --[60s timeout]--> HALF_OPEN
@@ -91,10 +105,11 @@ HALF_OPEN --[1 failure]--> OPEN
 ```
 
 **Example:**
+
 ```typescript
 const supabaseBreaker = new CircuitBreaker(
   async (userId: string) => {
-    return supabase.from('users').select('*').eq('id', userId).single()
+    return supabase.from('users').select('*').eq('id', userId).single();
   },
   {
     failureThreshold: 5,
@@ -102,9 +117,9 @@ const supabaseBreaker = new CircuitBreaker(
     successThreshold: 2,
     requestTimeoutMs: 5000,
   }
-)
+);
 
-const user = await supabaseBreaker.execute(userId)
+const user = await supabaseBreaker.execute(userId);
 ```
 
 ### 3. Combined Resilient Call Pattern
@@ -116,7 +131,7 @@ Combines retry + circuit breaker for maximum resilience:
 ```typescript
 const fetchUser = withResilientCall(
   async (userId: string) => {
-    return supabase.from('users').select('*').eq('id', userId).single()
+    return supabase.from('users').select('*').eq('id', userId).single();
   },
   {
     // Retry config
@@ -128,9 +143,9 @@ const fetchUser = withResilientCall(
     failureThreshold: 5,
     resetTimeoutMs: 60000,
   }
-)
+);
 
-const user = await fetchUser(userId)
+const user = await fetchUser(userId);
 ```
 
 ### 4. Timeout Strategy
@@ -141,7 +156,8 @@ All external service calls SHOULD have timeouts to prevent hung requests:
 - **Write operations**: 10 seconds
 - **Batch operations**: 30 seconds
 
-Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config.
+Timeouts are enforced at the circuit breaker level via `requestTimeoutMs`
+config.
 
 ---
 
@@ -149,10 +165,13 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 
 ### Positive
 
-1. **Improved Availability:** System remains functional during transient failures
-2. **Cascading Failure Prevention:** Circuit breaker stops overwhelming failing services
+1. **Improved Availability:** System remains functional during transient
+   failures
+2. **Cascading Failure Prevention:** Circuit breaker stops overwhelming failing
+   services
 3. **Better UX:** Users see fewer error messages for transient issues
-4. **Service Protection:** Prevents overwhelming external services during recovery
+4. **Service Protection:** Prevents overwhelming external services during
+   recovery
 5. **Observability:** All failures logged with context for debugging
 6. **Cost Efficiency:** Exponential backoff reduces unnecessary retry attempts
 7. **Graceful Degradation:** Services can partially function during outages
@@ -161,7 +180,8 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 
 1. **Increased Latency:** Retries add latency to failed requests
 2. **Complexity:** More code paths to test and maintain
-3. **State Management:** Circuit breaker requires in-memory state (not suitable for serverless edge functions)
+3. **State Management:** Circuit breaker requires in-memory state (not suitable
+   for serverless edge functions)
 4. **False Positives:** Circuit may open during legitimate high-error scenarios
 5. **Resource Usage:** Retry queues consume memory
 
@@ -210,6 +230,7 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 ### When to Use Retry
 
 **DO use retry for:**
+
 - ✅ Database read operations
 - ✅ External API calls (weather, maps, etc.)
 - ✅ File uploads to storage
@@ -217,6 +238,7 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 - ✅ Message queue operations
 
 **DON'T use retry for:**
+
 - ❌ Non-idempotent writes without idempotency keys
 - ❌ Payment processing (use idempotency instead)
 - ❌ User authentication (security risk)
@@ -225,12 +247,14 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 ### When to Use Circuit Breaker
 
 **DO use circuit breaker for:**
+
 - ✅ Calls to external services (Supabase, APIs)
 - ✅ Operations that can cascade failures
 - ✅ Services with known instability
 - ✅ High-volume read paths
 
 **DON'T use circuit breaker for:**
+
 - ❌ Edge functions (stateless, no shared memory)
 - ❌ Infrequent operations (<10 req/min)
 - ❌ Operations that must always attempt (critical writes)
@@ -238,6 +262,7 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 ### Configuration Recommendations
 
 **Critical Path (Auth, Payments):**
+
 ```typescript
 {
   maxRetries: 2,
@@ -248,6 +273,7 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 ```
 
 **Standard Path (Dashboard Data):**
+
 ```typescript
 {
   maxRetries: 3,
@@ -258,6 +284,7 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 ```
 
 **Background Jobs:**
+
 ```typescript
 {
   maxRetries: 5,
@@ -292,11 +319,13 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 ### Alert Rules
 
 **Critical:**
+
 - Circuit breaker open for >5 minutes
 - Retry rate >20% for >10 minutes
 - All requests timing out
 
 **Warning:**
+
 - Circuit breaker state changes >3 times in 5 minutes
 - Retry rate >10% for >5 minutes
 - Timeout rate >5%
@@ -336,10 +365,12 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 ### 1. No Resilience Patterns (Rejected)
 
 **Pros:**
+
 - Simpler code
 - Lower latency for successful requests
 
 **Cons:**
+
 - Poor user experience during outages
 - Cascading failures
 - Manual intervention required for recovery
@@ -349,10 +380,12 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 ### 2. Simple Fixed Retry (Rejected)
 
 **Pros:**
+
 - Easier to implement
 - Predictable behavior
 
 **Cons:**
+
 - Can overwhelm services during recovery (thundering herd)
 - Fixed delays not optimal for all scenarios
 - No protection against cascading failures
@@ -362,10 +395,12 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 ### 3. External Service (Resilience4j, Polly) (Rejected)
 
 **Pros:**
+
 - Battle-tested implementations
 - Rich feature sets
 
 **Cons:**
+
 - Additional dependency
 - Language-specific (JVM, .NET)
 - Overkill for our current needs
@@ -375,10 +410,12 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 ### 4. Cloud Provider Resilience (AWS SDK Retries) (Considered)
 
 **Pros:**
+
 - Built into SDKs
 - Well-tuned for specific services
 
 **Cons:**
+
 - Not available for all services (Supabase)
 - Less control over behavior
 - Vendor lock-in
@@ -411,13 +448,13 @@ Timeouts are enforced at the circuit breaker level via `requestTimeoutMs` config
 
 ## Decision Log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-02-11 | Implement retry with exponential backoff | Industry best practice for transient failures |
-| 2026-02-11 | Implement circuit breaker pattern | Prevent cascading failures per Codex |
-| 2026-02-11 | Use in-memory state for circuit breaker | Sufficient for current scale, can upgrade to Redis later |
-| 2026-02-11 | Default timeout 5s for reads, 10s for writes | Balanced between UX and service protection |
-| 2026-02-11 | Jitter enabled by default | Prevents thundering herd |
+| Date       | Decision                                     | Rationale                                                |
+| ---------- | -------------------------------------------- | -------------------------------------------------------- |
+| 2026-02-11 | Implement retry with exponential backoff     | Industry best practice for transient failures            |
+| 2026-02-11 | Implement circuit breaker pattern            | Prevent cascading failures per Codex                     |
+| 2026-02-11 | Use in-memory state for circuit breaker      | Sufficient for current scale, can upgrade to Redis later |
+| 2026-02-11 | Default timeout 5s for reads, 10s for writes | Balanced between UX and service protection               |
+| 2026-02-11 | Jitter enabled by default                    | Prevents thundering herd                                 |
 
 ---
 

@@ -1,39 +1,39 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useCreateCohort, useUpdateCohort } from '@/hooks/use-cohorts'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCreateCohort, useUpdateCohort } from '@/hooks/use-cohorts';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { X } from 'lucide-react'
+} from '@/components/ui/select';
+import { X } from 'lucide-react';
 
 interface CohortModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   cohort?: {
-    id: string
-    name: string
-    description?: string | null
-    status: string
-    start_date?: string | null
-    end_date?: string | null
-  }
+    id: string;
+    name: string;
+    description?: string | null;
+    status: string;
+    start_date?: string | null;
+    end_date?: string | null;
+  };
 }
 
 const STATUS_OPTIONS = [
@@ -41,13 +41,13 @@ const STATUS_OPTIONS = [
   { value: 'paused', label: 'Paused' },
   { value: 'at-risk', label: 'At-Risk' },
   { value: 'completed', label: 'Completed' },
-]
+];
 
 export function CohortModal({ open, onOpenChange, cohort }: CohortModalProps) {
-  const router = useRouter()
-  const isEditing = !!cohort
-  const createMutation = useCreateCohort()
-  const updateMutation = useUpdateCohort()
+  const router = useRouter();
+  const isEditing = !!cohort;
+  const createMutation = useCreateCohort();
+  const updateMutation = useUpdateCohort();
 
   const [formData, setFormData] = useState({
     name: cohort?.name || '',
@@ -55,54 +55,54 @@ export function CohortModal({ open, onOpenChange, cohort }: CohortModalProps) {
     status: cohort?.status || 'active',
     startDate: cohort?.start_date || '',
     endDate: cohort?.end_date || '',
-  })
+  });
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => {
-        const newErrors = { ...prev }
-        delete newErrors[field]
-        return newErrors
-      })
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
-  }
+  };
 
   const validate = () => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required'
+      newErrors.name = 'Name is required';
     } else if (formData.name.length < 3) {
-      newErrors.name = 'Name must be at least 3 characters'
+      newErrors.name = 'Name must be at least 3 characters';
     } else if (formData.name.length > 255) {
-      newErrors.name = 'Name must be less than 255 characters'
+      newErrors.name = 'Name must be less than 255 characters';
     }
 
     if (formData.description && formData.description.length > 10000) {
-      newErrors.description = 'Description must be less than 10,000 characters'
+      newErrors.description = 'Description must be less than 10,000 characters';
     }
 
     if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate)
-      const end = new Date(formData.endDate)
+      const start = new Date(formData.startDate);
+      const end = new Date(formData.endDate);
       if (end < start) {
-        newErrors.endDate = 'End date must be after start date'
+        newErrors.endDate = 'End date must be after start date';
       }
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validate()) {
-      return
+      return;
     }
 
     try {
@@ -112,16 +112,16 @@ export function CohortModal({ open, onOpenChange, cohort }: CohortModalProps) {
         status: formData.status as 'active' | 'paused' | 'at-risk' | 'completed',
         startDate: formData.startDate || undefined,
         endDate: formData.endDate || undefined,
-      }
+      };
 
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: cohort.id, data: payload })
+        await updateMutation.mutateAsync({ id: cohort.id, data: payload });
       } else {
-        const newCohort = await createMutation.mutateAsync(payload)
-        router.push(`/cohorts/${newCohort.id}`)
+        const newCohort = await createMutation.mutateAsync(payload);
+        router.push(`/cohorts/${newCohort.id}`);
       }
 
-      onOpenChange(false)
+      onOpenChange(false);
       // Reset form if creating new
       if (!isEditing) {
         setFormData({
@@ -130,19 +130,19 @@ export function CohortModal({ open, onOpenChange, cohort }: CohortModalProps) {
           status: 'active',
           startDate: '',
           endDate: '',
-        })
+        });
       }
     } catch (error: any) {
       // Handle validation errors from API
       if (error.errors) {
-        setErrors(error.errors)
+        setErrors(error.errors);
       } else {
-        setErrors({ submit: error.message || 'Failed to save cohort' })
+        setErrors({ submit: error.message || 'Failed to save cohort' });
       }
     }
-  }
+  };
 
-  const isPending = createMutation.isPending || updateMutation.isPending
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -185,9 +185,7 @@ export function CohortModal({ open, onOpenChange, cohort }: CohortModalProps) {
               disabled={isPending}
               className={errors.description ? 'border-destructive' : ''}
             />
-            {errors.description && (
-              <p className="text-sm text-destructive">{errors.description}</p>
-            )}
+            {errors.description && <p className="text-sm text-destructive">{errors.description}</p>}
           </div>
 
           {/* Status */}
@@ -261,5 +259,5 @@ export function CohortModal({ open, onOpenChange, cohort }: CohortModalProps) {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

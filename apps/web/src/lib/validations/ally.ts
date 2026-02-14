@@ -3,10 +3,10 @@
  * Follows same pattern as cohort validations.
  */
 
-import { z } from 'zod'
+import { z } from 'zod';
 
-export const allyStatusEnum = z.enum(['active', 'idle', 'busy', 'offline', 'error'])
-export type AllyStatus = z.infer<typeof allyStatusEnum>
+export const allyStatusEnum = z.enum(['active', 'idle', 'busy', 'offline', 'error']);
+export type AllyStatus = z.infer<typeof allyStatusEnum>;
 
 export const createAllySchema = z.object({
   name: z
@@ -22,9 +22,9 @@ export const createAllySchema = z.object({
   runtimeType: z.string().max(50).default('clawdbot'),
   runtimeConfig: z.record(z.any()).optional(),
   settings: z.record(z.any()).optional(),
-})
+});
 
-export type CreateAllyInput = z.infer<typeof createAllySchema>
+export type CreateAllyInput = z.infer<typeof createAllySchema>;
 
 export const updateAllySchema = z.object({
   name: z.string().min(2).max(255).trim().optional(),
@@ -36,9 +36,9 @@ export const updateAllySchema = z.object({
   runtimeType: z.string().max(50).optional(),
   runtimeConfig: z.record(z.any()).optional(),
   settings: z.record(z.any()).optional(),
-})
+});
 
-export type UpdateAllyInput = z.infer<typeof updateAllySchema>
+export type UpdateAllyInput = z.infer<typeof updateAllySchema>;
 
 export const allyQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
@@ -48,6 +48,6 @@ export const allyQuerySchema = z.object({
   cohortId: z.string().uuid().optional(),
   sortBy: z.enum(['name', 'createdAt', 'status', 'totalTasksCompleted']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
-})
+});
 
-export type AllyQueryParams = z.infer<typeof allyQuerySchema>
+export type AllyQueryParams = z.infer<typeof allyQuerySchema>;

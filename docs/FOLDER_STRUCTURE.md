@@ -2,7 +2,7 @@
 
 > Enterprise-grade monorepo organization for scalable SaaS development
 
-*Version: 1.0.0 | Last Updated: 2026-02-05*
+_Version: 1.0.0 | Last Updated: 2026-02-05_
 
 ---
 
@@ -546,9 +546,9 @@ tooling/
 
 ```yaml
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "tooling/*"
+  - 'apps/*'
+  - 'packages/*'
+  - 'tooling/*'
 ```
 
 ### Root `turbo.json`
@@ -557,10 +557,7 @@ packages:
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": [
-    "NODE_ENV",
-    "NEXT_PUBLIC_*"
-  ],
+  "globalEnv": ["NODE_ENV", "NEXT_PUBLIC_*"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -610,14 +607,14 @@ packages:
 
 ### Files
 
-| Type | Convention | Example |
-|------|------------|---------|
-| React Components | PascalCase | `ProjectCard.tsx` → `project-card.tsx` (kebab preferred) |
-| Utilities | camelCase | `formatDate.ts` → `dates.ts` |
-| Types | camelCase | `project.ts` |
-| Constants | SCREAMING_SNAKE | `API_URL` (inside files) |
-| Routes | kebab-case | `api/v1/project-templates/` |
-| CSS/Styles | kebab-case | `button-primary.css` |
+| Type             | Convention      | Example                                                  |
+| ---------------- | --------------- | -------------------------------------------------------- |
+| React Components | PascalCase      | `ProjectCard.tsx` → `project-card.tsx` (kebab preferred) |
+| Utilities        | camelCase       | `formatDate.ts` → `dates.ts`                             |
+| Types            | camelCase       | `project.ts`                                             |
+| Constants        | SCREAMING_SNAKE | `API_URL` (inside files)                                 |
+| Routes           | kebab-case      | `api/v1/project-templates/`                              |
+| CSS/Styles       | kebab-case      | `button-primary.css`                                     |
 
 ### Components
 
@@ -725,28 +722,27 @@ src/
 
 ## What Goes Where
 
-| Type of Code | Location | Example |
-|--------------|----------|---------|
-| Page/Route | `app/(group)/route/page.tsx` | `app/(dashboard)/projects/page.tsx` |
-| API Route | `app/api/v1/resource/route.ts` | `app/api/v1/projects/route.ts` |
-| UI Component | `components/ui/` | `components/ui/button.tsx` |
-| Feature Component | `components/features/[feature]/` | `components/features/tasks/task-card.tsx` |
-| Layout Component | `components/layouts/` | `components/layouts/sidebar.tsx` |
-| Shared Component | `components/shared/` | `components/shared/avatar.tsx` |
-| Custom Hook | `lib/hooks/` | `lib/hooks/use-projects.ts` |
-| Zustand Store | `lib/stores/` | `lib/stores/sidebar-store.ts` |
-| API Client | `lib/api/` | `lib/api/projects.ts` |
-| Service (business logic) | `lib/services/` | `lib/services/project-service.ts` |
-| Validation Schema | `lib/validations/` | `lib/validations/project.ts` |
-| Utility Function | `lib/utils/` | `lib/utils/dates.ts` |
-| Server Action | `server/actions/` | `server/actions/projects.ts` |
-| DB Query | `server/db/queries/` | `server/db/queries/projects.ts` |
-| DB Mutation | `server/db/mutations/` | `server/db/mutations/projects.ts` |
-| External Integration | `server/integrations/` | `server/integrations/github/` |
-| Type Definition | `types/` or `packages/types/` | `types/api.ts` |
-| Database Schema | `packages/database/schema/` | `packages/database/schema/projects.ts` |
+| Type of Code             | Location                         | Example                                   |
+| ------------------------ | -------------------------------- | ----------------------------------------- |
+| Page/Route               | `app/(group)/route/page.tsx`     | `app/(dashboard)/projects/page.tsx`       |
+| API Route                | `app/api/v1/resource/route.ts`   | `app/api/v1/projects/route.ts`            |
+| UI Component             | `components/ui/`                 | `components/ui/button.tsx`                |
+| Feature Component        | `components/features/[feature]/` | `components/features/tasks/task-card.tsx` |
+| Layout Component         | `components/layouts/`            | `components/layouts/sidebar.tsx`          |
+| Shared Component         | `components/shared/`             | `components/shared/avatar.tsx`            |
+| Custom Hook              | `lib/hooks/`                     | `lib/hooks/use-projects.ts`               |
+| Zustand Store            | `lib/stores/`                    | `lib/stores/sidebar-store.ts`             |
+| API Client               | `lib/api/`                       | `lib/api/projects.ts`                     |
+| Service (business logic) | `lib/services/`                  | `lib/services/project-service.ts`         |
+| Validation Schema        | `lib/validations/`               | `lib/validations/project.ts`              |
+| Utility Function         | `lib/utils/`                     | `lib/utils/dates.ts`                      |
+| Server Action            | `server/actions/`                | `server/actions/projects.ts`              |
+| DB Query                 | `server/db/queries/`             | `server/db/queries/projects.ts`           |
+| DB Mutation              | `server/db/mutations/`           | `server/db/mutations/projects.ts`         |
+| External Integration     | `server/integrations/`           | `server/integrations/github/`             |
+| Type Definition          | `types/` or `packages/types/`    | `types/api.ts`                            |
+| Database Schema          | `packages/database/schema/`      | `packages/database/schema/projects.ts`    |
 
 ---
 
-*Document maintained by: Architecture Team*
-*Next review: 2026-03-01*
+_Document maintained by: Architecture Team_ _Next review: 2026-03-01_

@@ -1,14 +1,15 @@
 #!/usr/bin/env tsx
 /**
  * Create Test User for QA
- * 
+ *
  * Creates a test user in Supabase Auth and links to organization
  */
 
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://rfwscvklcokzuofyzqwx.supabase.co';
-const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmd3NjdmtsY29renVvZnl6cXd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDcyNDYyNCwiZXhwIjoyMDg2MzAwNjI0fQ.DtEf0p3b_tBCvzO5g3Al6QqCkDg-Y8K6-xRI4rcKqNM';
+const serviceRoleKey =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmd3NjdmtsY29renVvZnl6cXd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDcyNDYyNCwiZXhwIjoyMDg2MzAwNjI0fQ.DtEf0p3b_tBCvzO5g3Al6QqCkDg-Y8K6-xRI4rcKqNM';
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: {
@@ -31,15 +32,15 @@ async function createTestUser() {
 
     if (createResult.error && createResult.error.code === 'email_exists') {
       console.log('ℹ️  User already exists, fetching...\n');
-      
+
       // List users and find ours
       const { data: users } = await supabase.auth.admin.listUsers();
-      const existingUser = users?.users.find(u => u.email === 'test@cohortix.dev');
-      
+      const existingUser = users?.users.find((u) => u.email === 'test@cohortix.dev');
+
       if (!existingUser) {
         throw new Error('User exists but could not be found');
       }
-      
+
       authData = { user: existingUser };
       console.log(`✅ Found existing user: ${authData.user.email} (${authData.user.id})\n`);
     } else if (createResult.error) {
@@ -109,7 +110,6 @@ async function createTestUser() {
     console.log('  Password: TestPass123!');
     console.log('\n🚀 You can now sign in at http://localhost:3000/sign-in');
     console.log('═══════════════════════════════════════════\n');
-
   } catch (error) {
     console.error('❌ Failed to create test user:', error);
     process.exit(1);

@@ -6,7 +6,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rfwscvklcokzuofyzqwx.supabase.co';
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rfwscvklcokzuofyzqwx.supabase.co';
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
@@ -22,7 +23,7 @@ async function verify() {
       .from('organizations')
       .select('*')
       .eq('slug', 'axon-hq');
-    
+
     if (orgsError) throw orgsError;
     console.log(`✅ Organizations: ${orgs?.length || 0} (expected: 1)`);
 
@@ -31,7 +32,7 @@ async function verify() {
       .from('agents')
       .select('*')
       .eq('organization_id', orgs[0]?.id);
-    
+
     if (agentsError) throw agentsError;
     console.log(`✅ Agents: ${agents?.length || 0} (expected: 4)`);
 
@@ -40,7 +41,7 @@ async function verify() {
       .from('cohorts')
       .select('*')
       .eq('organization_id', orgs[0]?.id);
-    
+
     if (cohortsError) throw cohortsError;
     console.log(`✅ Cohorts: ${cohorts?.length || 0} (expected: 4)`);
 
@@ -48,7 +49,7 @@ async function verify() {
     const { data: members, error: membersError } = await supabase
       .from('cohort_members')
       .select('*');
-    
+
     if (membersError) throw membersError;
     console.log(`✅ Cohort Members: ${members?.length || 0} (expected: 10)`);
 
@@ -57,7 +58,7 @@ async function verify() {
       .from('projects')
       .select('*')
       .eq('organization_id', orgs[0]?.id);
-    
+
     if (projectsError) throw projectsError;
     console.log(`✅ Projects: ${projects?.length || 0} (expected: 3)`);
 
@@ -66,7 +67,7 @@ async function verify() {
       .from('tasks')
       .select('*')
       .eq('organization_id', orgs[0]?.id);
-    
+
     if (tasksError) throw tasksError;
     console.log(`✅ Tasks: ${tasks?.length || 0} (expected: 5)`);
 
@@ -75,7 +76,7 @@ async function verify() {
       .from('knowledge_entries')
       .select('*')
       .eq('organization_id', orgs[0]?.id);
-    
+
     if (knowledgeError) throw knowledgeError;
     console.log(`✅ Knowledge Entries: ${knowledge?.length || 0} (expected: 3)`);
 
@@ -84,7 +85,7 @@ async function verify() {
       .from('audit_logs')
       .select('*')
       .eq('organization_id', orgs[0]?.id);
-    
+
     if (auditError) throw auditError;
     console.log(`✅ Audit Logs: ${auditLogs?.length || 0} (expected: 25+)`);
 
@@ -95,10 +96,12 @@ async function verify() {
         .from('cohort_members')
         .select('*, agents(name)')
         .eq('cohort_id', cohort.id);
-      
+
       console.log(`\n   ${cohort.name} (${cohort.status}):`);
       cohortMembers?.forEach((member: any) => {
-        console.log(`     - ${member.agents?.name || 'Unknown'}: ${member.engagement_score}% engagement`);
+        console.log(
+          `     - ${member.agents?.name || 'Unknown'}: ${member.engagement_score}% engagement`
+        );
       });
     }
 
@@ -110,13 +113,12 @@ async function verify() {
         .select('*')
         .eq('resource_type', 'cohort')
         .eq('resource_id', cohort.id);
-      
+
       console.log(`   ${cohort.name}: ${activities?.length || 0} activities`);
     }
 
     console.log('\n✨ Verification complete! All tables populated.\n');
     process.exit(0);
-
   } catch (error) {
     console.error('❌ Verification failed:', error);
     process.exit(1);

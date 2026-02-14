@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { cn } from '@/lib/utils'
-import { LineChart, Line, XAxis, ResponsiveContainer } from 'recharts'
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
+import { LineChart, Line, XAxis, ResponsiveContainer } from 'recharts';
 
-const timeRanges = ['30D', '90D', '1Y'] as const
-type TimeRange = (typeof timeRanges)[number]
+const timeRanges = ['30D', '90D', '1Y'] as const;
+type TimeRange = (typeof timeRanges)[number];
 
 // Mock data for the chart
 const chartData: Record<TimeRange, { date: string; value: number }[]> = {
@@ -34,11 +34,11 @@ const chartData: Record<TimeRange, { date: string; value: number }[]> = {
     { date: 'SEP', value: 60 },
     { date: 'NOV', value: 75 },
   ],
-}
+};
 
 export function EngagementChart() {
-  const [activeRange, setActiveRange] = useState<TimeRange>('30D')
-  const data = chartData[activeRange]
+  const [activeRange, setActiveRange] = useState<TimeRange>('30D');
+  const data = chartData[activeRange];
 
   return (
     <div className="bg-card border border-border rounded-lg p-6">
@@ -81,16 +81,10 @@ export function EngagementChart() {
               tickLine={false}
               axisLine={false}
             />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#F2F2F2"
-              strokeWidth={2}
-              dot={false}
-            />
+            <Line type="monotone" dataKey="value" stroke="#F2F2F2" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
-  )
+  );
 }

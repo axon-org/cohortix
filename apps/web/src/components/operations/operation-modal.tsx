@@ -1,40 +1,40 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useCreateOperation, useUpdateOperation } from '@/hooks/use-operations'
-import { useMissions } from '@/hooks/use-missions'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCreateOperation, useUpdateOperation } from '@/hooks/use-operations';
+import { useMissions } from '@/hooks/use-missions';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/ui/select';
 
 interface OperationModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   operation?: {
-    id: string
-    name: string
-    description?: string | null
-    status: string
-    startDate?: string | null
-    targetDate?: string | null
-    missionId?: string | null
-  }
+    id: string;
+    name: string;
+    description?: string | null;
+    status: string;
+    startDate?: string | null;
+    targetDate?: string | null;
+    missionId?: string | null;
+  };
 }
 
 const STATUS_OPTIONS = [
@@ -43,14 +43,14 @@ const STATUS_OPTIONS = [
   { value: 'on_hold', label: 'On Hold' },
   { value: 'completed', label: 'Completed' },
   { value: 'archived', label: 'Archived' },
-]
+];
 
 export function OperationModal({ open, onOpenChange, operation }: OperationModalProps) {
-  const router = useRouter()
-  const isEditing = !!operation
-  const createMutation = useCreateOperation()
-  const updateMutation = useUpdateOperation()
-  const { data: missionsData } = useMissions({ limit: 100 })
+  const router = useRouter();
+  const isEditing = !!operation;
+  const createMutation = useCreateOperation();
+  const updateMutation = useUpdateOperation();
+  const { data: missionsData } = useMissions({ limit: 100 });
 
   const [formData, setFormData] = useState({
     name: operation?.name || '',
@@ -59,54 +59,54 @@ export function OperationModal({ open, onOpenChange, operation }: OperationModal
     startDate: operation?.startDate || '',
     targetDate: operation?.targetDate || '',
     missionId: operation?.missionId || '',
-  })
+  });
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => {
-        const newErrors = { ...prev }
-        delete newErrors[field]
-        return newErrors
-      })
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
-  }
+  };
 
   const validate = () => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required'
+      newErrors.name = 'Name is required';
     } else if (formData.name.length < 3) {
-      newErrors.name = 'Name must be at least 3 characters'
+      newErrors.name = 'Name must be at least 3 characters';
     } else if (formData.name.length > 255) {
-      newErrors.name = 'Name must be less than 255 characters'
+      newErrors.name = 'Name must be less than 255 characters';
     }
 
     if (formData.description && formData.description.length > 10000) {
-      newErrors.description = 'Description must be less than 10,000 characters'
+      newErrors.description = 'Description must be less than 10,000 characters';
     }
 
     if (formData.startDate && formData.targetDate) {
-      const start = new Date(formData.startDate)
-      const target = new Date(formData.targetDate)
+      const start = new Date(formData.startDate);
+      const target = new Date(formData.targetDate);
       if (target < start) {
-        newErrors.targetDate = 'Target date must be after start date'
+        newErrors.targetDate = 'Target date must be after start date';
       }
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validate()) {
-      return
+      return;
     }
 
     try {
@@ -117,16 +117,16 @@ export function OperationModal({ open, onOpenChange, operation }: OperationModal
         startDate: formData.startDate || undefined,
         targetDate: formData.targetDate || undefined,
         missionId: formData.missionId || undefined,
-      }
+      };
 
       if (isEditing) {
-        await updateMutation.mutateAsync({ id: operation.id, data: payload })
+        await updateMutation.mutateAsync({ id: operation.id, data: payload });
       } else {
-        const newOperation = await createMutation.mutateAsync(payload)
-        router.push(`/operations/${newOperation.id}`)
+        const newOperation = await createMutation.mutateAsync(payload);
+        router.push(`/operations/${newOperation.id}`);
       }
 
-      onOpenChange(false)
+      onOpenChange(false);
       // Reset form if creating new
       if (!isEditing) {
         setFormData({
@@ -136,19 +136,19 @@ export function OperationModal({ open, onOpenChange, operation }: OperationModal
           startDate: '',
           targetDate: '',
           missionId: '',
-        })
+        });
       }
     } catch (error: any) {
       // Handle validation errors from API
       if (error.errors) {
-        setErrors(error.errors)
+        setErrors(error.errors);
       } else {
-        setErrors({ submit: error.message || 'Failed to save operation' })
+        setErrors({ submit: error.message || 'Failed to save operation' });
       }
     }
-  }
+  };
 
-  const isPending = createMutation.isPending || updateMutation.isPending
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -191,9 +191,7 @@ export function OperationModal({ open, onOpenChange, operation }: OperationModal
               disabled={isPending}
               className={errors.description ? 'border-destructive' : ''}
             />
-            {errors.description && (
-              <p className="text-sm text-destructive">{errors.description}</p>
-            )}
+            {errors.description && <p className="text-sm text-destructive">{errors.description}</p>}
           </div>
 
           {/* Mission (optional relationship) */}
@@ -292,5 +290,5 @@ export function OperationModal({ open, onOpenChange, operation }: OperationModal
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

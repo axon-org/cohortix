@@ -5,29 +5,33 @@ The main web application for Cohortix - Your AI crew, ready for action.
 ## Getting Started
 
 1. **Install dependencies:**
+
    ```bash
    pnpm install
    ```
 
 2. **Set up environment variables:**
+
    ```bash
    cp .env.example .env.local
    # Edit .env.local with your Supabase credentials
    ```
 
 3. **Run the development server:**
+
    ```bash
    pnpm dev
    ```
 
-4. **Open your browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+4. **Open your browser:** Navigate to
+   [http://localhost:3000](http://localhost:3000)
 
 ## Mission Control Dashboard
 
 The Mission Control dashboard (`/`) provides an overview of your ecosystem:
 
-- **KPI Cards:** Total Members, Active Rate, Retention, MRR with sparkline charts
+- **KPI Cards:** Total Members, Active Rate, Retention, MRR with sparkline
+  charts
 - **Engagement Velocity:** Interactive chart showing member activity over time
 - **Recent Activity:** Live feed of system events and user actions
 - **Urgent Alerts:** Critical notifications requiring attention
@@ -97,15 +101,19 @@ The application uses a Linear.app-inspired dark aesthetic:
 
 ## Authentication
 
-The dashboard is protected by Supabase authentication. Users must sign in to access the Mission Control page. Authentication state is managed via middleware and server-side checks.
+The dashboard is protected by Supabase authentication. Users must sign in to
+access the Mission Control page. Authentication state is managed via middleware
+and server-side checks.
 
 ## Real-time Updates
 
 Components can subscribe to real-time updates using Supabase Realtime:
+
 - Activity feed updates live
 - Alert notifications appear instantly
 - KPI metrics refresh automatically
 
 ## Contributing
 
-See the main [CLAUDE.md](../../CLAUDE.md) file for development conventions and guidelines.
+See the main [CLAUDE.md](../../CLAUDE.md) file for development conventions and
+guidelines.

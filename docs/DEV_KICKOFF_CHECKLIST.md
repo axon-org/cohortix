@@ -2,7 +2,7 @@
 
 **Project:** Cohortix  
 **Created:** 2026-02-10  
-**Status:** Pre-Development  
+**Status:** Pre-Development
 
 ---
 
@@ -171,32 +171,33 @@
 
 ## 🚨 Blockers & Dependencies
 
-| Item | Waiting On | ETA |
-|------|-----------|-----|
-| Supabase API keys | Ahmad | Immediate |
-| UI design tool selection | Devi | 30-45 min |
-| Design mockups | Lubna (after tool selection) | TBD |
-| Design approval | Ahmad | TBD |
-| Clerk account setup | Ahmad/Team | TBD |
-| Vercel access verification | Alim (email verification) | Immediate |
+| Item                       | Waiting On                   | ETA       |
+| -------------------------- | ---------------------------- | --------- |
+| Supabase API keys          | Ahmad                        | Immediate |
+| UI design tool selection   | Devi                         | 30-45 min |
+| Design mockups             | Lubna (after tool selection) | TBD       |
+| Design approval            | Ahmad                        | TBD       |
+| Clerk account setup        | Ahmad/Team                   | TBD       |
+| Vercel access verification | Alim (email verification)    | Immediate |
 
 ---
 
 ## 📅 Timeline Estimate
 
-| Phase | Duration | Dependencies |
-|-------|----------|--------------|
-| **Phase 0:** Pre-Dev Setup | 1-2 days | Credentials, design approval |
-| **Phase 1:** Database Migration | 4-6 hours | Phase 0 complete |
-| **Phase 2:** Dev Environment | 2-4 hours | Phase 1 complete |
-| **Phase 3:** Team Setup | Ongoing | - |
-| **Phase 4:** Monitoring | 2-3 hours | Can be parallel |
+| Phase                           | Duration  | Dependencies                 |
+| ------------------------------- | --------- | ---------------------------- |
+| **Phase 0:** Pre-Dev Setup      | 1-2 days  | Credentials, design approval |
+| **Phase 1:** Database Migration | 4-6 hours | Phase 0 complete             |
+| **Phase 2:** Dev Environment    | 2-4 hours | Phase 1 complete             |
+| **Phase 3:** Team Setup         | Ongoing   | -                            |
+| **Phase 4:** Monitoring         | 2-3 hours | Can be parallel              |
 
 **Total to "Ready to Build":** ~2-3 days
 
 ---
 
 **Next Actions:**
+
 1. ⏳ Await Supabase API keys from Ahmad
 2. ⏳ Await Devi's UI tool recommendations
 3. ⏳ Await design mockups and approval

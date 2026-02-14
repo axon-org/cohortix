@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
 import {
   LineChart,
   Line,
@@ -9,13 +9,13 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from 'recharts'
-import { format, parseISO } from 'date-fns'
-import type { CohortTimelineData } from '@/lib/api/client'
+} from 'recharts';
+import { format, parseISO } from 'date-fns';
+import type { CohortTimelineData } from '@/lib/api/client';
 
 interface EngagementTimelineProps {
-  data: CohortTimelineData[]
-  days?: number
+  data: CohortTimelineData[];
+  days?: number;
 }
 
 export function EngagementTimeline({ data, days = 30 }: EngagementTimelineProps) {
@@ -23,7 +23,7 @@ export function EngagementTimeline({ data, days = 30 }: EngagementTimelineProps)
     date: item.date,
     displayDate: format(parseISO(item.date), 'MMM d'),
     interactions: item.interaction_count,
-  }))
+  }));
 
   return (
     <div className="bg-card border border-border rounded-lg p-6 space-y-4">
@@ -38,9 +38,7 @@ export function EngagementTimeline({ data, days = 30 }: EngagementTimelineProps)
           <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             7D
           </button>
-          <button className="text-sm font-medium text-foreground">
-            30D
-          </button>
+          <button className="text-sm font-medium text-foreground">30D</button>
           <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             90D
           </button>
@@ -49,11 +47,7 @@ export function EngagementTimeline({ data, days = 30 }: EngagementTimelineProps)
 
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={chartData}>
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#27282D"
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke="#27282D" vertical={false} />
           <XAxis
             dataKey="displayDate"
             stroke="#6E7079"
@@ -61,12 +55,7 @@ export function EngagementTimeline({ data, days = 30 }: EngagementTimelineProps)
             tickLine={false}
             axisLine={false}
           />
-          <YAxis
-            stroke="#6E7079"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
+          <YAxis stroke="#6E7079" fontSize={12} tickLine={false} axisLine={false} />
           <Tooltip
             contentStyle={{
               backgroundColor: '#141416',
@@ -106,5 +95,5 @@ export function EngagementTimeline({ data, days = 30 }: EngagementTimelineProps)
         </LineChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

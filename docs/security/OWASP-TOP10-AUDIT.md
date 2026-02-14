@@ -9,11 +9,14 @@
 
 ## Executive Summary
 
-This security audit reviews the Cohortix platform against the OWASP Top 10 (2021) vulnerability classes. The assessment covers authentication, authorization, data access patterns, input validation, and configuration.
+This security audit reviews the Cohortix platform against the OWASP Top 10
+(2021) vulnerability classes. The assessment covers authentication,
+authorization, data access patterns, input validation, and configuration.
 
 **Overall Security Posture:** 🟢 **Strong**
 
 **Key Strengths:**
+
 - ✅ Supabase RLS provides robust multi-tenant isolation (A01)
 - ✅ Authentication handled by Supabase Auth with JWT tokens (A07)
 - ✅ Database queries use parameterized statements (A03 prevention)
@@ -21,15 +24,18 @@ This security audit reviews the Cohortix platform against the OWASP Top 10 (2021
 - ✅ Secret scanning in CI/CD pipeline (A08)
 
 **Areas for Improvement:**
+
 - ⚠️ Input validation could be more explicit at API boundary (A03)
 - ⚠️ Error messages may leak internal details (A05)
 - ⚠️ Logging strategy needs structured audit trail (A09)
 - ⚠️ Rate limiting not yet implemented (A04, DoS risk)
 
 **Recommendations:**
+
 1. Add explicit input validation schemas (Zod) at all API routes
 2. Implement centralized error handling with sanitized user-facing messages
-3. Deploy structured logging with correlation IDs (see OBSERVABILITY-BASELINE.md)
+3. Deploy structured logging with correlation IDs (see
+   OBSERVABILITY-BASELINE.md)
 4. Add rate limiting using Upstash or Vercel's built-in limits
 5. Conduct penetration testing before production launch
 
@@ -44,13 +50,16 @@ This security audit reviews the Cohortix platform against the OWASP Top 10 (2021
 
 **Assessment:**
 
-The platform uses **Supabase Row-Level Security (RLS)** for database-level access control, which is the gold standard for multi-tenant SaaS applications.
+The platform uses **Supabase Row-Level Security (RLS)** for database-level
+access control, which is the gold standard for multi-tenant SaaS applications.
 
 **Strengths:**
+
 1. **Database-Enforced Isolation:**
    - RLS policies automatically filter queries by `organization_id`
    - Authorization happens at database level (not application layer)
-   - Queries from `src/server/db/queries/dashboard.ts` correctly use `auth.uid()` via Supabase client
+   - Queries from `src/server/db/queries/dashboard.ts` correctly use
+     `auth.uid()` via Supabase client
 
 2. **Automatic Context Propagation:**
    - JWT token passed automatically from client to server
@@ -58,15 +67,18 @@ The platform uses **Supabase Row-Level Security (RLS)** for database-level acces
    - No manual "set current_user" required (reduces attack surface)
 
 3. **RBAC Implementation:**
-   - Organization membership table tracks user roles (owner, admin, member, viewer)
-   - Permission checks can be added at application layer for fine-grained control
+   - Organization membership table tracks user roles (owner, admin, member,
+     viewer)
+   - Permission checks can be added at application layer for fine-grained
+     control
 
 **Code Review:**
+
 ```typescript
 // src/server/db/queries/dashboard.ts (Line 60)
 export async function getDashboardKPIs(organizationId: string) {
   const supabase = await createClient();
-  
+
   // ✅ SECURE: RLS automatically filters by auth.uid()
   const { count: activeMissions } = await supabase
     .from('projects')
@@ -76,33 +88,41 @@ export async function getDashboardKPIs(organizationId: string) {
 ```
 
 **Potential Vulnerabilities:**
-- ⚠️ **Application-Layer Checks Missing:** While RLS is active, there's no explicit authorization check at the API route level. If a user guesses another org's `organizationId`, RLS will block it, but the request still hits the database.
+
+- ⚠️ **Application-Layer Checks Missing:** While RLS is active, there's no
+  explicit authorization check at the API route level. If a user guesses another
+  org's `organizationId`, RLS will block it, but the request still hits the
+  database.
 
 **Recommendations:**
+
 1. **Add Explicit Authorization Middleware:**
+
    ```typescript
    // lib/auth/authorize.ts
    export async function requireOrgAccess(orgId: string) {
      const user = await getCurrentUser();
      const membership = await getUserOrganization(user.id);
-     
+
      if (membership.organization_id !== orgId) {
        throw new ForbiddenError('Access denied');
      }
-     
+
      return membership;
    }
    ```
 
 2. **Test RLS Policies:**
    - Create test cases that attempt cross-org access
-   - Verify RLS blocks unauthorized queries (see test-plans/cohort-crud-test-plan.md §6.2)
+   - Verify RLS blocks unauthorized queries (see
+     test-plans/cohort-crud-test-plan.md §6.2)
 
 3. **Audit RLS Policies Weekly:**
    - Review Supabase RLS policies for all tables
    - Ensure no tables have accidentally disabled RLS
 
 **Evidence:**
+
 - ✅ RLS enabled on all tenant tables (verified via `docs/SECURITY.md`)
 - ✅ All queries use authenticated Supabase client
 
@@ -117,9 +137,11 @@ export async function getDashboardKPIs(organizationId: string) {
 
 **Assessment:**
 
-Cryptographic operations are handled by trusted providers (Supabase, Vercel), reducing custom implementation risks.
+Cryptographic operations are handled by trusted providers (Supabase, Vercel),
+reducing custom implementation risks.
 
 **Strengths:**
+
 1. **Encryption at Rest:**
    - Database: Supabase PostgreSQL (AES-256, provider-managed keys)
    - File storage: Vercel Blob/Supabase Storage (AES-256)
@@ -131,13 +153,15 @@ Cryptographic operations are handled by trusted providers (Supabase, Vercel), re
 
 3. **Secrets Management:**
    - Environment variables for API keys (`.env.local`)
-   - TruffleHog secret scanning in CI/CD (verified in `.github/workflows/ci.yml`)
+   - TruffleHog secret scanning in CI/CD (verified in
+     `.github/workflows/ci.yml`)
 
 4. **Password Hashing:**
    - Supabase Auth uses bcrypt (industry standard)
    - No custom password storage
 
 **Code Review:**
+
 ```typescript
 // middleware.ts (implicitly uses HTTPS via Vercel)
 // No hardcoded secrets found in codebase
@@ -149,10 +173,14 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # Server-side only
 ```
 
 **Potential Vulnerabilities:**
-- ⚠️ **Sensitive Data in Logs:** If logs capture entire request bodies, PII or tokens could leak.
+
+- ⚠️ **Sensitive Data in Logs:** If logs capture entire request bodies, PII or
+  tokens could leak.
 
 **Recommendations:**
+
 1. **Redact Sensitive Fields in Logging:**
+
    ```typescript
    // lib/logger.ts (from OBSERVABILITY-BASELINE.md)
    redact: {
@@ -162,9 +190,13 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # Server-side only
    ```
 
 2. **Implement HSTS Headers:**
+
    ```typescript
    // middleware.ts
-   response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+   response.headers.set(
+     'Strict-Transport-Security',
+     'max-age=31536000; includeSubDomains; preload'
+   );
    ```
 
 3. **Regular Secret Rotation:**
@@ -172,6 +204,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # Server-side only
    - Document rotation procedure
 
 **Evidence:**
+
 - ✅ TruffleHog scanning active in CI/CD
 - ✅ No secrets found in commit history
 
@@ -186,11 +219,14 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # Server-side only
 
 **Assessment:**
 
-The platform uses Supabase's query builder, which provides automatic parameterization. However, explicit input validation is minimal.
+The platform uses Supabase's query builder, which provides automatic
+parameterization. However, explicit input validation is minimal.
 
 **Strengths:**
+
 1. **SQL Injection Prevention:**
-   - All database queries use Supabase's query builder (`.eq()`, `.select()`, etc.)
+   - All database queries use Supabase's query builder (`.eq()`, `.select()`,
+     etc.)
    - No raw SQL strings found in codebase
    - Supabase uses parameterized queries internally
 
@@ -199,27 +235,32 @@ The platform uses Supabase's query builder, which provides automatic parameteriz
    - No `dangerouslySetInnerHTML` found in components
 
 **Code Review:**
+
 ```typescript
 // src/server/db/queries/dashboard.ts (Line 42)
 // ✅ SECURE: Parameterized query via Supabase query builder
 const { data: membership } = await supabase
   .from('organization_memberships')
   .select('*')
-  .eq('user_id', userId)  // ✅ Parameterized (no string concatenation)
+  .eq('user_id', userId) // ✅ Parameterized (no string concatenation)
   .single();
 ```
 
 **Potential Vulnerabilities:**
-- ⚠️ **No Input Validation Schema:** API routes do not validate input types before passing to database
-- ⚠️ **Prototype Pollution Risk:** If user input is spread directly into objects without validation
+
+- ⚠️ **No Input Validation Schema:** API routes do not validate input types
+  before passing to database
+- ⚠️ **Prototype Pollution Risk:** If user input is spread directly into objects
+  without validation
 
 **Example of Missing Validation:**
+
 ```typescript
 // Hypothetical API route (not found, but pattern to avoid)
 // ❌ VULNERABLE: No validation
 export async function POST(request: Request) {
   const body = await request.json();
-  
+
   // If body contains { __proto__: { isAdmin: true } }, prototype pollution risk
   await supabase.from('cohorts').insert({ ...body });
 }
@@ -228,34 +269,39 @@ export async function POST(request: Request) {
 **Recommendations:**
 
 1. **Add Zod Schemas for All API Inputs:**
+
    ```typescript
    // lib/validation/cohort.ts
    import { z } from 'zod';
-   
+
    export const createCohortSchema = z.object({
      name: z.string().min(1).max(100),
      description: z.string().max(1000).optional(),
      // ✅ Explicitly define allowed fields (prevents prototype pollution)
    });
-   
+
    // In API route:
    export async function POST(request: Request) {
      const body = await request.json();
-     const validated = createCohortSchema.parse(body);  // Throws on invalid input
-     
+     const validated = createCohortSchema.parse(body); // Throws on invalid input
+
      await supabase.from('cohorts').insert(validated);
    }
    ```
 
 2. **Implement Content Security Policy (CSP):**
+
    ```typescript
    // middleware.ts
-   response.headers.set('Content-Security-Policy', [
-     "default-src 'self'",
-     "script-src 'self' 'unsafe-inline' 'unsafe-eval'",  // ⚠️ Tighten after testing
-     "style-src 'self' 'unsafe-inline'",
-     "img-src 'self' data: https:",
-   ].join('; '));
+   response.headers.set(
+     'Content-Security-Policy',
+     [
+       "default-src 'self'",
+       "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // ⚠️ Tighten after testing
+       "style-src 'self' 'unsafe-inline'",
+       "img-src 'self' data: https:",
+     ].join('; ')
+   );
    ```
 
 3. **Test XSS Vectors:**
@@ -264,6 +310,7 @@ export async function POST(request: Request) {
    - Verify React escapes output correctly
 
 **Evidence:**
+
 - ✅ No raw SQL found in codebase
 - ⚠️ No Zod validation schemas found in API routes
 
@@ -278,31 +325,39 @@ export async function POST(request: Request) {
 
 **Assessment:**
 
-The platform follows secure-by-default patterns (RLS, Auth), but lacks threat modeling and rate limiting.
+The platform follows secure-by-default patterns (RLS, Auth), but lacks threat
+modeling and rate limiting.
 
 **Strengths:**
-1. **Spec-Driven Development:** Features have specifications before implementation (reduces design flaws)
+
+1. **Spec-Driven Development:** Features have specifications before
+   implementation (reduces design flaws)
 2. **Defense in Depth:** RLS + Application-layer checks + Authentication
-3. **Principle of Least Privilege:** Users assigned roles (viewer, member, admin, owner)
+3. **Principle of Least Privilege:** Users assigned roles (viewer, member,
+   admin, owner)
 
 **Potential Vulnerabilities:**
-- ⚠️ **No Rate Limiting:** API endpoints can be abused for DoS or brute-force attacks
+
+- ⚠️ **No Rate Limiting:** API endpoints can be abused for DoS or brute-force
+  attacks
 - ⚠️ **No Threat Modeling:** No documented threat model for agent system
-- ⚠️ **Unlimited API Calls:** No throttling on expensive operations (e.g., bulk exports)
+- ⚠️ **Unlimited API Calls:** No throttling on expensive operations (e.g., bulk
+  exports)
 
 **Recommendations:**
 
 1. **Implement Rate Limiting:**
+
    ```typescript
    // lib/rate-limit.ts (from OBSERVABILITY-BASELINE.md)
    import { Ratelimit } from '@upstash/ratelimit';
    import { Redis } from '@upstash/redis';
-   
+
    export const apiLimiter = new Ratelimit({
      redis: Redis.fromEnv(),
-     limiter: Ratelimit.slidingWindow(60, '1 m'),  // 60 requests/minute
+     limiter: Ratelimit.slidingWindow(60, '1 m'), // 60 requests/minute
    });
-   
+
    // In API route:
    const { success } = await apiLimiter.limit(userIp);
    if (!success) throw new RateLimitError();
@@ -319,6 +374,7 @@ The platform follows secure-by-default patterns (RLS, Auth), but lacks threat mo
    - Track usage via metrics (see OBSERVABILITY-BASELINE.md)
 
 **Evidence:**
+
 - ✅ Spec-driven development in use (see `docs/specs/`)
 - ⚠️ No rate limiting found in middleware
 
@@ -336,9 +392,9 @@ The platform follows secure-by-default patterns (RLS, Auth), but lacks threat mo
 Security headers and environment configuration follow best practices.
 
 **Strengths:**
+
 1. **Security Headers Present:**
    - Verified in `middleware.ts` (needs enhancement, see A02)
-   
 2. **Environment Separation:**
    - Development, staging, production use separate Supabase projects
    - No production credentials in development
@@ -348,12 +404,16 @@ Security headers and environment configuration follow best practices.
    - No unnecessary services exposed
 
 **Potential Vulnerabilities:**
-- ⚠️ **Error Messages May Leak Info:** Stack traces could expose file paths in development mode
-- ⚠️ **Debug Mode in Production:** If `NODE_ENV=production` not set, debug info leaks
+
+- ⚠️ **Error Messages May Leak Info:** Stack traces could expose file paths in
+  development mode
+- ⚠️ **Debug Mode in Production:** If `NODE_ENV=production` not set, debug info
+  leaks
 
 **Recommendations:**
 
 1. **Sanitize Error Messages:**
+
    ```typescript
    // lib/errors/handler.ts
    export function toUserError(error: Error): UserFacingError {
@@ -365,6 +425,7 @@ Security headers and environment configuration follow best practices.
    ```
 
 2. **Enhance Security Headers:**
+
    ```typescript
    // middleware.ts (from SECURITY.md)
    const securityHeaders = {
@@ -381,6 +442,7 @@ Security headers and environment configuration follow best practices.
    - Auto-merge low-risk Dependabot PRs
 
 **Evidence:**
+
 - ✅ Security headers partially configured
 - ⚠️ Error handling not centralized
 
@@ -398,6 +460,7 @@ Security headers and environment configuration follow best practices.
 Dependency scanning is active via CI/CD pipeline.
 
 **Strengths:**
+
 1. **Automated Scanning:**
    - `pnpm audit` runs on every PR (`.github/workflows/ci.yml`)
    - Semgrep SAST scans dependencies
@@ -409,6 +472,7 @@ Dependency scanning is active via CI/CD pipeline.
    - Supabase SDK (regularly updated)
 
 **Recommendations:**
+
 1. **Add Snyk for Enhanced Scanning:**
    - Implement Snyk as documented in `CI-CD-SECURITY-GATES.md`
    - Track vulnerability remediation time (target: <7 days for high/critical)
@@ -418,14 +482,15 @@ Dependency scanning is active via CI/CD pipeline.
    # .github/dependabot.yml
    version: 2
    updates:
-     - package-ecosystem: "npm"
-       directory: "/"
+     - package-ecosystem: 'npm'
+       directory: '/'
        schedule:
-         interval: "weekly"
+         interval: 'weekly'
        open-pull-requests-limit: 5
    ```
 
 **Evidence:**
+
 - ✅ `pnpm audit` active in CI/CD
 - ✅ No known high/critical vulnerabilities (as of 2026-02-11)
 
@@ -443,6 +508,7 @@ Dependency scanning is active via CI/CD pipeline.
 Authentication is handled by Supabase Auth, a battle-tested provider.
 
 **Strengths:**
+
 1. **Strong Authentication:**
    - JWT tokens with 7-day expiration
    - Refresh token rotation
@@ -457,10 +523,11 @@ Authentication is handled by Supabase Auth, a battle-tested provider.
    - No custom session implementation (reduces risk)
 
 **Code Review:**
+
 ```typescript
 // middleware.ts (Line 5)
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);  // ✅ Refreshes session automatically
+  return await updateSession(request); // ✅ Refreshes session automatically
 }
 
 // lib/supabase/middleware.ts (implicit)
@@ -469,18 +536,22 @@ export async function middleware(request: NextRequest) {
 ```
 
 **Potential Vulnerabilities:**
-- ⚠️ **No Rate Limiting on Auth Endpoints:** Brute-force attacks possible (see A04)
+
+- ⚠️ **No Rate Limiting on Auth Endpoints:** Brute-force attacks possible (see
+  A04)
 
 **Recommendations:**
+
 1. **Enable MFA for Admins:**
    - Enforce MFA for `admin` and `owner` roles via RLS policy
 
 2. **Add Auth Rate Limiting:**
+
    ```typescript
    // lib/rate-limit.ts
    export const authLimiter = new Ratelimit({
      redis: Redis.fromEnv(),
-     limiter: Ratelimit.slidingWindow(5, '1 m'),  // 5 attempts/minute
+     limiter: Ratelimit.slidingWindow(5, '1 m'), // 5 attempts/minute
    });
    ```
 
@@ -489,6 +560,7 @@ export async function middleware(request: NextRequest) {
    - Notify user via email
 
 **Evidence:**
+
 - ✅ Supabase Auth configured correctly
 - ✅ JWT verification automatic
 
@@ -506,6 +578,7 @@ export async function middleware(request: NextRequest) {
 Supply chain security is strong with automated scanning.
 
 **Strengths:**
+
 1. **Secret Scanning:**
    - TruffleHog runs on every commit
    - Verified secrets disabled in production
@@ -518,6 +591,7 @@ Supply chain security is strong with automated scanning.
    - All PRs require approval before merge (assumed from Codex standards)
 
 **Recommendations:**
+
 1. **Add SLSA Provenance:**
    - Implement build attestation as documented in `CI-CD-SECURITY-GATES.md` (§3)
 
@@ -528,6 +602,7 @@ Supply chain security is strong with automated scanning.
    ```
 
 **Evidence:**
+
 - ✅ TruffleHog active in CI/CD
 - ✅ Lock file commits enforced
 
@@ -545,6 +620,7 @@ Supply chain security is strong with automated scanning.
 Logging infrastructure is planned but not yet implemented.
 
 **Current State:**
+
 - ⚠️ No structured logging (logs go to stdout)
 - ⚠️ No correlation IDs for request tracing
 - ⚠️ No audit trail for sensitive actions
@@ -560,6 +636,7 @@ Logging infrastructure is planned but not yet implemented.
    - Redact sensitive fields automatically
 
 2. **Create Audit Log Table:**
+
    ```sql
    CREATE TABLE audit_logs (
      id UUID PRIMARY KEY,
@@ -584,6 +661,7 @@ Logging infrastructure is planned but not yet implemented.
    - Permission changes
 
 **Evidence:**
+
 - ⚠️ Observability baseline documented but not implemented
 
 **Verdict:** 🟡 **NEEDS ATTENTION** (High priority for Week 3)
@@ -597,21 +675,26 @@ Logging infrastructure is planned but not yet implemented.
 
 **Assessment:**
 
-The platform does not currently make server-side HTTP requests to user-provided URLs, eliminating SSRF risk.
+The platform does not currently make server-side HTTP requests to user-provided
+URLs, eliminating SSRF risk.
 
 **Current State:**
+
 - ✅ No user-controlled URL fetching
 - ✅ External API calls only to trusted providers (Supabase, Vercel)
 
 **Future Considerations:**
+
 - If webhook functionality is added, implement URL allowlisting
 - If file upload with URL is added, validate and sanitize URLs
 
 **Recommendations:**
+
 1. **If Webhooks Are Added:**
+
    ```typescript
    const ALLOWED_DOMAINS = ['api.example.com', 'webhook.safe-provider.com'];
-   
+
    function isAllowedUrl(url: string): boolean {
      const { hostname } = new URL(url);
      return ALLOWED_DOMAINS.includes(hostname);
@@ -622,6 +705,7 @@ The platform does not currently make server-side HTTP requests to user-provided 
    - Prevent SSRF to internal networks (10.0.0.0/8, 192.168.0.0/16, 127.0.0.1)
 
 **Evidence:**
+
 - ✅ No server-side HTTP request code found
 
 **Verdict:** 🟢 **SECURE** (not applicable currently)
@@ -630,18 +714,18 @@ The platform does not currently make server-side HTTP requests to user-provided 
 
 ## Summary of Findings
 
-| OWASP Category | Risk | Status | Priority |
-|----------------|------|--------|----------|
-| **A01: Broken Access Control** | Critical | 🟢 Secure | P3 (Minor enhancements) |
-| **A02: Cryptographic Failures** | Critical | 🟢 Secure | P4 (Monitoring) |
-| **A03: Injection** | Critical | 🟡 Needs Attention | **P1 (Add input validation)** |
-| **A04: Insecure Design** | Medium | 🟡 Needs Attention | **P1 (Add rate limiting)** |
-| **A05: Security Misconfiguration** | Medium | 🟢 Mostly Secure | P3 (Enhance headers) |
-| **A06: Vulnerable Components** | Medium | 🟢 Secure | P3 (Add Snyk) |
-| **A07: Authentication Failures** | Critical | 🟢 Secure | P3 (Add auth rate limiting) |
-| **A08: Integrity Failures** | Medium | 🟢 Secure | P4 (Monitoring) |
-| **A09: Logging Failures** | Medium | 🟡 Needs Attention | **P2 (Implement logging)** |
-| **A10: SSRF** | Medium | 🟢 Secure (N/A) | P4 (Monitor) |
+| OWASP Category                     | Risk     | Status             | Priority                      |
+| ---------------------------------- | -------- | ------------------ | ----------------------------- |
+| **A01: Broken Access Control**     | Critical | 🟢 Secure          | P3 (Minor enhancements)       |
+| **A02: Cryptographic Failures**    | Critical | 🟢 Secure          | P4 (Monitoring)               |
+| **A03: Injection**                 | Critical | 🟡 Needs Attention | **P1 (Add input validation)** |
+| **A04: Insecure Design**           | Medium   | 🟡 Needs Attention | **P1 (Add rate limiting)**    |
+| **A05: Security Misconfiguration** | Medium   | 🟢 Mostly Secure   | P3 (Enhance headers)          |
+| **A06: Vulnerable Components**     | Medium   | 🟢 Secure          | P3 (Add Snyk)                 |
+| **A07: Authentication Failures**   | Critical | 🟢 Secure          | P3 (Add auth rate limiting)   |
+| **A08: Integrity Failures**        | Medium   | 🟢 Secure          | P4 (Monitoring)               |
+| **A09: Logging Failures**          | Medium   | 🟡 Needs Attention | **P2 (Implement logging)**    |
+| **A10: SSRF**                      | Medium   | 🟢 Secure (N/A)    | P4 (Monitor)                  |
 
 ---
 
@@ -650,11 +734,13 @@ The platform does not currently make server-side HTTP requests to user-provided 
 ### Week 2 (Current Sprint) — Critical Issues
 
 **P1: Add Input Validation Schemas (A03)**
+
 - [ ] Create Zod schemas for all API endpoints
 - [ ] Implement validation middleware
 - [ ] Test with malicious inputs
 
 **P1: Implement Rate Limiting (A04)**
+
 - [ ] Set up Upstash Redis (or use Vercel's built-in rate limiting)
 - [ ] Add rate limiting middleware to API routes
 - [ ] Configure limits: 60 req/min for API, 5 req/min for auth
@@ -664,12 +750,14 @@ The platform does not currently make server-side HTTP requests to user-provided 
 ### Week 3 — Important Issues
 
 **P2: Implement Structured Logging (A09)**
+
 - [ ] Deploy Pino logger with correlation IDs
 - [ ] Create audit log table
 - [ ] Add security event logging
 - [ ] Set up log aggregation (Vercel Logs or Better Stack)
 
 **P3: Security Enhancements**
+
 - [ ] Add Snyk to CI/CD (A06)
 - [ ] Enhance security headers (A02, A05)
 - [ ] Implement centralized error handling (A05)
@@ -680,6 +768,7 @@ The platform does not currently make server-side HTTP requests to user-provided 
 ### Month 2 — Monitoring & Testing
 
 **P4: Security Monitoring**
+
 - [ ] Set up security dashboard
 - [ ] Configure alerts for suspicious activity
 - [ ] Quarterly penetration testing
@@ -693,9 +782,10 @@ The platform does not currently make server-side HTTP requests to user-provided 
 - **Axon Codex v1.2 §2.5:** Security Standards
 - **CI-CD-SECURITY-GATES.md:** Enhanced security scanning
 - **OBSERVABILITY-BASELINE.md:** Logging and monitoring standards
-- **Supabase Security:** https://supabase.com/docs/guides/auth/row-level-security
+- **Supabase Security:**
+  https://supabase.com/docs/guides/auth/row-level-security
 
 ---
 
-*Audit conducted by: Guardian (Hafiz)*  
-*Next audit: 2026-03-11 (Monthly security review)*
+_Audit conducted by: Guardian (Hafiz)_  
+_Next audit: 2026-03-11 (Monthly security review)_

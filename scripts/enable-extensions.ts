@@ -32,18 +32,15 @@ async function enableExtensions() {
 
   for (const ext of extensions) {
     console.log(`Enabling ${ext.name} (${ext.description})...`);
-    
+
     const { error } = await supabase.rpc('exec_sql', {
       sql: `CREATE EXTENSION IF NOT EXISTS "${ext.name}";`,
     });
 
     if (error) {
       // If rpc doesn't exist, try direct SQL
-      const { error: directError } = await supabase
-        .from('_metadata')
-        .select('*')
-        .limit(1);
-      
+      const { error: directError } = await supabase.from('_metadata').select('*').limit(1);
+
       if (directError) {
         console.log(`⚠️  Cannot use RPC, trying alternative method...`);
         // Extensions might already be enabled or need manual setup
@@ -58,7 +55,7 @@ async function enableExtensions() {
   console.log('\n✨ Extension setup complete!');
   console.log('\nIf you see errors above, manually run these in Supabase SQL Editor:');
   console.log('---');
-  extensions.forEach(ext => {
+  extensions.forEach((ext) => {
     console.log(`CREATE EXTENSION IF NOT EXISTS "${ext.name}";`);
   });
   console.log('---\n');

@@ -12,14 +12,18 @@
 
 **What is the problem or situation that requires a decision?**
 
-[Describe the architectural challenge, technical debt, or requirement that necessitates a decision. Provide enough context for someone reading this 6 months from now to understand why this decision was made.]
+[Describe the architectural challenge, technical debt, or requirement that
+necessitates a decision. Provide enough context for someone reading this 6
+months from now to understand why this decision was made.]
 
 **Constraints:**
+
 - [Constraint 1: e.g., Must support 10,000 concurrent users]
 - [Constraint 2: e.g., Budget limited to $X/month for infrastructure]
 - [Constraint 3: e.g., Must integrate with existing authentication system]
 
 **Assumptions:**
+
 - [Assumption 1: e.g., User traffic will grow 2x per year]
 - [Assumption 2: e.g., Team has expertise in Technology X]
 
@@ -47,10 +51,12 @@
 ### Option 1: [Option Name]
 
 **Pros:**
+
 - [Pro 1]
 - [Pro 2]
 
 **Cons:**
+
 - [Con 1]
 - [Con 2]
 
@@ -62,10 +68,12 @@
 ### Option 2: [Option Name] ✅ **SELECTED**
 
 **Pros:**
+
 - [Pro 1]
 - [Pro 2]
 
 **Cons:**
+
 - [Con 1]
 - [Con 2]
 
@@ -77,9 +85,11 @@
 ### Option 3: [Option Name]
 
 **Pros:**
+
 - [Pro 1]
 
 **Cons:**
+
 - [Con 1]
 - [Con 2]
 
@@ -145,11 +155,13 @@
 ## References
 
 **Supporting Documents:**
+
 - [Link to research doc, benchmark results, or external articles]
 - [Link to related specs or RFCs]
 - [Link to vendor documentation or best practices]
 
 **Related Work:**
+
 - [ADR-XXX: Related architectural decision]
 - [Spec FEAT-XXX: Feature that depends on this decision]
 
@@ -157,18 +169,19 @@
 
 ## Status History
 
-| Date | Status | Notes |
-|------|--------|-------|
-| YYYY-MM-DD | Proposed | Initial draft by [Author] |
-| YYYY-MM-DD | Accepted | Approved by [Reviewer] |
-| YYYY-MM-DD | Deprecated | Superseded by ADR-XXX |
+| Date       | Status     | Notes                     |
+| ---------- | ---------- | ------------------------- |
+| YYYY-MM-DD | Proposed   | Initial draft by [Author] |
+| YYYY-MM-DD | Accepted   | Approved by [Reviewer]    |
+| YYYY-MM-DD | Deprecated | Superseded by ADR-XXX     |
 
 ---
 
 ## Notes
 
-[Any additional context, discussions, or future considerations that don't fit above.]
+[Any additional context, discussions, or future considerations that don't fit
+above.]
 
 ---
 
-*This template follows the Axon Codex v1.2 ADR Standards (§5.1.3).*
+_This template follows the Axon Codex v1.2 ADR Standards (§5.1.3)._

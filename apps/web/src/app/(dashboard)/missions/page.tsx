@@ -1,6 +1,6 @@
-import { MissionsTableClient } from '@/components/missions/missions-table-client'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { MissionsTableClient } from '@/components/missions/missions-table-client';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 export default function MissionsPage() {
   return (
@@ -19,5 +19,5 @@ export default function MissionsPage() {
       </div>
       <MissionsTableClient />
     </div>
-  )
+  );
 }

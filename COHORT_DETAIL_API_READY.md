@@ -8,7 +8,10 @@
 
 ## Overview
 
-The API layer for the **Cohort Detail Screen** is now complete. All necessary endpoints, queries, and database schema are in place to support the Linear-inspired detail view shown in `/mockups/v3/03-cohort-detail-linear-dark.png`.
+The API layer for the **Cohort Detail Screen** is now complete. All necessary
+endpoints, queries, and database schema are in place to support the
+Linear-inspired detail view shown in
+`/mockups/v3/03-cohort-detail-linear-dark.png`.
 
 ---
 
@@ -19,6 +22,7 @@ The API layer for the **Cohort Detail Screen** is now complete. All necessary en
 Links agents (allies) to cohorts with engagement tracking.
 
 **Columns:**
+
 - `id` (UUID) - Primary key
 - `cohort_id` (UUID) - References `cohorts.id`
 - `agent_id` (UUID) - References `agents.id`
@@ -29,6 +33,7 @@ Links agents (allies) to cohorts with engagement tracking.
 **Unique Constraint:** `(cohort_id, agent_id)` - Prevents duplicate memberships
 
 **Auto-triggers:**
+
 - Updates `cohorts.member_count` on insert/delete
 - Updates `cohorts.engagement_percent` on engagement_score changes
 
@@ -38,9 +43,11 @@ Links agents (allies) to cohorts with engagement tracking.
 
 ### 1. GET `/api/cohorts/:id/members`
 
-**Purpose:** Fetch all members (allies) in a cohort with engagement scores and statuses.
+**Purpose:** Fetch all members (allies) in a cohort with engagement scores and
+statuses.
 
 **Response:**
+
 ```json
 {
   "members": [
@@ -71,9 +78,11 @@ Links agents (allies) to cohorts with engagement tracking.
 **Purpose:** Get daily engagement timeline data for the graph.
 
 **Query Parameters:**
+
 - `days` (optional, default: 30) - Number of days to fetch (max: 365)
 
 **Response:**
+
 ```json
 {
   "timeline": [
@@ -103,9 +112,11 @@ Links agents (allies) to cohorts with engagement tracking.
 **Purpose:** Get recent activity log entries for the cohort.
 
 **Query Parameters:**
+
 - `limit` (optional, default: 20, max: 100) - Number of activities to return
 
 **Response:**
+
 ```json
 {
   "activities": [
@@ -153,7 +164,8 @@ Links agents (allies) to cohorts with engagement tracking.
 }
 ```
 
-**Used for:** Cohort header (name, date range, status badge, "Invite AI Ally" button)
+**Used for:** Cohort header (name, date range, status badge, "Invite AI Ally"
+button)
 
 ---
 
@@ -162,6 +174,7 @@ Links agents (allies) to cohorts with engagement tracking.
 **File:** `/migrations/0003_cohort_members_table.sql`
 
 **To apply:**
+
 ```bash
 # Run in Supabase SQL Editor
 # https://supabase.com/dashboard/project/rfwscvklcokzuofyzqwx/sql/new
@@ -169,6 +182,7 @@ Links agents (allies) to cohorts with engagement tracking.
 ```
 
 **What it does:**
+
 1. Creates `cohort_members` table with RLS policies
 2. Creates `get_cohort_engagement_timeline()` database function
 3. Adds auto-update triggers for `member_count` and `engagement_percent`
@@ -227,13 +241,13 @@ export default function CohortDetailPage({ params }: { params: { id: string } })
     <div className="cohort-detail">
       {/* Header */}
       <CohortHeader cohort={cohort} />
-      
+
       {/* Engagement Timeline Graph */}
       <EngagementTimeline data={timeline} />
-      
+
       {/* Activity Log */}
       <ActivityLog activities={activities} />
-      
+
       {/* Batch Members List */}
       <MembersList members={members} />
     </div>
@@ -243,14 +257,14 @@ export default function CohortDetailPage({ params }: { params: { id: string } })
 
 ### Component Mapping to API Data
 
-| UI Component | API Endpoint | Data Field |
-|-------------|--------------|------------|
-| **Cohort Header** | `GET /api/cohorts/:id` | `name`, `status`, `start_date`, `end_date` |
-| **"Invite AI Ally" Button** | Manual action (opens modal) | - |
-| **Engagement Timeline** | `GET /api/cohorts/:id/timeline` | `timeline[]` |
-| **Activity Log** | `GET /api/cohorts/:id/activity` | `activities[]` |
-| **Batch Members List** | `GET /api/cohorts/:id/members` | `members[]` |
-| **Member Card** | - | `agent_name`, `agent_role`, `agent_status`, `engagement_score` |
+| UI Component                | API Endpoint                    | Data Field                                                     |
+| --------------------------- | ------------------------------- | -------------------------------------------------------------- |
+| **Cohort Header**           | `GET /api/cohorts/:id`          | `name`, `status`, `start_date`, `end_date`                     |
+| **"Invite AI Ally" Button** | Manual action (opens modal)     | -                                                              |
+| **Engagement Timeline**     | `GET /api/cohorts/:id/timeline` | `timeline[]`                                                   |
+| **Activity Log**            | `GET /api/cohorts/:id/activity` | `activities[]`                                                 |
+| **Batch Members List**      | `GET /api/cohorts/:id/members`  | `members[]`                                                    |
+| **Member Card**             | -                               | `agent_name`, `agent_role`, `agent_status`, `engagement_score` |
 
 ---
 
@@ -297,7 +311,7 @@ const cohortStatusConfig = {
 // In member card component
 <div className="flex items-center gap-2">
   <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
-    <div 
+    <div
       className="h-full bg-gradient-to-r from-blue-500 to-violet-500"
       style={{ width: `${member.engagement_score}%` }}
     />
@@ -311,12 +325,14 @@ const cohortStatusConfig = {
 ## Testing the Endpoints
 
 ### 1. Apply Migration
+
 ```bash
 # Copy migrations/0003_cohort_members_table.sql
 # Paste into Supabase SQL Editor and execute
 ```
 
 ### 2. Seed Test Data
+
 ```bash
 # In Supabase SQL Editor:
 INSERT INTO cohort_members (cohort_id, agent_id, engagement_score) VALUES
@@ -326,6 +342,7 @@ INSERT INTO cohort_members (cohort_id, agent_id, engagement_score) VALUES
 ```
 
 ### 3. Test Endpoints
+
 ```bash
 # Get cohort with stats
 curl http://localhost:3000/api/cohorts/{cohort-id}
@@ -360,16 +377,20 @@ curl http://localhost:3000/api/cohorts/{cohort-id}/activity?limit=20
 ## Known Limitations / Future Work
 
 ### Timeline Data Accuracy
+
 - Currently uses `audit_logs` table for interaction counts
 - May need refinement based on what "interactions" means in your domain
-- If `audit_logs.user_id` doesn't store agent IDs, the timeline query needs adjustment
+- If `audit_logs.user_id` doesn't store agent IDs, the timeline query needs
+  adjustment
 
 ### Activity Log Format
+
 - Currently returns raw `audit_logs` entries
 - You may want to format/transform these for better UX
 - Consider adding activity types (e.g., "agent_joined", "engagement_spike")
 
 ### Member Management
+
 - No endpoints yet for adding/removing members from cohorts
 - That's a future feature (POST/DELETE `/api/cohorts/:id/members`)
 
@@ -378,6 +399,7 @@ curl http://localhost:3000/api/cohorts/{cohort-id}/activity?limit=20
 ## Questions / Issues?
 
 If anything is unclear or you hit issues integrating:
+
 1. Check browser Network tab for API errors
 2. Check Supabase logs for database errors
 3. Ping Devi or drop a note in #dev-general

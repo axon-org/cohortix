@@ -11,9 +11,13 @@
 ## 1. Overview
 
 ### Purpose
-Implement the cohorts database schema and API routes to support the Cohortix platform's core feature: managing groups of AI allies (cohorts) with engagement tracking, status management, and multi-tenant access control.
+
+Implement the cohorts database schema and API routes to support the Cohortix
+platform's core feature: managing groups of AI allies (cohorts) with engagement
+tracking, status management, and multi-tenant access control.
 
 ### Scope
+
 - **In Scope:**
   - Cohorts table schema with Drizzle ORM
   - CRUD API routes with Zod validation
@@ -37,42 +41,48 @@ Implement the cohorts database schema and API routes to support the Cohortix pla
 
 ```typescript
 export const cohortStatusEnum = pgEnum('cohort_status', [
-  'active',      // Actively running
-  'paused',      // Temporarily paused
-  'at-risk',     // Low engagement or issues
-  'completed'    // Finished/archived
+  'active', // Actively running
+  'paused', // Temporarily paused
+  'at-risk', // Low engagement or issues
+  'completed', // Finished/archived
 ]);
 
 export const cohorts = pgTable('cohorts', {
   // Primary key
   id: uuid('id').primaryKey().defaultRandom(),
-  
+
   // Multi-tenancy
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
-  
+
   // Core fields
   name: varchar('name', { length: 255 }).notNull(),
   slug: varchar('slug', { length: 100 }).notNull(),
   description: text('description'),
   status: cohortStatusEnum('status').default('active').notNull(),
-  
+
   // Metrics (computed/cached values)
   memberCount: integer('member_count').default(0).notNull(),
-  engagementPercent: decimal('engagement_percent', { precision: 5, scale: 2 }).default('0').notNull(),
-  
+  engagementPercent: decimal('engagement_percent', { precision: 5, scale: 2 })
+    .default('0')
+    .notNull(),
+
   // Dates
   startDate: date('start_date'),
   endDate: date('end_date'),
-  
+
   // Audit fields
   createdBy: uuid('created_by')
     .notNull()
     .references(() => users.id, { onDelete: 'restrict' }),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
-  
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+
   // Optional settings
   settings: jsonb('settings').default({}).notNull(),
 });
@@ -86,6 +96,7 @@ export const cohorts = pgTable('cohorts', {
 ### 2.2 Related Tables (Future)
 
 **cohort_members** (not in this sprint):
+
 - Links agents to cohorts
 - Tracks individual engagement
 - Enables many-to-many relationship
@@ -95,14 +106,17 @@ export const cohorts = pgTable('cohorts', {
 ## 3. API Routes
 
 ### 3.1 Base Path
+
 All cohort API routes use the base path: `/api/v1/cohorts`
 
 ### 3.2 Route Specifications
 
 #### GET `/api/v1/cohorts`
+
 **Purpose:** List all cohorts for the current organization
 
 **Query Parameters:**
+
 ```typescript
 {
   page?: number;           // Default: 1
@@ -115,6 +129,7 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ```
 
 **Response (200):**
+
 ```typescript
 {
   data: Cohort[];
@@ -128,6 +143,7 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ```
 
 **Errors:**
+
 - 401: Unauthorized (no session)
 - 403: Forbidden (no org access)
 - 500: Internal Server Error
@@ -135,12 +151,15 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ---
 
 #### GET `/api/v1/cohorts/:id`
+
 **Purpose:** Get a single cohort by ID
 
 **Path Parameters:**
+
 - `id`: UUID of the cohort
 
 **Response (200):**
+
 ```typescript
 {
   data: Cohort;
@@ -148,6 +167,7 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ```
 
 **Errors:**
+
 - 401: Unauthorized
 - 403: Forbidden (wrong org)
 - 404: Not Found
@@ -156,9 +176,11 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ---
 
 #### POST `/api/v1/cohorts`
+
 **Purpose:** Create a new cohort
 
 **Request Body:**
+
 ```typescript
 {
   name: string;                    // Min 3, max 255 chars
@@ -171,6 +193,7 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ```
 
 **Response (201):**
+
 ```typescript
 {
   data: Cohort;
@@ -178,6 +201,7 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ```
 
 **Errors:**
+
 - 400: Bad Request (invalid JSON)
 - 401: Unauthorized
 - 403: Forbidden
@@ -187,12 +211,15 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ---
 
 #### PATCH `/api/v1/cohorts/:id`
+
 **Purpose:** Update an existing cohort
 
 **Path Parameters:**
+
 - `id`: UUID of the cohort
 
 **Request Body:** (all fields optional)
+
 ```typescript
 {
   name?: string;
@@ -207,6 +234,7 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ```
 
 **Response (200):**
+
 ```typescript
 {
   data: Cohort;
@@ -214,6 +242,7 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ```
 
 **Errors:**
+
 - 400: Bad Request
 - 401: Unauthorized
 - 403: Forbidden
@@ -224,17 +253,21 @@ All cohort API routes use the base path: `/api/v1/cohorts`
 ---
 
 #### DELETE `/api/v1/cohorts/:id`
+
 **Purpose:** Delete a cohort (soft delete recommended, hard delete for now)
 
 **Path Parameters:**
+
 - `id`: UUID of the cohort
 
 **Response (204):**
+
 ```
 No content
 ```
 
 **Errors:**
+
 - 401: Unauthorized
 - 403: Forbidden
 - 404: Not Found
@@ -245,20 +278,22 @@ No content
 ### 3.3 Dashboard API Routes
 
 #### GET `/api/v1/dashboard/mission-control`
+
 **Purpose:** Get KPI aggregations for Mission Control dashboard
 
 **Response (200):**
+
 ```typescript
 {
   data: {
     kpis: {
       activeCohortsCount: number;
       totalAllies: number;
-      avgEngagement: number;      // Percentage (0-100)
-      atRiskCount: number;         // Cohorts with status='at-risk'
-    };
+      avgEngagement: number; // Percentage (0-100)
+      atRiskCount: number; // Cohorts with status='at-risk'
+    }
     trends: {
-      activeCohortsChange: number;  // Percentage change from last period
+      activeCohortsChange: number; // Percentage change from last period
       totalAlliesChange: number;
       avgEngagementChange: number;
       atRiskChange: number;
@@ -268,6 +303,7 @@ No content
 ```
 
 **Errors:**
+
 - 401: Unauthorized
 - 403: Forbidden
 - 500: Internal Server Error
@@ -275,9 +311,11 @@ No content
 ---
 
 #### GET `/api/v1/dashboard/health-trends`
+
 **Purpose:** Get engagement trends over time
 
 **Query Parameters:**
+
 ```typescript
 {
   period?: '30d' | '90d' | '1y';  // Default: '30d'
@@ -286,12 +324,13 @@ No content
 ```
 
 **Response (200):**
+
 ```typescript
 {
   data: {
     dataPoints: Array<{
-      date: string;           // ISO 8601
-      avgEngagement: number;  // Percentage
+      date: string; // ISO 8601
+      avgEngagement: number; // Percentage
       activeCohorts: number;
       totalMembers: number;
     }>;
@@ -300,6 +339,7 @@ No content
 ```
 
 **Errors:**
+
 - 401: Unauthorized
 - 403: Forbidden
 - 422: Validation Error
@@ -310,6 +350,7 @@ No content
 ## 4. Row-Level Security (RLS) Policies
 
 ### 4.1 Tenant Isolation Policy
+
 ```sql
 -- Enable RLS
 ALTER TABLE cohorts ENABLE ROW LEVEL SECURITY;
@@ -318,8 +359,8 @@ ALTER TABLE cohorts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY tenant_isolation ON cohorts
   USING (
     organization_id IN (
-      SELECT organization_id 
-      FROM organization_memberships 
+      SELECT organization_id
+      FROM organization_memberships
       WHERE user_id = auth.uid()
     )
   );
@@ -329,8 +370,8 @@ CREATE POLICY tenant_insert ON cohorts
   FOR INSERT
   WITH CHECK (
     organization_id IN (
-      SELECT organization_id 
-      FROM organization_memberships 
+      SELECT organization_id
+      FROM organization_memberships
       WHERE user_id = auth.uid()
     )
   );
@@ -340,8 +381,8 @@ CREATE POLICY tenant_update ON cohorts
   FOR UPDATE
   USING (
     organization_id IN (
-      SELECT organization_id 
-      FROM organization_memberships 
+      SELECT organization_id
+      FROM organization_memberships
       WHERE user_id = auth.uid()
     )
   );
@@ -351,14 +392,15 @@ CREATE POLICY tenant_delete ON cohorts
   FOR DELETE
   USING (
     organization_id IN (
-      SELECT organization_id 
-      FROM organization_memberships 
+      SELECT organization_id
+      FROM organization_memberships
       WHERE user_id = auth.uid()
     )
   );
 ```
 
 ### 4.2 Role-Based Access (Future Enhancement)
+
 - Admin: Full CRUD
 - Member: Read-only
 - Owner: Full CRUD + delete
@@ -368,13 +410,17 @@ CREATE POLICY tenant_delete ON cohorts
 ## 5. Validation Schemas (Zod)
 
 ### 5.1 Create Cohort
+
 ```typescript
 export const createCohortSchema = z.object({
-  name: z.string()
+  name: z
+    .string()
     .min(3, 'Name must be at least 3 characters')
     .max(255, 'Name must be less than 255 characters'),
   description: z.string().max(10000).optional(),
-  status: z.enum(['active', 'paused', 'at-risk', 'completed']).default('active'),
+  status: z
+    .enum(['active', 'paused', 'at-risk', 'completed'])
+    .default('active'),
   startDate: z.string().date().optional(),
   endDate: z.string().date().optional(),
   settings: z.record(z.any()).optional(),
@@ -382,6 +428,7 @@ export const createCohortSchema = z.object({
 ```
 
 ### 5.2 Update Cohort
+
 ```typescript
 export const updateCohortSchema = z.object({
   name: z.string().min(3).max(255).optional(),
@@ -396,13 +443,16 @@ export const updateCohortSchema = z.object({
 ```
 
 ### 5.3 Query Parameters
+
 ```typescript
 export const cohortQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
   status: z.enum(['active', 'paused', 'at-risk', 'completed']).optional(),
   search: z.string().optional(),
-  sortBy: z.enum(['name', 'createdAt', 'memberCount', 'engagementPercent']).default('createdAt'),
+  sortBy: z
+    .enum(['name', 'createdAt', 'memberCount', 'engagementPercent'])
+    .default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 ```
@@ -427,6 +477,7 @@ All API routes follow RFC 7807 Problem Details standard:
 **Examples:**
 
 **Validation Error:**
+
 ```json
 {
   "type": "https://cohortix.com/errors/validation-error",
@@ -442,6 +493,7 @@ All API routes follow RFC 7807 Problem Details standard:
 ```
 
 **Not Found:**
+
 ```json
 {
   "type": "https://cohortix.com/errors/not-found",
@@ -483,11 +535,13 @@ logger.error('Failed to fetch cohorts', {
 ## 8. Testing Requirements
 
 ### 8.1 Unit Tests (Vitest)
+
 - [x] Zod schema validation (valid/invalid inputs)
 - [x] Slug generation utility
 - [x] Engagement calculation utility
 
 ### 8.2 Integration Tests (Vitest + Supabase)
+
 - [x] GET `/api/v1/cohorts` - list with pagination
 - [x] GET `/api/v1/cohorts` - filter by status
 - [x] GET `/api/v1/cohorts` - search by name
@@ -502,10 +556,12 @@ logger.error('Failed to fetch cohorts', {
 - [x] Multi-tenant isolation (user cannot access other org's cohorts)
 
 ### 8.3 Dashboard Tests
+
 - [x] GET `/api/v1/dashboard/mission-control` - KPI calculations
 - [x] GET `/api/v1/dashboard/health-trends` - trend data
 
 ### 8.4 Coverage Target
+
 - **Minimum:** 70% overall
 - **Critical paths:** 80%+ (CRUD operations, RLS)
 
@@ -514,6 +570,7 @@ logger.error('Failed to fetch cohorts', {
 ## 9. Implementation Plan
 
 ### Phase 1: Schema & Migrations ✅
+
 1. Create `cohorts.ts` schema file
 2. Add to `schema/index.ts` exports
 3. Generate migration with `pnpm db:generate`
@@ -521,24 +578,28 @@ logger.error('Failed to fetch cohorts', {
 5. Add RLS policies in migration SQL
 
 ### Phase 2: Validation & Utils ✅
+
 1. Create `cohort.ts` validation schemas
 2. Add to `lib/validation.ts`
 3. Create slug generation utility
 4. Create engagement calculation utility
 
 ### Phase 3: API Routes ✅
+
 1. Create `/api/v1/cohorts/route.ts` (GET, POST)
 2. Create `/api/v1/cohorts/[id]/route.ts` (GET, PATCH, DELETE)
 3. Apply validation, error handling, logging
 4. Test manually with Postman/curl
 
 ### Phase 4: Dashboard Routes ✅
+
 1. Create `/api/v1/dashboard/mission-control/route.ts`
 2. Create `/api/v1/dashboard/health-trends/route.ts`
 3. Implement KPI aggregations
 4. Implement trend calculations
 
 ### Phase 5: Tests ✅
+
 1. Write unit tests for schemas and utils
 2. Write integration tests for all routes
 3. Run tests: `pnpm test`
@@ -546,6 +607,7 @@ logger.error('Failed to fetch cohorts', {
 5. Fix failing tests until 70%+ coverage
 
 ### Phase 6: Documentation & Review ✅
+
 1. Update CLAUDE.md with cohorts implementation
 2. Document learnings in Mem0
 3. Update expertise files

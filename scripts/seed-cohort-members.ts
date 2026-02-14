@@ -7,7 +7,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://rfwscvklcokzuofyzqwx.supabase.co';
-const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmd3NjdmtsY29renVvZnl6cXd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDcyNDYyNCwiZXhwIjoyMDg2MzAwNjI0fQ.DtEf0p3b_tBCvzO5g3Al6QqCkDg-Y8K6-xRI4rcKqNM';
+const serviceRoleKey =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmd3NjdmtsY29renVvZnl6cXd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDcyNDYyNCwiZXhwIjoyMDg2MzAwNjI0fQ.DtEf0p3b_tBCvzO5g3Al6QqCkDg-Y8K6-xRI4rcKqNM';
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -51,16 +52,16 @@ async function seedCohortMembersAndActivity() {
     console.log(`📦 Found ${cohorts.length} cohorts\n`);
 
     // Agent mapping
-    const devi = agents.find(a => a.slug === 'devi');
-    const lubna = agents.find(a => a.slug === 'lubna');
-    const zara = agents.find(a => a.slug === 'zara');
-    const khalid = agents.find(a => a.slug === 'khalid');
+    const devi = agents.find((a) => a.slug === 'devi');
+    const lubna = agents.find((a) => a.slug === 'lubna');
+    const zara = agents.find((a) => a.slug === 'zara');
+    const khalid = agents.find((a) => a.slug === 'khalid');
 
     // Cohort mapping
-    const aiTeam = cohorts.find(c => c.slug === 'ai-development-team');
-    const designSquad = cohorts.find(c => c.slug === 'product-design-squad');
-    const contentTeam = cohorts.find(c => c.slug === 'content-strategy-team');
-    const devopsTeam = cohorts.find(c => c.slug === 'devops-infrastructure');
+    const aiTeam = cohorts.find((c) => c.slug === 'ai-development-team');
+    const designSquad = cohorts.find((c) => c.slug === 'product-design-squad');
+    const contentTeam = cohorts.find((c) => c.slug === 'content-strategy-team');
+    const devopsTeam = cohorts.find((c) => c.slug === 'devops-infrastructure');
 
     // ====================================================================
     // STEP 1: Populate cohort_members
@@ -215,7 +216,10 @@ async function seedCohortMembersAndActivity() {
           action: 'contributed',
           resource_type: 'cohort',
           resource_id: aiTeam.id,
-          new_values: { contribution: 'Completed agent integration testing', cohort_slug: aiTeam.slug },
+          new_values: {
+            contribution: 'Completed agent integration testing',
+            cohort_slug: aiTeam.slug,
+          },
           ip_address: '127.0.0.1',
           user_agent: 'Cohortix/1.0',
           created_at: new Date(now - 3 * oneDay).toISOString(),
@@ -257,7 +261,10 @@ async function seedCohortMembersAndActivity() {
           action: 'contributed',
           resource_type: 'cohort',
           resource_id: designSquad.id,
-          new_values: { contribution: 'Created new design system components', cohort_slug: designSquad.slug },
+          new_values: {
+            contribution: 'Created new design system components',
+            cohort_slug: designSquad.slug,
+          },
           ip_address: '127.0.0.1',
           user_agent: 'Cohortix/1.0',
           created_at: new Date(now - 4 * oneDay).toISOString(),
@@ -376,7 +383,6 @@ async function seedCohortMembersAndActivity() {
     console.log('🎯 Next: QA Engineer can verify:');
     console.log('   - GET /api/cohorts/:id/members');
     console.log('   - GET /api/cohorts/:id/activity');
-
   } catch (error) {
     console.error('❌ Seeding failed:', error);
     process.exit(1);

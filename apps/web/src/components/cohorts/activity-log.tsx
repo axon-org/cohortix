@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { formatDistanceToNow, parseISO } from 'date-fns'
-import { cn } from '@/lib/utils'
-import type { CohortActivity } from '@/lib/api/client'
+import { formatDistanceToNow, parseISO } from 'date-fns';
+import { cn } from '@/lib/utils';
+import type { CohortActivity } from '@/lib/api/client';
 
 interface ActivityLogProps {
-  activities: CohortActivity[]
+  activities: CohortActivity[];
 }
 
 const actionConfig: Record<string, { color: string; icon: string }> = {
@@ -15,7 +15,7 @@ const actionConfig: Record<string, { color: string; icon: string }> = {
   engagement_drop: { color: 'text-warning', icon: '●' },
   status_change: { color: 'text-info', icon: '●' },
   default: { color: 'text-muted-foreground', icon: '●' },
-}
+};
 
 export function ActivityLog({ activities }: ActivityLogProps) {
   return (
@@ -36,35 +36,29 @@ export function ActivityLog({ activities }: ActivityLogProps) {
           </div>
         ) : (
           activities.map((activity) => {
-            const config =
-              actionConfig[activity.action] ?? actionConfig.default
+            const config = actionConfig[activity.action] ?? actionConfig.default;
             const timeAgo = formatDistanceToNow(parseISO(activity.created_at), {
               addSuffix: true,
-            })
+            });
 
             return (
-              <div
-                key={activity.id}
-                className="px-6 py-4 hover:bg-background/50 transition-colors"
-              >
+              <div key={activity.id} className="px-6 py-4 hover:bg-background/50 transition-colors">
                 <div className="flex items-start gap-3">
-                  <span className={cn('text-lg leading-none', config?.color ?? 'text-muted-foreground')}>
+                  <span
+                    className={cn('text-lg leading-none', config?.color ?? 'text-muted-foreground')}
+                  >
                     {config?.icon ?? '●'}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-foreground">
-                      {activity.description}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {timeAgo}
-                    </p>
+                    <p className="text-sm text-foreground">{activity.description}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{timeAgo}</p>
                   </div>
                 </div>
               </div>
-            )
+            );
           })
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -1,18 +1,18 @@
-import Link from 'next/link'
-import { AlertTriangle, TrendingDown, AlertCircle, XCircle } from 'lucide-react'
+import Link from 'next/link';
+import { AlertTriangle, TrendingDown, AlertCircle, XCircle } from 'lucide-react';
 
 interface Alert {
-  type: 'warning' | 'error' | 'info'
-  title: string
-  message: string
+  type: 'warning' | 'error' | 'info';
+  title: string;
+  message: string;
   action?: {
-    label: string
-    href: string
-  }
+    label: string;
+    href: string;
+  };
 }
 
 interface UrgentAlertsProps {
-  alerts: Alert[]
+  alerts: Alert[];
 }
 
 export function UrgentAlerts({ alerts }: UrgentAlertsProps) {
@@ -32,37 +32,35 @@ export function UrgentAlerts({ alerts }: UrgentAlertsProps) {
             <p className="text-xs mt-1">No urgent alerts at the moment</p>
           </div>
         ) : (
-          alerts.map((alert, index) => (
-            <AlertItem key={index} alert={alert} />
-          ))
+          alerts.map((alert, index) => <AlertItem key={index} alert={alert} />)
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function AlertItem({ alert }: { alert: Alert }) {
   const getAlertIcon = (type: string) => {
     switch (type) {
       case 'error':
-        return XCircle
+        return XCircle;
       case 'warning':
-        return TrendingDown
+        return TrendingDown;
       case 'info':
       default:
-        return AlertCircle
+        return AlertCircle;
     }
-  }
+  };
 
-  const Icon = getAlertIcon(alert.type)
+  const Icon = getAlertIcon(alert.type);
 
   const typeColors = {
     error: 'bg-destructive/10 border-destructive/20 text-destructive',
     warning: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-600 dark:text-yellow-500',
     info: 'bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-500',
-  }
+  };
 
-  const typeColor = typeColors[alert.type as keyof typeof typeColors]
+  const typeColor = typeColors[alert.type as keyof typeof typeColors];
 
   return (
     <div className={`p-4 rounded-lg border ${typeColor}`}>
@@ -87,5 +85,5 @@ function AlertItem({ alert }: { alert: Alert }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

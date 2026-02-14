@@ -1,6 +1,6 @@
 /**
  * Cohort Members API Route
- * 
+ *
  * GET /api/cohorts/:id/members - List all members (allies) in a cohort
  */
 

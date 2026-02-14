@@ -1,12 +1,12 @@
 /**
  * Typography Design Tokens
- * 
+ *
  * Font families, sizes, weights, and line heights
  * Based on 1.25 ratio scale (Major Third)
- * 
+ *
  * See: docs/UI_DESIGN_SYSTEM.md
  * Reference: TOOLS.md "Typography Scale (1.25 Ratio)"
- * 
+ *
  * @packageDocumentation
  */
 
@@ -16,12 +16,20 @@
  */
 export const fontFamily = {
   /** Primary sans-serif (UI text) */
-  sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+  sans: [
+    'Inter',
+    'system-ui',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Roboto',
+    'sans-serif',
+  ],
   /** Monospace (code, technical content) */
   mono: ['Fira Code', 'Menlo', 'Monaco', 'Courier New', 'monospace'],
   /** Display (headings, marketing) - currently same as sans */
   display: ['Inter', 'system-ui', 'sans-serif'],
-} as const
+} as const;
 
 /**
  * Font weights
@@ -40,7 +48,7 @@ export const fontWeight = {
   bold: '700',
   /** 800 - Extrabold */
   extrabold: '800',
-} as const
+} as const;
 
 /**
  * Font sizes with line heights
@@ -70,7 +78,7 @@ export const fontSize = {
   '6xl': ['3.75rem', { lineHeight: '1' }],
   /** 72px / 72px - Marketing hero */
   '7xl': ['4.5rem', { lineHeight: '1' }],
-} as const
+} as const;
 
 /**
  * Line heights (unitless multipliers)
@@ -89,7 +97,7 @@ export const lineHeight = {
   relaxed: '1.625',
   /** 2.0 - Loose (spacious layouts) */
   loose: '2',
-} as const
+} as const;
 
 /**
  * Letter spacing (tracking)
@@ -107,7 +115,7 @@ export const letterSpacing = {
   wider: '0.05em',
   /** 0.1em - Widest (loose all caps) */
   widest: '0.1em',
-} as const
+} as const;
 
 /**
  * Text styles for common UI patterns
@@ -195,7 +203,7 @@ export const textStyles = {
     lineHeight: fontSize.sm[1].lineHeight,
     fontFamily: fontFamily.mono.join(', '),
   },
-} as const
+} as const;
 
 /**
  * Component-specific typography
@@ -300,7 +308,7 @@ export const componentTypography = {
     lineHeight: fontSize.xs[1].lineHeight,
     fontWeight: fontWeight.normal,
   },
-} as const
+} as const;
 
 /**
  * Responsive typography utilities
@@ -319,16 +327,16 @@ export const responsiveTypography = {
       '4xl': '3xl',
       '3xl': '2xl',
       '2xl': 'xl',
-      'xl': 'lg',
-      'lg': 'base',
-      'base': 'sm',
-      'sm': 'xs',
-      'xs': 'xs', // Don't go smaller
-    }
+      xl: 'lg',
+      lg: 'base',
+      base: 'sm',
+      sm: 'xs',
+      xs: 'xs', // Don't go smaller
+    };
     return {
       mobile: fontSize[sizeMap[desktopSize]],
       desktop: fontSize[desktopSize],
-    }
+    };
   },
 
   /**
@@ -340,10 +348,10 @@ export const responsiveTypography = {
       2: responsiveTypography.scaledSize('3xl'),
       3: responsiveTypography.scaledSize('2xl'),
       4: responsiveTypography.scaledSize('xl'),
-    }
-    return headingMap[level]
+    };
+    return headingMap[level];
   },
-} as const
+} as const;
 
 /**
  * Accessibility utilities
@@ -361,9 +369,9 @@ export const a11y = {
     outlineStyle: 'solid',
     outlineOffset: '2px',
   },
-} as const
+} as const;
 
 /**
  * Export default fontSize object for Tailwind config
  */
-export default fontSize
+export default fontSize;

@@ -1,32 +1,38 @@
-'use client'
+'use client';
 
-import { use, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { useOperation, useUpdateOperation, useDeleteOperation } from '@/hooks/use-operations'
-import { useMission } from '@/hooks/use-missions'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { DeleteDialog } from '@/components/ui/delete-dialog'
-import { Skeleton } from '@/components/ui/skeleton'
-import { ArrowLeft, Pencil, Save, X, ExternalLink } from 'lucide-react'
-import { OperationStatusChip, type OperationStatus } from '@/components/ui/operation-status-chip'
-import { cn, formatDate } from '@/lib/utils'
+import { use, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useOperation, useUpdateOperation, useDeleteOperation } from '@/hooks/use-operations';
+import { useMission } from '@/hooks/use-missions';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { DeleteDialog } from '@/components/ui/delete-dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowLeft, Pencil, Save, X, ExternalLink } from 'lucide-react';
+import { OperationStatusChip, type OperationStatus } from '@/components/ui/operation-status-chip';
+import { cn, formatDate } from '@/lib/utils';
 
-const STATUS_OPTIONS: OperationStatus[] = ['planning', 'active', 'on_hold', 'completed', 'archived']
+const STATUS_OPTIONS: OperationStatus[] = [
+  'planning',
+  'active',
+  'on_hold',
+  'completed',
+  'archived',
+];
 
 export default function OperationDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
-  const router = useRouter()
-  const { data: operation, isLoading, error } = useOperation(id)
-  const { data: missionData } = useMission(operation?.missionId || '')
-  const updateMutation = useUpdateOperation()
-  const deleteMutation = useDeleteOperation()
-  const [editing, setEditing] = useState(false)
-  const [form, setForm] = useState<Record<string, any>>({})
+  const { id } = use(params);
+  const router = useRouter();
+  const { data: operation, isLoading, error } = useOperation(id);
+  const { data: missionData } = useMission(operation?.missionId || '');
+  const updateMutation = useUpdateOperation();
+  const deleteMutation = useDeleteOperation();
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState<Record<string, any>>({});
 
-  if (isLoading) return <DetailSkeleton />
+  if (isLoading) return <DetailSkeleton />;
   if (error || !operation) {
     return (
       <div className="text-center py-20">
@@ -35,7 +41,7 @@ export default function OperationDetailPage({ params }: { params: Promise<{ id: 
           Back to Operations
         </Link>
       </div>
-    )
+    );
   }
 
   const startEditing = () => {
@@ -45,19 +51,19 @@ export default function OperationDetailPage({ params }: { params: Promise<{ id: 
       status: operation.status,
       startDate: operation.startDate || '',
       targetDate: operation.targetDate || '',
-    })
-    setEditing(true)
-  }
+    });
+    setEditing(true);
+  };
 
   const handleSave = async () => {
-    await updateMutation.mutateAsync({ id, data: form })
-    setEditing(false)
-  }
+    await updateMutation.mutateAsync({ id, data: form });
+    setEditing(false);
+  };
 
   const handleDelete = async () => {
-    await deleteMutation.mutateAsync(id)
-    router.push('/operations')
-  }
+    await deleteMutation.mutateAsync(id);
+    router.push('/operations');
+  };
 
   return (
     <div className="space-y-6">
@@ -116,7 +122,9 @@ export default function OperationDetailPage({ params }: { params: Promise<{ id: 
               className="bg-secondary border border-border rounded px-2 py-1 text-xs"
             >
               {STATUS_OPTIONS.map((s) => (
-                <option key={s} value={s}>{s.replace('_', ' ')}</option>
+                <option key={s} value={s}>
+                  {s.replace('_', ' ')}
+                </option>
               ))}
             </select>
           ) : (
@@ -171,13 +179,18 @@ export default function OperationDetailPage({ params }: { params: Promise<{ id: 
               className="w-48"
             />
           ) : (
-            <p className="text-sm">{operation.targetDate ? formatDate(operation.targetDate) : '—'}</p>
+            <p className="text-sm">
+              {operation.targetDate ? formatDate(operation.targetDate) : '—'}
+            </p>
           )}
         </Field>
         <Field label="Mission">
           <p className="text-sm text-muted-foreground">
             {operation.missionId && missionData ? (
-              <Link href={`/missions/${operation.missionId}`} className="hover:text-foreground transition-colors">
+              <Link
+                href={`/missions/${operation.missionId}`}
+                className="hover:text-foreground transition-colors"
+              >
                 {missionData.name}
               </Link>
             ) : (
@@ -186,18 +199,14 @@ export default function OperationDetailPage({ params }: { params: Promise<{ id: 
           </p>
         </Field>
         <Field label="Created">
-          <p className="text-sm text-muted-foreground">
-            {formatDate(operation.created_at)}
-          </p>
+          <p className="text-sm text-muted-foreground">{formatDate(operation.created_at)}</p>
         </Field>
         <Field label="Last Updated">
-          <p className="text-sm text-muted-foreground">
-            {formatDate(operation.updated_at)}
-          </p>
+          <p className="text-sm text-muted-foreground">{formatDate(operation.updated_at)}</p>
         </Field>
       </div>
     </div>
-  )
+  );
 }
 
 function Field({
@@ -205,9 +214,9 @@ function Field({
   editing,
   children,
 }: {
-  label: string
-  editing?: boolean
-  children: React.ReactNode
+  label: string;
+  editing?: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <div className="px-5 py-4">
@@ -216,7 +225,7 @@ function Field({
       </label>
       {children}
     </div>
-  )
+  );
 }
 
 function DetailSkeleton() {
@@ -230,5 +239,5 @@ function DetailSkeleton() {
         <Skeleton className="h-4 w-1/2" />
       </div>
     </div>
-  )
+  );
 }

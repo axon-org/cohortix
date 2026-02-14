@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { OperationsTableClient } from '@/components/operations/operations-table-client'
-import { OperationModal } from '@/components/operations/operation-modal'
-import { Button } from '@/components/ui/button'
-import { Plus, LayoutGrid, List } from 'lucide-react'
-import { KanbanBoard } from '@/components/kanban/kanban-board'
-import { useOperations } from '@/hooks/use-operations'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useState } from 'react';
+import { OperationsTableClient } from '@/components/operations/operations-table-client';
+import { OperationModal } from '@/components/operations/operation-modal';
+import { Button } from '@/components/ui/button';
+import { Plus, LayoutGrid, List } from 'lucide-react';
+import { KanbanBoard } from '@/components/kanban/kanban-board';
+import { useOperations } from '@/hooks/use-operations';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function OperationsPage() {
-  const [modalOpen, setModalOpen] = useState(false)
-  const [view, setView] = useState<'list' | 'kanban'>('kanban')
-  const { data, isLoading } = useOperations({ limit: 100 })
+  const [modalOpen, setModalOpen] = useState(false);
+  const [view, setView] = useState<'list' | 'kanban'>('kanban');
+  const { data, isLoading } = useOperations({ limit: 100 });
 
   return (
     <>
@@ -38,10 +38,7 @@ export default function OperationsPage() {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
-            <Button 
-              onClick={() => setModalOpen(true)}
-              variant="primary"
-            >
+            <Button onClick={() => setModalOpen(true)} variant="primary">
               <Plus className="w-4 h-4 mr-2" />
               New Operation
             </Button>
@@ -54,7 +51,10 @@ export default function OperationsPage() {
             isLoading ? (
               <div className="flex gap-6 h-full overflow-x-auto pb-4">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="w-[320px] bg-muted/20 rounded-lg animate-pulse h-full min-h-[500px]" />
+                  <div
+                    key={i}
+                    className="w-[320px] bg-muted/20 rounded-lg animate-pulse h-full min-h-[500px]"
+                  />
                 ))}
               </div>
             ) : (
@@ -69,5 +69,5 @@ export default function OperationsPage() {
       {/* Create/Edit Modal */}
       <OperationModal open={modalOpen} onOpenChange={setModalOpen} />
     </>
-  )
+  );
 }

@@ -1,30 +1,30 @@
-'use client'
+'use client';
 
-import { useMemo } from 'react'
-import { useOperations } from '@/hooks/use-operations'
-import { useMissions } from '@/hooks/use-missions'
-import { useAllies } from '@/hooks/use-allies'
-import { OperationsTable, type Operation } from './operations-table'
-import { Skeleton } from '@/components/ui/skeleton'
+import { useMemo } from 'react';
+import { useOperations } from '@/hooks/use-operations';
+import { useMissions } from '@/hooks/use-missions';
+import { useAllies } from '@/hooks/use-allies';
+import { OperationsTable, type Operation } from './operations-table';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function OperationsTableClient() {
-  const { data, isLoading, error } = useOperations()
-  const { data: missionsData } = useMissions({ limit: 1000 })
-  const { data: alliesData } = useAllies({ limit: 1000 })
+  const { data, isLoading, error } = useOperations();
+  const { data: missionsData } = useMissions({ limit: 1000 });
+  const { data: alliesData } = useAllies({ limit: 1000 });
 
   // Lookup maps
   const missionLookup = useMemo(() => {
-    if (!missionsData?.data) return new Map()
-    return new Map(missionsData.data.map(m => [m.id, m.name]))
-  }, [missionsData])
+    if (!missionsData?.data) return new Map();
+    return new Map(missionsData.data.map((m) => [m.id, m.name]));
+  }, [missionsData]);
 
   const allyLookup = useMemo(() => {
-    if (!alliesData?.data) return new Map()
-    return new Map(alliesData.data.map(a => [a.id, a.name]))
-  }, [alliesData])
+    if (!alliesData?.data) return new Map();
+    return new Map(alliesData.data.map((a) => [a.id, a.name]));
+  }, [alliesData]);
 
   if (isLoading) {
-    return <OperationsTableSkeleton />
+    return <OperationsTableSkeleton />;
   }
 
   if (error) {
@@ -33,7 +33,7 @@ export function OperationsTableClient() {
         <p className="text-destructive font-medium">Failed to load operations</p>
         <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
       </div>
-    )
+    );
   }
 
   if (!data?.data || data.data.length === 0) {
@@ -44,7 +44,7 @@ export function OperationsTableClient() {
           Create your first operation to get started.
         </p>
       </div>
-    )
+    );
   }
 
   // Transform API data to table format with names
@@ -52,20 +52,22 @@ export function OperationsTableClient() {
     id: operation.id,
     name: operation.name,
     status: operation.status,
-    missionName: (operation as any).missions?.title || (operation.missionId ? missionLookup.get(operation.missionId) : undefined),
+    missionName:
+      (operation as any).missions?.title ||
+      (operation.missionId ? missionLookup.get(operation.missionId) : undefined),
     ownerName: operation.ownerId ? allyLookup.get(operation.ownerId) : 'Unassigned',
     startDate: operation.startDate,
     targetDate: operation.targetDate,
     createdAt: operation.created_at,
-  }))
+  }));
 
   return (
-    <OperationsTable 
-      data={tableData} 
+    <OperationsTable
+      data={tableData}
       missions={missionsData?.data || []}
       allies={alliesData?.data || []}
     />
-  )
+  );
 }
 
 function OperationsTableSkeleton() {
@@ -97,5 +99,5 @@ function OperationsTableSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

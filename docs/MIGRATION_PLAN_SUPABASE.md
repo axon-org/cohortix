@@ -12,6 +12,7 @@
 **Devi's Assessment:** 5/10 (Neon) → 9/10 (Supabase)
 
 ### Critical Advantages for Cohortix
+
 1. **Real-time subscriptions** — Built-in via PostgreSQL logical replication
    - Agent activity feeds (live mission status)
    - Knowledge base updates
@@ -26,6 +27,7 @@
 ## 📋 Migration Checklist
 
 ### Phase 1: Setup Supabase Project
+
 - [ ] Create Supabase project (use existing account Ahmad mentioned)
 - [ ] Configure database region (closest to majority users)
 - [ ] Enable pgvector extension
@@ -33,6 +35,7 @@
 - [ ] Configure backup schedule
 
 ### Phase 2: Schema Migration
+
 - [ ] Export current Drizzle schema
 - [ ] Run Drizzle migrations on Supabase
 - [ ] Add Supabase-specific RLS policies
@@ -40,6 +43,7 @@
 - [ ] Verify vector search works (pgvector)
 
 ### Phase 3: Auth Integration (Clerk + Supabase)
+
 - [ ] Configure Clerk JWT template for Supabase
 - [ ] Add Supabase JWT verification in Clerk
 - [ ] Create RLS policies that accept Clerk JWTs
@@ -47,6 +51,7 @@
 - [ ] Document auth architecture
 
 ### Phase 4: Real-time Setup
+
 - [ ] Enable real-time on critical tables:
   - `agent_activities`
   - `missions`
@@ -57,12 +62,14 @@
 - [ ] Add real-time error handling
 
 ### Phase 5: Environment Variables Update
+
 - [ ] Update `.env` with Supabase credentials
 - [ ] Update Vercel environment variables
 - [ ] Update CI/CD secrets
 - [ ] Document new env vars
 
 ### Phase 6: Testing & Validation
+
 - [ ] Run full test suite
 - [ ] Test agent data flows
 - [ ] Test real-time subscriptions
@@ -70,6 +77,7 @@
 - [ ] Security audit (RLS policies)
 
 ### Phase 7: Deployment
+
 - [ ] Deploy to staging first
 - [ ] Smoke test all features
 - [ ] Deploy to production
@@ -81,6 +89,7 @@
 ## 🔐 Credentials Needed
 
 **From Ahmad:**
+
 1. **Supabase Account Access**
    - Project URL (or create new project)
    - Service role key (for migrations)
@@ -96,6 +105,7 @@
 ### 1. Drizzle + Supabase Connection
 
 **Update database connection:**
+
 ```typescript
 // lib/db.ts
 import { drizzle } from 'drizzle-orm/postgres-js';
@@ -114,6 +124,7 @@ export const db = drizzle(sql);
 ```
 
 **Environment variables:**
+
 ```bash
 # .env.local
 DATABASE_URL=postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres
@@ -125,6 +136,7 @@ SUPABASE_SERVICE_ROLE_KEY=[service-key]
 ### 2. Clerk + Supabase Auth Integration
 
 **Configure Clerk JWT template:**
+
 ```json
 {
   "aud": "authenticated",
@@ -141,6 +153,7 @@ SUPABASE_SERVICE_ROLE_KEY=[service-key]
 ```
 
 **Supabase RLS policy (accepts Clerk JWTs):**
+
 ```sql
 -- Enable RLS
 ALTER TABLE agents ENABLE ROW LEVEL SECURITY;
@@ -166,6 +179,7 @@ WITH CHECK (
 ### 3. Real-time Subscriptions
 
 **Client-side subscription:**
+
 ```typescript
 // hooks/useAgentActivity.ts
 import { createClient } from '@supabase/supabase-js';
@@ -173,7 +187,7 @@ import { useEffect, useState } from 'react';
 
 export function useAgentActivity(agentId: string) {
   const [activities, setActivities] = useState<Activity[]>([]);
-  
+
   useEffect(() => {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -208,6 +222,7 @@ export function useAgentActivity(agentId: string) {
 ### 4. RLS Helper Functions
 
 **Supabase migration (add to schema):**
+
 ```sql
 -- Function: Get current user's org_id from JWT
 CREATE OR REPLACE FUNCTION auth.user_org_id()
@@ -239,17 +254,20 @@ $$;
 ## 🧪 Testing Strategy
 
 ### Unit Tests
+
 - [ ] Database connection
 - [ ] RLS policies (test with different user roles)
 - [ ] Real-time subscription setup
 
 ### Integration Tests
+
 - [ ] Full auth flow (Clerk → Supabase)
 - [ ] Agent CRUD operations
 - [ ] Knowledge base operations
 - [ ] Real-time updates end-to-end
 
 ### Load Tests
+
 - [ ] 100 concurrent users reading agent activities
 - [ ] 50 simultaneous real-time subscriptions
 - [ ] Vector search performance (pgvector)
@@ -259,6 +277,7 @@ $$;
 ## 📊 Success Metrics
 
 **Must Pass Before Production:**
+
 1. **RLS works** — No cross-org data leakage
 2. **Real-time works** — <100ms latency for updates
 3. **Auth works** — Clerk JWTs validated correctly
@@ -283,6 +302,7 @@ If something goes catastrophically wrong:
 ## 📚 Documentation Updates Required
 
 After migration:
+
 - [ ] Update `docs/TECH_STACK.md` (Neon → Supabase)
 - [ ] Update `docs/ARCHITECTURE.md` (real-time architecture)
 - [ ] Update `README.md` (setup instructions)
@@ -295,26 +315,28 @@ After migration:
 
 **Total: 4-6 hours**
 
-| Phase | Time | Owner |
-|-------|------|-------|
-| Supabase project setup | 30 min | Alim |
-| Schema migration | 1 hour | Alim |
-| Clerk integration | 1 hour | Alim |
-| Real-time setup | 1 hour | Alim |
-| Testing | 1-2 hours | Alim + Ahmad |
-| Deployment | 30 min | Alim |
-| Monitoring | 24 hours | Alim |
+| Phase                  | Time      | Owner        |
+| ---------------------- | --------- | ------------ |
+| Supabase project setup | 30 min    | Alim         |
+| Schema migration       | 1 hour    | Alim         |
+| Clerk integration      | 1 hour    | Alim         |
+| Real-time setup        | 1 hour    | Alim         |
+| Testing                | 1-2 hours | Alim + Ahmad |
+| Deployment             | 30 min    | Alim         |
+| Monitoring             | 24 hours  | Alim         |
 
 ---
 
 ## 🎬 Next Steps
 
 **What I need from Ahmad:**
+
 1. ✅ Supabase project URL (or permission to create new project)
 2. ✅ Supabase service role key
 3. ✅ Vercel environment variable access
 
 **Once I have these, I will:**
+
 1. Execute Phases 1-6 in sequence
 2. Update all documentation
 3. Report completion in #cohortix-dev channel

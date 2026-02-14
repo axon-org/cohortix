@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { use } from 'react'
-import { useRouter } from 'next/navigation'
+import { use } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   useCohort,
   useUpdateCohort,
@@ -9,40 +9,40 @@ import {
   useCohortMembers,
   useCohortTimeline,
   useCohortActivity,
-} from '@/hooks/use-cohorts'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { DeleteDialog } from '@/components/ui/delete-dialog'
-import { Skeleton } from '@/components/ui/skeleton'
-import { ArrowLeft, Pencil, Save, X } from 'lucide-react'
-import { useState } from 'react'
-import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import { EngagementTimeline } from '@/components/cohorts/engagement-timeline'
-import { BatchMembers } from '@/components/cohorts/batch-members'
-import { ActivityLog } from '@/components/cohorts/activity-log'
+} from '@/hooks/use-cohorts';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { DeleteDialog } from '@/components/ui/delete-dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowLeft, Pencil, Save, X } from 'lucide-react';
+import { useState } from 'react';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { EngagementTimeline } from '@/components/cohorts/engagement-timeline';
+import { BatchMembers } from '@/components/cohorts/batch-members';
+import { ActivityLog } from '@/components/cohorts/activity-log';
 
-const STATUS_OPTIONS = ['active', 'paused', 'at-risk', 'completed'] as const
+const STATUS_OPTIONS = ['active', 'paused', 'at-risk', 'completed'] as const;
 const STATUS_COLORS: Record<string, string> = {
   active: 'bg-success',
   paused: 'bg-warning',
   'at-risk': 'bg-destructive',
   completed: 'bg-info',
-}
+};
 
 export default function CohortDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
-  const router = useRouter()
-  const { data: cohort, isLoading, error } = useCohort(id)
-  const { data: membersData } = useCohortMembers(id)
-  const { data: timelineData } = useCohortTimeline(id, 30)
-  const { data: activityData } = useCohortActivity(id, 20)
-  const updateMutation = useUpdateCohort()
-  const deleteMutation = useDeleteCohort()
-  const [editing, setEditing] = useState(false)
-  const [form, setForm] = useState<Record<string, any>>({})
+  const { id } = use(params);
+  const router = useRouter();
+  const { data: cohort, isLoading, error } = useCohort(id);
+  const { data: membersData } = useCohortMembers(id);
+  const { data: timelineData } = useCohortTimeline(id, 30);
+  const { data: activityData } = useCohortActivity(id, 20);
+  const updateMutation = useUpdateCohort();
+  const deleteMutation = useDeleteCohort();
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState<Record<string, any>>({});
 
-  if (isLoading) return <DetailSkeleton />
+  if (isLoading) return <DetailSkeleton />;
   if (error || !cohort) {
     return (
       <div className="text-center py-20">
@@ -51,7 +51,7 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
           Back to Cohorts
         </Link>
       </div>
-    )
+    );
   }
 
   const startEditing = () => {
@@ -61,19 +61,19 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
       status: cohort.status,
       startDate: cohort.start_date || '',
       endDate: cohort.end_date || '',
-    })
-    setEditing(true)
-  }
+    });
+    setEditing(true);
+  };
 
   const handleSave = async () => {
-    await updateMutation.mutateAsync({ id, data: form })
-    setEditing(false)
-  }
+    await updateMutation.mutateAsync({ id, data: form });
+    setEditing(false);
+  };
 
   const handleDelete = async () => {
-    await deleteMutation.mutateAsync(id)
-    router.push('/cohorts')
-  }
+    await deleteMutation.mutateAsync(id);
+    router.push('/cohorts');
+  };
 
   return (
     <div className="space-y-6">
@@ -132,7 +132,9 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
               className="bg-secondary border border-border rounded px-2 py-1 text-xs"
             >
               {STATUS_OPTIONS.map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s}>
+                  {s}
+                </option>
               ))}
             </select>
           ) : (
@@ -195,9 +197,7 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* Engagement Timeline */}
-      {timelineData && (
-        <EngagementTimeline data={timelineData.timeline} days={30} />
-      )}
+      {timelineData && <EngagementTimeline data={timelineData.timeline} days={30} />}
 
       {/* Two-Column Layout: Members (left, wider) + Activity (right, narrower) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -212,7 +212,7 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function Field({
@@ -220,9 +220,9 @@ function Field({
   editing,
   children,
 }: {
-  label: string
-  editing?: boolean
-  children: React.ReactNode
+  label: string;
+  editing?: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <div className="px-5 py-4">
@@ -231,7 +231,7 @@ function Field({
       </label>
       {children}
     </div>
-  )
+  );
 }
 
 function DetailSkeleton() {
@@ -245,5 +245,5 @@ function DetailSkeleton() {
         <Skeleton className="h-4 w-1/2" />
       </div>
     </div>
-  )
+  );
 }

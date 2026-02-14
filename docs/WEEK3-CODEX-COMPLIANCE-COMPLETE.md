@@ -9,9 +9,14 @@
 
 ## Executive Summary
 
-All 5 Week 3 Codex compliance tasks have been successfully completed for the Cohortix platform. This week focused on **CI/CD hardening** (adding Snyk dependency scanning and Lighthouse performance budgets) and **drift prevention** (creating automated detection scripts and establishing tracking mechanisms for technical debt and pre-launch readiness).
+All 5 Week 3 Codex compliance tasks have been successfully completed for the
+Cohortix platform. This week focused on **CI/CD hardening** (adding Snyk
+dependency scanning and Lighthouse performance budgets) and **drift prevention**
+(creating automated detection scripts and establishing tracking mechanisms for
+technical debt and pre-launch readiness).
 
 **Key Deliverables:**
+
 1. ✅ Snyk dependency scanning integrated into CI/CD pipeline
 2. ✅ Lighthouse CI performance budgets configured and enforced
 3. ✅ Drift detection automation script + weekly checklist
@@ -27,12 +32,14 @@ All 5 Week 3 Codex compliance tasks have been successfully completed for the Coh
 **File Modified:** `.github/workflows/ci.yml`
 
 **Changes:**
+
 - Added `snyk-scan` job to PR stage (runs on every pull request)
 - Configured to fail on high/critical vulnerabilities that are upgradable
 - Set `continue-on-error: true` for gradual rollout (allows failures initially)
 - Integrated with GitHub Code Scanning via SARIF upload
 
 **Enhanced Semgrep SAST:**
+
 - Added OWASP Top 10 rulesets (`p/owasp-top-ten`)
 - Added supply chain security rules (`p/supply-chain`)
 - Added XSS and SQL injection specific rules
@@ -90,10 +97,12 @@ snyk-scan:
 ### What Was Implemented
 
 **Files Created:**
+
 - `.github/workflows/lighthouse.yml` — GitHub Actions workflow
 - `lighthouserc.json` — Lighthouse CI configuration with performance budgets
 
 **Features:**
+
 - Runs on every PR that modifies frontend code
 - Measures Core Web Vitals against Codex thresholds:
   - **LCP (Largest Contentful Paint):** <2.5s
@@ -107,6 +116,7 @@ snyk-scan:
 ### Lighthouse Budgets Configured
 
 **Core Web Vitals (Codex §3.5.1):**
+
 ```json
 "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
 "max-potential-fid": ["error", { "maxNumericValue": 200 }],
@@ -116,12 +126,14 @@ snyk-scan:
 ```
 
 **Resource Budgets:**
+
 ```json
 "total-byte-weight": ["warn", { "maxNumericValue": 512000 }],
 "dom-size": ["warn", { "maxNumericValue": 1500 }]
 ```
 
 **Accessibility (WCAG 2.2 AA):**
+
 - Color contrast: Error
 - Image alt text: Error
 - ARIA attributes: Error
@@ -151,6 +163,7 @@ npx lighthouse-ci autorun --config=lighthouserc.json
 ### What Was Implemented
 
 **Files Created:**
+
 - `scripts/drift-detection.sh` — Automated drift detection script (executable)
 - `docs/DRIFT-PREVENTION-CHECKLIST.md` — Weekly manual checklist
 
@@ -184,6 +197,7 @@ The script performs **5 categories of drift detection:**
    - Monitors coverage trends
 
 **Output:**
+
 - 🟢 Green: No drift detected
 - 🟡 Yellow: Warnings (review but not blocking)
 - 🔴 Red: Critical drift (requires immediate action)
@@ -196,6 +210,7 @@ cd ~/Projects/cohortix
 ```
 
 **Recommended Cron Schedule:**
+
 ```bash
 # Add to crontab: Weekly drift detection (Mondays 9 AM)
 0 9 * * 1 cd ~/Projects/cohortix && ./scripts/drift-detection.sh | tee -a logs/drift-$(date +\%Y-\%m-\%d).log
@@ -203,7 +218,9 @@ cd ~/Projects/cohortix
 
 ### Manual Checklist
 
-`docs/DRIFT-PREVENTION-CHECKLIST.md` provides a **weekly manual review checklist** covering:
+`docs/DRIFT-PREVENTION-CHECKLIST.md` provides a **weekly manual review
+checklist** covering:
+
 - Dependency updates review (5 min)
 - Configuration alignment check (3 min)
 - Architectural pattern compliance (10 min)
@@ -226,6 +243,7 @@ cd ~/Projects/cohortix
 **File Created:** `docs/TECH-DEBT.md`
 
 **Features:**
+
 - 4-tier debt classification system (Critical / High / Medium / Low)
 - 11 cataloged debt items identified during Codex compliance audit
 - Each item includes:
@@ -240,17 +258,18 @@ cd ~/Projects/cohortix
 
 ### Current Debt Snapshot
 
-| Priority | Count | Examples |
-|----------|-------|----------|
-| **🔴 Critical** | 3 | Rate limiting, observability, test coverage |
-| **🟡 High** | 3 | Hardcoded config, OpenAPI docs, backup strategy |
-| **🟢 Medium** | 3 | Error handling, Server Component overuse, a11y testing |
-| **⚪ Low** | 2 | Turborepo optimization, design tokens |
-| **TOTAL** | 11 | ~39 days estimated effort |
+| Priority        | Count | Examples                                               |
+| --------------- | ----- | ------------------------------------------------------ |
+| **🔴 Critical** | 3     | Rate limiting, observability, test coverage            |
+| **🟡 High**     | 3     | Hardcoded config, OpenAPI docs, backup strategy        |
+| **🟢 Medium**   | 3     | Error handling, Server Component overuse, a11y testing |
+| **⚪ Low**      | 2     | Turborepo optimization, design tokens                  |
+| **TOTAL**       | 11    | ~39 days estimated effort                              |
 
 ### Debt Prevention Strategies
 
 The log includes:
+
 - **Definition of Done (DoD) enforcement** for all PRs
 - **Quarterly debt review** process
 - **Debt budget** (max 3 critical, max 5 high-priority items)
@@ -264,7 +283,8 @@ The log includes:
 - Percentage of sprints with remediation work
 - Debt by category distribution
 
-**Goal:** Reduce critical debt to 0 before launch, maintain <5 high-priority items.
+**Goal:** Reduce critical debt to 0 before launch, maintain <5 high-priority
+items.
 
 ### Reference
 
@@ -280,6 +300,7 @@ The log includes:
 **File Created:** `docs/PRE-LAUNCH-CHECKLIST.md`
 
 **Features:**
+
 - **65 checklist items** across 8 categories
 - Priority marking: 🔴 MUST complete, 🟡 SHOULD complete
 - Go/No-Go decision matrix
@@ -289,21 +310,22 @@ The log includes:
 
 ### Checklist Categories
 
-| Category | Items | Critical | Should |
-|----------|-------|----------|--------|
-| **1. Security** | 12 | 11 | 1 |
-| **2. Performance** | 8 | 6 | 2 |
-| **3. Quality Assurance** | 10 | 7 | 3 |
-| **4. Infrastructure** | 9 | 7 | 2 |
-| **5. Compliance** | 7 | 5 | 2 |
-| **6. Operations** | 8 | 6 | 2 |
-| **7. Documentation** | 6 | 5 | 1 |
-| **8. Business Readiness** | 5 | 4 | 1 |
-| **TOTAL** | **65** | **51** | **14** |
+| Category                  | Items  | Critical | Should |
+| ------------------------- | ------ | -------- | ------ |
+| **1. Security**           | 12     | 11       | 1      |
+| **2. Performance**        | 8      | 6        | 2      |
+| **3. Quality Assurance**  | 10     | 7        | 3      |
+| **4. Infrastructure**     | 9      | 7        | 2      |
+| **5. Compliance**         | 7      | 5        | 2      |
+| **6. Operations**         | 8      | 6        | 2      |
+| **7. Documentation**      | 6      | 5        | 1      |
+| **8. Business Readiness** | 5      | 4        | 1      |
+| **TOTAL**                 | **65** | **51**   | **14** |
 
 ### Launch Criteria
 
 **Go / No-Go Thresholds:**
+
 - ✅ 100% of critical items (🔴) complete
 - ✅ ≥80% of should items (🟡) complete
 - ✅ Test coverage ≥80%
@@ -322,6 +344,7 @@ The log includes:
 ### Post-Launch Monitoring
 
 **Critical Metrics (First 48 Hours):**
+
 - Error rate: <0.1% (alert >1%)
 - API latency (p95): <500ms (alert >1000ms)
 - Signup success rate: >95% (alert <90%)
@@ -349,66 +372,80 @@ The log includes:
 ### 1. Snyk Integration
 
 **Pattern:**
+
 - Use `snyk/actions/node@master` for Node.js projects
 - Set `severity-threshold=high` to avoid noise from low/medium issues
 - Use `fail-on=upgradable` to only block when patches are available
 - Start with `continue-on-error: true` for gradual rollout
 - Upload SARIF to GitHub Code Scanning for centralized vulnerability tracking
 
-**Gotcha:** Requires `SNYK_TOKEN` secret. Free tier limits: 200 tests/month (sufficient for most projects).
+**Gotcha:** Requires `SNYK_TOKEN` secret. Free tier limits: 200 tests/month
+(sufficient for most projects).
 
 ### 2. Lighthouse CI Performance Budgets
 
 **Pattern:**
+
 - Run 3+ tests per URL for consistent results (averages out variance)
 - Use desktop preset with realistic throttling (40ms RTT, 10Mbps throughput)
 - Separate warnings (e.g., bundle size) from errors (Core Web Vitals)
 - Include accessibility assertions alongside performance
 - Upload artifacts for historical tracking and trend analysis
 
-**Gotcha:** Lighthouse requires the app to be running. Use `startServerCommand` and `startServerReadyPattern` in config.
+**Gotcha:** Lighthouse requires the app to be running. Use `startServerCommand`
+and `startServerReadyPattern` in config.
 
 ### 3. Drift Detection Automation
 
 **Pattern:**
-- Check multiple drift categories (dependency, config, architectural, docs, testing)
+
+- Check multiple drift categories (dependency, config, architectural, docs,
+  testing)
 - Use color-coded output for quick assessment (red/yellow/green)
 - Provide actionable recommendations, not just detection
 - Track metrics over time (drift incident count, MTTR)
 - Run weekly via cron, not just on-demand
 
-**Gotcha:** Script assumes `pnpm`, `jq`, and `coverage/coverage-summary.json` exist. Add error handling if tools are missing.
+**Gotcha:** Script assumes `pnpm`, `jq`, and `coverage/coverage-summary.json`
+exist. Add error handling if tools are missing.
 
 ### 4. Technical Debt Management
 
 **Pattern:**
+
 - 4-tier classification (Critical/High/Medium/Low) with clear thresholds
-- Each item has: ID, category, impact, root cause, effort estimate, owner, target date
+- Each item has: ID, category, impact, root cause, effort estimate, owner,
+  target date
 - Enforce debt budget (max 3 critical, max 5 high-priority)
 - Allocate 10-20% of sprint capacity to remediation
 - Conduct root cause analysis to prevent recurring debt
 
-**Gotcha:** Debt log must be actively maintained or it becomes stale. Review in sprint planning and retrospectives.
+**Gotcha:** Debt log must be actively maintained or it becomes stale. Review in
+sprint planning and retrospectives.
 
 ### 5. Pre-Launch Readiness
 
 **Pattern:**
+
 - Separate MUST (🔴) from SHOULD (🟡) items
 - Group into categories (Security, Performance, QA, Infrastructure, etc.)
 - Define clear Go/No-Go criteria with measurable thresholds
 - Include staged rollout plan (Private Beta → Public Beta → GA)
 - Plan post-launch monitoring (first 48 hours critical)
 
-**Gotcha:** 65 items can feel overwhelming. Use this as a **tracking document**, not a "complete all at once" checklist. Distribute across sprints.
+**Gotcha:** 65 items can feel overwhelming. Use this as a **tracking document**,
+not a "complete all at once" checklist. Distribute across sprints.
 
 ---
 
 ## Files Modified/Created
 
 ### Modified Files
+
 - `.github/workflows/ci.yml` — Added Snyk scan + enhanced Semgrep
 
 ### New Files
+
 1. `.github/workflows/lighthouse.yml` — Lighthouse CI workflow
 2. `lighthouserc.json` — Performance budgets configuration
 3. `scripts/drift-detection.sh` — Automated drift detection (executable)
@@ -431,7 +468,8 @@ The log includes:
 
 ### Week 4 (Upcoming)
 
-1. **Implement critical debt items** (rate limiting, observability, test coverage)
+1. **Implement critical debt items** (rate limiting, observability, test
+   coverage)
 2. **Configure weekly cron** for drift detection
 3. **Begin filling out pre-launch checklist** (allocate items to sprints)
 4. **Add performance budgets** to package.json scripts for local testing
@@ -447,14 +485,14 @@ The log includes:
 
 ## Success Metrics
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| **Week 3 Tasks Complete** | 5/5 | 5/5 | ✅ Complete |
-| **Security Gates Active** | 4 | 4 (TruffleHog, Semgrep, pnpm audit, Snyk) | ✅ Complete |
-| **Performance Budgets Enforced** | Yes | Yes (Lighthouse CI) | ✅ Complete |
-| **Drift Detection Automated** | Yes | Yes (script + checklist) | ✅ Complete |
-| **Technical Debt Cataloged** | Yes | 11 items | ✅ Complete |
-| **Pre-Launch Checklist Defined** | Yes | 65 items | ✅ Complete |
+| Metric                           | Target | Current                                   | Status      |
+| -------------------------------- | ------ | ----------------------------------------- | ----------- |
+| **Week 3 Tasks Complete**        | 5/5    | 5/5                                       | ✅ Complete |
+| **Security Gates Active**        | 4      | 4 (TruffleHog, Semgrep, pnpm audit, Snyk) | ✅ Complete |
+| **Performance Budgets Enforced** | Yes    | Yes (Lighthouse CI)                       | ✅ Complete |
+| **Drift Detection Automated**    | Yes    | Yes (script + checklist)                  | ✅ Complete |
+| **Technical Debt Cataloged**     | Yes    | 11 items                                  | ✅ Complete |
+| **Pre-Launch Checklist Defined** | Yes    | 65 items                                  | ✅ Complete |
 
 **Overall Week 3 Status:** ✅ **COMPLETE**
 
@@ -464,13 +502,13 @@ The log includes:
 
 ### Codex Alignment Check
 
-| Codex Section | Requirement | Implementation | Status |
-|---------------|-------------|----------------|--------|
-| **§4.9** | Security gates (Snyk, SAST, secrets) | Snyk + Semgrep + TruffleHog + pnpm audit | ✅ |
-| **§3.5.1** | Core Web Vitals budgets | Lighthouse CI with LCP/INP/CLS thresholds | ✅ |
-| **§5.3** | Drift prevention & detection | Automated script + weekly checklist | ✅ |
-| **§5.4** | Technical debt management | Debt log with classification and tracking | ✅ |
-| **§5.7** | Production readiness checklist | 65-item checklist across 8 categories | ✅ |
+| Codex Section | Requirement                          | Implementation                            | Status |
+| ------------- | ------------------------------------ | ----------------------------------------- | ------ |
+| **§4.9**      | Security gates (Snyk, SAST, secrets) | Snyk + Semgrep + TruffleHog + pnpm audit  | ✅     |
+| **§3.5.1**    | Core Web Vitals budgets              | Lighthouse CI with LCP/INP/CLS thresholds | ✅     |
+| **§5.3**      | Drift prevention & detection         | Automated script + weekly checklist       | ✅     |
+| **§5.4**      | Technical debt management            | Debt log with classification and tracking | ✅     |
+| **§5.7**      | Production readiness checklist       | 65-item checklist across 8 categories     | ✅     |
 
 **Compliance Score:** 5/5 (100%)
 
@@ -486,10 +524,11 @@ The log includes:
 
 ## Revision History
 
-| Date | Change | Author |
-|------|--------|--------|
+| Date       | Change                 | Author           |
+| ---------- | ---------------------- | ---------------- |
 | 2026-02-11 | Week 3 tasks completed | Guardian (Hafiz) |
 
 ---
 
-*For questions or follow-up, contact Guardian (Hafiz) via Discord #platform-health or #dev-general.*
+_For questions or follow-up, contact Guardian (Hafiz) via Discord
+#platform-health or #dev-general._

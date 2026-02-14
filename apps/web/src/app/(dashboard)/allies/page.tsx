@@ -1,6 +1,6 @@
-import { AlliesTableClient } from '@/components/allies/allies-table-client'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { AlliesTableClient } from '@/components/allies/allies-table-client';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 export default function AlliesPage() {
   return (
@@ -19,5 +19,5 @@ export default function AlliesPage() {
       </div>
       <AlliesTableClient />
     </div>
-  )
+  );
 }

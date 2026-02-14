@@ -11,34 +11,48 @@
 
 ### Core Philosophy: "Agent-First, Human-Friendly"
 
-Cohortix is not a traditional PM tool — it's a **control center for AI teammates**. Every design decision reinforces this unique positioning:
+Cohortix is not a traditional PM tool — it's a **control center for AI
+teammates**. Every design decision reinforces this unique positioning:
 
 #### **1.1 Clarity Over Cleverness**
-- Information hierarchy is sacred: Users should instantly understand what's happening
-- No mystery states — every ally status, mission progress, and goal health must be transparent
-- Avoid UI patterns that require explanation; the interface should feel intuitive
+
+- Information hierarchy is sacred: Users should instantly understand what's
+  happening
+- No mystery states — every ally status, mission progress, and goal health must
+  be transparent
+- Avoid UI patterns that require explanation; the interface should feel
+  intuitive
 
 #### **1.2 Generous, Not Cluttered**
-- Whitespace is functional, not decorative — it creates breathing room for cognitive processing
-- Density serves a purpose: Lists can be dense when scanning; cards are spacious when decision-making
+
+- Whitespace is functional, not decorative — it creates breathing room for
+  cognitive processing
+- Density serves a purpose: Lists can be dense when scanning; cards are spacious
+  when decision-making
 - Every pixel earns its place; avoid decoration for decoration's sake
 
 #### **1.3 Allies Are Teammates, Not Tools**
-- Ally profiles have warmth and personality (avatars, status rings, skill badges)
-- Status language is human: "On Mission" / "Standing By" / "Off Duty" (not "Running" / "Idle" / "Offline")
+
+- Ally profiles have warmth and personality (avatars, status rings, skill
+  badges)
+- Status language is human: "On Mission" / "Standing By" / "Off Duty" (not
+  "Running" / "Idle" / "Offline")
 - Celebrate ally wins: Mission accomplished states are joyful, not clinical
 
 #### **1.4 Progressive Disclosure**
+
 - Show essentials first; reveal details on demand
 - Card views prioritize quick scanning; detail views provide depth
 - Don't overwhelm new users; guide them progressively into power features
 
 #### **1.5 Speed and Responsiveness**
+
 - Interactions feel instant (< 100ms perceived latency)
 - Loading states are friendly, not frustrating
 - Optimistic UI updates wherever possible
 
 #### **1.6 Designed for Dark Mode**
+
 - Not a dark mode "theme" — it's a first-class experience
 - Colors maintain semantic meaning in both modes
 - Contrast ratios meet WCAG AA standards in both themes
@@ -147,18 +161,22 @@ z-index: {
 #### **Sidebar Navigation**
 
 **Structure:**
+
 - Logo/Brand (top, 64px height)
 - Primary navigation items (with icons)
 - Active Missions section (collapsible)
 - Settings/Help/Profile (bottom)
 
 **States:**
+
 - Default: Gray text, icon
 - Hover: Primary-50 background, darker text
-- Active: Primary-100 background, primary-700 text, 3px left border (primary-500)
+- Active: Primary-100 background, primary-700 text, 3px left border
+  (primary-500)
 - Badge: Notification count (red dot or number)
 
 **Visual Specs:**
+
 - Item height: 40px
 - Padding: 12px 16px
 - Icon size: 20px
@@ -172,6 +190,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 ```
 
 **Visual Specs:**
+
 - Font: text-sm (14px)
 - Color: neutral-600 (dark mode: neutral-400)
 - Separator: `/` with 8px margin on each side
@@ -181,10 +200,12 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 #### **Tabs**
 
 **Variants:**
+
 - **Line Tabs (default):** Underline indicator, for secondary navigation
 - **Pill Tabs:** Background highlight, for filter/view switching
 
 **Line Tabs Visual Specs:**
+
 - Tab height: 48px
 - Bottom border: 2px solid primary-500 (active), neutral-200 (inactive)
 - Text: font-medium, neutral-600 (inactive), neutral-900 (active)
@@ -195,6 +216,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 #### **Mission/Goal Card**
 
 **Anatomy:**
+
 ```
 ┌─────────────────────────────────┐
 │ 📁 Icon    ● Active (badge)     │ ← Header (48px)
@@ -209,6 +231,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 ```
 
 **Visual Specs:**
+
 - Card dimensions: Min-height 220px, aspect ratio ~ 1:1.2
 - Background: white (dark mode: neutral-900)
 - Border: 1px solid neutral-200 (dark mode: neutral-800)
@@ -218,8 +241,10 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 - Hover: Transform translateY(-2px), transition 200ms
 
 **Status Badge:**
+
 - Position: Top-right
-- Variants: Active (green dot), Backlog (orange), Completed (blue), Planned (gray)
+- Variants: Active (green dot), Backlog (orange), Completed (blue), Planned
+  (gray)
 - Size: text-xs, px-2 py-1, rounded-full
 - Background: Semantic color-50 (dark mode: color-900/20)
 - Text: Semantic color-700 (dark mode: color-300)
@@ -227,6 +252,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 #### **Ally Card**
 
 **Anatomy:**
+
 ```
 ┌─────────────────────────────────┐
 │         👤                      │ ← Avatar (80px, centered)
@@ -242,14 +268,18 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 ```
 
 **Visual Specs:**
+
 - Card dimensions: 280px x 320px
-- Avatar: 80px circle, with 3px status ring (green = On Mission, gray = Standing By, red = Off Duty)
-- Skill pills: text-xs, px-2 py-1, rounded-full, primary-100 bg, primary-700 text
+- Avatar: 80px circle, with 3px status ring (green = On Mission, gray = Standing
+  By, red = Off Duty)
+- Skill pills: text-xs, px-2 py-1, rounded-full, primary-100 bg, primary-700
+  text
 - Workload meter: Progress bar, 4px height, primary-500 fill
 
 #### **Mission Card (Kanban)**
 
 **Anatomy:**
+
 ```
 ┌─────────────────────────────────┐
 │ ⋮⋮ Mission Title (draggable)    │ ← Header with drag handle
@@ -264,6 +294,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 ```
 
 **Visual Specs:**
+
 - Card dimensions: Full column width, min-height 140px
 - Background: white (dark mode: neutral-900)
 - Border: 1px solid neutral-200
@@ -275,6 +306,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 #### **Knowledge/Intel Card**
 
 **Anatomy:**
+
 ```
 ┌─────────────────────────────────┐
 │ 💡 Insight Title                │
@@ -289,6 +321,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 ```
 
 **Visual Specs:**
+
 - Background: accent-50 (light purple tint)
 - Border: 1px solid accent-200
 - Border-left: 4px solid accent-500 (accent strip)
@@ -297,6 +330,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 #### **Client Card**
 
 **Anatomy:**
+
 ```
 ┌─────────────────────────────────┐
 │ 🏢 Client Logo / Icon           │
@@ -316,6 +350,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 #### **Status Badges**
 
 **Variants:**
+
 ```javascript
 statusBadges: {
   'active':    { color: 'success', dot: 'green',  label: 'Active' },
@@ -329,6 +364,7 @@ statusBadges: {
 ```
 
 **Visual Specs:**
+
 - Dot: 6px circle, inline with text, 6px margin-right
 - Text: text-xs, font-medium
 - Container: px-2.5 py-1, rounded-full, semantic bg color
@@ -336,11 +372,13 @@ statusBadges: {
 #### **Progress Rings/Circles**
 
 **Use Cases:**
+
 - Goal completion percentage
 - Ally workload meter
 - Mission progress
 
 **Visual Specs:**
+
 - Size: 48px (default), 32px (compact), 64px (large)
 - Stroke width: 4px
 - Background stroke: neutral-200 (dark mode: neutral-700)
@@ -352,6 +390,7 @@ statusBadges: {
 **Use Cases:** Goal health, system health, ally performance
 
 **Visual Specs:**
+
 - Horizontal bar, 8px height, rounded-full
 - Background: neutral-200
 - Fill: Gradient based on health
@@ -362,6 +401,7 @@ statusBadges: {
 #### **Priority Indicators**
 
 **Visual Specs:**
+
 - Icon + Label (e.g., `📊 High`)
 - Colors:
   - **Urgent:** danger-600 (red)
@@ -376,6 +416,7 @@ statusBadges: {
 **Use Cases:** Mission lists, ally directory (list view), audit logs
 
 **Visual Specs:**
+
 - Header: font-medium, text-sm, neutral-700, border-bottom 2px neutral-200
 - Row: text-sm, neutral-900, hover:bg-neutral-50, 48px min-height
 - Cell padding: px-4 py-3
@@ -387,6 +428,7 @@ statusBadges: {
 #### **Activity Feed**
 
 **Structure:**
+
 ```
 ┌─────────────────────────────────┐
 │ 👤  Riley completed Mission #42 │
@@ -399,6 +441,7 @@ statusBadges: {
 ```
 
 **Visual Specs:**
+
 - Item: py-3, border-bottom 1px neutral-200
 - Icon: 20px, left-aligned, neutral-400
 - Text: text-sm, neutral-700
@@ -408,6 +451,7 @@ statusBadges: {
 #### **Timeline (Gantt-style)**
 
 **Visual Specs:**
+
 - Header: Month/week labels, text-xs, neutral-600
 - Row height: 48px
 - Bar: 8px height, rounded, primary-500 fill
@@ -419,6 +463,7 @@ statusBadges: {
 #### **Text Input**
 
 **Visual Specs:**
+
 - Height: 40px
 - Padding: px-3
 - Border: 1px solid neutral-300 (hover: neutral-400, focus: primary-500)
@@ -428,17 +473,20 @@ statusBadges: {
 - Focus ring: 3px primary-200 shadow
 
 **States:**
+
 - Default, Hover, Focus, Disabled (opacity-50), Error (border-danger-500)
 
 #### **Select Dropdown**
 
 **Visual Specs:**
+
 - Same as text input, with chevron-down icon (right-aligned, 16px)
 - Dropdown menu: shadow-lg, border 1px neutral-200, max-height 300px, scroll
 
 #### **Toggle Switch**
 
 **Visual Specs:**
+
 - Width: 44px, height: 24px
 - Track: rounded-full, neutral-300 (off), primary-500 (on)
 - Circle: 20px, absolute, left-0.5 (off), right-0.5 (on)
@@ -447,6 +495,7 @@ statusBadges: {
 #### **Search Bar**
 
 **Visual Specs:**
+
 - Height: 40px (compact), 48px (prominent)
 - Icon: Magnifying glass (left, 20px, neutral-400)
 - Padding: pl-10 pr-3
@@ -459,10 +508,12 @@ statusBadges: {
 **Use Cases:** Mission descriptions, comments, intel notes
 
 **Visual Specs:**
+
 - Toolbar: bg-neutral-50, border-bottom 1px neutral-200, 48px height
 - Toolbar buttons: 32px square, rounded-md, hover:bg-neutral-200
 - Content area: min-height 200px, p-4, border 1px neutral-300, rounded-b-lg
-- Syntax highlighting for code blocks: Fira Code font, bg-neutral-900, text-neutral-100
+- Syntax highlighting for code blocks: Fira Code font, bg-neutral-900,
+  text-neutral-100
 
 ### 3.6 Modals, Dialogs, Sheets
 
@@ -471,19 +522,22 @@ statusBadges: {
 **Use Cases:** Confirm actions, create new ally, mission detail (mobile)
 
 **Visual Specs:**
+
 - Backdrop: bg-black/50, fixed inset-0
 - Container: max-w-lg (512px), bg-white, rounded-xl, shadow-2xl
 - Header: px-6 py-4, border-bottom 1px neutral-200
 - Content: px-6 py-4, max-height 70vh, overflow-y-auto
 - Footer: px-6 py-4, border-top 1px neutral-200, flex justify-end gap-3
 
-**Animation:** Fade in backdrop (200ms), scale + fade modal (300ms, cubic-bezier)
+**Animation:** Fade in backdrop (200ms), scale + fade modal (300ms,
+cubic-bezier)
 
 #### **Sheet (Side Panel)**
 
 **Use Cases:** Filters, settings, mission properties
 
 **Visual Specs:**
+
 - Width: 400px (desktop), 100vw (mobile)
 - Background: white, shadow-2xl
 - Position: Fixed right-0 top-0 bottom-0
@@ -494,6 +548,7 @@ statusBadges: {
 **Use Cases:** Tooltips, quick actions, date pickers
 
 **Visual Specs:**
+
 - max-w-xs (320px), bg-white, rounded-lg, shadow-lg, border 1px neutral-200
 - Arrow: 8px triangle, same bg and border
 - Padding: p-3
@@ -503,6 +558,7 @@ statusBadges: {
 #### **Ally Profile (Full)**
 
 **Sections:**
+
 1. **Header**
    - Avatar (120px) with status ring
    - Name (text-2xl, font-bold)
@@ -527,6 +583,7 @@ statusBadges: {
    - Intel contributed (count)
 
 **Visual Specs:**
+
 - Container: max-w-4xl, mx-auto
 - Sections: py-6, border-bottom 1px neutral-200
 - Timeline dots: 12px circle, primary-500, connected by 2px vertical line
@@ -534,7 +591,9 @@ statusBadges: {
 #### **Ally Avatar with Status Ring**
 
 **Visual Specs:**
-- Avatar: Circle, sizes: 32px (small), 48px (default), 80px (large), 120px (profile)
+
+- Avatar: Circle, sizes: 32px (small), 48px (default), 80px (large), 120px
+  (profile)
 - Ring: 3px thick, 4px gap from avatar
 - Ring colors:
   - Green (success-500): On Mission
@@ -545,6 +604,7 @@ statusBadges: {
 #### **Skill Badge/Pill**
 
 **Visual Specs:**
+
 - Background: primary-100 (dark mode: primary-900/30)
 - Text: primary-700 (dark mode: primary-300)
 - Font: text-xs, font-medium
@@ -555,6 +615,7 @@ statusBadges: {
 #### **Expertise Meter**
 
 **Visual Specs:**
+
 - Label: text-sm, font-medium, neutral-700
 - Bar: 8px height, rounded-full, bg-neutral-200
 - Fill: Gradient primary-400 → primary-600
@@ -563,6 +624,7 @@ statusBadges: {
 #### **Evolution Timeline**
 
 **Structure:**
+
 ```
 ┌─────────────────────────────────┐
 │ ● Completed "Advanced React"    │
@@ -576,6 +638,7 @@ statusBadges: {
 ```
 
 **Visual Specs:**
+
 - Dots: 12px circle, primary-500
 - Line: 2px, neutral-300, connecting dots
 - Text: text-sm, neutral-700
@@ -589,8 +652,9 @@ statusBadges: {
 ### 4.1 Brand Colors (from Tailwind Preset)
 
 #### **Primary: Blue-Violet (Linear-Inspired)**
-Main brand color, used for primary actions, active states, links.
-Inspired by Linear.app's homepage — leans blue, not purple.
+
+Main brand color, used for primary actions, active states, links. Inspired by
+Linear.app's homepage — leans blue, not purple.
 
 ```javascript
 primary: {
@@ -609,6 +673,7 @@ primary: {
 ```
 
 #### **Secondary: Cool Gray**
+
 Complementary to primary, used for secondary actions, borders, subtle UI.
 
 ```javascript
@@ -620,6 +685,7 @@ secondary: {
 ```
 
 #### **Accent: Cyan-Blue**
+
 Used for knowledge sources, highlights, special badges.
 
 ```javascript
@@ -633,6 +699,7 @@ accent: {
 ### 4.2 Semantic Colors
 
 #### **Success (Green)**
+
 Mission completed, positive status, ally available.
 
 ```javascript
@@ -645,6 +712,7 @@ success: {
 ```
 
 #### **Warning (Orange)**
+
 Attention needed, medium priority, backlog.
 
 ```javascript
@@ -657,6 +725,7 @@ warning: {
 ```
 
 #### **Danger (Red)**
+
 Errors, blocked missions, critical priority, off duty.
 
 ```javascript
@@ -669,6 +738,7 @@ danger: {
 ```
 
 #### **Info (Blue)**
+
 Informational messages, completed state (alternative), neutral highlights.
 
 ```javascript
@@ -711,15 +781,17 @@ neutral: {
 ### 4.4 Usage Guidelines
 
 #### **Text Hierarchy (Light Mode)**
+
 ```javascript
-heading: 'neutral-900'
-body: 'neutral-700'
-secondary: 'neutral-600'
-placeholder: 'neutral-400'
-disabled: 'neutral-400'
+heading: 'neutral-900';
+body: 'neutral-700';
+secondary: 'neutral-600';
+placeholder: 'neutral-400';
+disabled: 'neutral-400';
 ```
 
 #### **Backgrounds (Light Mode)**
+
 ```javascript
 page: 'white' or 'neutral-50'
 card: 'white'
@@ -729,6 +801,7 @@ sidebar: 'neutral-100'
 ```
 
 #### **Borders (Light Mode)**
+
 ```javascript
 default: 'neutral-200'
 hover: 'neutral-300'
@@ -768,38 +841,39 @@ fontFamily: {
 ### 5.3 Font Weights
 
 ```javascript
-normal:    400  // Body text
-medium:    500  // Subtle emphasis
-semibold:  600  // Headings, buttons, labels
-bold:      700  // Strong emphasis
-extrabold: 800  // Rare (hero text only)
+normal: 400; // Body text
+medium: 500; // Subtle emphasis
+semibold: 600; // Headings, buttons, labels
+bold: 700; // Strong emphasis
+extrabold: 800; // Rare (hero text only)
 ```
 
 ### 5.4 Line Heights
 
 ```javascript
-tight:   1.25  // Headings
-normal:  1.5   // Body text
-relaxed: 1.75  // Long-form content
+tight: 1.25; // Headings
+normal: 1.5; // Body text
+relaxed: 1.75; // Long-form content
 ```
 
 ### 5.5 Typography Usage
 
-| Element | Size | Weight | Line Height | Color |
-|---------|------|--------|-------------|-------|
-| **Hero Heading** | 3xl / 4xl | bold | tight | neutral-900 |
-| **Page Heading** | 2xl | bold | tight | neutral-900 |
-| **Section Heading** | xl | semibold | tight | neutral-900 |
-| **Card Title** | lg | semibold | normal | neutral-900 |
-| **Body Text** | sm / base | normal | normal | neutral-700 |
-| **Caption** | xs | normal | normal | neutral-600 |
-| **Label** | sm | medium | normal | neutral-700 |
-| **Button Text** | sm / base | semibold | normal | (varies) |
-| **Code Block** | sm | normal | relaxed | neutral-100 (on dark bg) |
+| Element             | Size      | Weight   | Line Height | Color                    |
+| ------------------- | --------- | -------- | ----------- | ------------------------ |
+| **Hero Heading**    | 3xl / 4xl | bold     | tight       | neutral-900              |
+| **Page Heading**    | 2xl       | bold     | tight       | neutral-900              |
+| **Section Heading** | xl        | semibold | tight       | neutral-900              |
+| **Card Title**      | lg        | semibold | normal      | neutral-900              |
+| **Body Text**       | sm / base | normal   | normal      | neutral-700              |
+| **Caption**         | xs        | normal   | normal      | neutral-600              |
+| **Label**           | sm        | medium   | normal      | neutral-700              |
+| **Button Text**     | sm / base | semibold | normal      | (varies)                 |
+| **Code Block**      | sm        | normal   | relaxed     | neutral-100 (on dark bg) |
 
 ### 5.6 Code Block Styling
 
 **Visual Specs:**
+
 - Font: Fira Code, text-sm
 - Background: neutral-900 (light mode), neutral-950 (dark mode)
 - Text: neutral-100
@@ -813,7 +887,8 @@ relaxed: 1.75  // Long-form content
 
 ### 6.1 Base Unit: 8px
 
-All spacing follows an 8px base unit for visual consistency and developer ergonomics.
+All spacing follows an 8px base unit for visual consistency and developer
+ergonomics.
 
 ```javascript
 spacing: {
@@ -836,6 +911,7 @@ spacing: {
 ### 6.2 Consistent Padding/Gap Rules
 
 #### **Cards**
+
 ```javascript
 padding: {
   compact: '16px',   // Small cards
@@ -845,6 +921,7 @@ padding: {
 ```
 
 #### **Component Internal Spacing**
+
 ```javascript
 gap: {
   tight: '8px',      // Closely related elements (icon + label)
@@ -855,6 +932,7 @@ gap: {
 ```
 
 #### **Page/Container Padding**
+
 ```javascript
 padding: {
   mobile: '16px',
@@ -883,6 +961,7 @@ gap: {
 **Lucide Icons** (MIT license, 1000+ icons, perfect for shadcn/ui)
 
 **Why Lucide?**
+
 - Native React components
 - Consistent 24x24 stroke design
 - Excellent shadcn/ui compatibility
@@ -890,15 +969,17 @@ gap: {
 - Clean, modern aesthetic
 
 **Installation:**
+
 ```bash
 npm install lucide-react
 ```
 
 **Usage:**
-```jsx
-import { Home, Users, Target, Sparkles } from 'lucide-react'
 
-<Home className="w-5 h-5 text-neutral-600" />
+```jsx
+import { Home, Users, Target, Sparkles } from 'lucide-react';
+
+<Home className="w-5 h-5 text-neutral-600" />;
 ```
 
 ### 7.2 Icon Sizes
@@ -916,29 +997,29 @@ sizes: {
 
 ### 7.3 Core Icon Mapping
 
-| Concept | Icon (Lucide) | Usage |
-|---------|---------------|-------|
-| **Home / Dashboard** | `Home` | Sidebar nav, breadcrumbs |
-| **Allies** | `Users` | Ally directory, team |
-| **Goals** | `Target` | Goal creation, tracking |
-| **Goals** | `Briefcase` | Goal cards, nav |
-| **Missions** | `CheckSquare` | Mission cards, lists |
-| **Intel / Knowledge** | `Lightbulb` | Knowledge base, insights |
-| **Clients** | `Building2` | Client management |
-| **Settings** | `Settings` | Configuration, preferences |
-| **Add / Create** | `Plus` | Create buttons |
-| **Search** | `Search` | Search bars |
-| **Filter** | `Filter` | Filter controls |
-| **Notifications** | `Bell` | Alerts, updates |
-| **Calendar** | `Calendar` | Dates, schedules |
-| **Attachments** | `Paperclip` | Files, documents |
-| **Comments** | `MessageSquare` | Discussions, threads |
-| **AI / Ally** | `Sparkles` | AI-specific features |
-| **Status: Active** | `CircleDot` | Active missions/allies |
-| **Status: Completed** | `CheckCircle2` | Completed states |
-| **Status: Blocked** | `AlertCircle` | Errors, blockers |
-| **Priority: High** | `ArrowUp` | High priority indicator |
-| **Priority: Low** | `ArrowDown` | Low priority indicator |
+| Concept               | Icon (Lucide)   | Usage                      |
+| --------------------- | --------------- | -------------------------- |
+| **Home / Dashboard**  | `Home`          | Sidebar nav, breadcrumbs   |
+| **Allies**            | `Users`         | Ally directory, team       |
+| **Goals**             | `Target`        | Goal creation, tracking    |
+| **Goals**             | `Briefcase`     | Goal cards, nav            |
+| **Missions**          | `CheckSquare`   | Mission cards, lists       |
+| **Intel / Knowledge** | `Lightbulb`     | Knowledge base, insights   |
+| **Clients**           | `Building2`     | Client management          |
+| **Settings**          | `Settings`      | Configuration, preferences |
+| **Add / Create**      | `Plus`          | Create buttons             |
+| **Search**            | `Search`        | Search bars                |
+| **Filter**            | `Filter`        | Filter controls            |
+| **Notifications**     | `Bell`          | Alerts, updates            |
+| **Calendar**          | `Calendar`      | Dates, schedules           |
+| **Attachments**       | `Paperclip`     | Files, documents           |
+| **Comments**          | `MessageSquare` | Discussions, threads       |
+| **AI / Ally**         | `Sparkles`      | AI-specific features       |
+| **Status: Active**    | `CircleDot`     | Active missions/allies     |
+| **Status: Completed** | `CheckCircle2`  | Completed states           |
+| **Status: Blocked**   | `AlertCircle`   | Errors, blockers           |
+| **Priority: High**    | `ArrowUp`       | High priority indicator    |
+| **Priority: Low**     | `ArrowDown`     | Low priority indicator     |
 
 ### 7.4 Icon Colors
 
@@ -966,11 +1047,13 @@ iconColors: {
 <html className="dark">
 ```
 
-**shadcn/ui compatibility:** Uses CSS variables for theming, allowing smooth light/dark transitions.
+**shadcn/ui compatibility:** Uses CSS variables for theming, allowing smooth
+light/dark transitions.
 
 ### 8.2 Color Mappings
 
 #### **Backgrounds**
+
 ```javascript
 lightMode → darkMode
 
@@ -982,6 +1065,7 @@ lightMode → darkMode
 ```
 
 #### **Text**
+
 ```javascript
 'neutral-900' → 'neutral-50'
 'neutral-700' → 'neutral-200'
@@ -990,25 +1074,29 @@ lightMode → darkMode
 ```
 
 #### **Borders**
+
 ```javascript
 'neutral-200' → 'neutral-700'
 'neutral-300' → 'neutral-600'
 ```
 
 #### **Primary Colors**
-Primary, accent, and semantic colors **remain the same** in dark mode, but adjust opacity/saturation slightly:
+
+Primary, accent, and semantic colors **remain the same** in dark mode, but
+adjust opacity/saturation slightly:
 
 ```javascript
 // Light mode
-primary-500
+primary - 500;
 
 // Dark mode (slightly brighter)
-primary-400
+primary - 400;
 ```
 
 ### 8.3 Dark Mode Component Adjustments
 
 #### **Cards**
+
 ```css
 /* Light mode */
 bg-white border-neutral-200 shadow-sm
@@ -1020,6 +1108,7 @@ dark:bg-[#131316] dark:border-[#1F1F23] dark:shadow-none
 ```
 
 #### **Inputs**
+
 ```css
 /* Light mode */
 bg-white border-neutral-300 text-neutral-900
@@ -1029,6 +1118,7 @@ dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-100
 ```
 
 #### **Buttons (Primary)**
+
 ```css
 /* Light mode */
 bg-primary-500 text-white hover:bg-primary-600
@@ -1038,7 +1128,9 @@ dark:bg-primary-600 dark:text-white dark:hover:bg-primary-700
 ```
 
 #### **Shadows**
-Reduce or eliminate shadows in dark mode (they're less visible and can look muddy):
+
+Reduce or eliminate shadows in dark mode (they're less visible and can look
+muddy):
 
 ```css
 shadow-md dark:shadow-none
@@ -1050,7 +1142,8 @@ shadow-md dark:shadow-none
 
 **Icon:** Sun (light mode), Moon (dark mode)
 
-**Behavior:** 
+**Behavior:**
+
 - Persists preference in localStorage
 - Applies `.dark` class to `<html>` element
 - Smooth transition (200ms) on all color properties
@@ -1061,7 +1154,8 @@ shadow-md dark:shadow-none
 
 ### 9.1 Principles
 
-- **Purposeful:** Every animation serves a function (feedback, guidance, delight)
+- **Purposeful:** Every animation serves a function (feedback, guidance,
+  delight)
 - **Subtle:** Avoid distracting motion; animations should feel natural
 - **Fast:** Durations should be snappy (150-300ms for most interactions)
 - **Respectful:** Honor `prefers-reduced-motion` for accessibility
@@ -1092,6 +1186,7 @@ easing: {
 ### 9.4 Common Animations
 
 #### **Hover States**
+
 ```css
 /* Cards */
 transition: transform 200ms ease, shadow 200ms ease;
@@ -1105,15 +1200,22 @@ hover: bg-primary-600
 #### **Loading States**
 
 **Spinner:**
+
 ```jsx
 <div className="animate-spin rounded-full h-8 w-8 border-4 border-neutral-200 border-t-primary-500" />
 ```
 
 **Skeleton Loader:**
+
 ```css
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .skeleton {
@@ -1124,10 +1226,15 @@ hover: bg-primary-600
 ```
 
 **Progress Bar (Indeterminate):**
+
 ```css
 @keyframes indeterminate {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .progress-bar {
@@ -1136,11 +1243,16 @@ hover: bg-primary-600
 ```
 
 #### **Modal/Dialog Entry**
+
 ```css
 /* Backdrop */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Modal */
@@ -1155,21 +1267,33 @@ hover: bg-primary-600
   }
 }
 
-.modal-backdrop { animation: fadeIn 200ms ease; }
-.modal-content { animation: scaleIn 300ms cubic-bezier(0, 0, 0.2, 1); }
+.modal-backdrop {
+  animation: fadeIn 200ms ease;
+}
+.modal-content {
+  animation: scaleIn 300ms cubic-bezier(0, 0, 0.2, 1);
+}
 ```
 
 #### **Sheet/Drawer Entry**
+
 ```css
 @keyframes slideInRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
-.sheet { animation: slideInRight 300ms ease-out; }
+.sheet {
+  animation: slideInRight 300ms ease-out;
+}
 ```
 
 #### **Toast Notification**
+
 ```css
 @keyframes slideInBottom {
   from {
@@ -1182,17 +1306,27 @@ hover: bg-primary-600
   }
 }
 
-.toast { animation: slideInBottom 300ms ease-out; }
+.toast {
+  animation: slideInBottom 300ms ease-out;
+}
 ```
 
 #### **Ally Status Ring (On Mission)**
+
 ```css
 @keyframes pulse-ring {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
-.status-ring.on-mission { animation: pulse-ring 2s ease-in-out infinite; }
+.status-ring.on-mission {
+  animation: pulse-ring 2s ease-in-out infinite;
+}
 ```
 
 ### 9.5 Accessibility: Reduced Motion
@@ -1218,6 +1352,7 @@ hover: bg-primary-600
 **Purpose:** High-level overview of goals, allies, and recent activity
 
 **Layout Structure:**
+
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ Top Bar: Logo | Search | "Create Mission" | Notifications  │
@@ -1243,12 +1378,17 @@ hover: bg-primary-600
 ```
 
 **Key Elements:**
-- **Stats Cards** (row 1): Active Goals, Allies On Mission, Missions Completed Today
-- **Goal Grid** (row 2): 3-column grid of active goal cards (see Component Inventory)
-- **Activity Feed** (bottom-left): Real-time updates (scrollable, max 5 items visible)
+
+- **Stats Cards** (row 1): Active Goals, Allies On Mission, Missions Completed
+  Today
+- **Goal Grid** (row 2): 3-column grid of active goal cards (see Component
+  Inventory)
+- **Activity Feed** (bottom-left): Real-time updates (scrollable, max 5 items
+  visible)
 - **Milestones** (bottom-right): Upcoming deadlines and key dates
 
 **Responsive:**
+
 - **Desktop:** 3-column goal grid, side-by-side activity/milestones
 - **Tablet:** 2-column goal grid, stacked activity/milestones
 - **Mobile:** Sidebar hidden (hamburger menu), 1-column everything
@@ -1260,6 +1400,7 @@ hover: bg-primary-600
 **Purpose:** Browse, search, and manage all allies in the cohort
 
 **Layout Structure:**
+
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ Ally Directory                                             │
@@ -1278,15 +1419,19 @@ hover: bg-primary-600
 ```
 
 **Key Elements:**
+
 - **Search Bar:** Full-text search by name, role, skill
-- **Filters:** Status (All, On Mission, Standing By, Off Duty), Role (Developer, Designer, etc.)
+- **Filters:** Status (All, On Mission, Standing By, Off Duty), Role (Developer,
+  Designer, etc.)
 - **View Toggle:** Card view (default) / List view (table)
 - **Ally Cards:** 4-column grid (see Component Inventory > Ally Card)
 - **+ Recruit Button:** Primary CTA, opens ally creation modal
 
-**Click Behavior:** Clicking ally card opens full Ally Profile (modal or dedicated page)
+**Click Behavior:** Clicking ally card opens full Ally Profile (modal or
+dedicated page)
 
 **Responsive:**
+
 - **Desktop:** 4 columns
 - **Tablet:** 3 columns
 - **Mobile:** 1 column, stacked
@@ -1298,6 +1443,7 @@ hover: bg-primary-600
 **Purpose:** Deep-dive into a specific goal's missions, progress, and team
 
 **Layout Structure:**
+
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ < Back to Goals                                        │
@@ -1322,27 +1468,33 @@ hover: bg-primary-600
 ```
 
 **Key Elements:**
+
 - **Breadcrumbs:** Back navigation
 - **Goal Header:** Title, metadata, status badge, progress ring
 - **Tabs:** Overview, Missions (Kanban), Intel, Team, Settings
-- **Kanban Board:** 4 columns (Todo, In Progress, Review, Done), draggable mission cards
+- **Kanban Board:** 4 columns (Todo, In Progress, Review, Done), draggable
+  mission cards
 - **+ Add Mission:** Bottom of each column, opens mission creation modal
 
 **Overview Tab (Alternative View):**
+
 - Goal description (rich text)
 - Key metrics (progress %, missions completed, allies assigned)
 - Timeline visualization (Gantt chart)
 - Recent activity feed
 
 **Intel Tab:**
+
 - Grid of knowledge/intel cards captured during this goal
 - Search and filter capabilities
 
 **Team Tab:**
+
 - List of assigned allies with workload meters
-- + Assign Ally button
+- - Assign Ally button
 
 **Responsive:**
+
 - **Desktop:** 4-column Kanban
 - **Tablet:** Horizontal scroll for Kanban (or switch to list view)
 - **Mobile:** List view default (Kanban becomes impractical)
@@ -1354,6 +1506,7 @@ hover: bg-primary-600
 **Purpose:** Search and explore all intel captured by allies
 
 **Layout Structure:**
+
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ Intel • Your Organization's Knowledge Base                 │
@@ -1377,13 +1530,17 @@ hover: bg-primary-600
 ```
 
 **Key Elements:**
+
 - **Semantic Search Bar:** Main interaction, natural language queries
-- **Filters:** Source type (Research, Manual, Observation), Ally, Date range, Goal
+- **Filters:** Source type (Research, Manual, Observation), Ally, Date range,
+  Goal
 - **Sort:** Relevance (default), Recent, Most Referenced
 - **Knowledge Cards:** 3-column grid (see Component Inventory > Knowledge Card)
 - **Pagination:** Load more / infinite scroll
 
-**Click Behavior:** Clicking intel card opens full detail view (modal or dedicated page) with:
+**Click Behavior:** Clicking intel card opens full detail view (modal or
+dedicated page) with:
+
 - Full insight text
 - Source mission/goal link
 - Ally attribution
@@ -1391,6 +1548,7 @@ hover: bg-primary-600
 - Comments/discussion thread
 
 **Responsive:**
+
 - **Desktop:** 3 columns
 - **Tablet:** 2 columns
 - **Mobile:** 1 column
@@ -1402,6 +1560,7 @@ hover: bg-primary-600
 **Purpose:** View all goals, missions, and context for a specific client
 
 **Layout Structure:**
+
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ < Back to Clients                                          │
@@ -1432,14 +1591,18 @@ hover: bg-primary-600
 ```
 
 **Key Elements:**
-- **Client Header:** Logo/icon, name, metadata (industry, size, established date)
+
+- **Client Header:** Logo/icon, name, metadata (industry, size, established
+  date)
 - **Tabs:** Overview, Goals, Team, Intel, Settings
 - **Overview Tab:** Description, active goals, assigned allies, recent activity
 - **Goals Tab:** Full list/grid of all goals for this client
 - **Team Tab:** Allies assigned to this client with workload meters
-- **Intel Tab:** Client-scoped knowledge base (only intel from this client's goals)
+- **Intel Tab:** Client-scoped knowledge base (only intel from this client's
+  goals)
 
 **Responsive:**
+
 - **Desktop:** 3-column goal grid
 - **Tablet:** 2-column goal grid
 - **Mobile:** 1-column, stacked sections
@@ -1451,6 +1614,7 @@ hover: bg-primary-600
 **Purpose:** Configure user preferences, HQ settings, integrations, billing
 
 **Layout Structure:**
+
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ Settings                                                   │
@@ -1471,6 +1635,7 @@ hover: bg-primary-600
 ```
 
 **Key Elements:**
+
 - **Left Sidebar:** Section navigation (stacked links)
 - **Right Panel:** Section-specific settings (forms, toggles, lists)
 - **Profile:** Name, email, avatar, timezone, password
@@ -1482,6 +1647,7 @@ hover: bg-primary-600
 - **Danger Zone:** Delete account, leave HQ (red accents)
 
 **Responsive:**
+
 - **Desktop:** Side-by-side navigation + content
 - **Mobile:** Stack navigation above content, or use tabs
 
@@ -1489,11 +1655,13 @@ hover: bg-primary-600
 
 ### 10.7 Goal Creation Flow (Human + Ally Proposals)
 
-**Purpose:** Create new goals, with support for both human-initiated and ally-proposed goals
+**Purpose:** Create new goals, with support for both human-initiated and
+ally-proposed goals
 
 **Layout Structure (Modal/Sheet):**
 
 #### **Step 1: Goal Details**
+
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ Create New Goal                                      [X]   │
@@ -1548,19 +1716,25 @@ If an ally proposes a goal, it enters a "Pending Approval" state:
 ```
 
 **Human Actions:**
+
 - **Approve:** Goal is created and enters normal workflow
 - **Modify Scope:** Opens edit mode to adjust title, priority, deadline
-- **Reject:** Ally is notified, goal is discarded (with optional feedback comment)
+- **Reject:** Ally is notified, goal is discarded (with optional feedback
+  comment)
 - **Comment:** Opens discussion thread for clarification before deciding
 
 **Key Elements:**
-- Form fields: Title (required), Description (optional), Priority, Deadline, Client
-- Ally proposals include: Proposing ally, Reason/Justification, Suggested priority/effort
+
+- Form fields: Title (required), Description (optional), Priority, Deadline,
+  Client
+- Ally proposals include: Proposing ally, Reason/Justification, Suggested
+  priority/effort
 - Approval workflow: Approve / Modify / Reject / Comment buttons
 - Validation: Title required, priority defaults to Medium
 - Confirmation: Toast notification on success
 
 **Responsive:**
+
 - **Desktop:** Modal (max-w-lg)
 - **Mobile:** Full-screen sheet
 
@@ -1568,31 +1742,43 @@ If an ally proposes a goal, it enters a "Pending Approval" state:
 
 ## Summary
 
-This UI/UX Design System establishes a comprehensive foundation for Cohortix's visual language. Key decisions:
+This UI/UX Design System establishes a comprehensive foundation for Cohortix's
+visual language. Key decisions:
 
-1. **Agent-first philosophy:** Allies are treated as teammates, not tools, with warm, human-centric design patterns.
+1. **Agent-first philosophy:** Allies are treated as teammates, not tools, with
+   warm, human-centric design patterns.
 
-2. **Clean, card-based layouts:** Inspired by Linear/Notion/ClickUp, prioritizing generous whitespace and scannable information hierarchy.
+2. **Clean, card-based layouts:** Inspired by Linear/Notion/ClickUp,
+   prioritizing generous whitespace and scannable information hierarchy.
 
-3. **Purple/violet brand identity:** Carried through from existing Tailwind preset, extended into a full semantic color system.
+3. **Purple/violet brand identity:** Carried through from existing Tailwind
+   preset, extended into a full semantic color system.
 
-4. **Dark mode as first-class citizen:** Not an afterthought, with thoughtful color mappings and contrast ratios.
+4. **Dark mode as first-class citizen:** Not an afterthought, with thoughtful
+   color mappings and contrast ratios.
 
-5. **Lucide icons:** Modern, consistent, and perfectly aligned with shadcn/ui components.
+5. **Lucide icons:** Modern, consistent, and perfectly aligned with shadcn/ui
+   components.
 
-6. **8px spacing system:** Ensures visual consistency and developer ergonomics across all components.
+6. **8px spacing system:** Ensures visual consistency and developer ergonomics
+   across all components.
 
-7. **Purposeful motion:** Subtle, fast animations that guide attention without distracting.
+7. **Purposeful motion:** Subtle, fast animations that guide attention without
+   distracting.
 
-8. **Responsive-first:** Every layout and component designed to gracefully adapt from mobile to desktop.
+8. **Responsive-first:** Every layout and component designed to gracefully adapt
+   from mobile to desktop.
 
-9. **Accessibility baked in:** WCAG AA contrast ratios, reduced motion support, semantic HTML patterns.
+9. **Accessibility baked in:** WCAG AA contrast ratios, reduced motion support,
+   semantic HTML patterns.
 
-10. **Production-ready specs:** Every component includes precise dimensions, colors, spacing, and states for seamless handoff to developers.
+10. **Production-ready specs:** Every component includes precise dimensions,
+    colors, spacing, and states for seamless handoff to developers.
 
 ---
 
 **Next Steps:**
+
 - Review with Ahmad for strategic alignment
 - Share with Devi (AI Developer) for shadcn/ui implementation planning
 - Create Figma/Storybook component library (if needed)

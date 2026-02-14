@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import { useMemo } from 'react'
-import { type ColumnDef } from '@tanstack/react-table'
-import { DataTable, SortableHeader } from '@/components/ui/data-table'
-import { Button } from '@/components/ui/button'
-import { AgentStatusChip, type AgentStatus } from '@/components/ui/agent-status-chip'
-import { formatDate } from '@/lib/utils'
+import { useMemo } from 'react';
+import { type ColumnDef } from '@tanstack/react-table';
+import { DataTable, SortableHeader } from '@/components/ui/data-table';
+import { Button } from '@/components/ui/button';
+import { AgentStatusChip, type AgentStatus } from '@/components/ui/agent-status-chip';
+import { formatDate } from '@/lib/utils';
 
 export interface AllyRow {
-  id: string
-  name: string
-  role: string | null
-  status: AgentStatus
-  capabilities: string[]
-  totalTasksCompleted: number
-  lastActiveAt: string | null
+  id: string;
+  name: string;
+  role: string | null;
+  status: AgentStatus;
+  capabilities: string[];
+  totalTasksCompleted: number;
+  lastActiveAt: string | null;
 }
 
 interface AlliesTableProps {
-  data: AllyRow[]
+  data: AllyRow[];
 }
 
 export function AlliesTable({ data }: AlliesTableProps) {
@@ -46,8 +46,8 @@ export function AlliesTable({ data }: AlliesTableProps) {
         accessorKey: 'capabilities',
         header: 'Capabilities',
         cell: ({ row }) => {
-          const caps = row.getValue<string[]>('capabilities')
-          if (!caps?.length) return <span className="text-muted-foreground">—</span>
+          const caps = row.getValue<string[]>('capabilities');
+          if (!caps?.length) return <span className="text-muted-foreground">—</span>;
           return (
             <div className="flex flex-wrap gap-1">
               {caps.slice(0, 3).map((cap) => (
@@ -56,10 +56,12 @@ export function AlliesTable({ data }: AlliesTableProps) {
                 </span>
               ))}
               {caps.length > 3 && (
-                <span className="px-2 py-0.5 text-xs text-muted-foreground">+{caps.length - 3}</span>
+                <span className="px-2 py-0.5 text-xs text-muted-foreground">
+                  +{caps.length - 3}
+                </span>
               )}
             </div>
-          )
+          );
         },
       },
       {
@@ -75,13 +77,13 @@ export function AlliesTable({ data }: AlliesTableProps) {
         accessorKey: 'lastActiveAt',
         header: 'Last Active',
         cell: ({ row }) => {
-          const date = row.getValue<string | null>('lastActiveAt')
-          return <span className="text-muted-foreground">{date ? formatDate(date) : '—'}</span>
+          const date = row.getValue<string | null>('lastActiveAt');
+          return <span className="text-muted-foreground">{date ? formatDate(date) : '—'}</span>;
         },
       },
     ],
     []
-  )
+  );
 
   return (
     <DataTable
@@ -89,7 +91,9 @@ export function AlliesTable({ data }: AlliesTableProps) {
       data={data}
       searchKey="name"
       searchPlaceholder="Search allies..."
-      onRowClick={(ally) => { window.location.href = `/allies/${ally.id}` }}
+      onRowClick={(ally) => {
+        window.location.href = `/allies/${ally.id}`;
+      }}
       emptyMessage="No allies found."
       toolbar={(table) => (
         <div className="flex items-center gap-2">
@@ -103,11 +107,15 @@ export function AlliesTable({ data }: AlliesTableProps) {
               {s.charAt(0).toUpperCase() + s.slice(1)}
             </Button>
           ))}
-          <Button variant="outline" size="sm" onClick={() => table.getColumn('status')?.setFilterValue(undefined)}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.getColumn('status')?.setFilterValue(undefined)}
+          >
             All
           </Button>
         </div>
       )}
     />
-  )
+  );
 }

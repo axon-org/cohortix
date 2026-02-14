@@ -1,12 +1,12 @@
-import { TrendingUp, TrendingDown } from 'lucide-react'
-import { formatNumber, formatCurrency, formatPercentage } from '@/lib/utils'
-import { Sparkline } from '@/components/ui/sparkline'
+import { TrendingUp, TrendingDown } from 'lucide-react';
+import { formatNumber, formatCurrency, formatPercentage } from '@/lib/utils';
+import { Sparkline } from '@/components/ui/sparkline';
 
 interface KpiCardsProps {
-  activeMissions: number
-  actionsInProgress: number
-  activeAllies: number
-  completionRate: number
+  activeMissions: number;
+  actionsInProgress: number;
+  activeAllies: number;
+  completionRate: number;
 }
 
 export function KpiCards({
@@ -49,7 +49,7 @@ export function KpiCards({
       isPercentage: true,
       sparklineData: [10, 20, 30, 40, 50, 60, 70, completionRate],
     },
-  ]
+  ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -57,18 +57,18 @@ export function KpiCards({
         <KpiCard key={kpi.label} {...kpi} />
       ))}
     </div>
-  )
+  );
 }
 
 interface KpiCardProps {
-  label: string
-  value: number
-  change: number
-  changeLabel: string
-  isPositive: boolean
-  isPercentage?: boolean
-  isCurrency?: boolean
-  sparklineData: number[]
+  label: string;
+  value: number;
+  change: number;
+  changeLabel: string;
+  isPositive: boolean;
+  isPercentage?: boolean;
+  isCurrency?: boolean;
+  sparklineData: number[];
 }
 
 function KpiCard({
@@ -82,17 +82,15 @@ function KpiCard({
   sparklineData,
 }: KpiCardProps) {
   const formatValue = () => {
-    if (isCurrency) return formatCurrency(value)
-    if (isPercentage) return `${value}%`
-    return formatNumber(value)
-  }
+    if (isCurrency) return formatCurrency(value);
+    if (isPercentage) return `${value}%`;
+    return formatNumber(value);
+  };
 
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       {/* Label */}
-      <div className="text-xs font-medium text-muted-foreground tracking-wider mb-2">
-        {label}
-      </div>
+      <div className="text-xs font-medium text-muted-foreground tracking-wider mb-2">{label}</div>
 
       {/* Value & Change */}
       <div className="flex items-end justify-between mb-4">
@@ -105,9 +103,7 @@ function KpiCard({
               <TrendingDown className="w-4 h-4 text-destructive" />
             )}
             <span
-              className={`text-sm font-medium ${
-                isPositive ? 'text-success' : 'text-destructive'
-              }`}
+              className={`text-sm font-medium ${isPositive ? 'text-success' : 'text-destructive'}`}
             >
               {changeLabel}
             </span>
@@ -120,5 +116,5 @@ function KpiCard({
         </div>
       </div>
     </div>
-  )
+  );
 }

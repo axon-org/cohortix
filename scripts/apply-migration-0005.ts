@@ -20,40 +20,40 @@ async function run() {
   try {
     console.log('📖 Reading migration 0005...');
     const migrationSQL = readFileSync(
-      resolve(process.cwd(), 'migrations/0005_fix_rls_service_role_bypass.sql'), 
+      resolve(process.cwd(), 'migrations/0005_fix_rls_service_role_bypass.sql'),
       'utf-8'
     );
-    
+
     console.log('✅ Migration file loaded\n');
     console.log('🚀 Applying migration 0005_fix_rls_service_role_bypass...\n');
-    
+
     await sql.unsafe(migrationSQL);
-    
+
     console.log('✅ Migration 0005 completed successfully!\n');
-    
+
     // Verify policies were created
     console.log('🔍 Verifying RLS policies...\n');
-    
+
     const cohortPolicies = await sql`
       SELECT policyname, cmd 
       FROM pg_policies 
       WHERE tablename = 'cohorts' 
       ORDER BY policyname
     `;
-    
+
     console.log('📊 Cohorts Table Policies:');
-    cohortPolicies.forEach(row => console.log(`   • ${row.policyname} (${row.cmd})`));
-    
+    cohortPolicies.forEach((row) => console.log(`   • ${row.policyname} (${row.cmd})`));
+
     const memberPolicies = await sql`
       SELECT policyname, cmd 
       FROM pg_policies 
       WHERE tablename = 'cohort_members' 
       ORDER BY policyname
     `;
-    
+
     console.log('\n📊 Cohort Members Table Policies:');
-    memberPolicies.forEach(row => console.log(`   • ${row.policyname} (${row.cmd})`));
-    
+    memberPolicies.forEach((row) => console.log(`   • ${row.policyname} (${row.cmd})`));
+
     await sql.end();
   } catch (error) {
     console.error('❌ Migration failed:', error);

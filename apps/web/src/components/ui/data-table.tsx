@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -13,7 +13,7 @@ import {
   type ColumnFiltersState,
   type RowSelectionState,
   type Table as TTable,
-} from '@tanstack/react-table'
+} from '@tanstack/react-table';
 import {
   Table,
   TableBody,
@@ -21,19 +21,26 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Search, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  ChevronsUpDown,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // ============================================================================
 // Sortable Header Helper
 // ============================================================================
 
 interface SortableHeaderProps {
-  column: any
-  children: React.ReactNode
+  column: any;
+  children: React.ReactNode;
 }
 
 export function SortableHeader({ column, children }: SortableHeaderProps) {
@@ -51,7 +58,7 @@ export function SortableHeader({ column, children }: SortableHeaderProps) {
         <ChevronsUpDown className="w-4 h-4 opacity-50" />
       )}
     </button>
-  )
+  );
 }
 
 // ============================================================================
@@ -59,17 +66,17 @@ export function SortableHeader({ column, children }: SortableHeaderProps) {
 // ============================================================================
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  searchPlaceholder?: string
-  searchKey?: string
-  onRowClick?: (row: TData) => void
-  enablePagination?: boolean
-  pageSize?: number
-  enableSelection?: boolean
-  toolbar?: (table: TTable<TData>) => React.ReactNode
-  emptyMessage?: string
-  emptyDescription?: string
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  searchPlaceholder?: string;
+  searchKey?: string;
+  onRowClick?: (row: TData) => void;
+  enablePagination?: boolean;
+  pageSize?: number;
+  enableSelection?: boolean;
+  toolbar?: (table: TTable<TData>) => React.ReactNode;
+  emptyMessage?: string;
+  emptyDescription?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -85,10 +92,10 @@ export function DataTable<TData, TValue>({
   emptyMessage = 'No results found.',
   emptyDescription,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [globalFilter, setGlobalFilter] = useState('')
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = useState('');
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const table = useReactTable({
     data,
@@ -110,7 +117,7 @@ export function DataTable<TData, TValue>({
     initialState: {
       pagination: { pageSize },
     },
-  })
+  });
 
   return (
     <div className="space-y-4">
@@ -209,5 +216,5 @@ export function DataTable<TData, TValue>({
         )}
       </div>
     </div>
-  )
+  );
 }

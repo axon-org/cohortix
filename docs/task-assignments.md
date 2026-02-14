@@ -5,6 +5,7 @@
 ### Backend Track - Devi (ai-developer)
 
 **Session 1: Cohorts Database Foundation**
+
 ```
 Label: devi-cohorts-schema
 Task: COH-B1 - Create Cohorts Database Schema
@@ -26,6 +27,7 @@ Working directory: ~/Projects/cohortix/
 ```
 
 **Session 2: Dashboard Query Enhancements**
+
 ```
 Label: devi-dashboard-queries
 Task: MC-B1 - Enhance Dashboard Queries
@@ -44,6 +46,7 @@ Working directory: ~/Projects/cohortix/
 ```
 
 **Session 3: Cohort Queries Module**
+
 ```
 Label: devi-cohort-queries
 Task: COH-B2 - Cohort Queries Module (after COH-B1 completes)
@@ -68,6 +71,7 @@ Working directory: ~/Projects/cohortix/
 ### Frontend Track - Sami (frontend-developer)
 
 **Session 1: Mission Control KPI Cards**
+
 ```
 Label: sami-kpi-cards
 Task: MC-F1 - Align KPI Cards with Mockup
@@ -93,6 +97,7 @@ Working directory: ~/Projects/cohortix/
 ```
 
 **Session 2: Cohorts Grid Page**
+
 ```
 Label: sami-cohorts-grid
 Task: COH-F1 - Cohorts Grid Page (after COH-B2 completes)
@@ -115,6 +120,7 @@ Working directory: ~/Projects/cohortix/
 ```
 
 **Session 3: Cohorts Data Table**
+
 ```
 Label: sami-cohorts-table
 Task: COH-F2 - Cohorts Data Table Component (parallel with COH-F1)
@@ -144,12 +150,14 @@ Working directory: ~/Projects/cohortix/
 ### Week 1 Focus
 
 **Devi (Backend):**
+
 1. COH-B1: Cohorts Schema ← START HERE
 2. MC-B1: Dashboard Queries (parallel)
 3. COH-B2: Cohort Queries (depends on COH-B1)
 4. COH-B3: Cohort Mutations (depends on COH-B2)
 
 **Sami (Frontend):**
+
 1. MC-F1: KPI Cards ← START HERE
 2. MC-F2: Engagement Chart (parallel)
 3. COH-F1: Cohorts Grid Page (wait for COH-B2)
@@ -158,11 +166,13 @@ Working directory: ~/Projects/cohortix/
 ### Week 2 Focus
 
 **Devi:**
+
 1. COH-B4: Cohort API Routes
 2. ALLY-B1: Enhance Ally Queries
 3. ALLY-B2: Ally API Routes
 
 **Sami:**
+
 1. COH-F3: Cohort Detail Page
 2. COH-F4: Engagement Timeline
 3. COH-F5: Members List
@@ -171,6 +181,7 @@ Working directory: ~/Projects/cohortix/
 ### Week 3 Focus
 
 **Both:**
+
 1. ALLY-F1: Ally Profile Page (Sami)
 2. DS-1: Shared UI Components (Both)
 3. AUTH-F1: Login Page Update (Sami)
@@ -183,6 +194,7 @@ Working directory: ~/Projects/cohortix/
 ## 📋 Session Spawn Commands
 
 ### For Devi (Backend)
+
 ```bash
 # Session 1
 sessions_spawn --agent ai-developer --label devi-cohorts-schema \
@@ -198,6 +210,7 @@ sessions_spawn --agent ai-developer --label devi-cohort-queries \
 ```
 
 ### For Sami (Frontend)
+
 ```bash
 # Session 1
 sessions_spawn --agent frontend-developer --label sami-kpi-cards \
@@ -230,18 +243,21 @@ sessions_spawn --agent frontend-developer --label sami-cohorts-table \
 ## 📞 Communication Protocol
 
 **Daily Updates to Discord #general:**
+
 - What completed today
 - What's in progress
 - Any blockers
 - ETA for current tasks
 
 **Ping Ahmad only for:**
+
 - Design decisions not in mockups
 - Business logic clarifications
 - External dependencies
 - Critical blockers
 
 **Agent-to-Agent:**
+
 - Backend → Frontend: "API ready for X, data shape documented in spec"
 - Frontend → Backend: "Need endpoint for Y, expected shape is Z"
 - Use Discord #dev-updates or direct mentions
@@ -251,18 +267,21 @@ sessions_spawn --agent frontend-developer --label sami-cohorts-table \
 ## 🎯 Success Criteria
 
 **End of Week 1:**
+
 - ✅ Cohorts database schema deployed
 - ✅ Dashboard queries enhanced
 - ✅ Mission Control KPI cards polished
 - ✅ Cohort queries module implemented
 
 **End of Week 2:**
+
 - ✅ Cohorts CRUD API complete
 - ✅ Cohorts grid page live
 - ✅ Cohort detail page live
 - ✅ Create/edit cohort working
 
 **End of Week 3:**
+
 - ✅ Ally profiles implemented
 - ✅ Auth screens updated
 - ✅ All tests passing (80%+ coverage)

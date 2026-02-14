@@ -9,7 +9,10 @@
 
 ## Decision
 
-Cohortix adopts **shadcn/ui** as the primary component library, built on **Radix UI primitives** and **Tailwind CSS**. Components are **copied into the codebase** (not npm-installed), giving full ownership and customization without library lock-in.
+Cohortix adopts **shadcn/ui** as the primary component library, built on **Radix
+UI primitives** and **Tailwind CSS**. Components are **copied into the
+codebase** (not npm-installed), giving full ownership and customization without
+library lock-in.
 
 ---
 
@@ -18,20 +21,22 @@ Cohortix adopts **shadcn/ui** as the primary component library, built on **Radix
 ### Problem Statement
 
 Cohortix requires:
+
 1. **Accessible components** — WCAG 2.2 AA compliance out-of-the-box
-2. **Full customization** — Linear-inspired dark theme without fighting library defaults
+2. **Full customization** — Linear-inspired dark theme without fighting library
+   defaults
 3. **TypeScript-first** — Strong typing for AI developer agents (Devi)
 4. **Developer velocity** — Pre-built patterns for common UI elements
 
 ### Evaluated Alternatives
 
-| Library | Pros | Cons | Verdict |
-|---------|------|------|---------|
-| **MUI (Material-UI)** | Mature, comprehensive | Material Design opinionated, large bundle | ❌ Too opinionated |
-| **Chakra UI** | Great DX, accessible | Theming abstraction, CSS-in-JS overhead | ⚠️ Acceptable but heavy |
-| **Headless UI** | Minimal, unstyled | Too low-level, repetitive styling | ⚠️ Too much work |
-| **Radix UI** | Accessible primitives | No default styles, every component custom | ⚠️ Better as foundation |
-| **shadcn/ui** | Copy-paste, full control, Radix + Tailwind | Manual updates, no npm package | ✅ **SELECTED** |
+| Library               | Pros                                       | Cons                                      | Verdict                 |
+| --------------------- | ------------------------------------------ | ----------------------------------------- | ----------------------- |
+| **MUI (Material-UI)** | Mature, comprehensive                      | Material Design opinionated, large bundle | ❌ Too opinionated      |
+| **Chakra UI**         | Great DX, accessible                       | Theming abstraction, CSS-in-JS overhead   | ⚠️ Acceptable but heavy |
+| **Headless UI**       | Minimal, unstyled                          | Too low-level, repetitive styling         | ⚠️ Too much work        |
+| **Radix UI**          | Accessible primitives                      | No default styles, every component custom | ⚠️ Better as foundation |
+| **shadcn/ui**         | Copy-paste, full control, Radix + Tailwind | Manual updates, no npm package            | ✅ **SELECTED**         |
 
 ---
 
@@ -40,32 +45,39 @@ Cohortix requires:
 ### 1. Copy-Paste Philosophy (Full Ownership)
 
 **How it works:**
+
 ```bash
 npx shadcn@latest add button
 ```
 
-This **copies** `components/ui/button.tsx` into your codebase. It's not an npm dependency.
+This **copies** `components/ui/button.tsx` into your codebase. It's not an npm
+dependency.
 
 **Why this matters:**
+
 - ✅ **Full control** — Modify components without forking or ejecting
 - ✅ **No version lock-in** — Update on your schedule, not library releases
-- ✅ **Transparent code** — AI agents (Devi) can read and understand components directly
+- ✅ **Transparent code** — AI agents (Devi) can read and understand components
+  directly
 - ✅ **Zero breaking changes** — Library updates don't break your app
 
 **Trade-off:**  
-You manage updates manually. But for Cohortix, **stability > automatic updates**.
+You manage updates manually. But for Cohortix, **stability > automatic
+updates**.
 
 ### 2. Built on Radix UI (Accessibility Foundation)
 
 **Radix UI provides:**
+
 - ✅ **Keyboard navigation** — Tab, Arrow keys, Enter/Space activation
 - ✅ **Screen reader support** — Proper ARIA attributes, announcements
 - ✅ **Focus management** — Correct focus trapping in modals, dialogs
 - ✅ **Touch-friendly** — Handles hover/focus/active states correctly
 
 **Example: Dialog component**
+
 ```tsx
-import * as Dialog from '@radix-ui/react-dialog'
+import * as Dialog from '@radix-ui/react-dialog';
 
 // Radix handles:
 // - Escape key closes dialog
@@ -75,37 +87,44 @@ import * as Dialog from '@radix-ui/react-dialog'
 // - Focus return to trigger button
 ```
 
-shadcn/ui wraps Radix with Tailwind styles, so we get **accessible primitives + visual design**.
+shadcn/ui wraps Radix with Tailwind styles, so we get **accessible primitives +
+visual design**.
 
 ### 3. Tailwind CSS Integration (No CSS-in-JS)
 
 **Why this matters:**
-- ✅ **Consistent styling** — Same Tailwind classes everywhere (buttons, cards, forms)
+
+- ✅ **Consistent styling** — Same Tailwind classes everywhere (buttons, cards,
+  forms)
 - ✅ **Zero runtime overhead** — No CSS-in-JS parsing, smaller bundles
 - ✅ **Responsive by default** — `md:`, `lg:` prefixes work seamlessly
 - ✅ **Dark mode built-in** — `dark:` prefix matches our dark-first strategy
 
 **Example:**
+
 ```tsx
 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
   Deploy Cohort
 </Button>
 ```
 
-Tailwind's `hover:bg-primary/90` gives us 90% opacity on hover. No CSS file, no styled-components, just utility classes.
+Tailwind's `hover:bg-primary/90` gives us 90% opacity on hover. No CSS file, no
+styled-components, just utility classes.
 
 ### 4. TypeScript-First (AI Developer Friendly)
 
 **All shadcn/ui components:**
+
 - ✅ **Strongly typed** — `ButtonProps`, `DialogProps` with full IntelliSense
 - ✅ **Exported interfaces** — Devi can extend types without guessing
 - ✅ **Generics support** — `<Select<T>>` for type-safe options
 
 **Example:**
+
 ```tsx
 interface AllySelectProps {
-  allies: Ally[]
-  onSelect: (ally: Ally) => void
+  allies: Ally[];
+  onSelect: (ally: Ally) => void;
 }
 
 export function AllySelect({ allies, onSelect }: AllySelectProps) {
@@ -115,11 +134,12 @@ export function AllySelect({ allies, onSelect }: AllySelectProps) {
       getOptionLabel={(ally) => ally.name}
       onChange={onSelect}
     />
-  )
+  );
 }
 ```
 
-Devi (AI Developer) can read this and understand the contract without documentation.
+Devi (AI Developer) can read this and understand the contract without
+documentation.
 
 ---
 
@@ -127,31 +147,31 @@ Devi (AI Developer) can read this and understand the contract without documentat
 
 ### Core Components (Installed)
 
-| Component | Usage | WCAG Compliance |
-|-----------|-------|-----------------|
-| **Button** | Primary actions, links | ✅ AA (focus ring, contrast) |
-| **Card** | Missions, goals, ally profiles | ✅ AA (semantic HTML) |
-| **Dialog** | Modals, confirmations | ✅ AAA (focus trap, Esc key) |
-| **Form** | Mission briefs, ally creation | ✅ AA (labels, error messages) |
-| **Input** | Text fields, search | ✅ AA (aria-labelledby, placeholder) |
-| **Select** | Ally assignment, status filters | ✅ AA (keyboard navigation) |
-| **Dropdown Menu** | Context menus, actions | ✅ AA (arrow key navigation) |
-| **Tabs** | Mission details, ally settings | ✅ AA (arrow keys, Home/End) |
-| **Toast** | Success, error notifications | ✅ AA (aria-live regions) |
-| **Avatar** | Ally profiles, user menu | ✅ AA (alt text, fallback initials) |
-| **Badge** | Status indicators, counts | ✅ AA (color + text) |
-| **Progress** | Mission completion, workload | ✅ AA (aria-valuenow, min/max) |
-| **Tooltip** | Icon explanations, help text | ✅ AA (aria-describedby) |
+| Component         | Usage                           | WCAG Compliance                      |
+| ----------------- | ------------------------------- | ------------------------------------ |
+| **Button**        | Primary actions, links          | ✅ AA (focus ring, contrast)         |
+| **Card**          | Missions, goals, ally profiles  | ✅ AA (semantic HTML)                |
+| **Dialog**        | Modals, confirmations           | ✅ AAA (focus trap, Esc key)         |
+| **Form**          | Mission briefs, ally creation   | ✅ AA (labels, error messages)       |
+| **Input**         | Text fields, search             | ✅ AA (aria-labelledby, placeholder) |
+| **Select**        | Ally assignment, status filters | ✅ AA (keyboard navigation)          |
+| **Dropdown Menu** | Context menus, actions          | ✅ AA (arrow key navigation)         |
+| **Tabs**          | Mission details, ally settings  | ✅ AA (arrow keys, Home/End)         |
+| **Toast**         | Success, error notifications    | ✅ AA (aria-live regions)            |
+| **Avatar**        | Ally profiles, user menu        | ✅ AA (alt text, fallback initials)  |
+| **Badge**         | Status indicators, counts       | ✅ AA (color + text)                 |
+| **Progress**      | Mission completion, workload    | ✅ AA (aria-valuenow, min/max)       |
+| **Tooltip**       | Icon explanations, help text    | ✅ AA (aria-describedby)             |
 
 ### Custom Components (To Be Built)
 
-| Component | Based On | Status |
-|-----------|----------|--------|
-| **MissionCard** | Card + Badge + Progress | 🟡 In progress |
-| **AllyCard** | Card + Avatar + Badge | 🟡 In progress |
-| **WorkloadMeter** | Progress + Tooltip | 📝 Planned |
-| **StatusRing** | Custom SVG | 📝 Planned |
-| **MissionTimeline** | Custom (no base) | 📝 Planned |
+| Component           | Based On                | Status         |
+| ------------------- | ----------------------- | -------------- |
+| **MissionCard**     | Card + Badge + Progress | 🟡 In progress |
+| **AllyCard**        | Card + Avatar + Badge   | 🟡 In progress |
+| **WorkloadMeter**   | Progress + Tooltip      | 📝 Planned     |
+| **StatusRing**      | Custom SVG              | 📝 Planned     |
+| **MissionTimeline** | Custom (no base)        | 📝 Planned     |
 
 ---
 
@@ -166,17 +186,18 @@ Devi (AI Developer) can read this and understand the contract without documentat
 :root {
   --background: 0 0% 100%;
   --foreground: 0 0% 3.9%;
-  --primary: 221.2 83.2 53.3%;  /* #5E6AD2 in HSL */
+  --primary: 221.2 83.2 53.3%; /* #5E6AD2 in HSL */
   --ring: 221.2 83.2 53.3%;
 }
 
 .dark {
-  --background: 0 0% 3.9%;      /* #0A0A0B */
-  --foreground: 0 0% 98%;       /* #FAFAFA */
+  --background: 0 0% 3.9%; /* #0A0A0B */
+  --foreground: 0 0% 98%; /* #FAFAFA */
 }
 ```
 
 **Why CSS variables:**
+
 - ✅ **Runtime theme switching** — Dark mode toggle without re-render
 - ✅ **Scoped overrides** — Theme a specific section differently
 - ✅ **Design token compatibility** — Maps directly to our token system
@@ -187,38 +208,44 @@ shadcn/ui uses **class-variance-authority (cva)** for variant management:
 
 ```tsx
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors",
+  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors',
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input hover:bg-accent hover:text-accent-foreground",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        destructive:
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+        outline:
+          'border border-input hover:bg-accent hover:text-accent-foreground',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: 'h-10 px-4 py-2',
+        sm: 'h-9 rounded-md px-3',
+        lg: 'h-11 rounded-md px-8',
+        icon: 'h-10 w-10',
       },
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      variant: 'default',
+      size: 'default',
     },
   }
-)
+);
 ```
 
 **Benefits:**
+
 - ✅ **Type-safe variants** — IntelliSense suggests `variant="outline"`
 - ✅ **Composable styles** — Combine variants without className hell
 - ✅ **Default fallbacks** — Missing props use sensible defaults
 
 **Usage:**
+
 ```tsx
-<Button variant="destructive" size="lg">Delete Mission</Button>
+<Button variant="destructive" size="lg">
+  Delete Mission
+</Button>
 ```
 
 ---
@@ -227,7 +254,8 @@ const buttonVariants = cva(
 
 ### Color Token Mapping
 
-Our `tailwind.config.ts` defines colors. shadcn/ui references them via CSS variables:
+Our `tailwind.config.ts` defines colors. shadcn/ui references them via CSS
+variables:
 
 ```ts
 // tailwind.config.ts
@@ -245,13 +273,19 @@ className="bg-primary text-primary-foreground"
 ```
 
 Tailwind compiles this to:
+
 ```css
-.bg-primary { background-color: hsl(var(--primary)); }
-.text-primary-foreground { color: hsl(var(--primary-foreground)); }
+.bg-primary {
+  background-color: hsl(var(--primary));
+}
+.text-primary-foreground {
+  color: hsl(var(--primary-foreground));
+}
 ```
 
 **Why this indirection:**  
-CSS variables enable **dark mode** without duplicating classes. `.dark .bg-primary` automatically uses the dark theme value.
+CSS variables enable **dark mode** without duplicating classes.
+`.dark .bg-primary` automatically uses the dark theme value.
 
 ---
 
@@ -260,18 +294,23 @@ CSS variables enable **dark mode** without duplicating classes. `.dark .bg-prima
 ### What We Sacrificed
 
 1. **Automatic updates** — No `npm update` for components
-   - *Mitigation:* Subscribe to shadcn/ui changelog, manually port relevant fixes
+   - _Mitigation:_ Subscribe to shadcn/ui changelog, manually port relevant
+     fixes
 2. **Community themes** — Can't install pre-built themes from npm
-   - *Mitigation:* We control theming (not a downside for custom design)
+   - _Mitigation:_ We control theming (not a downside for custom design)
 3. **Documentation overhead** — Must document custom modifications
-   - *Mitigation:* Add inline comments, update Storybook
+   - _Mitigation:_ Add inline comments, update Storybook
 
 ### What We Gained
 
-1. **Zero vendor lock-in** — Can replace shadcn/ui anytime (components live in our repo)
-2. **Perfect alignment with design system** — No CSS overrides, no `!important` hacks
-3. **AI agent transparency** — Devi can read, modify, generate components directly
-4. **Bundle size control** — Only ship components we use (no tree-shaking uncertainty)
+1. **Zero vendor lock-in** — Can replace shadcn/ui anytime (components live in
+   our repo)
+2. **Perfect alignment with design system** — No CSS overrides, no `!important`
+   hacks
+3. **AI agent transparency** — Devi can read, modify, generate components
+   directly
+4. **Bundle size control** — Only ship components we use (no tree-shaking
+   uncertainty)
 
 ---
 
@@ -297,36 +336,39 @@ import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 ```tsx
 // packages/ui/src/components/ui/button.tsx
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-full text-sm font-medium",
+  'inline-flex items-center justify-center rounded-full text-sm font-medium'
   //                                            ^^^^^ Changed from rounded-md
   // ... rest unchanged
-)
+);
 ```
 
-**Impact:** All buttons across the app now use full rounding. No breaking changes (it's our code).
+**Impact:** All buttons across the app now use full rounding. No breaking
+changes (it's our code).
 
 ### Testing Strategy
 
 **Unit tests:**
+
 ```tsx
-import { render, screen } from '@testing-library/react'
-import { Button } from '@/components/ui/button'
+import { render, screen } from '@testing-library/react';
+import { Button } from '@/components/ui/button';
 
 test('button renders with correct variant', () => {
-  render(<Button variant="destructive">Delete</Button>)
-  expect(screen.getByRole('button')).toHaveClass('bg-destructive')
-})
+  render(<Button variant="destructive">Delete</Button>);
+  expect(screen.getByRole('button')).toHaveClass('bg-destructive');
+});
 ```
 
 **Accessibility tests:**
+
 ```tsx
-import { axe } from 'jest-axe'
+import { axe } from 'jest-axe';
 
 test('button has no accessibility violations', async () => {
-  const { container } = render(<Button>Click me</Button>)
-  const results = await axe(container)
-  expect(results).toHaveNoViolations()
-})
+  const { container } = render(<Button>Click me</Button>);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});
 ```
 
 ---
@@ -338,9 +380,11 @@ test('button has no accessibility violations', async () => {
 1. **Components are ours** — No need to "eject" (we already own the code)
 2. **Replace primitives** — Swap Radix UI for Headless UI or React Aria
 3. **Keep styling** — Tailwind classes remain unchanged
-4. **Gradual migration** — Replace components one at a time (no big-bang rewrite)
+4. **Gradual migration** — Replace components one at a time (no big-bang
+   rewrite)
 
-**Estimated effort:** 2-3 weeks for full migration (vs. 6-8 weeks for locked-in libraries like MUI)
+**Estimated effort:** 2-3 weeks for full migration (vs. 6-8 weeks for locked-in
+libraries like MUI)
 
 ---
 
@@ -349,11 +393,13 @@ test('button has no accessibility violations', async () => {
 ### Bundle Size Impact
 
 **Typical shadcn/ui component:**
+
 - Button: ~2KB (gzipped)
 - Dialog: ~8KB (includes Radix primitives)
 - Form: ~12KB (includes React Hook Form integration)
 
 **Comparison:**
+
 - MUI Button: ~15KB (includes ThemeProvider, styled-components)
 - Chakra Button: ~10KB (includes Emotion runtime)
 

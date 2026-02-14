@@ -8,7 +8,8 @@
 
 ## Overview
 
-This document captures established backend patterns in Cohortix. Follow these patterns for consistency and maintainability.
+This document captures established backend patterns in Cohortix. Follow these
+patterns for consistency and maintainability.
 
 ---
 
@@ -22,44 +23,51 @@ This document captures established backend patterns in Cohortix. Follow these pa
  * Axon Codex v1.2 compliant.
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { logger } from '@/lib/logger'
-import { withErrorHandler } from '@/lib/errors'
-import { validateRequest, validateData } from '@/lib/validation'
-import { getAuthContext } from '@/lib/auth-helper'
+import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
+import { withErrorHandler } from '@/lib/errors';
+import { validateRequest, validateData } from '@/lib/validation';
+import { getAuthContext } from '@/lib/auth-helper';
 
 // ============================================================================
 // GET /api/v1/resources
 // ============================================================================
 
 export const GET = withErrorHandler(async (request: NextRequest) => {
-  const correlationId = logger.generateCorrelationId()
-  logger.setContext({ correlationId })
+  const correlationId = logger.generateCorrelationId();
+  logger.setContext({ correlationId });
 
   // 1. Validate query parameters
-  const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries())
-  const query = validateData(querySchema, searchParams)
+  const searchParams = Object.fromEntries(
+    request.nextUrl.searchParams.entries()
+  );
+  const query = validateData(querySchema, searchParams);
 
   // 2. Get authenticated context
-  const { supabase, organizationId, userId } = await getAuthContext()
+  const { supabase, organizationId, userId } = await getAuthContext();
 
   // 3. Log the operation
-  logger.info('Fetching resources', { correlationId, userId, organizationId, query })
+  logger.info('Fetching resources', {
+    correlationId,
+    userId,
+    organizationId,
+    query,
+  });
 
   // 4. Build and execute query
   let queryBuilder = supabase
     .from('resources')
     .select('*', { count: 'exact' })
-    .eq('organization_id', organizationId)
+    .eq('organization_id', organizationId);
 
   // Apply filters, sorting, pagination
   // ...
 
-  const { data, error, count } = await queryBuilder
+  const { data, error, count } = await queryBuilder;
 
   if (error) {
-    logger.error('Failed to fetch resources', { correlationId, error })
-    throw error
+    logger.error('Failed to fetch resources', { correlationId, error });
+    throw error;
   }
 
   // 5. Return standardized response
@@ -71,8 +79,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       total: count || 0,
       totalPages: count ? Math.ceil(count / query.limit) : 0,
     },
-  })
-})
+  });
+});
 ```
 
 ### Key Principles
@@ -91,12 +99,13 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 ### Use Centralized Auth Helper
 
 ```typescript
-import { getAuthContext } from '@/lib/auth-helper'
+import { getAuthContext } from '@/lib/auth-helper';
 
-const { supabase, organizationId, userId } = await getAuthContext()
+const { supabase, organizationId, userId } = await getAuthContext();
 ```
 
 **Never duplicate auth logic.** The helper handles:
+
 - Production auth (Supabase)
 - Development auth bypass
 - Organization membership verification
@@ -112,7 +121,8 @@ NODE_ENV=development
 BYPASS_AUTH=true
 ```
 
-**⚠️ CRITICAL:** Never enable in production. CI should fail if `BYPASS_AUTH=true` in production builds.
+**⚠️ CRITICAL:** Never enable in production. CI should fail if
+`BYPASS_AUTH=true` in production builds.
 
 ### Authorization Checks
 
@@ -135,9 +145,9 @@ const { data: existing } = await supabase
   .select('id')
   .eq('id', resourceId)
   .eq('organization_id', organizationId)
-  .single()
+  .single();
 
-if (!existing) throw new NotFoundError('Resource', resourceId)
+if (!existing) throw new NotFoundError('Resource', resourceId);
 ```
 
 ---
@@ -149,40 +159,41 @@ if (!existing) throw new NotFoundError('Resource', resourceId)
 All endpoints MUST validate inputs with Zod:
 
 ```typescript
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const createResourceSchema = z.object({
   name: z.string().min(3).max(255).trim(),
   description: z.string().max(10000).optional(),
   status: z.enum(['active', 'inactive']).default('active'),
   settings: z.record(z.any()).optional(),
-})
+});
 
 // Use in route
-const validator = validateRequest(createResourceSchema, { target: 'body' })
-const data = await validator(request)
+const validator = validateRequest(createResourceSchema, { target: 'body' });
+const data = await validator(request);
 ```
 
 ### Common Validation Patterns
 
 ```typescript
 // UUID validation
-resourceId: z.string().uuid()
+resourceId: z.string().uuid();
 
 // Email validation
-email: z.string().email()
+email: z.string().email();
 
 // Date validation (YYYY-MM-DD)
-startDate: z.string().date()
+startDate: z.string().date();
 
 // Hex color validation
-color: z.string().regex(/^#[0-9a-fA-F]{6}$/)
+color: z.string()
+  .regex(/^#[0-9a-fA-F]{6}$/)
 
-// Custom refinements
-.refine(
-  (data) => new Date(data.startDate) <= new Date(data.endDate),
-  { message: 'End date must be after start date', path: ['endDate'] }
-)
+  // Custom refinements
+  .refine((data) => new Date(data.startDate) <= new Date(data.endDate), {
+    message: 'End date must be after start date',
+    path: ['endDate'],
+  });
 ```
 
 ---
@@ -194,17 +205,17 @@ color: z.string().regex(/^#[0-9a-fA-F]{6}$/)
 All errors use standardized format:
 
 ```typescript
-import { 
-  UnauthorizedError, 
-  ForbiddenError, 
-  NotFoundError, 
-  ValidationError 
-} from '@/lib/errors'
+import {
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  ValidationError,
+} from '@/lib/errors';
 
 // Example usage
-if (!user) throw new UnauthorizedError('Authentication required')
-if (!membership) throw new ForbiddenError('Insufficient permissions')
-if (!resource) throw new NotFoundError('Resource', resourceId)
+if (!user) throw new UnauthorizedError('Authentication required');
+if (!membership) throw new ForbiddenError('Insufficient permissions');
+if (!resource) throw new NotFoundError('Resource', resourceId);
 ```
 
 ### Error Response Format
@@ -225,8 +236,8 @@ if (!resource) throw new NotFoundError('Resource', resourceId)
 try {
   // Operation
 } catch (error) {
-  logger.error('Operation failed', { correlationId, error })
-  throw error // Let withErrorHandler convert to response
+  logger.error('Operation failed', { correlationId, error });
+  throw error; // Let withErrorHandler convert to response
 }
 ```
 
@@ -239,11 +250,11 @@ try {
 Every request gets a unique correlation ID:
 
 ```typescript
-const correlationId = logger.generateCorrelationId()
-logger.setContext({ correlationId })
+const correlationId = logger.generateCorrelationId();
+logger.setContext({ correlationId });
 
-logger.info('Operation started', { correlationId, userId, resourceId })
-logger.error('Operation failed', { correlationId, error })
+logger.info('Operation started', { correlationId, userId, resourceId });
+logger.error('Operation failed', { correlationId, error });
 ```
 
 ### Log Levels
@@ -263,10 +274,11 @@ logger.info('Resource created', {
   organizationId,
   resourceId: resource.id,
   resourceType: 'mission',
-})
+});
 ```
 
 **Always include:**
+
 - `correlationId` — Request tracking
 - `userId` — Who performed the action
 - `organizationId` — Tenant isolation
@@ -283,7 +295,7 @@ export const resources = pgTable('resources', {
   id: uuid('id').primaryKey().defaultRandom(),
   // ✅ GOOD: UUID
   // ❌ BAD: serial('id').primaryKey()
-})
+});
 ```
 
 ### Timestamps
@@ -321,11 +333,11 @@ Configuration in `packages/database/src/client.ts`:
 
 ```typescript
 const poolConfig = {
-  max: 20,                // Maximum pool size
-  idle_timeout: 30,       // Close idle connections after 30s
-  connect_timeout: 10,    // Connection timeout
-  max_lifetime: 60 * 30,  // Close connections after 30 min
-}
+  max: 20, // Maximum pool size
+  idle_timeout: 30, // Close idle connections after 30s
+  connect_timeout: 10, // Connection timeout
+  max_lifetime: 60 * 30, // Close connections after 30 min
+};
 ```
 
 ---
@@ -336,15 +348,18 @@ const poolConfig = {
 
 ```typescript
 // ❌ BAD: N+1 query (fetches owner for each mission)
-const missions = await supabase.from('missions').select('*')
+const missions = await supabase.from('missions').select('*');
 for (const mission of missions) {
-  const owner = await supabase.from('users').select('*').eq('id', mission.owner_id)
+  const owner = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', mission.owner_id);
 }
 
 // ✅ GOOD: Single query with join
 const missions = await supabase
   .from('missions')
-  .select('*, owner:users(id, name, email)')
+  .select('*, owner:users(id, name, email)');
 ```
 
 ### Batch Loading
@@ -352,14 +367,14 @@ const missions = await supabase
 ```typescript
 // ❌ BAD: Multiple queries
 for (const missionId of missionIds) {
-  await supabase.from('tasks').select('*').eq('mission_id', missionId)
+  await supabase.from('tasks').select('*').eq('mission_id', missionId);
 }
 
 // ✅ GOOD: Single query with IN clause
 const tasks = await supabase
   .from('tasks')
   .select('*')
-  .in('mission_id', missionIds)
+  .in('mission_id', missionIds);
 ```
 
 ---
@@ -372,7 +387,7 @@ const tasks = await supabase
 export const paginationSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
-})
+});
 ```
 
 ### Response Format
@@ -392,10 +407,10 @@ return NextResponse.json({
 ### Implementation
 
 ```typescript
-const start = (query.page - 1) * query.limit
-const end = start + query.limit - 1
+const start = (query.page - 1) * query.limit;
+const end = start + query.limit - 1;
 
-queryBuilder = queryBuilder.range(start, end)
+queryBuilder = queryBuilder.range(start, end);
 ```
 
 ---
@@ -404,23 +419,31 @@ queryBuilder = queryBuilder.range(start, end)
 
 ### Pattern
 
-For entities that can belong to multiple parent types (e.g., comments on tasks/operations/missions):
+For entities that can belong to multiple parent types (e.g., comments on
+tasks/operations/missions):
 
 ```typescript
-export const comments = pgTable('comments', {
-  entityType: varchar('entity_type', { length: 50 }).notNull(),
-  entityId: uuid('entity_id').notNull(),
-  // ...
-}, (table) => ({
-  entityIdx: index('idx_comments_entity').on(table.entityType, table.entityId),
-}))
+export const comments = pgTable(
+  'comments',
+  {
+    entityType: varchar('entity_type', { length: 50 }).notNull(),
+    entityId: uuid('entity_id').notNull(),
+    // ...
+  },
+  (table) => ({
+    entityIdx: index('idx_comments_entity').on(
+      table.entityType,
+      table.entityId
+    ),
+  })
+);
 ```
 
 ### Best Practice: Add CHECK Constraint
 
 ```sql
 ALTER TABLE comments
-ADD CONSTRAINT entity_type_check 
+ADD CONSTRAINT entity_type_check
 CHECK (entity_type IN ('task', 'operation', 'mission'));
 ```
 
@@ -432,7 +455,7 @@ const comments = await supabase
   .from('comments')
   .select('*')
   .eq('entity_type', 'mission')
-  .eq('entity_id', missionId)
+  .eq('entity_id', missionId);
 ```
 
 ---
@@ -446,6 +469,7 @@ All routes under `/api/v1/`
 ### Breaking Changes
 
 When introducing breaking changes:
+
 1. Create new version: `/api/v2/`
 2. Maintain v1 for 12 months
 3. Document deprecation in v1 responses
@@ -453,6 +477,7 @@ When introducing breaking changes:
 ### Non-Breaking Changes
 
 Safe to add to existing version:
+
 - New optional fields
 - New endpoints
 - Additional query parameters (with defaults)
@@ -461,19 +486,19 @@ Safe to add to existing version:
 
 ## 11. HTTP Status Codes
 
-| Code | Use Case | Example |
-|------|----------|---------|
-| `200 OK` | Successful GET, PUT, PATCH | Resource fetched/updated |
-| `201 Created` | Successful POST | Resource created |
-| `204 No Content` | Successful DELETE | Resource deleted |
-| `400 Bad Request` | Client error, invalid input | Missing required field |
-| `401 Unauthorized` | Authentication required | No auth token |
-| `403 Forbidden` | Authenticated but not authorized | User not in organization |
-| `404 Not Found` | Resource doesn't exist | Invalid ID |
-| `409 Conflict` | Resource conflict | Duplicate slug |
-| `422 Unprocessable Entity` | Validation error | End date before start date |
-| `429 Too Many Requests` | Rate limited | Exceeded API quota |
-| `500 Internal Server Error` | Server error | Database connection failed |
+| Code                        | Use Case                         | Example                    |
+| --------------------------- | -------------------------------- | -------------------------- |
+| `200 OK`                    | Successful GET, PUT, PATCH       | Resource fetched/updated   |
+| `201 Created`               | Successful POST                  | Resource created           |
+| `204 No Content`            | Successful DELETE                | Resource deleted           |
+| `400 Bad Request`           | Client error, invalid input      | Missing required field     |
+| `401 Unauthorized`          | Authentication required          | No auth token              |
+| `403 Forbidden`             | Authenticated but not authorized | User not in organization   |
+| `404 Not Found`             | Resource doesn't exist           | Invalid ID                 |
+| `409 Conflict`              | Resource conflict                | Duplicate slug             |
+| `422 Unprocessable Entity`  | Validation error                 | End date before start date |
+| `429 Too Many Requests`     | Rate limited                     | Exceeded API quota         |
+| `500 Internal Server Error` | Server error                     | Database connection failed |
 
 ---
 
@@ -482,35 +507,34 @@ Safe to add to existing version:
 ### Retry with Exponential Backoff
 
 ```typescript
-import { withRetry } from '@/lib/resilience'
+import { withRetry } from '@/lib/resilience';
 
-const data = await withRetry(
-  () => fetch('https://external-api.com/data'),
-  { attempts: 3, delay: 1000 }
-)
+const data = await withRetry(() => fetch('https://external-api.com/data'), {
+  attempts: 3,
+  delay: 1000,
+});
 ```
 
 ### Circuit Breaker
 
 ```typescript
-import { CircuitBreaker } from '@/lib/resilience'
+import { CircuitBreaker } from '@/lib/resilience';
 
-const breaker = new CircuitBreaker({ failureThreshold: 5 })
+const breaker = new CircuitBreaker({ failureThreshold: 5 });
 
 const result = await breaker.execute(async () => {
-  return await fetch('https://flaky-service.com/data')
-})
+  return await fetch('https://flaky-service.com/data');
+});
 ```
 
 ### Timeout
 
 ```typescript
-import { withTimeout } from '@/lib/resilience'
+import { withTimeout } from '@/lib/resilience';
 
-const data = await withTimeout(
-  () => fetch('https://slow-api.com/data'),
-  { timeoutMs: 5000 }
-)
+const data = await withTimeout(() => fetch('https://slow-api.com/data'), {
+  timeoutMs: 5000,
+});
 ```
 
 ---
@@ -525,6 +549,7 @@ const data = await withTimeout(
 ### Usage
 
 Load balancers and monitoring tools should:
+
 - Check `/health` for liveness probes
 - Check `/ready` for readiness probes
 - Consider service unhealthy if `/ready` returns 503
@@ -537,7 +562,10 @@ Load balancers and monitoring tools should:
 
 ```typescript
 // BAD: Auth logic in every route
-if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+if (
+  process.env.NODE_ENV === 'development' &&
+  process.env.BYPASS_AUTH === 'true'
+) {
   // 20 lines of setup
 }
 ```
@@ -566,7 +594,7 @@ const client = postgres(connectionString);
 
 ```typescript
 // BAD: Trust client data
-const { name } = await request.json()
+const { name } = await request.json();
 ```
 
 **Fix:** Always use Zod schemas (see §3)
@@ -575,7 +603,7 @@ const { name } = await request.json()
 
 ```typescript
 // BAD: Secret in code
-const API_KEY = 'sk-abc123...'
+const API_KEY = 'sk-abc123...';
 ```
 
 **Fix:** Use environment variables
@@ -589,20 +617,20 @@ const API_KEY = 'sk-abc123...'
 Test business logic in isolation:
 
 ```typescript
-import { describe, it, expect } from 'vitest'
-import { validateMission } from './validation'
+import { describe, it, expect } from 'vitest';
+import { validateMission } from './validation';
 
 describe('Mission validation', () => {
   it('should accept valid mission data', () => {
-    const result = validateMission({ name: 'Test Mission' })
-    expect(result.success).toBe(true)
-  })
+    const result = validateMission({ name: 'Test Mission' });
+    expect(result.success).toBe(true);
+  });
 
   it('should reject invalid data', () => {
-    const result = validateMission({ name: '' })
-    expect(result.success).toBe(false)
-  })
-})
+    const result = validateMission({ name: '' });
+    expect(result.success).toBe(false);
+  });
+});
 ```
 
 ### Integration Tests
@@ -610,7 +638,7 @@ describe('Mission validation', () => {
 Test API endpoints with real database:
 
 ```typescript
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest';
 
 describe('Missions API', () => {
   it('should create a mission', async () => {
@@ -618,13 +646,13 @@ describe('Missions API', () => {
       method: 'POST',
       headers: { authorization: `Bearer ${token}` },
       body: JSON.stringify({ name: 'Test Mission' }),
-    })
+    });
 
-    expect(response.status).toBe(201)
-    const data = await response.json()
-    expect(data.data.name).toBe('Test Mission')
-  })
-})
+    expect(response.status).toBe(201);
+    const data = await response.json();
+    expect(data.data.name).toBe('Test Mission');
+  });
+});
 ```
 
 ---
