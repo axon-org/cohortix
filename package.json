@@ -9,6 +9,7 @@
     "lint": "turbo lint",
     "test": "turbo test",
     "test:unit": "turbo test:unit",
+    "test:coverage": "turbo test:coverage",
     "test:e2e": "turbo test:e2e",
     "type-check": "turbo type-check",
     "db:generate": "turbo db:generate",
