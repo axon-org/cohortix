@@ -26,8 +26,22 @@ import {
 } from 'lucide-react'
 import { useComments, useCreateComment, useActivity } from '@/hooks/use-comments'
 
+type Task = {
+  id: string
+  title: string
+  description?: string
+  status: string
+  priority?: string
+  dueDate?: string
+  assigneeId?: string
+  projectId?: string
+  projects?: { id: string; name: string; status: string }
+  createdAt: string
+  updatedAt?: string
+}
+
 interface TaskDetailSheetProps {
-  task: Operation | null
+  task: Operation | Task | null
   open: boolean
   onOpenChange: (open: boolean) => void
 }
@@ -39,6 +53,13 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
   const createCommentMutation = useCreateComment()
 
   if (!task) return null
+  
+  // Type guard to check if task is an Operation
+  const isOperation = (t: Operation | Task): t is Operation => {
+    return 'name' in t && 'ownerId' in t
+  }
+  
+  const taskIsOperation = isOperation(task)
 
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault()
@@ -75,7 +96,7 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
               </span>
             </div>
             <SheetTitle className="text-2xl font-semibold leading-tight">
-              {task.name}
+              {taskIsOperation ? task.name : task.title}
             </SheetTitle>
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div className="flex items-center gap-2 text-sm">
@@ -83,31 +104,31 @@ export function TaskDetailSheet({ task, open, onOpenChange }: TaskDetailSheetPro
                 <span className="text-muted-foreground w-16">Owner</span>
                 <div className="flex items-center gap-1.5 font-medium">
                   <Avatar className="w-5 h-5">
-                    <AvatarImage src={`https://avatar.vercel.sh/${task.ownerId ?? 'unassigned'}`} />
-                    <AvatarFallback>{(task.ownerId ?? 'NA').slice(0, 2).toUpperCase()}</AvatarFallback>
+                    <AvatarImage src={`https://avatar.vercel.sh/${taskIsOperation ? task.ownerId : (task.assigneeId ?? 'unassigned')}`} />
+                    <AvatarFallback>{(taskIsOperation ? task.ownerId : (task.assigneeId ?? 'NA')).slice(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
-                  <span>{(task.ownerId ?? 'Unassigned').slice(0, 8)}</span>
+                  <span>{(taskIsOperation ? task.ownerId : (task.assigneeId ?? 'Unassigned')).slice(0, 8)}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="w-4 h-4 text-muted-foreground" />
                 <span className="text-muted-foreground w-16">Due</span>
                 <span className="font-medium">
-                  {task.targetDate ? format(new Date(task.targetDate), 'PPP') : 'No date'}
+                  {taskIsOperation && task.targetDate ? format(new Date(task.targetDate), 'PPP') : (!taskIsOperation && task.dueDate ? format(new Date(task.dueDate), 'PPP') : 'No date')}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Tag className="w-4 h-4 text-muted-foreground" />
                 <span className="text-muted-foreground w-16">Mission</span>
                 <span className="font-medium truncate">
-                  {task.missionId ? task.missionId.slice(0, 8) : 'Unassigned'}
+                  {taskIsOperation && task.missionId ? task.missionId.slice(0, 8) : 'Unassigned'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="w-4 h-4 text-muted-foreground" />
                 <span className="text-muted-foreground w-16">Created</span>
                 <span className="font-medium">
-                  {format(new Date(task.created_at), 'MMM d, yyyy')}
+                  {format(new Date(taskIsOperation ? task.created_at : task.createdAt), 'MMM d, yyyy')}
                 </span>
               </div>
             </div>

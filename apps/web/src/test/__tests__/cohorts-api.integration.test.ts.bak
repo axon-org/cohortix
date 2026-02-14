@@ -272,7 +272,7 @@ describe('Cohort CRUD API - Integration Tests', () => {
     })
 
     it('should return 401 when user is not authenticated', async () => {
-      mockGetCurrentUser.mockResolvedValue(null as any)
+      mockGetCurrentUser.mockResolvedValue(null)
 
       const request = new NextRequest('https://example.com/api/cohorts')
       const response = await getCohortsHandler(request)
@@ -520,7 +520,7 @@ describe('Cohort CRUD API - Integration Tests', () => {
     })
 
     it('should return 401 when user is not authenticated', async () => {
-      mockGetCurrentUser.mockResolvedValue(null as any)
+      mockGetCurrentUser.mockResolvedValue(null)
 
       const request = new NextRequest('https://example.com/api/cohorts', {
         method: 'POST',
@@ -611,7 +611,7 @@ describe('Cohort CRUD API - Integration Tests', () => {
     })
 
     it('should return 401 when user is not authenticated', async () => {
-      mockGetCurrentUser.mockResolvedValue(null as any)
+      mockGetCurrentUser.mockResolvedValue(null)
 
       const request = new NextRequest('https://example.com/api/cohorts/cohort-123')
       const context = { params: Promise.resolve({ id: 'cohort-123' }) }
@@ -757,7 +757,7 @@ describe('Cohort CRUD API - Integration Tests', () => {
     })
 
     it('should return 401 when user is not authenticated', async () => {
-      mockGetCurrentUser.mockResolvedValue(null as any)
+      mockGetCurrentUser.mockResolvedValue(null)
 
       const request = new NextRequest('https://example.com/api/cohorts/cohort-123', {
         method: 'PATCH',
@@ -855,7 +855,7 @@ describe('Cohort CRUD API - Integration Tests', () => {
     })
 
     it('should return 401 when user is not authenticated', async () => {
-      mockGetCurrentUser.mockResolvedValue(null as any)
+      mockGetCurrentUser.mockResolvedValue(null)
 
       const request = new NextRequest('https://example.com/api/cohorts/cohort-123', {
         method: 'DELETE',
@@ -1113,7 +1113,7 @@ describe('Cohort CRUD API - Integration Tests', () => {
     })
 
     it('should enforce authentication on all endpoints', async () => {
-      mockGetCurrentUser.mockResolvedValue(null as any)
+      mockGetCurrentUser.mockResolvedValue(null)
 
       // Test all endpoints return 401 without auth
       const endpoints = [
@@ -1186,7 +1186,7 @@ describe('Cohort CRUD API - Integration Tests', () => {
     })
 
     it('should return consistent error format for 401 errors', async () => {
-      mockGetCurrentUser.mockResolvedValue(null as any)
+      mockGetCurrentUser.mockResolvedValue(null)
 
       const request = new NextRequest('https://example.com/api/cohorts')
       const response = await getCohortsHandler(request)

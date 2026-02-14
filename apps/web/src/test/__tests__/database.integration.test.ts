@@ -5,10 +5,19 @@
  * Note: These are integration tests that verify the patterns, not actual DB calls.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 
 describe('Database Client Integration', () => {
+  beforeEach(() => {
+    // Set up test environment variables
+    vi.stubEnv('DATABASE_URL', 'postgresql://test:test@localhost:5432/testdb')
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
   describe('Database Connection', () => {
     it('should require DATABASE_URL environment variable', () => {
       expect(process.env.DATABASE_URL).toBeDefined()

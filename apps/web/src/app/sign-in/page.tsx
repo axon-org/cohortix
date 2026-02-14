@@ -301,7 +301,7 @@ export default function SignInPage() {
 
           {/* Sign Up Link */}
           <p className="text-center text-sm mt-6" style={{ color: '#6B7280' }}>
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link 
               href="/sign-up" 
               className="font-medium transition-colors"

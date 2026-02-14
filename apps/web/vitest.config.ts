@@ -1,15 +1,24 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
+import tsconfigPaths from 'vite-tsconfig-paths'
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(), 
+    tsconfigPaths({
+      projects: ['./tsconfig.json'],
+    }),
+  ],
   test: {
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['node_modules', '.next', 'e2e'],
+    exclude: ['node_modules', '.next', 'e2e/**', '**/e2e/**/*.spec.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -30,10 +39,10 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@repo/database': path.resolve(__dirname, '../../packages/database/src'),
-      '@repo/types': path.resolve(__dirname, '../../packages/types/src'),
-    },
+    alias: [
+      { find: /^@\/(.*)$/, replacement: path.resolve(__dirname, './src/$1') },
+      { find: '@repo/database', replacement: path.resolve(__dirname, '../../packages/database/src') },
+      { find: '@repo/types', replacement: path.resolve(__dirname, '../../packages/types/src') },
+    ],
   },
 })
