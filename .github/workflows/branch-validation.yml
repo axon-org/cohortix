@@ -1,0 +1,59 @@
+name: Branch Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  validate-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR base branch
+        run: |
+          BASE_BRANCH="${{ github.base_ref }}"
+          HEAD_BRANCH="${{ github.head_ref }}"
+          
+          echo "PR: $HEAD_BRANCH → $BASE_BRANCH"
+          
+          # Rule 1: feat/* and fix/* MUST target dev
+          if [[ "$HEAD_BRANCH" =~ ^(feat|fix)/ ]]; then
+            if [ "$BASE_BRANCH" != "dev" ]; then
+              echo "❌ ERROR: Feature/fix branches must target 'dev', not '$BASE_BRANCH'"
+              exit 1
+            fi
+            echo "✅ Feature/fix branch correctly targets dev"
+          fi
+          
+          # Rule 2: dev can ONLY target main
+          if [ "$HEAD_BRANCH" == "dev" ]; then
+            if [ "$BASE_BRANCH" != "main" ]; then
+              echo "❌ ERROR: 'dev' can only merge to 'main', not '$BASE_BRANCH'"
+              exit 1
+            fi
+            echo "✅ dev → main merge is valid"
+          fi
+          
+          # Rule 3: main should never be source branch
+          if [ "$HEAD_BRANCH" == "main" ]; then
+            echo "❌ ERROR: Cannot create PR from 'main'"
+            exit 1
+          fi
+          
+          # Rule 4: Direct PRs to main are forbidden (except from dev)
+          if [ "$BASE_BRANCH" == "main" ] && [ "$HEAD_BRANCH" != "dev" ]; then
+            echo "❌ ERROR: Only 'dev' can merge to 'main'. Branch '$HEAD_BRANCH' cannot."
+            exit 1
+          fi
+
+      - name: Validate branch naming
+        run: |
+          HEAD_BRANCH="${{ github.head_ref }}"
+          
+          # Allow dev, hotfix/*, feat/*, fix/*
+          if [[ ! "$HEAD_BRANCH" =~ ^(dev|hotfix/|feat/|fix/) ]]; then
+            echo "⚠️ WARNING: Branch '$HEAD_BRANCH' doesn't follow naming convention"
+            echo "Expected: feat/*, fix/*, hotfix/*, or dev"
+            # Don't fail, just warn
+          else
+            echo "✅ Branch name follows convention"
+          fi
