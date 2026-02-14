@@ -278,7 +278,7 @@ jobs:
           echo "✓ Homepage accessible"
 
           # Test API endpoint
-          curl -f -s -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" "$DEPLOYMENT_URL/api/status" > /dev/null || (echo "❌ API failed" && exit 1)
+          curl -f -s -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" "$DEPLOYMENT_URL/api/health" > /dev/null || (echo "❌ API failed" && exit 1)
           echo "✓ API responsive"
 
           echo "✓ All smoke tests passed"
@@ -308,6 +308,7 @@ jobs:
 
       - name: Generate version and changelog
         id: changelog
+        continue-on-error: true
         uses: TriPSs/conventional-changelog-action@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
