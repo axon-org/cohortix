@@ -2,10 +2,10 @@
  * Centralized Auth Context Helper
  * Codex v1.2 - DRY Principle for Auth Logic
  *
- * Replaces duplicated dev auth bypass logic across routes.
+ * Migrated to Clerk for authentication, Supabase for database operations.
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { auth } from '@clerk/nextjs/server';
 import { createServerClient } from '@supabase/ssr';
 import { UnauthorizedError, ForbiddenError } from './errors';
 
@@ -18,11 +18,12 @@ export interface AuthContext {
   supabase: any;
   organizationId: string;
   userId: string;
+  clerkUserId?: string;
 }
 
 /**
  * Create a service-role Supabase client (bypasses RLS).
- * Used only when BYPASS_AUTH=true for local development.
+ * Used for authenticated operations that need admin access.
  */
 function createServiceClient() {
   return createServerClient(
@@ -37,7 +38,7 @@ function createServiceClient() {
  *
  * @throws {UnauthorizedError} If user is not authenticated
  * @throws {ForbiddenError} If user is not associated with any organization
- * @returns {AuthContext} Supabase client, organization ID, and user ID
+ * @returns {AuthContext} Supabase client, organization ID, user ID, and Clerk user ID
  */
 export async function getAuthContext(): Promise<AuthContext> {
   // DEV BYPASS: Use service role + first org found
@@ -53,21 +54,51 @@ export async function getAuthContext(): Promise<AuthContext> {
       supabase,
       organizationId: membership?.organization_id ?? 'dev-org',
       userId: membership?.user_id ?? 'dev-user',
+      clerkUserId: 'dev-clerk-user',
     };
   }
 
-  // PRODUCTION: Standard Supabase auth
-  const supabase = await createClient();
+  // PRODUCTION: Clerk auth + Supabase service client
+  const { userId: clerkUserId, orgId } = await auth();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  if (!clerkUserId) {
     throw new UnauthorizedError('Authentication required');
   }
 
+  const supabase = createServiceClient();
+
+  // Get internal user ID from Clerk user ID
+  const { data: user, error: userError } = await supabase
+    .from('users')
+    .select('id')
+    .eq('clerk_user_id', clerkUserId)
+    .single();
+
+  if (userError || !user) {
+    throw new UnauthorizedError('User not found in database');
+  }
+
+  // If Clerk has an active organization, use it
+  if (orgId) {
+    const { data: org, error: orgError } = await supabase
+      .from('organizations')
+      .select('id')
+      .eq('clerk_org_id', orgId)
+      .single();
+
+    if (orgError || !org) {
+      throw new ForbiddenError('Organization not found in database');
+    }
+
+    return {
+      supabase,
+      organizationId: org.id,
+      userId: user.id,
+      clerkUserId,
+    };
+  }
+
+  // If no active organization in Clerk, get from membership
   const { data: membership, error: membershipError } = await supabase
     .from('organization_memberships')
     .select('organization_id')
@@ -82,6 +113,7 @@ export async function getAuthContext(): Promise<AuthContext> {
     supabase,
     organizationId: membership.organization_id,
     userId: user.id,
+    clerkUserId,
   };
 }
 
@@ -91,25 +123,35 @@ export async function getAuthContext(): Promise<AuthContext> {
  * Use for routes that don't require organization membership (e.g., user profile).
  *
  * @throws {UnauthorizedError} If user is not authenticated
- * @returns Supabase client and user ID
+ * @returns Supabase client, user ID, and Clerk user ID
  */
 export async function getAuthContextBasic(): Promise<{
   supabase: any;
   userId: string;
+  clerkUserId: string;
 }> {
-  const supabase = await createClient();
+  const { userId: clerkUserId } = await auth();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
+  if (!clerkUserId) {
     throw new UnauthorizedError('Authentication required');
+  }
+
+  const supabase = createServiceClient();
+
+  // Get internal user ID from Clerk user ID
+  const { data: user, error: userError } = await supabase
+    .from('users')
+    .select('id')
+    .eq('clerk_user_id', clerkUserId)
+    .single();
+
+  if (userError || !user) {
+    throw new UnauthorizedError('User not found in database');
   }
 
   return {
     supabase,
     userId: user.id,
+    clerkUserId,
   };
 }
