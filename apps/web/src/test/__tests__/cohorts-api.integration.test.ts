@@ -47,6 +47,10 @@ vi.mock('@/server/db/queries/dashboard', () => ({
   getUserOrganization: vi.fn(),
 }))
 
+vi.mock('@/lib/auth-helper', () => ({
+  getAuthContext: vi.fn(),
+}))
+
 import {
   getCohorts,
   getCohortById,
@@ -60,6 +64,8 @@ import {
   updateCohortSchema,
 } from '@/server/db/mutations/cohorts'
 import { getCurrentUser, getUserOrganization } from '@/server/db/queries/dashboard'
+import { getAuthContext } from '@/lib/auth-helper'
+import { UnauthorizedError, ForbiddenError } from '@/lib/errors'
 
 const mockGetCohorts = vi.mocked(getCohorts)
 const mockGetCohortById = vi.mocked(getCohortById)
@@ -69,6 +75,7 @@ const mockUpdateCohort = vi.mocked(updateCohort)
 const mockDeleteCohort = vi.mocked(deleteCohort)
 const mockGetCurrentUser = vi.mocked(getCurrentUser)
 const mockGetUserOrganization = vi.mocked(getUserOrganization)
+const mockGetAuthContext = vi.mocked(getAuthContext)
 const mockCreateCohortSchema = vi.mocked(createCohortSchema)
 const mockUpdateCohortSchema = vi.mocked(updateCohortSchema)
 
@@ -116,6 +123,12 @@ describe('Cohort CRUD API - Integration Tests', () => {
     // Default auth mocks - successful authentication
     mockGetCurrentUser.mockResolvedValue(mockUser as any)
     mockGetUserOrganization.mockResolvedValue(mockOrganization as any)
+    // Mock getAuthContext for [id] routes that use auth-helper
+    mockGetAuthContext.mockResolvedValue({
+      supabase: {} as any,
+      organizationId: mockOrganization.id,
+      userId: mockUser.id,
+    })
   })
 
   afterEach(() => {
@@ -611,24 +624,20 @@ describe('Cohort CRUD API - Integration Tests', () => {
     })
 
     it('should return 401 when user is not authenticated', async () => {
-      mockGetCurrentUser.mockResolvedValue(null as any)
+      mockGetAuthContext.mockRejectedValue(new UnauthorizedError('Authentication required'))
 
       const request = new NextRequest('https://example.com/api/cohorts/cohort-123')
       const context = { params: Promise.resolve({ id: 'cohort-123' }) }
-      const response = await getCohortHandler(request, context)
-
-      expect(response.status).toBe(401)
+      await expect(getCohortHandler(request, context)).rejects.toThrow('Authentication required')
       expect(mockGetCohortById).not.toHaveBeenCalled()
     })
 
     it('should return 403 when user has no organization', async () => {
-      mockGetUserOrganization.mockResolvedValue(null)
+      mockGetAuthContext.mockRejectedValue(new ForbiddenError('No organization'))
 
       const request = new NextRequest('https://example.com/api/cohorts/cohort-123')
       const context = { params: Promise.resolve({ id: 'cohort-123' }) }
-      const response = await getCohortHandler(request, context)
-
-      expect(response.status).toBe(403)
+      await expect(getCohortHandler(request, context)).rejects.toThrow('No organization')
       expect(mockGetCohortById).not.toHaveBeenCalled()
     })
 
@@ -757,30 +766,26 @@ describe('Cohort CRUD API - Integration Tests', () => {
     })
 
     it('should return 401 when user is not authenticated', async () => {
-      mockGetCurrentUser.mockResolvedValue(null as any)
+      mockGetAuthContext.mockRejectedValue(new UnauthorizedError('Authentication required'))
 
       const request = new NextRequest('https://example.com/api/cohorts/cohort-123', {
         method: 'PATCH',
         body: JSON.stringify({ name: 'Updated' }),
       })
       const context = { params: Promise.resolve({ id: 'cohort-123' }) }
-      const response = await patchCohortHandler(request, context)
-
-      expect(response.status).toBe(401)
+      await expect(patchCohortHandler(request, context)).rejects.toThrow('Authentication required')
       expect(mockUpdateCohort).not.toHaveBeenCalled()
     })
 
     it('should return 403 when user has no organization', async () => {
-      mockGetUserOrganization.mockResolvedValue(null)
+      mockGetAuthContext.mockRejectedValue(new ForbiddenError('No organization'))
 
       const request = new NextRequest('https://example.com/api/cohorts/cohort-123', {
         method: 'PATCH',
         body: JSON.stringify({ name: 'Updated' }),
       })
       const context = { params: Promise.resolve({ id: 'cohort-123' }) }
-      const response = await patchCohortHandler(request, context)
-
-      expect(response.status).toBe(403)
+      await expect(patchCohortHandler(request, context)).rejects.toThrow('No organization')
       expect(mockUpdateCohort).not.toHaveBeenCalled()
     })
 
@@ -855,28 +860,24 @@ describe('Cohort CRUD API - Integration Tests', () => {
     })
 
     it('should return 401 when user is not authenticated', async () => {
-      mockGetCurrentUser.mockResolvedValue(null as any)
+      mockGetAuthContext.mockRejectedValue(new UnauthorizedError('Authentication required'))
 
       const request = new NextRequest('https://example.com/api/cohorts/cohort-123', {
         method: 'DELETE',
       })
       const context = { params: Promise.resolve({ id: 'cohort-123' }) }
-      const response = await deleteCohortHandler(request, context)
-
-      expect(response.status).toBe(401)
+      await expect(deleteCohortHandler(request, context)).rejects.toThrow('Authentication required')
       expect(mockDeleteCohort).not.toHaveBeenCalled()
     })
 
     it('should return 403 when user has no organization', async () => {
-      mockGetUserOrganization.mockResolvedValue(null)
+      mockGetAuthContext.mockRejectedValue(new ForbiddenError('No organization'))
 
       const request = new NextRequest('https://example.com/api/cohorts/cohort-123', {
         method: 'DELETE',
       })
       const context = { params: Promise.resolve({ id: 'cohort-123' }) }
-      const response = await deleteCohortHandler(request, context)
-
-      expect(response.status).toBe(403)
+      await expect(deleteCohortHandler(request, context)).rejects.toThrow('No organization')
       expect(mockDeleteCohort).not.toHaveBeenCalled()
     })
 
