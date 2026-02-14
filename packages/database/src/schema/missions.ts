@@ -46,6 +46,9 @@ export const missions = pgTable('projects', {
 export type Mission = typeof missions.$inferSelect;
 export type InsertMission = typeof missions.$inferInsert;
 
+// Re-export ownerTypeEnum for use in other schemas
+export { ownerTypeEnum };
+
 // Legacy aliases for backwards compatibility
 export const projects = missions;
 export const projectStatusEnum = missionStatusEnum;
