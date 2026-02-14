@@ -90,6 +90,17 @@ export const PATCH = withMiddleware(
     if (data.icon !== undefined) updateData.icon = data.icon;
     if (data.settings !== undefined) updateData.settings = data.settings;
 
+    // Operations Redesign fields
+    if (data.location !== undefined) updateData.location = data.location
+    if (data.sprintInfo !== undefined) updateData.sprint_info = data.sprintInfo
+    if (data.lastSync !== undefined) updateData.last_sync = data.lastSync
+    if (data.inScope !== undefined) updateData.in_scope = data.inScope
+    if (data.outOfScope !== undefined) updateData.out_of_scope = data.outOfScope
+    if (data.expectedOutcomes !== undefined) updateData.expected_outcomes = data.expectedOutcomes
+    if (data.keyFeatures !== undefined) updateData.key_features = data.keyFeatures
+    if (data.healthStatus !== undefined) updateData.health_status = data.healthStatus
+    if (data.label !== undefined) updateData.label = data.label
+
     // Auto-set completed_at when status changes to completed
     if (data.status === 'completed') updateData.completed_at = new Date().toISOString();
     if (data.status && data.status !== 'completed') updateData.completed_at = null;

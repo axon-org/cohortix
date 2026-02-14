@@ -15,65 +15,70 @@ export const operationStatusEnum = z.enum([
 ]);
 export type OperationStatus = z.infer<typeof operationStatusEnum>;
 
-export const createOperationSchema = z
-  .object({
-    name: z
-      .string()
-      .min(3, 'Name must be at least 3 characters')
-      .max(255, 'Name must be less than 255 characters')
-      .trim(),
-    description: z.string().max(10000).optional(),
-    status: operationStatusEnum.default('planning'),
-    cohortId: z.string().uuid().optional().nullable(),
-    missionId: z.string().uuid().optional().nullable(), // Links to Mission (goals table in DB)
-    startDate: z.string().date('Invalid date format (use YYYY-MM-DD)').optional().nullable(),
-    targetDate: z.string().date('Invalid date format (use YYYY-MM-DD)').optional().nullable(),
-    color: z
-      .string()
-      .regex(/^#[0-9a-fA-F]{6}$/, 'Invalid hex color')
-      .optional()
-      .nullable(),
-    icon: z.string().max(50).optional().nullable(),
-    settings: z.record(z.any()).optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.startDate && data.targetDate) {
-        return new Date(data.startDate) <= new Date(data.targetDate);
-      }
-      return true;
-    },
-    { message: 'Target date must be after start date', path: ['targetDate'] }
-  );
+export const healthStatusEnum = z.enum(['healthy', 'at_risk', 'critical', 'unknown'])
+export type HealthStatus = z.infer<typeof healthStatusEnum>
+
+export const createOperationSchema = z.object({
+  name: z
+    .string()
+    .min(3, 'Name must be at least 3 characters')
+    .max(255, 'Name must be less than 255 characters')
+    .trim(),
+  description: z.string().max(10000).optional(),
+  status: operationStatusEnum.default('planning'),
+  cohortId: z.string().uuid().optional().nullable(),
+  missionId: z.string().uuid().optional().nullable(), // Links to Mission (goals table in DB)
+  startDate: z.string().date('Invalid date format (use YYYY-MM-DD)').optional().nullable(),
+  targetDate: z.string().date('Invalid date format (use YYYY-MM-DD)').optional().nullable(),
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Invalid hex color').optional().nullable(),
+  icon: z.string().max(50).optional().nullable(),
+  settings: z.record(z.any()).optional(),
+}).refine(
+  (data) => {
+    if (data.startDate && data.targetDate) {
+      return new Date(data.startDate) <= new Date(data.targetDate)
+    }
+    return true
+  },
+  { message: 'Target date must be after start date', path: ['targetDate'] }
+)
 
 export type CreateOperationInput = z.infer<typeof createOperationSchema>;
 
-export const updateOperationSchema = z
-  .object({
-    name: z.string().min(3).max(255).trim().optional(),
-    description: z.string().max(10000).optional().nullable(),
-    status: operationStatusEnum.optional(),
-    cohortId: z.string().uuid().optional().nullable(),
-    missionId: z.string().uuid().optional().nullable(),
-    startDate: z.string().date().optional().nullable(),
-    targetDate: z.string().date().optional().nullable(),
-    color: z
-      .string()
-      .regex(/^#[0-9a-fA-F]{6}$/)
-      .optional()
-      .nullable(),
-    icon: z.string().max(50).optional().nullable(),
-    settings: z.record(z.any()).optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.startDate && data.targetDate) {
-        return new Date(data.startDate) <= new Date(data.targetDate);
-      }
-      return true;
-    },
-    { message: 'Target date must be after start date', path: ['targetDate'] }
-  );
+export const updateOperationSchema = z.object({
+  name: z.string().min(3).max(255).trim().optional(),
+  description: z.string().max(10000).optional().nullable(),
+  status: operationStatusEnum.optional(),
+  cohortId: z.string().uuid().optional().nullable(),
+  missionId: z.string().uuid().optional().nullable(),
+  startDate: z.string().date().optional().nullable(),
+  targetDate: z.string().date().optional().nullable(),
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional().nullable(),
+  icon: z.string().max(50).optional().nullable(),
+  settings: z.record(z.any()).optional(),
+  // Operations Redesign fields
+  location: z.string().max(255).optional().nullable(),
+  sprintInfo: z.string().max(255).optional().nullable(),
+  lastSync: z.string().datetime().optional().nullable(),
+  inScope: z.array(z.string()).optional().nullable(),
+  outOfScope: z.array(z.string()).optional().nullable(),
+  expectedOutcomes: z.array(z.string()).optional().nullable(),
+  keyFeatures: z.object({
+    p0: z.array(z.string()).optional(),
+    p1: z.array(z.string()).optional(),
+    p2: z.array(z.string()).optional(),
+  }).optional().nullable(),
+  healthStatus: healthStatusEnum.optional().nullable(),
+  label: z.string().max(100).optional().nullable(),
+}).refine(
+  (data) => {
+    if (data.startDate && data.targetDate) {
+      return new Date(data.startDate) <= new Date(data.targetDate)
+    }
+    return true
+  },
+  { message: 'Target date must be after start date', path: ['targetDate'] }
+)
 
 export type UpdateOperationInput = z.infer<typeof updateOperationSchema>;
 

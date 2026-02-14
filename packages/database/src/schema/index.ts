@@ -16,7 +16,14 @@ export * from './goals';
 // Note: Both missions.ts and projects.ts export the same types with legacy aliases
 // Only export from missions.ts to avoid duplicate exports
 export * from './missions'; // User-facing: "Missions" (DB table: projects)
+export * from './operations'; // Operations (bounded initiatives) - uses same DB table as missions
 export * from './milestones';
+
+// Operations Redesign
+export * from './workstreams';
+export * from './operation-notes';
+export * from './operation-files';
+export * from './timeline-items';
 
 // Actions (User-facing: "Actions", DB table: tasks)
 // Note: Both actions.ts and tasks.ts export the same types with legacy aliases

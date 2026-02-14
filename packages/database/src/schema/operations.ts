@@ -6,13 +6,8 @@ import { missions, ownerTypeEnum } from './missions';
 
 // Note: Table name remains 'projects' in database for backwards compatibility
 // User-facing terminology: "Operation" (bounded initiative with start/end)
-export const operationStatusEnum = pgEnum('project_status', [
-  'planning',
-  'active',
-  'on_hold',
-  'completed',
-  'archived',
-]);
+export const operationStatusEnum = pgEnum('project_status', ['planning', 'active', 'on_hold', 'completed', 'archived']);
+export const healthStatusEnum = pgEnum('health_status', ['healthy', 'at_risk', 'critical', 'unknown']);
 
 export const operations = pgTable('projects', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -42,6 +37,17 @@ export const operations = pgTable('projects', {
 
   // Linked mission (Operations support Missions in PPV hierarchy)
   missionId: uuid('goal_id').references(() => missions.id, { onDelete: 'set null' }), // DB column: goal_id
+
+  // Operations Redesign: New metadata fields
+  location: varchar('location', { length: 255 }),
+  sprintInfo: varchar('sprint_info', { length: 255 }),
+  lastSync: timestamp('last_sync', { withTimezone: true }),
+  inScope: text('in_scope').array(),
+  outOfScope: text('out_of_scope').array(),
+  expectedOutcomes: text('expected_outcomes').array(),
+  keyFeatures: jsonb('key_features').default({ p0: [], p1: [], p2: [] }).notNull(),
+  healthStatus: healthStatusEnum('health_status'),
+  label: varchar('label', { length: 100 }),
 
   settings: jsonb('settings').default({}).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),

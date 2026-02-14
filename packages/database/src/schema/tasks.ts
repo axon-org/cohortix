@@ -35,6 +35,7 @@ export const tasks = pgTable('tasks', {
     .references(() => organizations.id, { onDelete: 'cascade' }),
   projectId: uuid('project_id').references(() => operations.id, { onDelete: 'set null' }), // References operations (projects table in DB) - optional for rhythm tasks
   rhythmId: uuid('rhythm_id'), // References rhythms table - added via migration (circular dependency)
+  workstreamId: uuid('workstream_id'), // References workstreams table - added via migration (circular dependency to avoid import cycle)
   parentTaskId: uuid('parent_task_id').references((): AnyPgColumn => tasks.id, {
     onDelete: 'cascade',
   }),
