@@ -1,0 +1,122 @@
+name: Hotfix Workflow
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    branches:
+      - main
+  pull_request_review:
+    types: [submitted, dismissed]
+
+jobs:
+  enforce-approvals:
+    name: Enforce 2+ Approvals
+    runs-on: ubuntu-latest
+    if: github.head_ref && startsWith(github.head_ref, 'hotfix/')
+    steps:
+      - name: Check approval count
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+            
+            // Count unique approvals (latest review per user)
+            const latestReviews = {};
+            reviews.forEach(review => {
+              const userId = review.user.id;
+              if (!latestReviews[userId] || new Date(review.submitted_at) > new Date(latestReviews[userId].submitted_at)) {
+                latestReviews[userId] = review;
+              }
+            });
+            
+            const approvals = Object.values(latestReviews).filter(
+              review => review.state === 'APPROVED'
+            ).length;
+            
+            console.log(`✅ Current approvals: ${approvals}/2`);
+            
+            if (approvals < 2) {
+              core.setFailed(`❌ Hotfix requires 2+ approvals (currently ${approvals})`);
+            } else {
+              console.log('✅ Approval requirement met');
+            }
+
+  backport-to-dev:
+    name: Auto-backport to dev
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'hotfix/')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge main into dev
+        run: |
+          git fetch origin main dev
+          git checkout dev
+          
+          echo "📥 Merging main into dev (backporting hotfix)"
+          if git merge origin/main --no-ff -m "chore: backport hotfix from main"; then
+            echo "✅ Merge successful"
+            git push origin dev
+            echo "✅ Pushed dev to origin"
+          else
+            echo "❌ Merge conflict detected - manual resolution required"
+            echo "Please manually merge main into dev and resolve conflicts"
+            exit 1
+          fi
+
+      - name: Delete hotfix branch
+        if: success()
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          echo "🗑️  Deleting hotfix branch: $BRANCH_NAME"
+          git push origin --delete "$BRANCH_NAME" || echo "Branch already deleted"
+          echo "✅ Hotfix branch cleaned up"
+
+      - name: Comment on PR
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `✅ **Hotfix backported successfully**\n\n` +
+                    `- Merged \`main\` → \`dev\`\n` +
+                    `- Deleted branch \`${{ github.head_ref }}\`\n\n` +
+                    `The hotfix is now live in both \`main\` and \`dev\`.`
+            });
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `⚠️ **Hotfix backport failed**\n\n` +
+                    `Failed to merge \`main\` into \`dev\` automatically. ` +
+                    `Please manually merge and resolve conflicts:\n\n` +
+                    `\`\`\`bash\n` +
+                    `git checkout dev\n` +
+                    `git merge main\n` +
+                    `# Resolve conflicts\n` +
+                    `git push origin dev\n` +
+                    `\`\`\`\n\n` +
+                    `Then delete the hotfix branch: \`git push origin --delete ${{ github.head_ref }}\``
+            });
