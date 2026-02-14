@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, integer, jsonb, decimal, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, text, timestamp, integer, jsonb, decimal, index, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
 import { ownerTypeEnum } from './missions';
 
@@ -19,7 +19,7 @@ export const intelligence = pgTable('intelligence', {
   createdById: uuid('created_by_id').notNull(),
   
   // Topic hierarchy (for nested topics)
-  parentTopicId: uuid('parent_topic_id').references(() => intelligence.id, { onDelete: 'cascade' }),
+  parentTopicId: uuid('parent_topic_id').references((): AnyPgColumn => intelligence.id, { onDelete: 'cascade' }),
   
   name: varchar('name', { length: 255 }).notNull(),
   description: text('description'),

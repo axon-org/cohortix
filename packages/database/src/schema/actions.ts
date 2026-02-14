@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, integer, decimal, jsonb, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, text, timestamp, integer, decimal, jsonb, pgEnum, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
 import { missions } from './missions';
 import { milestones } from './milestones';
@@ -18,7 +18,7 @@ export const actions = pgTable('tasks', {
   projectId: uuid('project_id')
     .notNull()
     .references(() => missions.id, { onDelete: 'cascade' }), // References missions table
-  parentTaskId: uuid('parent_task_id').references(() => actions.id, { onDelete: 'cascade' }),
+  parentTaskId: uuid('parent_task_id').references((): AnyPgColumn => actions.id, { onDelete: 'cascade' }),
   milestoneId: uuid('milestone_id').references(() => milestones.id, { onDelete: 'set null' }),
   
   // Polymorphic assignee (user or ally)

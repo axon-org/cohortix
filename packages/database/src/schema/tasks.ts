@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, integer, decimal, jsonb, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, text, timestamp, integer, decimal, jsonb, pgEnum, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
 import { operations } from './operations'; // Operations (bounded initiatives)
 import { milestones } from './milestones';
@@ -17,7 +17,7 @@ export const tasks = pgTable('tasks', {
     .references(() => organizations.id, { onDelete: 'cascade' }),
   projectId: uuid('project_id').references(() => operations.id, { onDelete: 'set null' }), // References operations (projects table in DB) - optional for rhythm tasks
   rhythmId: uuid('rhythm_id'), // References rhythms table - added via migration (circular dependency)
-  parentTaskId: uuid('parent_task_id').references(() => tasks.id, { onDelete: 'cascade' }),
+  parentTaskId: uuid('parent_task_id').references((): AnyPgColumn => tasks.id, { onDelete: 'cascade' }),
   milestoneId: uuid('milestone_id').references(() => milestones.id, { onDelete: 'set null' }),
   
   // Polymorphic assignee (user or ally)

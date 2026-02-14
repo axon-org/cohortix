@@ -28,12 +28,15 @@ import { useUpdateOperation } from '@/hooks/use-operations'
 type Task = {
   id: string
   title: string
+  description?: string
   status: string
   priority?: string
   dueDate?: string
   assigneeId?: string
   projectId?: string
   projects?: { id: string; name: string; status: string }
+  createdAt: string
+  updatedAt?: string
 }
 
 export type KanbanStatus = 'planning' | 'active' | 'on_hold' | 'completed' | 'archived'
@@ -67,7 +70,12 @@ export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardPro
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   
   const updateOperation = useUpdateOperation()
-  const isTaskView = initialTasks.length > 0 && 'title' in initialTasks[0]
+  const isTaskView = initialTasks.length > 0 && initialTasks[0] && 'title' in initialTasks[0]
+
+  // Type guard to check if item is an Operation
+  const isOperation = (item: Operation | Task): item is Operation => {
+    return 'missionId' in item && 'ownerId' in item
+  }
 
   // Dynamic columns based on grouping
   const columns = useMemo(() => {
@@ -76,15 +84,17 @@ export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardPro
     // For Mission or Ally, we extract unique IDs from tasks
     const uniqueIds = Array.from(new Set(tasks.map(t => {
       if (groupBy === 'mission') {
-        return 'missionId' in t ? (t.missionId || 'unassigned') : 'unassigned'
+        return isOperation(t) ? (t.missionId || 'unassigned') : 'unassigned'
       }
-      return 'ownerId' in t ? t.ownerId : ('assigneeId' in t ? t.assigneeId : undefined)
+      return isOperation(t) ? t.ownerId : (t.assigneeId || undefined)
     })))
     
-    return uniqueIds.map(id => ({
-      id: id as any,
-      title: id === 'unassigned' ? 'No Mission' : ((id?.length ?? 0) > 8 ? id?.slice(0, 8) ?? id : id ?? 'Unassigned')
-    }))
+    return uniqueIds
+      .filter((id): id is string => id !== undefined)
+      .map(id => ({
+        id: id as any,
+        title: id === 'unassigned' ? 'No Mission' : (id.length > 8 ? id.slice(0, 8) : id)
+      }))
   }, [groupBy, tasks, isTaskView])
 
   const sensors = useSensors(
@@ -162,12 +172,15 @@ export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardPro
         const activeIndex = tasks.findIndex((t) => t.id === activeId)
         if (activeIndex === -1) return tasks
         
+        const task = tasks[activeIndex]
+        if (!task) return tasks
+        
         if (groupBy === 'status') {
-          tasks[activeIndex]!.status = overId as KanbanStatus
-        } else if (groupBy === 'mission') {
-          tasks[activeIndex]!.missionId = overId === 'unassigned' ? undefined : String(overId)
-        } else {
-          tasks[activeIndex]!.ownerId = String(overId)
+          task.status = overId as string
+        } else if (groupBy === 'mission' && isOperation(task)) {
+          task.missionId = overId === 'unassigned' ? undefined : String(overId)
+        } else if (groupBy === 'owner' && isOperation(task)) {
+          task.ownerId = String(overId)
         }
         return arrayMove(tasks, activeIndex, activeIndex)
       })
@@ -184,9 +197,9 @@ export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardPro
     const activeId = active.id
     const activeTask = tasks.find((t) => t.id === activeId)
     
-    if (activeTask) {
+    if (activeTask && isOperation(activeTask)) {
       const updateData: Partial<Operation> = {}
-      if (groupBy === 'status') updateData.status = activeTask.status
+      if (groupBy === 'status') updateData.status = activeTask.status as KanbanStatus
       if (groupBy === 'mission') updateData.missionId = activeTask.missionId
       if (groupBy === 'owner') updateData.ownerId = activeTask.ownerId
 

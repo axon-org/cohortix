@@ -11,11 +11,25 @@ import { type Operation } from '@/lib/api/client'
 import { type KanbanStatus } from './kanban-board'
 import { cn } from '@/lib/utils'
 
+type Task = {
+  id: string
+  title: string
+  description?: string
+  status: string
+  priority?: string
+  dueDate?: string
+  assigneeId?: string
+  projectId?: string
+  projects?: { id: string; name: string; status: string }
+  createdAt: string
+  updatedAt?: string
+}
+
 interface KanbanColumnProps {
   id: string
   title: string
-  tasks: Operation[]
-  onCardClick?: (task: Operation) => void
+  tasks: (Operation | Task)[]
+  onCardClick?: (task: Operation | Task) => void
 }
 
 export function KanbanColumn({ id, title, tasks, onCardClick }: KanbanColumnProps) {

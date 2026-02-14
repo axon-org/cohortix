@@ -5,7 +5,7 @@
  * with proper configuration.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { createBrowserClient } from '@supabase/ssr'
 
 // Mock @supabase/ssr
@@ -17,6 +17,14 @@ vi.mock('@supabase/ssr', () => ({
 describe('Supabase Client Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // Set up test environment variables
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://test.supabase.co')
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'test-anon-key')
+    vi.stubEnv('DATABASE_URL', 'postgresql://test:test@localhost:5432/testdb')
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
   })
 
   describe('Browser Client Creation', () => {
