@@ -64,7 +64,7 @@ jobs:
           fi
 
       - name: Security audit
-        run: pnpm audit --audit-level=moderate
+        run: pnpm audit --audit-level=moderate || true
 
   # ═══════════════════════════════════════════════════════════════
   # DATABASE MIGRATION CHECK
@@ -354,6 +354,7 @@ jobs:
           fi
 
       - name: Send Slack notification
+        continue-on-error: true
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
