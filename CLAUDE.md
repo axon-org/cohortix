@@ -12,16 +12,23 @@
 ### Current Status: Dashboard Wired + Terminology Alignment In Progress
 
 ### What's Done ✅
-1. **UI Mockups** — 8 screens designed (v1 + v3) in `/Users/alimai/clawd/cohortix-mockups/v3/`
-2. **Mission Control Dashboard** — Built with sidebar, header, KPI cards, sparklines, engagement chart, activity feed, alerts
-3. **Auth Screens** — Sign-in, sign-up, forgot-password with Supabase Auth (email/password + GitHub/Google OAuth)
+
+1. **UI Mockups** — 8 screens designed (v1 + v3) in
+   `/Users/alimai/clawd/cohortix-mockups/v3/`
+2. **Mission Control Dashboard** — Built with sidebar, header, KPI cards,
+   sparklines, engagement chart, activity feed, alerts
+3. **Auth Screens** — Sign-in, sign-up, forgot-password with Supabase Auth
+   (email/password + GitHub/Google OAuth)
 4. **Database Schema** — 16 tables, 14 enums, RLS policies pushed to Supabase
-5. **Data Seeding** — Axon HQ org, 4 AI allies (Devi, Lubna, Zara, Khalid), missions, actions
+5. **Data Seeding** — Axon HQ org, 4 AI allies (Devi, Lubna, Zara, Khalid),
+   missions, actions
 6. **Dashboard Wiring** — Real Supabase data flowing to all dashboard components
 7. **Terminology Alignment** — IN PROGRESS (subagent running)
 
 ### What's Next 🔜
-1. ~~Complete terminology alignment~~ ✅ Done (2026-02-13) — see `docs/TERMINOLOGY.md`
+
+1. ~~Complete terminology alignment~~ ✅ Done (2026-02-13) — see
+   `docs/TERMINOLOGY.md`
 2. Mobile responsive fixes for dashboard
 3. Fix Next.js warnings (bottom-left corner)
 4. Build Cohort Grid screen
@@ -32,21 +39,31 @@
 9. Add cohort performance table (missing from dashboard mockup)
 
 ### Key Decisions Made
+
 - **Supabase** for auth AND database (NOT Clerk/Neon)
 - **Tailwind v3** (codebase uses v3 syntax, was accidentally installed as v4)
-- **Terminology hierarchy:** Domain → Vision → Mission → Operation/Rhythm → Task (PPV Pro by August Bradley, rebranded for Cohortix)
-- **⚠️ MANDATORY: Read `docs/TERMINOLOGY.md` before any work** — this is the authoritative terminology reference. Use ONLY these terms in code, UI, docs, and communications.
-- **Supabase server client** lives in `apps/web/src/lib/supabase/` (NOT in shared packages — Next.js `cookies()` can't run from packages)
+- **Terminology hierarchy:** Domain → Vision → Mission → Operation/Rhythm → Task
+  (PPV Pro by August Bradley, rebranded for Cohortix)
+- **⚠️ MANDATORY: Read `docs/TERMINOLOGY.md` before any work** — this is the
+  authoritative terminology reference. Use ONLY these terms in code, UI, docs,
+  and communications.
+- **Supabase server client** lives in `apps/web/src/lib/supabase/` (NOT in
+  shared packages — Next.js `cookies()` can't run from packages)
 
 ### Credentials
+
 - **Supabase:** `rfwscvklcokzuofyzqwx.supabase.co`
 - **Test account:** ahmadashfq@gmail.com / Test1234!
 - **Auth user ID:** b73baf11-1eee-44e8-8925-8e1277daa0ee
-- **Env files:** `apps/web/.env.local` (real keys), root `.env.local` (also has keys)
+- **Env files:** `apps/web/.env.local` (real keys), root `.env.local` (also has
+  keys)
 
 ### Known Issues
-- Port 3000 often occupied by orphaned processes — kill before starting dev server
-- Dashboard queries had `status` column filter that doesn't exist in schema — removed
+
+- Port 3000 often occupied by orphaned processes — kill before starting dev
+  server
+- Dashboard queries had `status` column filter that doesn't exist in schema —
+  removed
 - Activity feed empty until audit logs are seeded
 - Mobile layout not responsive yet
 
@@ -54,19 +71,29 @@
 
 ## What is Cohortix?
 
-Cohortix is an **Allies-as-a-Service (AaaS)** platform that enables humans to manage a high-performing organization of AI allies. It's a multi-tenant SaaS built with Next.js 15, React 19, and PostgreSQL, designed to bridge the gap between human strategic direction and autonomous AI execution.
+Cohortix is an **Allies-as-a-Service (AaaS)** platform that enables humans to
+manage a high-performing organization of AI allies. It's a multi-tenant SaaS
+built with Next.js 15, React 19, and PostgreSQL, designed to bridge the gap
+between human strategic direction and autonomous AI execution.
 
-**Core Concept:** While traditional mission management tools (ClickUp, Linear) focus on human-to-human collaboration, Cohortix is built from the ground up for human-to-AI team orchestration through a unified interface called **Mission Control**.
+**Core Concept:** While traditional mission management tools (ClickUp, Linear)
+focus on human-to-human collaboration, Cohortix is built from the ground up for
+human-to-AI team orchestration through a unified interface called **Mission
+Control**.
 
 **Domain:** cohortix.ai  
 **Tagline:** "Your AI crew, ready for action."
 
 ### Key Differentiators
 
-1. **Bidirectional Goal Setting**: Both humans AND allies can propose goals. Allies proactively suggest improvements based on observations (e.g., "test coverage dropped, proposing goal to fix it"), subject to human approval.
+1. **Bidirectional Goal Setting**: Both humans AND allies can propose goals.
+   Allies proactively suggest improvements based on observations (e.g., "test
+   coverage dropped, proposing goal to fix it"), subject to human approval.
 
-2. **Living Knowledge Base**: Not just logs — a continuously evolving knowledge system with:
-   - Graph relationships between concepts (depends-on, related-to, supersedes, contradicts)
+2. **Living Knowledge Base**: Not just logs — a continuously evolving knowledge
+   system with:
+   - Graph relationships between concepts (depends-on, related-to, supersedes,
+     contradicts)
    - Knowledge versioning and evolution over time
    - Cross-ally knowledge sharing (one ally's learning benefits others)
    - Context-aware knowledge suggestions during missions
@@ -183,6 +210,7 @@ vercel rollback <deployment-url>
 ```
 
 **Critical paths require 80%+ coverage:**
+
 - Authentication flows
 - Multi-tenant isolation
 - Payment processing
@@ -191,6 +219,7 @@ vercel rollback <deployment-url>
 ### Testing Patterns
 
 **Unit Tests (Vitest):**
+
 ```typescript
 // tests/unit/services/mission-service.test.ts
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -206,7 +235,7 @@ describe('ProjectService', () => {
       name: 'Test Mission',
       organizationId: 'org_123',
     });
-    
+
     expect(mission.id).toBeDefined();
     expect(mission.name).toBe('Test Mission');
   });
@@ -220,17 +249,18 @@ describe('ProjectService', () => {
 ```
 
 **E2E Tests (Playwright):**
+
 ```typescript
 // tests/e2e/auth.spec.ts
 import { test, expect } from '@playwright/test';
 
 test('user can sign in and access dashboard', async ({ page }) => {
   await page.goto('/sign-in');
-  
+
   await page.fill('input[name="email"]', 'test@example.com');
   await page.fill('input[name="password"]', 'password123');
   await page.click('button[type="submit"]');
-  
+
   await expect(page).toHaveURL('/dashboard');
   await expect(page.locator('h1')).toContainText('Dashboard');
 });
@@ -446,16 +476,16 @@ packages/database/
 // Use these aliases for cleaner imports
 
 // App-level
-import { Button } from '@/components/ui/button';          // apps/web/src/components/ui/button
-import { useProjects } from '@/lib/hooks/use-missions';   // apps/web/src/lib/hooks/use-missions
+import { Button } from '@/components/ui/button'; // apps/web/src/components/ui/button
+import { useProjects } from '@/lib/hooks/use-missions'; // apps/web/src/lib/hooks/use-missions
 import { projectService } from '@/lib/services/mission-service';
 import { ProjectCard } from '@/components/features/missions/mission-card';
 
 // Package-level
-import { db } from '@repo/database';                      // packages/database/src
-import type { Mission } from '@repo/types';               // packages/types/src
-import { Button } from '@repo/ui/button';                 // packages/ui/src/button
-import { formatDate } from '@repo/utils/dates';           // packages/utils/src/dates
+import { db } from '@repo/database'; // packages/database/src
+import type { Mission } from '@repo/types'; // packages/types/src
+import { Button } from '@repo/ui/button'; // packages/ui/src/button
+import { formatDate } from '@repo/utils/dates'; // packages/utils/src/dates
 ```
 
 ---
@@ -507,14 +537,14 @@ function createProject(data: any) {
 }
 
 // ✅ GOOD: Handle array access safely
-const firstProject = missions[0];  // Type: Mission | undefined
+const firstProject = missions[0]; // Type: Mission | undefined
 if (firstProject) {
-  console.log(firstProject.name);  // Safe access
+  console.log(firstProject.name); // Safe access
 }
 
 // ❌ BAD: Assume array has items
-const firstProject = missions[0];  // With noUncheckedIndexedAccess: false
-console.log(firstProject.name);    // Runtime error if array is empty
+const firstProject = missions[0]; // With noUncheckedIndexedAccess: false
+console.log(firstProject.name); // Runtime error if array is empty
 ```
 
 ### React Component Patterns
@@ -528,7 +558,7 @@ import { db } from '@repo/database';
 
 export default async function ProjectsPage() {
   const projects = await db.query.projects.findMany();
-  
+
   return (
     <div>
       {missions.map(mission => (
@@ -586,26 +616,26 @@ export default function UserCard({ user, onEdit }: { user: any; onEdit: any }) {
 
 ### File Naming
 
-| Type | Convention | Example |
-|------|------------|---------|
-| React Components | kebab-case | `project-card.tsx` |
-| Utilities | kebab-case | `dates.ts` |
-| Types | kebab-case | `project.ts` |
-| Routes | kebab-case | `api/v1/project-templates/` |
-| CSS/Styles | kebab-case | `globals.css` |
+| Type             | Convention | Example                     |
+| ---------------- | ---------- | --------------------------- |
+| React Components | kebab-case | `project-card.tsx`          |
+| Utilities        | kebab-case | `dates.ts`                  |
+| Types            | kebab-case | `project.ts`                |
+| Routes           | kebab-case | `api/v1/project-templates/` |
+| CSS/Styles       | kebab-case | `globals.css`               |
 
 ### Function Naming
 
 ```typescript
 // ✅ GOOD: Clear, descriptive names
-function getUserById(id: string): Promise<User | null> { }
-async function createProject(data: ProjectInput): Promise<Mission> { }
-function isValidEmail(email: string): boolean { }
+function getUserById(id: string): Promise<User | null> {}
+async function createProject(data: ProjectInput): Promise<Mission> {}
+function isValidEmail(email: string): boolean {}
 
 // ❌ BAD: Vague, abbreviated names
-function get(id: string) { }
-function create(d: any) { }
-function check(e: string) { }
+function get(id: string) {}
+function create(d: any) {}
+function check(e: string) {}
 ```
 
 ### Max Lengths
@@ -629,9 +659,9 @@ import { projectService } from '@/lib/services/mission-service';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const organizationId = searchParams.get('organizationId');
-  
+
   const missions = await projectService.list(organizationId);
-  
+
   return Response.json({ data: missions });
 }
 
@@ -645,7 +675,7 @@ export const projectService = {
       where: eq(missions.organizationId, organizationId),
     });
   },
-  
+
   async create(data: ProjectInput) {
     // Validation, business rules, etc.
   },
@@ -732,6 +762,7 @@ docs/api-documentation
 ```
 
 **Types:**
+
 - `feat` — New feature
 - `fix` — Bug fix
 - `docs` — Documentation
@@ -743,6 +774,7 @@ docs/api-documentation
 - `ci` — CI/CD changes
 
 **Scopes:**
+
 - `auth` — Authentication
 - `api` — API routes
 - `db` — Database
@@ -783,6 +815,7 @@ Closes ACC-150
 ### Pull Request Process
 
 1. **Create feature branch from `dev`:**
+
    ```bash
    git checkout dev
    git pull origin dev
@@ -790,12 +823,14 @@ Closes ACC-150
    ```
 
 2. **Commit changes with conventional commits:**
+
    ```bash
    git add .
    git commit -m "feat(auth): implement login form"
    ```
 
 3. **Push and create PR:**
+
    ```bash
    git push origin feature/ACC-123-user-auth
    # Create PR to dev via GitHub UI
@@ -819,11 +854,11 @@ Closes ACC-150
 
 ### Protected Branches
 
-| Branch | Approvals | Status Checks | Force Push |
-|--------|-----------|---------------|------------|
-| `main` | 2 | All must pass | ❌ |
-| `staging` | 1 | All must pass | ❌ |
-| `dev` | 1 | Required | ❌ |
+| Branch    | Approvals | Status Checks | Force Push |
+| --------- | --------- | ------------- | ---------- |
+| `main`    | 2         | All must pass | ❌         |
+| `staging` | 1         | All must pass | ❌         |
+| `dev`     | 1         | Required      | ❌         |
 
 ### Before Opening PR
 
@@ -873,11 +908,13 @@ git push origin dev
 
 ## 6. Boundaries (Permissions)
 
-**These boundaries define what AI development agents can do autonomously vs. what requires human approval.**
+**These boundaries define what AI development agents can do autonomously vs.
+what requires human approval.**
 
 ### Tier 1 — Always Safe (No Confirmation Needed)
 
 ✅ **Read Operations:**
+
 - Read any file in the repository
 - Search codebase
 - Check git status/log/diff
@@ -885,6 +922,7 @@ git push origin dev
 - Read documentation
 
 ✅ **Non-Destructive Commands:**
+
 - Run tests (`pnpm test`)
 - Run linting (`pnpm lint`)
 - Type checking (`pnpm type-check`)
@@ -893,6 +931,7 @@ git push origin dev
 - View database schema (`pnpm db:studio`)
 
 ✅ **Safe Analysis:**
+
 - Generate code suggestions
 - Analyze performance
 - Review security patterns
@@ -901,28 +940,33 @@ git push origin dev
 ### Tier 2 — Confirm First (Show Changes, Wait for Approval)
 
 ⚠️ **Code Modifications:**
+
 - Create/modify source files
 - Add/update components
 - Modify API routes
 - Update tests
 
 ⚠️ **Dependencies:**
+
 - Install new packages (`pnpm install <package>`)
 - Update dependencies (`pnpm update`)
 - Remove dependencies
 
 ⚠️ **Configuration:**
+
 - Modify `package.json` scripts
 - Update TypeScript config
 - Change ESLint rules
 - Modify Tailwind config
 
 ⚠️ **Database:**
+
 - Generate migrations (`pnpm db:generate`)
 - Push schema changes (`pnpm db:push`)
 - Seed database (`pnpm db:seed`)
 
 ⚠️ **Git Operations:**
+
 - Commit changes
 - Create branches
 - Push to remote
@@ -930,29 +974,34 @@ git push origin dev
 ### Tier 3 — Requires Explicit Human Permission
 
 🚨 **Destructive Operations:**
+
 - Delete files
 - Drop database tables (`pnpm db:drop`)
 - Force push (`git push --force`)
 - Delete branches
 
 🚨 **Production Changes:**
+
 - Deploy to production
 - Run migrations on production database
 - Modify production environment variables
 - Change access controls/permissions
 
 🚨 **CI/CD Pipeline:**
+
 - Modify GitHub Actions workflows
 - Change branch protection rules
 - Update deployment configuration
 
 🚨 **Security-Sensitive:**
+
 - Change authentication logic
 - Modify RBAC permissions
 - Update security headers
 - Change encryption keys
 
 🚨 **Billing/External Services:**
+
 - Add/remove external service integrations
 - Modify payment processing
 - Change subscription tiers
@@ -960,15 +1009,18 @@ git push origin dev
 ### Special Cases
 
 **Multi-file Refactoring:**
+
 - If changes affect >10 files: Show summary, get approval
 - If changes affect critical paths (auth, payment): Always confirm
 
 **Database Migrations:**
+
 - Development: Tier 2 (confirm)
 - Staging: Tier 3 (explicit permission)
 - Production: Tier 3 + manual review + backup verification
 
 **External API Calls:**
+
 - Read-only APIs: Tier 1
 - Write APIs (webhooks, etc.): Tier 2
 - Payment/billing APIs: Tier 3
@@ -979,7 +1031,8 @@ git push origin dev
 
 ### System Architecture
 
-Cohortix uses a **Backend-for-Frontend (BFF) monolithic pattern** within Next.js 15, designed for rapid iteration while maintaining clean separation of concerns.
+Cohortix uses a **Backend-for-Frontend (BFF) monolithic pattern** within Next.js
+15, designed for rapid iteration while maintaining clean separation of concerns.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -1034,7 +1087,9 @@ Cohortix uses a **Backend-for-Frontend (BFF) monolithic pattern** within Next.js
 
 **Strategy:** Shared database, shared schema with Row-Level Security (RLS)
 
-Every table containing tenant data includes an `organization_id` column. PostgreSQL RLS policies automatically filter queries to the current tenant's data.
+Every table containing tenant data includes an `organization_id` column.
+PostgreSQL RLS policies automatically filter queries to the current tenant's
+data.
 
 ```sql
 -- Example: RLS policy for tenant isolation
@@ -1061,7 +1116,8 @@ Platform
 
 ### Agent Runtime Abstraction
 
-**Critical Design:** Cohortix abstracts the agent runtime to avoid vendor lock-in.
+**Critical Design:** Cohortix abstracts the agent runtime to avoid vendor
+lock-in.
 
 ```typescript
 // Abstract interface for agent runtime
@@ -1070,15 +1126,15 @@ interface AgentRuntime {
   createAgent(config: AgentConfig): Promise<Agent>;
   startAgent(agentId: string): Promise<void>;
   stopAgent(agentId: string): Promise<void>;
-  
+
   // Action execution
   assignTask(agentId: string, action: Action): Promise<TaskExecution>;
   getTaskStatus(executionId: string): Promise<TaskStatus>;
-  
+
   // Communication
   sendMessage(agentId: string, message: Message): Promise<Response>;
   subscribeToEvents(agentId: string, callback: EventCallback): Subscription;
-  
+
   // Knowledge
   addKnowledge(agentId: string, knowledge: Knowledge): Promise<void>;
   queryKnowledge(agentId: string, query: string): Promise<Knowledge[]>;
@@ -1117,7 +1173,9 @@ import { pgTable, uuid, varchar, timestamp } from 'drizzle-orm/pg-core';
 
 export const missions = pgTable('missions', {
   id: uuid('id').primaryKey().defaultRandom(),
-  organizationId: uuid('organization_id').notNull().references(() => organizations.id),
+  organizationId: uuid('organization_id')
+    .notNull()
+    .references(() => organizations.id),
   name: varchar('name', { length: 255 }).notNull(),
   slug: varchar('slug', { length: 100 }).notNull(),
   description: text('description'),
@@ -1148,13 +1206,17 @@ const projects = await db.query.projects.findMany({
 });
 
 // Insert
-const newProject = await db.insert(missions).values({
-  name: 'New Mission',
-  organizationId: orgId,
-}).returning();
+const newProject = await db
+  .insert(missions)
+  .values({
+    name: 'New Mission',
+    organizationId: orgId,
+  })
+  .returning();
 
 // Update
-await db.update(missions)
+await db
+  .update(missions)
   .set({ name: 'Updated Name' })
   .where(eq(missions.id, projectId));
 
@@ -1166,11 +1228,14 @@ await db.delete(missions).where(eq(missions.id, projectId));
 
 ```typescript
 await db.transaction(async (tx) => {
-  const mission = await tx.insert(missions).values({
-    name: 'New Mission',
-    organizationId: orgId,
-  }).returning();
-  
+  const mission = await tx
+    .insert(missions)
+    .values({
+      name: 'New Mission',
+      organizationId: orgId,
+    })
+    .returning();
+
   await tx.insert(actions).values({
     projectId: mission[0].id,
     title: 'First Action',
@@ -1208,7 +1273,9 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   // Protect dashboard routes
   if (request.nextUrl.pathname.startsWith('/dashboard') && !session) {
@@ -1244,12 +1311,12 @@ export default async function DashboardPage() {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   // Fetch data (RLS automatically filters by user's org)
   const { data: missions } = await supabase
     .from('missions')
     .select('*');
-  
+
   return <div>Welcome, {user?.email}</div>;
 }
 
@@ -1271,11 +1338,11 @@ export async function GET(request: Request) {
   );
 
   const { data: { user }, error } = await supabase.auth.getUser();
-  
+
   if (error || !user) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  
+
   // RLS automatically filters data by user's org
   const { data: missions } = await supabase.from('missions').select('*');
   return Response.json({ data: missions });
@@ -1331,7 +1398,7 @@ export function useProjectRealtime(projectId: string) {
           // payload.eventType: INSERT | UPDATE | DELETE
           // payload.new: new row data
           // payload.old: old row data (for UPDATE/DELETE)
-          
+
           // Optimistically update UI or refetch
         }
       )
@@ -1429,7 +1496,10 @@ export const createProjectSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255),
   description: z.string().max(10000).optional(),
   workspaceId: z.string().uuid().optional(),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional(),
   startDate: z.string().date().optional(),
   targetDate: z.string().date().optional(),
 });
@@ -1445,21 +1515,24 @@ import { createProjectSchema } from '@/lib/validations/mission';
 
 export async function POST(request: Request) {
   const body = await request.json();
-  
+
   const validated = createProjectSchema.safeParse(body);
-  
+
   if (!validated.success) {
-    return Response.json({
-      error: {
-        code: 'VALIDATION_ERROR',
-        details: validated.error.issues,
+    return Response.json(
+      {
+        error: {
+          code: 'VALIDATION_ERROR',
+          details: validated.error.issues,
+        },
       },
-    }, { status: 400 });
+      { status: 400 }
+    );
   }
-  
+
   // Use validated.data (typed and sanitized)
   const mission = await projectService.create(validated.data);
-  
+
   return Response.json({ data: mission }, { status: 201 });
 }
 ```
@@ -1481,7 +1554,7 @@ export function ProjectForm() {
       description: '',
     },
   });
-  
+
   const onSubmit = async (data) => {
     // data is already validated and typed!
     await fetch('/api/v1/missions', {
@@ -1489,7 +1562,7 @@ export function ProjectForm() {
       body: JSON.stringify(data),
     });
   };
-  
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <input {...form.register('name')} />
@@ -1510,7 +1583,9 @@ export function useProjects(organizationId: string) {
   return useQuery({
     queryKey: ['missions', organizationId],
     queryFn: async () => {
-      const res = await fetch(`/api/v1/projects?organizationId=${organizationId}`);
+      const res = await fetch(
+        `/api/v1/projects?organizationId=${organizationId}`
+      );
       return res.json();
     },
   });
@@ -1518,7 +1593,7 @@ export function useProjects(organizationId: string) {
 
 export function useCreateProject() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (data: CreateProjectInput) => {
       const res = await fetch('/api/v1/missions', {
@@ -1545,15 +1620,15 @@ import { useProjects, useCreateProject } from '@/lib/hooks/use-missions';
 export function ProjectList({ organizationId }) {
   const { data: missions, isLoading } = useProjects(organizationId);
   const createProject = useCreateProject();
-  
+
   if (isLoading) return <div>Loading...</div>;
-  
+
   return (
     <div>
       {missions?.data.map(mission => (
         <div key={mission.id}>{mission.name}</div>
       ))}
-      
+
       <button onClick={() => createProject.mutate({ name: 'New Mission' })}>
         Create Mission
       </button>
@@ -1670,18 +1745,18 @@ pnpm db:seed
 
 ### Terminology (Use Consistently)
 
-| ❌ Avoid | ✅ Use | Context |
-|----------|--------|---------|
-| Agent | **Ally** | AI team member |
-| Agents (group) | **Cohort** | Group of allies |
-| Mission | **Mission** | Focused deliverable |
-| Action | **Action** | Individual step an Ally executes |
-| Dashboard | **Mission Control** | Main UI |
-| Intel Base | **Knowledge Base** | Organizational knowledge repository |
-| Create agent | **Recruit** | Add new ally |
-| Run/Execute | **Deploy** | Start work |
-| Workspace | **Base** | User workspace |
-| Training | **Growth** | Ally learning/improvement |
+| ❌ Avoid       | ✅ Use              | Context                             |
+| -------------- | ------------------- | ----------------------------------- |
+| Agent          | **Ally**            | AI team member                      |
+| Agents (group) | **Cohort**          | Group of allies                     |
+| Mission        | **Mission**         | Focused deliverable                 |
+| Action         | **Action**          | Individual step an Ally executes    |
+| Dashboard      | **Mission Control** | Main UI                             |
+| Intel Base     | **Knowledge Base**  | Organizational knowledge repository |
+| Create agent   | **Recruit**         | Add new ally                        |
+| Run/Execute    | **Deploy**          | Start work                          |
+| Workspace      | **Base**            | User workspace                      |
+| Training       | **Growth**          | Ally learning/improvement           |
 
 **Full Hierarchy:** Domain → Vision → Mission → Operation / Rhythm → Task
 
@@ -1691,23 +1766,23 @@ pnpm db:seed
 
 ```css
 /* Light mode */
---color-primary: 222.2 47.4% 11.2%;      /* Near black */
---color-secondary: 210 40% 96.1%;        /* Light gray */
---color-accent: 262 83% 58%;             /* Purple/Violet */
+--color-primary: 222.2 47.4% 11.2%; /* Near black */
+--color-secondary: 210 40% 96.1%; /* Light gray */
+--color-accent: 262 83% 58%; /* Purple/Violet */
 
 /* Dark mode */
---color-primary-dark: 210 40% 98%;       /* Near white */
---color-secondary-dark: 222.2 84% 4.9%;  /* Dark gray */
---color-accent-dark: 263 70% 50%;        /* Deeper purple */
+--color-primary-dark: 210 40% 98%; /* Near white */
+--color-secondary-dark: 222.2 84% 4.9%; /* Dark gray */
+--color-accent-dark: 263 70% 50%; /* Deeper purple */
 ```
 
 **Semantic Colors:**
 
 ```css
---color-success: 142 76% 36%;            /* Green */
---color-warning: 38 92% 50%;             /* Amber */
---color-error: 0 84% 60%;                /* Red */
---color-info: 199 89% 48%;               /* Blue */
+--color-success: 142 76% 36%; /* Green */
+--color-warning: 38 92% 50%; /* Amber */
+--color-error: 0 84% 60%; /* Red */
+--color-info: 199 89% 48%; /* Blue */
 ```
 
 ### Typography
@@ -1722,29 +1797,29 @@ pnpm db:seed
 **Type Scale:**
 
 ```css
---text-xs: 0.75rem;     /* 12px */
---text-sm: 0.875rem;    /* 14px */
---text-base: 1rem;      /* 16px */
---text-lg: 1.125rem;    /* 18px */
---text-xl: 1.25rem;     /* 20px */
---text-2xl: 1.5rem;     /* 24px */
---text-3xl: 1.875rem;   /* 30px */
---text-4xl: 2.25rem;    /* 36px */
+--text-xs: 0.75rem; /* 12px */
+--text-sm: 0.875rem; /* 14px */
+--text-base: 1rem; /* 16px */
+--text-lg: 1.125rem; /* 18px */
+--text-xl: 1.25rem; /* 20px */
+--text-2xl: 1.5rem; /* 24px */
+--text-3xl: 1.875rem; /* 30px */
+--text-4xl: 2.25rem; /* 36px */
 ```
 
 ### Spacing (8px Base Unit)
 
 ```css
---spacing-1: 0.25rem;   /* 4px */
---spacing-2: 0.5rem;    /* 8px */
---spacing-3: 0.75rem;   /* 12px */
---spacing-4: 1rem;      /* 16px */
---spacing-5: 1.25rem;   /* 20px */
---spacing-6: 1.5rem;    /* 24px */
---spacing-8: 2rem;      /* 32px */
---spacing-10: 2.5rem;   /* 40px */
---spacing-12: 3rem;     /* 48px */
---spacing-16: 4rem;     /* 64px */
+--spacing-1: 0.25rem; /* 4px */
+--spacing-2: 0.5rem; /* 8px */
+--spacing-3: 0.75rem; /* 12px */
+--spacing-4: 1rem; /* 16px */
+--spacing-5: 1.25rem; /* 20px */
+--spacing-6: 1.5rem; /* 24px */
+--spacing-8: 2rem; /* 32px */
+--spacing-10: 2.5rem; /* 40px */
+--spacing-12: 3rem; /* 48px */
+--spacing-16: 4rem; /* 64px */
 ```
 
 ### Component Library (shadcn/ui)
@@ -1801,6 +1876,7 @@ export function ProjectCard({ mission }: { mission: Mission }) {
 ### Voice & Tone
 
 **Personality:**
+
 - **Friendly** — Teammate, not corporate bot
 - **Encouraging** — Celebrate wins
 - **Clear** — No jargon
@@ -1810,12 +1886,12 @@ export function ProjectCard({ mission }: { mission: Mission }) {
 
 ```typescript
 // ✅ GOOD: Friendly, clear
-"Welcome to your new HQ! Let's recruit your first ally."
-"Mission accomplished! 🎉 Your ally captured some great intel."
+"Welcome to your new HQ! Let's recruit your first ally.";
+'Mission accomplished! 🎉 Your ally captured some great intel.';
 
 // ❌ BAD: Corporate, jargon-heavy
-"Initialize your agent orchestration environment."
-"Action execution completed successfully. Insights logged."
+'Initialize your agent orchestration environment.';
+'Action execution completed successfully. Insights logged.';
 ```
 
 ### UI Patterns
@@ -1954,15 +2030,15 @@ POST   /api/v1/agents/:id/deploy          # Deploy agent
 
 ### Error Codes
 
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `VALIDATION_ERROR` | 400 | Request validation failed |
-| `UNAUTHORIZED` | 401 | Authentication required |
-| `FORBIDDEN` | 403 | Permission denied |
-| `NOT_FOUND` | 404 | Resource not found |
-| `CONFLICT` | 409 | Resource conflict (duplicate) |
-| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
-| `INTERNAL_ERROR` | 500 | Server error |
+| Code                  | HTTP Status | Description                   |
+| --------------------- | ----------- | ----------------------------- |
+| `VALIDATION_ERROR`    | 400         | Request validation failed     |
+| `UNAUTHORIZED`        | 401         | Authentication required       |
+| `FORBIDDEN`           | 403         | Permission denied             |
+| `NOT_FOUND`           | 404         | Resource not found            |
+| `CONFLICT`            | 409         | Resource conflict (duplicate) |
+| `RATE_LIMIT_EXCEEDED` | 429         | Too many requests             |
+| `INTERNAL_ERROR`      | 500         | Server error                  |
 
 ### Pagination
 
@@ -1977,23 +2053,27 @@ GET /api/v1/missions?page=2&pageSize=20&sortBy=createdAt&sortOrder=desc
 ```typescript
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  
+
   const page = parseInt(searchParams.get('page') || '1');
-  const pageSize = Math.min(parseInt(searchParams.get('pageSize') || '20'), 100);
+  const pageSize = Math.min(
+    parseInt(searchParams.get('pageSize') || '20'),
+    100
+  );
   const sortBy = searchParams.get('sortBy') || 'createdAt';
   const sortOrder = searchParams.get('sortOrder') || 'desc';
-  
+
   const offset = (page - 1) * pageSize;
-  
+
   const [missions, totalCount] = await Promise.all([
     db.query.projects.findMany({
       limit: pageSize,
       offset,
-      orderBy: sortOrder === 'desc' ? desc(missions[sortBy]) : asc(missions[sortBy]),
+      orderBy:
+        sortOrder === 'desc' ? desc(missions[sortBy]) : asc(missions[sortBy]),
     }),
     db.select({ count: sql`count(*)` }).from(missions),
   ]);
-  
+
   return Response.json({
     data: missions,
     pagination: {
@@ -2047,14 +2127,14 @@ const projects = await db.query.projects.findMany({
 
 ### Naming Conventions
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Tables | Plural, snake_case | `projects`, `task_dependencies` |
-| Columns | snake_case | `created_at`, `organization_id` |
-| Primary Keys | `id` (UUID) | `id UUID PRIMARY KEY` |
-| Foreign Keys | `<table>_id` | `project_id`, `user_id` |
-| Junction Tables | `<table1>_<table2>` | `agent_assignments` |
-| Enums | snake_case | `task_status`, `agent_role` |
+| Type            | Convention          | Example                         |
+| --------------- | ------------------- | ------------------------------- |
+| Tables          | Plural, snake_case  | `projects`, `task_dependencies` |
+| Columns         | snake_case          | `created_at`, `organization_id` |
+| Primary Keys    | `id` (UUID)         | `id UUID PRIMARY KEY`           |
+| Foreign Keys    | `<table>_id`        | `project_id`, `user_id`         |
+| Junction Tables | `<table1>_<table2>` | `agent_assignments`             |
+| Enums           | snake_case          | `task_status`, `agent_role`     |
 
 ### Schema Standards
 
@@ -2064,17 +2144,17 @@ const projects = await db.query.projects.findMany({
 CREATE TABLE missions (
   -- Primary key
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  
+
   -- Tenant isolation (for multi-tenant tables)
   organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-  
+
   -- Timestamps
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
-  
+
   -- Soft deletes (optional)
   deleted_at TIMESTAMPTZ,
-  
+
   -- Other columns...
   name VARCHAR(255) NOT NULL
 );
@@ -2113,7 +2193,8 @@ id UUID PRIMARY KEY DEFAULT gen_random_uuid()
 id SERIAL PRIMARY KEY
 ```
 
-**Why:** UUIDs prevent enumeration attacks, work in distributed systems, and avoid merge conflicts.
+**Why:** UUIDs prevent enumeration attacks, work in distributed systems, and
+avoid merge conflicts.
 
 ### Timestamps
 
@@ -2221,7 +2302,7 @@ CREATE TABLE knowledge_embeddings (
 );
 
 -- HNSW index for fast similarity search
-CREATE INDEX idx_knowledge_embedding_hnsw ON knowledge_embeddings 
+CREATE INDEX idx_knowledge_embedding_hnsw ON knowledge_embeddings
   USING hnsw (embedding vector_cosine_ops)
   WITH (m = 16, ef_construction = 64);
 ```
@@ -2332,6 +2413,6 @@ Database Schema:     packages/database/src/schema/
 
 ---
 
-*This is a living document. Update as the mission evolves.*
+_This is a living document. Update as the mission evolves._
 
-*For additional documentation, see `/docs/` directory.*
+_For additional documentation, see `/docs/` directory._

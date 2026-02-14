@@ -1,16 +1,13 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
-export type CohortStatus = 'active' | 'paused' | 'at-risk' | 'completed'
+export type CohortStatus = 'active' | 'paused' | 'at-risk' | 'completed';
 
 interface StatusChipProps {
-  status: CohortStatus
-  className?: string
+  status: CohortStatus;
+  className?: string;
 }
 
-const statusConfig: Record<
-  CohortStatus,
-  { label: string; className: string }
-> = {
+const statusConfig: Record<CohortStatus, { label: string; className: string }> = {
   active: {
     label: 'Active',
     className: 'bg-[#10B981] text-white',
@@ -27,10 +24,10 @@ const statusConfig: Record<
     label: 'Completed',
     className: 'bg-muted text-foreground',
   },
-}
+};
 
 export function StatusChip({ status, className }: StatusChipProps) {
-  const config = statusConfig[status]
+  const config = statusConfig[status];
 
   return (
     <span
@@ -42,5 +39,5 @@ export function StatusChip({ status, className }: StatusChipProps) {
     >
       {config.label}
     </span>
-  )
+  );
 }

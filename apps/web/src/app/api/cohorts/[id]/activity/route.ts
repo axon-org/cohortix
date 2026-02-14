@@ -1,6 +1,6 @@
 /**
  * Cohort Activity Log API Route
- * 
+ *
  * GET /api/cohorts/:id/activity - Get recent activity for a cohort
  */
 

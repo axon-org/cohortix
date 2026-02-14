@@ -10,6 +10,7 @@
 ## Executive Summary
 
 **What was accomplished:**
+
 - ✅ Fixed Drizzle Kit command syntax in package.json
 - ✅ Created Supabase-compatible seed script
 - ✅ Created comprehensive dashboard data fetching queries
@@ -17,6 +18,7 @@
 - ❌ **Blocked:** Cannot push schema programmatically due to connection issues
 
 **What needs manual completion:**
+
 1. Push database schema via Supabase SQL Editor (15 minutes)
 2. Run seed script to populate data (1 minute)
 3. Update dashboard UI components to use new queries (30 minutes)
@@ -28,6 +30,7 @@
 ### Issue Encountered
 
 Direct database connections to Supabase are not working:
+
 - ❌ `psql` not installed locally
 - ❌ Direct connection URL: "Tenant or user not found" error
 - ❌ Pooler connection: "Tenant or user not found" error
@@ -37,7 +40,8 @@ Direct database connections to Supabase are not working:
 
 **Option 1: Supabase SQL Editor (Recommended)**
 
-1. Open Supabase dashboard: https://supabase.com/dashboard/project/rfwscvklcokzuofyzqwx
+1. Open Supabase dashboard:
+   https://supabase.com/dashboard/project/rfwscvklcokzuofyzqwx
 2. Navigate to **SQL Editor**
 3. Click **New Query**
 4. Paste the entire contents of:
@@ -115,6 +119,7 @@ After running the migration, verify in Supabase:
 Location: `/Users/alimai/Projects/cohortix/scripts/seed-supabase.ts`
 
 **Why a new script?**
+
 - Original seed script (`scripts/seed-db.ts`) uses Drizzle ORM
 - Drizzle requires working direct connection
 - New script uses Supabase JS client (works via HTTPS)
@@ -145,6 +150,7 @@ pnpm tsx scripts/seed-supabase.ts
 ```
 
 Expected output:
+
 ```
 🌱 Seeding database with Supabase client...
 
@@ -187,9 +193,11 @@ Summary:
 ### Troubleshooting
 
 **If seed fails with "relation does not exist":**
+
 - Schema not pushed yet → Complete Phase 1 first
 
 **If seed fails with authentication error:**
+
 - Check `.env.local` credentials are correct
 - Verify Supabase project is active (not paused)
 
@@ -199,11 +207,13 @@ Summary:
 
 ### Dashboard Queries Created
 
-Location: `/Users/alimai/Projects/cohortix/apps/web/src/server/db/queries/dashboard.ts`
+Location:
+`/Users/alimai/Projects/cohortix/apps/web/src/server/db/queries/dashboard.ts`
 
 ### Available Query Functions
 
 #### 1. `getCurrentUser()`
+
 Returns authenticated user with profile data.
 
 ```typescript
@@ -212,6 +222,7 @@ const user = await getCurrentUser();
 ```
 
 #### 2. `getUserOrganization(userId)`
+
 Fetches user's active organization membership.
 
 ```typescript
@@ -220,6 +231,7 @@ const membership = await getUserOrganization(user.id);
 ```
 
 #### 3. `getDashboardKPIs(organizationId)`
+
 Calculates key performance indicators.
 
 ```typescript
@@ -233,6 +245,7 @@ const kpis = await getDashboardKPIs(orgId);
 ```
 
 #### 4. `getRecentActivity(organizationId, limit?)`
+
 Fetches recent audit log activity.
 
 ```typescript
@@ -241,6 +254,7 @@ const activity = await getRecentActivity(orgId, 10);
 ```
 
 #### 5. `getActiveAlerts(organizationId)`
+
 Generates alerts for urgent/overdue/blocked tasks.
 
 ```typescript
@@ -256,6 +270,7 @@ const alerts = await getActiveAlerts(orgId);
 ```
 
 #### 6. `getActiveCohorts(organizationId, limit?)`
+
 Fetches active projects with task statistics.
 
 ```typescript
@@ -265,6 +280,7 @@ const cohorts = await getActiveCohorts(orgId, 6);
 ```
 
 #### 7. `getActiveAllies(organizationId)`
+
 Fetches agents with workload information.
 
 ```typescript
@@ -274,6 +290,7 @@ const allies = await getActiveAllies(orgId);
 ```
 
 #### 8. `getRecentKnowledge(organizationId, limit?)`
+
 Fetches recent knowledge base entries.
 
 ```typescript
@@ -281,6 +298,7 @@ const knowledge = await getRecentKnowledge(orgId, 5);
 ```
 
 #### 9. `getDashboardData()` — Main Entry Point
+
 Fetches all dashboard data in parallel.
 
 ```typescript
@@ -303,11 +321,11 @@ import { redirect } from 'next/navigation';
 
 export default async function DashboardPage() {
   const data = await getDashboardData();
-  
+
   if (!data) {
     redirect('/sign-in');
   }
-  
+
   return (
     <div>
       <DashboardHeader user={data.user} organization={data.organization} />
@@ -341,13 +359,13 @@ import { useEffect, useState } from 'react';
 
 export function Dashboard() {
   const [data, setData] = useState(null);
-  
+
   useEffect(() => {
     refreshDashboard().then(setData);
   }, []);
-  
+
   if (!data) return <Loading />;
-  
+
   return <DashboardUI data={data} />;
 }
 ```
@@ -363,6 +381,7 @@ export function Dashboard() {
 **Location:** `apps/web/src/components/layouts/sidebar.tsx` (or similar)
 
 **Current (hardcoded):**
+
 ```typescript
 <div className="user-info">
   <span>Alex Chen</span>
@@ -370,6 +389,7 @@ export function Dashboard() {
 ```
 
 **Update to:**
+
 ```typescript
 const data = await getDashboardData();
 
@@ -380,15 +400,17 @@ const data = await getDashboardData();
 
 #### 2. Update KPI Cards
 
-**Location:** `apps/web/src/components/features/dashboard/kpi-cards.tsx` (or similar)
+**Location:** `apps/web/src/components/features/dashboard/kpi-cards.tsx` (or
+similar)
 
 **Update to use real data:**
+
 ```typescript
 import { getDashboardKPIs } from '@/server/db/queries/dashboard';
 
 export async function KPICards({ organizationId }: { organizationId: string }) {
   const kpis = await getDashboardKPIs(organizationId);
-  
+
   return (
     <div className="grid grid-cols-4 gap-4">
       <KPICard label="Active Cohorts" value={kpis.activeCohorts} />
@@ -405,12 +427,13 @@ export async function KPICards({ organizationId }: { organizationId: string }) {
 **Location:** `apps/web/src/components/features/dashboard/activity-feed.tsx`
 
 **Update to use real data:**
+
 ```typescript
 import { getRecentActivity } from '@/server/db/queries/dashboard';
 
 export async function ActivityFeed({ organizationId }: { organizationId: string }) {
   const activity = await getRecentActivity(organizationId);
-  
+
   return (
     <div className="activity-feed">
       {activity.map((item) => (
@@ -424,6 +447,7 @@ export async function ActivityFeed({ organizationId }: { organizationId: string 
 #### 4. Add Loading States
 
 **Use Suspense for streaming:**
+
 ```typescript
 import { Suspense } from 'react';
 
@@ -433,7 +457,7 @@ export default function DashboardPage() {
       <Suspense fallback={<KPISkeleton />}>
         <KPICards organizationId={orgId} />
       </Suspense>
-      
+
       <Suspense fallback={<ActivitySkeleton />}>
         <ActivityFeed organizationId={orgId} />
       </Suspense>
@@ -445,15 +469,16 @@ export default function DashboardPage() {
 #### 5. Add Alerts Banner
 
 **Create new component:**
+
 ```typescript
 // apps/web/src/components/features/dashboard/alerts-banner.tsx
 import { getActiveAlerts } from '@/server/db/queries/dashboard';
 
 export async function AlertsBanner({ organizationId }: { organizationId: string }) {
   const alerts = await getActiveAlerts(organizationId);
-  
+
   if (alerts.length === 0) return null;
-  
+
   return (
     <div className="alerts-banner space-y-2">
       {alerts.map((alert, i) => (
@@ -478,9 +503,11 @@ export async function AlertsBanner({ organizationId }: { organizationId: string 
 
 **Strategy:** Shared database with Row-Level Security (RLS)
 
-Every table with tenant data includes `organization_id`. PostgreSQL RLS policies automatically filter queries.
+Every table with tenant data includes `organization_id`. PostgreSQL RLS policies
+automatically filter queries.
 
 **How RLS works:**
+
 ```sql
 -- Policy on projects table
 CREATE POLICY "Tenant isolation" ON projects
@@ -549,6 +576,7 @@ Never commit real credentials or full connection strings to git.
   - Verify tables exist
 
 - [ ] **Run seed script** (1 min)
+
   ```bash
   pnpm tsx scripts/seed-supabase.ts
   ```
@@ -562,6 +590,7 @@ Never commit real credentials or full connection strings to git.
 ### Soon (Nice to Have)
 
 - [ ] **Upgrade Drizzle Kit** to latest version
+
   ```bash
   cd packages/database
   pnpm add -D drizzle-kit@latest
@@ -601,18 +630,18 @@ Never commit real credentials or full connection strings to git.
 
 ### Created
 
-| File | Purpose |
-|------|---------|
-| `scripts/run-migration.ts` | Attempted direct migration (didn't work) |
-| `scripts/run-migration-api.ts` | Attempted API migration (didn't work) |
-| `scripts/verify-connection.ts` | Connection verification script |
-| `scripts/seed-supabase.ts` | ✅ **Working seed script (Supabase client)** |
-| `apps/web/src/server/db/queries/dashboard.ts` | ✅ **Dashboard data queries** |
+| File                                          | Purpose                                      |
+| --------------------------------------------- | -------------------------------------------- |
+| `scripts/run-migration.ts`                    | Attempted direct migration (didn't work)     |
+| `scripts/run-migration-api.ts`                | Attempted API migration (didn't work)        |
+| `scripts/verify-connection.ts`                | Connection verification script               |
+| `scripts/seed-supabase.ts`                    | ✅ **Working seed script (Supabase client)** |
+| `apps/web/src/server/db/queries/dashboard.ts` | ✅ **Dashboard data queries**                |
 
 ### Modified
 
-| File | Change |
-|------|--------|
+| File                             | Change                           |
+| -------------------------------- | -------------------------------- |
 | `packages/database/package.json` | Fixed Drizzle Kit command syntax |
 
 ---
@@ -624,7 +653,8 @@ Never commit real credentials or full connection strings to git.
 **Issue:** Cannot connect via `postgres` library  
 **Error:** "Tenant or user not found"  
 **Workaround:** Use Supabase JS client for data operations  
-**Permanent fix:** Investigate Supabase project settings, may be paused or restricted
+**Permanent fix:** Investigate Supabase project settings, may be paused or
+restricted
 
 ### 2. Drizzle Kit Version Mismatch
 
@@ -646,6 +676,7 @@ Never commit real credentials or full connection strings to git.
 ### RLS Policy Coverage
 
 All tenant tables have RLS enabled:
+
 - ✅ `organizations` — Membership-based access
 - ✅ `projects` — Automatic org filtering
 - ✅ `tasks` — Automatic org filtering
@@ -656,6 +687,7 @@ All tenant tables have RLS enabled:
 ### Service Role Key Usage
 
 The service role key **bypasses RLS**. Use only:
+
 - Server-side operations
 - Admin functions
 - Data seeding
@@ -664,6 +696,7 @@ The service role key **bypasses RLS**. Use only:
 ### Anon Key Usage
 
 The anon (public) key **respects RLS**. Safe to use:
+
 - Client-side queries
 - User authentication flows
 - Public data access
@@ -691,7 +724,8 @@ After completing setup:
 
 ### Current Query Strategy
 
-**Parallel fetching:** `getDashboardData()` uses `Promise.all()` to fetch all data simultaneously.
+**Parallel fetching:** `getDashboardData()` uses `Promise.all()` to fetch all
+data simultaneously.
 
 ```typescript
 const [kpis, activity, alerts, cohorts, allies, knowledge] = await Promise.all([
@@ -705,6 +739,7 @@ const [kpis, activity, alerts, cohorts, allies, knowledge] = await Promise.all([
 ```
 
 **Benefits:**
+
 - All queries run concurrently
 - Total load time = slowest query (not sum of all)
 - Typical dashboard load: ~500-800ms
@@ -712,11 +747,13 @@ const [kpis, activity, alerts, cohorts, allies, knowledge] = await Promise.all([
 ### Optimization Opportunities
 
 1. **Add caching:**
+
    ```typescript
    export const revalidate = 60; // Revalidate every 60 seconds
    ```
 
 2. **Use streaming:**
+
    ```typescript
    <Suspense fallback={<KPISkeleton />}>
      <KPICards /> {/* Loads independently */}
@@ -724,6 +761,7 @@ const [kpis, activity, alerts, cohorts, allies, knowledge] = await Promise.all([
    ```
 
 3. **Add indexes:**
+
    ```sql
    CREATE INDEX idx_tasks_org_status ON tasks(organization_id, status);
    CREATE INDEX idx_agents_org_status ON agents(organization_id, status);
@@ -731,7 +769,7 @@ const [kpis, activity, alerts, cohorts, allies, knowledge] = await Promise.all([
 
 4. **Implement pagination:**
    ```typescript
-   getRecentActivity(orgId, { limit: 10, offset: 0 })
+   getRecentActivity(orgId, { limit: 10, offset: 0 });
    ```
 
 ---
@@ -741,22 +779,27 @@ const [kpis, activity, alerts, cohorts, allies, knowledge] = await Promise.all([
 ### Common Errors
 
 **1. "Relation does not exist"**
+
 - **Cause:** Schema not pushed
 - **Fix:** Complete Phase 1 (push migration)
 
 **2. "Could not find the function public.version"**
+
 - **Cause:** Normal, Supabase doesn't have this RPC
 - **Fix:** Ignore, connection is working
 
 **3. "Tenant or user not found"**
+
 - **Cause:** Direct connection issue
 - **Fix:** Use Supabase client instead (HTTPS)
 
 **4. "Authentication required"**
+
 - **Cause:** User not signed in
 - **Fix:** Redirect to `/sign-in`
 
 **5. "Column 'organization_id' does not exist"**
+
 - **Cause:** Schema mismatch (old schema)
 - **Fix:** Re-run migration with latest SQL
 
@@ -799,11 +842,13 @@ const [kpis, activity, alerts, cohorts, allies, knowledge] = await Promise.all([
 **User must manually push schema via Supabase SQL Editor.**
 
 Once schema is pushed:
+
 1. Run seed script
 2. Update dashboard UI components
 3. Test everything
 
 **Estimated time to completion:** 45 minutes total
+
 - Schema push: 15 min
 - Seed: 1 min
 - UI updates: 30 min

@@ -1,4 +1,5 @@
 # Axon Codex v1.2 Rollout Tracker
+
 ## Cohortix Project Implementation
 
 **Rollout Start Date:** February 11, 2026  
@@ -10,20 +11,25 @@
 
 ## Rollout Overview
 
-This tracker monitors the adoption of the Axon Codex v1.2 across all Cohortix development agents. Each specialist is assigned relevant sections to read, internalize, and implement in their work.
+This tracker monitors the adoption of the Axon Codex v1.2 across all Cohortix
+development agents. Each specialist is assigned relevant sections to read,
+internalize, and implement in their work.
 
 ---
 
 ## Section Assignments
 
 ### 📚 Section 1: Foundation & Architecture
+
 **Assigned to:** ALL AGENTS  
 **Status:** 🔵 Pending  
 **Reading Materials:**
+
 - `~/clawd/research/devprotocol-v1/CODEX-V1.2-SUMMARY.md`
 - `~/clawd/research/devprotocol-v1/THE-AXON-CODEX-v1.2.md` (Section 1)
 
 **Key Topics:**
+
 - Project Structure & Repository Standards
 - Context Engineering (`AGENTS.md` vs `CLAUDE.md`)
 - Multi-Agent Coordination ("Stewnami" Prevention)
@@ -31,12 +37,14 @@ This tracker monitors the adoption of the Axon Codex v1.2 across all Cohortix de
 - Spec-Driven Development
 
 **Assigned Agents:**
+
 - Devi (ai-developer) — 🔵 Pending
 - Lubna (ui-designer) — 🔵 Pending
 - Hafiz (guardian) — 🔵 Pending
 - PM (coordination lead) — ✅ Complete
 
 **Adoption Checklist:**
+
 - [ ] Read Section 1 of Codex
 - [ ] Understand Requirements Discovery Protocol
 - [ ] Review Scaffold-First, Plan-Iterate approach
@@ -45,12 +53,16 @@ This tracker monitors the adoption of the Axon Codex v1.2 across all Cohortix de
 ---
 
 ### 🔧 Section 2: Backend & AI/ML Development
+
 **Assigned to:** Devi (ai-developer)  
 **Status:** 🔵 Pending  
 **Reading Materials:**
-- `~/clawd/research/devprotocol-v1/THE-AXON-CODEX-v1.2.md` (Section 2, Part A & B)
+
+- `~/clawd/research/devprotocol-v1/THE-AXON-CODEX-v1.2.md` (Section 2, Part A &
+  B)
 
 **Key Topics:**
+
 - **Part A: Backend**
   - API Design Standards (REST, versioning, RFC 7807 errors)
   - Database Architecture (UUID keys, zero-downtime migrations)
@@ -68,6 +80,7 @@ This tracker monitors the adoption of the Axon Codex v1.2 across all Cohortix de
   - AI Quality Assurance & Cost Optimization
 
 **Adoption Checklist:**
+
 - [ ] Read Section 2 of Codex
 - [ ] Understand API design conventions
 - [ ] Internalize resilience patterns (circuit breakers, retries)
@@ -78,12 +91,15 @@ This tracker monitors the adoption of the Axon Codex v1.2 across all Cohortix de
 ---
 
 ### 🎨 Section 3: Frontend & Design
+
 **Assigned to:** Lubna (ui-designer)  
 **Status:** 🔵 Pending  
 **Reading Materials:**
+
 - `~/clawd/research/devprotocol-v1/THE-AXON-CODEX-v1.2.md` (Section 3)
 
 **Key Topics:**
+
 - Framework Standards (Next.js 15, React 19, TypeScript strict)
 - Component Architecture (Server vs. Client boundaries)
 - State Management Hierarchy (URL > Server > Form > Client)
@@ -95,6 +111,7 @@ This tracker monitors the adoption of the Axon Codex v1.2 across all Cohortix de
 - Testing (Component, Visual Regression, E2E)
 
 **Adoption Checklist:**
+
 - [ ] Read Section 3 of Codex
 - [ ] Understand Server vs. Client Component boundaries
 - [ ] Internalize accessibility requirements (WCAG 2.2 AA)
@@ -105,12 +122,15 @@ This tracker monitors the adoption of the Axon Codex v1.2 across all Cohortix de
 ---
 
 ### ⚙️ Section 4 & 5: QA, DevOps, Governance
+
 **Assigned to:** Hafiz (guardian)  
 **Status:** 🔵 Pending  
 **Reading Materials:**
+
 - `~/clawd/research/devprotocol-v1/THE-AXON-CODEX-v1.2.md` (Section 4 & 5)
 
 **Key Topics:**
+
 - **Section 4: QA & DevOps**
   - Testing Philosophy (70/20/10 pyramid)
   - Unit, Integration, E2E Testing standards
@@ -131,6 +151,7 @@ This tracker monitors the adoption of the Axon Codex v1.2 across all Cohortix de
   - Production Readiness Checklists
 
 **Adoption Checklist:**
+
 - [ ] Read Section 4 & 5 of Codex
 - [ ] Understand 70/20/10 testing pyramid
 - [ ] Internalize 4-stage CI/CD pipeline requirements
@@ -143,31 +164,33 @@ This tracker monitors the adoption of the Axon Codex v1.2 across all Cohortix de
 
 ## Cohortix Project Compliance Requirements
 
-Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core documents:
+Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core
+documents:
 
 ### 📄 Required Documents Checklist
 
-| Document | Status | Owner | Notes |
-|----------|--------|-------|-------|
-| **CODEX-ROLLOUT-TRACKER.md** | ✅ Complete | PM | Rollout status tracking document |
-| **CODEX-V1.2-ROLLOUT-PLAN.md** | ✅ Complete | PM | Comprehensive 3-week rollout strategy |
-| **PROJECT_BRIEF.md** | ✅ Complete | PM | Created Feb 11, 2026 (4KB, extracted from CLAUDE.md) |
-| **AGENTS.md** | ✅ Complete | PM | Created Feb 11, 2026 (7KB, actionable standards) |
-| **CLAUDE.md** | ✅ Complete | Devi | Existing (68KB, comprehensive project context) |
-| **REQUIREMENTS-DISCOVERY-PROTOCOL.md** | ✅ Complete | PM | Created Feb 11, 2026 (13KB, mandatory workflow) |
-| **docs/specs/TEMPLATE.md** | ✅ Complete | PM | Feature Specification template (10KB, comprehensive) |
-| **docs/architecture/adr-000-template.md** | ✅ Complete | PM | Architecture Decision Record template |
-| **docs/architecture/adr-001-tech-stack-selection.md** | ✅ Complete | PM | Tech stack ADR (9KB) |
-| **docs/architecture/adr-002-monorepo-structure.md** | ✅ Complete | PM | Monorepo ADR (9KB) |
-| **docs/architecture/adr-003-authentication-approach.md** | ✅ Complete | PM | Auth + RLS ADR (13KB) |
-| **docs/decisions/ddr-000-template.md** | ✅ Complete | PM | Design Decision Record template |
-| **docs/test-plans/TEMPLATE.md** | ✅ Complete | PM | Test Plan template (13KB, comprehensive) |
+| Document                                                 | Status      | Owner | Notes                                                |
+| -------------------------------------------------------- | ----------- | ----- | ---------------------------------------------------- |
+| **CODEX-ROLLOUT-TRACKER.md**                             | ✅ Complete | PM    | Rollout status tracking document                     |
+| **CODEX-V1.2-ROLLOUT-PLAN.md**                           | ✅ Complete | PM    | Comprehensive 3-week rollout strategy                |
+| **PROJECT_BRIEF.md**                                     | ✅ Complete | PM    | Created Feb 11, 2026 (4KB, extracted from CLAUDE.md) |
+| **AGENTS.md**                                            | ✅ Complete | PM    | Created Feb 11, 2026 (7KB, actionable standards)     |
+| **CLAUDE.md**                                            | ✅ Complete | Devi  | Existing (68KB, comprehensive project context)       |
+| **REQUIREMENTS-DISCOVERY-PROTOCOL.md**                   | ✅ Complete | PM    | Created Feb 11, 2026 (13KB, mandatory workflow)      |
+| **docs/specs/TEMPLATE.md**                               | ✅ Complete | PM    | Feature Specification template (10KB, comprehensive) |
+| **docs/architecture/adr-000-template.md**                | ✅ Complete | PM    | Architecture Decision Record template                |
+| **docs/architecture/adr-001-tech-stack-selection.md**    | ✅ Complete | PM    | Tech stack ADR (9KB)                                 |
+| **docs/architecture/adr-002-monorepo-structure.md**      | ✅ Complete | PM    | Monorepo ADR (9KB)                                   |
+| **docs/architecture/adr-003-authentication-approach.md** | ✅ Complete | PM    | Auth + RLS ADR (13KB)                                |
+| **docs/decisions/ddr-000-template.md**                   | ✅ Complete | PM    | Design Decision Record template                      |
+| **docs/test-plans/TEMPLATE.md**                          | ✅ Complete | PM    | Test Plan template (13KB, comprehensive)             |
 
 ---
 
 ## Rollout Timeline
 
 ### Phase 1: Reading & Understanding (Week 1)
+
 **Target:** February 11-17, 2026
 
 - **Day 1-2:** All agents read assigned sections
@@ -177,6 +200,7 @@ Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core document
 **Deliverable:** All agents report "Reading Complete" status
 
 ### Phase 2: Documentation Setup (Week 2)
+
 **Target:** February 18-24, 2026
 
 - **PM creates:** `PROJECT_BRIEF.md`, `AGENTS.md`, `CLAUDE.md`
@@ -186,6 +210,7 @@ Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core document
 **Deliverable:** All Tier 1 documents exist and approved
 
 ### Phase 3: Adoption in Practice (Ongoing)
+
 **Target:** February 25, 2026 onwards
 
 - **All agents:** Follow Requirements Discovery Protocol before any feature work
@@ -201,14 +226,15 @@ Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core document
 
 ## Agent Status Dashboard
 
-| Agent | Role | Assigned Sections | Reading Status | Adoption Status | Last Update |
-|-------|------|-------------------|----------------|-----------------|-------------|
-| **PM** | Project Manager | Section 1, 5 | ✅ Complete | ✅ Week 1 Complete | 2026-02-11 16:00 |
-| **Devi** | Backend + AI/ML Developer | Section 1, 2 | 🔵 Pending | ⚪ Not Started | — |
-| **Lubna** | Frontend + Design | Section 1, 3 | 🔵 Pending | ⚪ Not Started | — |
-| **Hafiz** | DevOps + QA + Governance | Section 1, 4, 5 | 🔵 Pending | ⚪ Not Started | — |
+| Agent     | Role                      | Assigned Sections | Reading Status | Adoption Status    | Last Update      |
+| --------- | ------------------------- | ----------------- | -------------- | ------------------ | ---------------- |
+| **PM**    | Project Manager           | Section 1, 5      | ✅ Complete    | ✅ Week 1 Complete | 2026-02-11 16:00 |
+| **Devi**  | Backend + AI/ML Developer | Section 1, 2      | 🔵 Pending     | ⚪ Not Started     | —                |
+| **Lubna** | Frontend + Design         | Section 1, 3      | 🔵 Pending     | ⚪ Not Started     | —                |
+| **Hafiz** | DevOps + QA + Governance  | Section 1, 4, 5   | 🔵 Pending     | ⚪ Not Started     | —                |
 
 **Status Legend:**
+
 - 🔵 Pending — Not yet started
 - 🟡 In Progress — Currently reading/implementing
 - ✅ Complete — Fully adopted and practicing
@@ -220,13 +246,16 @@ Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core document
 ## Communication Log
 
 ### 2026-02-11 15:16 — PM (This Agent)
+
 **Action:** Created CODEX-ROLLOUT-TRACKER.md  
 **Status:** Preparing assignments for specialists  
 **Next:** Send section assignments via sessions_send
 
 ### 2026-02-11 15:30 — PM (This Agent)
+
 **Action:** Completed initial rollout setup  
 **Deliverables:**
+
 - ✅ Created CODEX-ROLLOUT-TRACKER.md (10KB)
 - ✅ Created CODEX-V1.2-ROLLOUT-PLAN.md (22KB comprehensive plan)
 - ✅ Created docs/specs/TEMPLATE.md (10KB comprehensive)
@@ -238,8 +267,10 @@ Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core document
 **Status:** Phase 1 Week 1 setup complete.
 
 ### 2026-02-11 16:00 — PM (Codex Compliance Execution)
+
 **Action:** Completed Week 1 Foundation Work  
 **Deliverables:**
+
 - ✅ Created PROJECT_BRIEF.md (4KB, extracted from CLAUDE.md)
 - ✅ Created AGENTS.md (7KB, actionable development standards)
 - ✅ Created REQUIREMENTS-DISCOVERY-PROTOCOL.md (13KB, mandatory workflow)
@@ -248,13 +279,15 @@ Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core document
 - ✅ Created ADR-003: Authentication Approach (13KB)
 - ✅ Validated CLAUDE.md exists (68KB comprehensive context)
 
-**Status:** Week 1 foundation COMPLETE. Ready to delegate Week 2-3 tasks to specialists.
+**Status:** Week 1 foundation COMPLETE. Ready to delegate Week 2-3 tasks to
+specialists.
 
 ---
 
 ## Next Actions
 
 ### Immediate (Today)
+
 1. ✅ PM reads Codex v1.2 summary and full doc
 2. ✅ PM creates CODEX-ROLLOUT-TRACKER.md
 3. ⏳ PM notifies Devi via sessions_send with Section 1 & 2 assignment
@@ -263,12 +296,15 @@ Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core document
 6. ⏳ PM posts rollout plan to Discord #general
 
 ### This Week
-7. PM creates `PROJECT_BRIEF.md` for Cohortix (once we have project context from CEO)
+
+7. PM creates `PROJECT_BRIEF.md` for Cohortix (once we have project context from
+   CEO)
 8. PM creates `AGENTS.md` and `CLAUDE.md` templates
 9. All agents confirm reading assignments received
 10. PM schedules check-in to validate understanding
 
 ### Ongoing
+
 11. Monitor agent compliance with Codex standards
 12. Update this tracker as agents progress through adoption
 13. Flag any blockers or clarification needs
@@ -279,11 +315,14 @@ Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core document
 ## Questions & Blockers
 
 ### Open Questions
-1. **What is Cohortix?** — Need project context from CEO to create PROJECT_BRIEF.md
+
+1. **What is Cohortix?** — Need project context from CEO to create
+   PROJECT_BRIEF.md
 2. **Current project state?** — Do we have existing code, or is this greenfield?
 3. **Priority sections?** — Should any Codex sections be adopted before others?
 
 ### Blockers
+
 - None currently
 
 ---
@@ -293,7 +332,8 @@ Per Codex Section 1.4, Cohortix **MUST** have the following Tier 1 core document
 Cohortix Codex v1.2 rollout is considered **complete** when:
 
 1. ✅ All agents have read and confirmed understanding of assigned sections
-2. ✅ All Tier 1 documents exist in Cohortix repo (`PROJECT_BRIEF.md`, `AGENTS.md`, `CLAUDE.md`)
+2. ✅ All Tier 1 documents exist in Cohortix repo (`PROJECT_BRIEF.md`,
+   `AGENTS.md`, `CLAUDE.md`)
 3. ✅ All agents follow Requirements Discovery Protocol before feature work
 4. ✅ All agents create specs before implementation (Spec-Driven Development)
 5. ✅ ADRs, DDRs, and Test Plans are created as required by Codex

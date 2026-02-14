@@ -45,7 +45,8 @@
 
 ### Browser Resilience Protocol Followed ✅
 
-Per `~/Projects/agent-architecture/protocols/browser-resilience/BROWSER_AUTOMATION_GUIDELINES.md`:
+Per
+`~/Projects/agent-architecture/protocols/browser-resilience/BROWSER_AUTOMATION_GUIDELINES.md`:
 
 1. ✅ Waited and retried snapshot (failed)
 2. ✅ Checked tab status (exists)
@@ -94,21 +95,26 @@ Per `~/Projects/agent-architecture/protocols/browser-resilience/BROWSER_AUTOMATI
 ### Next Actions
 
 **Option A: Manual Completion** (5-10 min)
+
 - Execute manual steps in `GENERATION_STEPS.md`
 - Post results to Discord
 
 **Option B: Infrastructure Fix** (30-60 min)
+
 - Debug OpenClaw gateway browser control
 - Retry automation once fixed
 - Configure Skyvern API keys
 
 **Option C: Escalate to CEO** (immediate)
+
 - Report browser control infrastructure issue
 - Request Guardian (Hafiz) to investigate
 
 ### Recommendation
 
-**Execute Option A** while investigating Option B in parallel. The design specifications are comprehensive enough that even without AI-generated mockups, a developer could implement directly from the specs.
+**Execute Option A** while investigating Option B in parallel. The design
+specifications are comprehensive enough that even without AI-generated mockups,
+a developer could implement directly from the specs.
 
 ---
 
@@ -124,6 +130,7 @@ Per `~/Projects/agent-architecture/protocols/browser-resilience/BROWSER_AUTOMATI
 ## Discord Posts - Ready to Send
 
 ### #design channel message:
+
 ```
 🎨 **Cohortix v5 Mockups - Design Specifications Ready**
 
@@ -143,6 +150,7 @@ Created comprehensive design specs for monochrome Linear.app-style interface:
 ```
 
 ### #general channel message:
+
 ```
 📊 **Cohortix Design Update**
 

@@ -1,16 +1,17 @@
 #!/usr/bin/env tsx
 /**
  * Database Reset Script
- * 
+ *
  * Deletes all data from the database in the correct order (respecting foreign keys).
  * This is safer than dropping tables and preserves migrations/schema.
- * 
+ *
  * Run: pnpm db:reset
  */
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rfwscvklcokzuofyzqwx.supabase.co';
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rfwscvklcokzuofyzqwx.supabase.co';
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!serviceRoleKey) {
@@ -26,7 +27,7 @@ async function reset() {
 
   try {
     // Delete in reverse dependency order (children first, parents last)
-    
+
     // 1. Audit logs (no dependencies)
     console.log('Deleting audit logs...');
     await supabase.from('audit_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
@@ -59,7 +60,10 @@ async function reset() {
 
     // 7. Cohort members (depends on cohorts and agents)
     console.log('Deleting cohort members...');
-    await supabase.from('cohort_members').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    await supabase
+      .from('cohort_members')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
     console.log('✅ Cohort members deleted\n');
 
     // 8. Cohorts
@@ -69,12 +73,18 @@ async function reset() {
 
     // 9. Knowledge entries
     console.log('Deleting knowledge entries...');
-    await supabase.from('knowledge_entries').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    await supabase
+      .from('knowledge_entries')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
     console.log('✅ Knowledge entries deleted\n');
 
     // 10. Agent assignments
     console.log('Deleting agent assignments...');
-    await supabase.from('agent_assignments').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    await supabase
+      .from('agent_assignments')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
     console.log('✅ Agent assignments deleted\n');
 
     // 11. Agents
@@ -99,7 +109,10 @@ async function reset() {
 
     // 15. Organization memberships
     console.log('Deleting organization memberships...');
-    await supabase.from('organization_memberships').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    await supabase
+      .from('organization_memberships')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
     console.log('✅ Organization memberships deleted\n');
 
     // 16. Organizations (parent of almost everything)

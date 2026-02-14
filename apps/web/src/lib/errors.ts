@@ -1,28 +1,28 @@
 /**
  * RFC 7807 Error Handling - Codex v1.2 Section 2.1.4
- * 
+ *
  * Implements Problem Details for HTTP APIs (RFC 7807)
  * Provides standardized error responses across all API routes.
  */
 
-import { NextResponse } from 'next/server'
-import { logger } from './logger'
+import { NextResponse } from 'next/server';
+import { logger } from './logger';
 
 export interface ProblemDetails {
-  type: string
-  title: string
-  status: number
-  detail?: string
-  instance?: string
-  [key: string]: unknown
+  type: string;
+  title: string;
+  status: number;
+  detail?: string;
+  instance?: string;
+  [key: string]: unknown;
 }
 
 export class AppError extends Error {
-  public readonly statusCode: number
-  public readonly type: string
-  public readonly title: string
-  public readonly detail?: string
-  public readonly extensions?: Record<string, unknown>
+  public readonly statusCode: number;
+  public readonly type: string;
+  public readonly title: string;
+  public readonly detail?: string;
+  public readonly extensions?: Record<string, unknown>;
 
   constructor(
     statusCode: number,
@@ -30,16 +30,16 @@ export class AppError extends Error {
     detail?: string,
     extensions?: Record<string, unknown>
   ) {
-    super(detail || title)
-    this.name = 'AppError'
-    this.statusCode = statusCode
-    this.type = `https://cohortix.com/errors/${this.getErrorType(statusCode)}`
-    this.title = title
-    this.detail = detail
-    this.extensions = extensions
+    super(detail || title);
+    this.name = 'AppError';
+    this.statusCode = statusCode;
+    this.type = `https://cohortix.com/errors/${this.getErrorType(statusCode)}`;
+    this.title = title;
+    this.detail = detail;
+    this.extensions = extensions;
 
     // Maintain proper stack trace
-    Error.captureStackTrace(this, this.constructor)
+    Error.captureStackTrace(this, this.constructor);
   }
 
   private getErrorType(statusCode: number): string {
@@ -53,8 +53,8 @@ export class AppError extends Error {
       429: 'rate-limit-exceeded',
       500: 'internal-server-error',
       503: 'service-unavailable',
-    }
-    return types[statusCode] || 'unknown-error'
+    };
+    return types[statusCode] || 'unknown-error';
   }
 
   toProblemDetails(instance?: string): ProblemDetails {
@@ -65,29 +65,29 @@ export class AppError extends Error {
       detail: this.detail,
       instance,
       ...this.extensions,
-    }
+    };
   }
 }
 
 // Specific error classes
 export class BadRequestError extends AppError {
   constructor(detail?: string, extensions?: Record<string, unknown>) {
-    super(400, 'Bad Request', detail, extensions)
-    this.name = 'BadRequestError'
+    super(400, 'Bad Request', detail, extensions);
+    this.name = 'BadRequestError';
   }
 }
 
 export class UnauthorizedError extends AppError {
   constructor(detail?: string) {
-    super(401, 'Unauthorized', detail || 'Authentication required')
-    this.name = 'UnauthorizedError'
+    super(401, 'Unauthorized', detail || 'Authentication required');
+    this.name = 'UnauthorizedError';
   }
 }
 
 export class ForbiddenError extends AppError {
   constructor(detail?: string) {
-    super(403, 'Forbidden', detail || 'Insufficient permissions')
-    this.name = 'ForbiddenError'
+    super(403, 'Forbidden', detail || 'Insufficient permissions');
+    this.name = 'ForbiddenError';
   }
 }
 
@@ -97,22 +97,22 @@ export class NotFoundError extends AppError {
       404,
       'Resource Not Found',
       id ? `${resource} with id '${id}' not found` : `${resource} not found`
-    )
-    this.name = 'NotFoundError'
+    );
+    this.name = 'NotFoundError';
   }
 }
 
 export class ConflictError extends AppError {
   constructor(detail: string) {
-    super(409, 'Conflict', detail)
-    this.name = 'ConflictError'
+    super(409, 'Conflict', detail);
+    this.name = 'ConflictError';
   }
 }
 
 export class ValidationError extends AppError {
   constructor(detail: string, errors?: Record<string, string[]>) {
-    super(422, 'Validation Error', detail, { errors })
-    this.name = 'ValidationError'
+    super(422, 'Validation Error', detail, { errors });
+    this.name = 'ValidationError';
   }
 }
 
@@ -120,15 +120,15 @@ export class RateLimitError extends AppError {
   constructor(retryAfter?: number) {
     super(429, 'Rate Limit Exceeded', 'Too many requests, please try again later', {
       retryAfter,
-    })
-    this.name = 'RateLimitError'
+    });
+    this.name = 'RateLimitError';
   }
 }
 
 export class InternalServerError extends AppError {
   constructor(detail?: string) {
-    super(500, 'Internal Server Error', detail || 'An unexpected error occurred')
-    this.name = 'InternalServerError'
+    super(500, 'Internal Server Error', detail || 'An unexpected error occurred');
+    this.name = 'InternalServerError';
   }
 }
 
@@ -137,7 +137,7 @@ export class InternalServerError extends AppError {
  */
 export function errorToResponse(error: unknown, instance?: string): NextResponse {
   if (error instanceof AppError) {
-    const problemDetails = error.toProblemDetails(instance)
+    const problemDetails = error.toProblemDetails(instance);
 
     // Log error with context
     logger.error(error.title, {
@@ -148,14 +148,14 @@ export function errorToResponse(error: unknown, instance?: string): NextResponse
       },
       statusCode: error.statusCode,
       instance,
-    })
+    });
 
     return NextResponse.json(problemDetails, {
       status: error.statusCode,
       headers: {
         'Content-Type': 'application/problem+json',
       },
-    })
+    });
   }
 
   // Handle unknown errors
@@ -165,24 +165,27 @@ export function errorToResponse(error: unknown, instance?: string): NextResponse
     status: 500,
     detail: error instanceof Error ? error.message : 'An unexpected error occurred',
     instance,
-  }
+  };
 
   // Log unexpected errors
   logger.error('Unexpected error', {
-    error: error instanceof Error ? {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-    } : { raw: String(error) },
+    error:
+      error instanceof Error
+        ? {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          }
+        : { raw: String(error) },
     instance,
-  })
+  });
 
   return NextResponse.json(problemDetails, {
     status: 500,
     headers: {
       'Content-Type': 'application/problem+json',
     },
-  })
+  });
 }
 
 /**
@@ -193,11 +196,11 @@ export function withErrorHandler<T extends (...args: any[]) => Promise<NextRespo
 ): T {
   return (async (...args: any[]) => {
     try {
-      return await handler(...args)
+      return await handler(...args);
     } catch (error) {
-      const request = args[0] as Request
-      const instance = new URL(request.url).pathname
-      return errorToResponse(error, instance)
+      const request = args[0] as Request;
+      const instance = new URL(request.url).pathname;
+      return errorToResponse(error, instance);
     }
-  }) as T
+  }) as T;
 }

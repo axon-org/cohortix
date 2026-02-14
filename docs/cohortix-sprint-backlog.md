@@ -1,12 +1,15 @@
 # Cohortix Sprint Backlog - February 2026
-**Sprint Goal:** Implement Mission Control Dashboard + Cohorts CRUD based on Lubna's v3 mockups
 
-**Design Reference:** Linear-inspired dark theme (#0A0A0B background, monochrome with status colors)
-**Mockups:** `/Users/alimai/clawd/cohortix-mockups/v3/`
+**Sprint Goal:** Implement Mission Control Dashboard + Cohorts CRUD based on
+Lubna's v3 mockups
+
+**Design Reference:** Linear-inspired dark theme (#0A0A0B background, monochrome
+with status colors) **Mockups:** `/Users/alimai/clawd/cohortix-mockups/v3/`
 
 ---
 
 ## 🎯 Sprint Priority Order
+
 1. **Mission Control Dashboard** (refine existing implementation)
 2. **Cohorts CRUD** (new feature - grid, detail, create/edit)
 3. **Ally Profiles** (new feature)
@@ -17,8 +20,9 @@
 ## 📋 BACKLOG TASKS
 
 ### EPIC 1: Mission Control Dashboard Refinement
-**Mockup:** `01-mission-control-linear-dark.png`
-**Status:** Partial implementation exists, needs design alignment
+
+**Mockup:** `01-mission-control-linear-dark.png` **Status:** Partial
+implementation exists, needs design alignment
 
 #### Backend Tasks (Devi)
 
@@ -81,7 +85,8 @@
 - [ ] **MC-F5: Dashboard Layout Polish**
   - File: `apps/web/src/app/(dashboard)/page.tsx`
   - Match exact grid layout from mockup
-  - Responsive breakpoints (mobile: 1 col, tablet: 2 col, desktop: 4 col for KPIs)
+  - Responsive breakpoints (mobile: 1 col, tablet: 2 col, desktop: 4 col for
+    KPIs)
   - Add loading states for all sections
   - Add error boundaries
   - Verify accessibility (ARIA labels, keyboard navigation)
@@ -90,15 +95,18 @@
 ---
 
 ### EPIC 2: Cohorts CRUD (NEW FEATURE)
-**Mockups:** `02-cohort-grid-linear-dark.png`, `03-cohort-detail-linear-dark.png`
-**Priority:** HIGH
+
+**Mockups:** `02-cohort-grid-linear-dark.png`,
+`03-cohort-detail-linear-dark.png` **Priority:** HIGH
 
 #### Backend Tasks (Devi)
 
 - [ ] **COH-B1: Create Cohorts Database Schema**
   - File: `supabase/migrations/YYYYMMDDHHMMSS_create_cohorts.sql`
-  - Table: `cohorts` (id, organization_id, name, description, status, start_date, end_date, metadata, created_at, updated_at)
-  - Table: `cohort_members` (id, cohort_id, user_id/ally_id, joined_at, engagement_score, metadata)
+  - Table: `cohorts` (id, organization_id, name, description, status,
+    start_date, end_date, metadata, created_at, updated_at)
+  - Table: `cohort_members` (id, cohort_id, user_id/ally_id, joined_at,
+    engagement_score, metadata)
   - Add RLS policies for tenant isolation
   - Add indexes on frequently queried columns
   - Spec: Schema documentation in `docs/specs/database/cohorts-schema.md`
@@ -159,7 +167,8 @@
   - File: `apps/web/src/components/cohorts/cohorts-table.tsx`
   - Match mockup design: dark theme, #1A1A1E rows, #2A2A2E borders
   - Columns: Name, Status, Members, Engagement, Start Date, Actions
-  - Status pills: Active (green), Paused (amber), At-Risk (red), Completed (blue)
+  - Status pills: Active (green), Paused (amber), At-Risk (red), Completed
+    (blue)
   - Engagement: progress bar + percentage
   - Sortable columns (click header)
   - Row hover state (#202025 background)
@@ -188,8 +197,10 @@
 
 - [ ] **COH-F5: Cohort Members List Component**
   - File: `apps/web/src/components/cohorts/members-list.tsx`
-  - Table with: Avatar, AI Ally name, Role, Status, Engagement Score, Action menu
-  - Status indicators: Optimal (green), Active (blue), Syncing (amber), Idle (gray)
+  - Table with: Avatar, AI Ally name, Role, Status, Engagement Score, Action
+    menu
+  - Status indicators: Optimal (green), Active (blue), Syncing (amber), Idle
+    (gray)
   - Engagement score: colored progress bar
   - Action menu: View Profile, Remove from Cohort
   - Search/filter members
@@ -207,6 +218,7 @@
 ---
 
 ### EPIC 3: Ally Profiles (NEW FEATURE)
+
 **Mockup:** `04-ally-profile-linear-dark.png`
 
 #### Backend Tasks (Devi)
@@ -256,14 +268,16 @@
 ---
 
 ### EPIC 4: Campaign Builder (DEFERRED TO SPRINT 2)
-**Mockup:** `05-campaign-builder-linear-dark.png`
-**Reason:** Complex workflow builder - needs dedicated focus after core CRUD is stable
 
-*Tasks to be defined in Sprint 2 planning*
+**Mockup:** `05-campaign-builder-linear-dark.png` **Reason:** Complex workflow
+builder - needs dedicated focus after core CRUD is stable
+
+_Tasks to be defined in Sprint 2 planning_
 
 ---
 
 ### EPIC 5: Auth Screen Styling Update
+
 **Mockup:** `06-auth-login-linear-dark.png`
 
 #### Frontend Tasks (Sami)
@@ -294,7 +308,8 @@
 - [ ] **DS-1: Create Shared UI Components**
   - File: `packages/ui/components/status-badge.tsx` - reusable status pills
   - File: `packages/ui/components/stat-card.tsx` - KPI card component
-  - File: `packages/ui/components/data-table.tsx` - generic table with sorting/filtering
+  - File: `packages/ui/components/data-table.tsx` - generic table with
+    sorting/filtering
   - File: `packages/ui/components/empty-state.tsx` - empty state pattern
   - All components use design tokens
   - Storybook stories for each
@@ -341,6 +356,7 @@
 ## ✅ Definition of Done
 
 For each task:
+
 1. ✅ Code follows Axon Codex (spec before code)
 2. ✅ Tests written and passing (unit + integration where applicable)
 3. ✅ Design matches mockup exactly (for frontend tasks)
@@ -379,10 +395,13 @@ For each task:
 
 ## 📝 Notes
 
-- **Terminology:** Database uses `projects` (Missions), `tasks` (Actions), `agents` (Allies)
-- **Goals vs Cohorts:** Ahmad mentioned "Goals CRUD" in priority, but mockups show Cohorts. Need clarification - assuming Cohorts for now.
+- **Terminology:** Database uses `projects` (Missions), `tasks` (Actions),
+  `agents` (Allies)
+- **Goals vs Cohorts:** Ahmad mentioned "Goals CRUD" in priority, but mockups
+  show Cohorts. Need clarification - assuming Cohorts for now.
 - **Campaign Builder:** Complex feature - deferred to Sprint 2 to ensure quality
-- **Existing Code:** Dashboard partially implemented, auth working, infrastructure solid
+- **Existing Code:** Dashboard partially implemented, auth working,
+  infrastructure solid
 
 ---
 

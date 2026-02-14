@@ -9,58 +9,60 @@
 ## 📊 Database Contents
 
 ### Organizations (1)
+
 - **Axon HQ** (`axon-hq`)
   - Plan: Pro
   - Features: AI Agents, Knowledge Base, Analytics enabled
 
 ### AI Allies / Agents (4)
+
 1. **Devi** - AI Developer Specialist
    - Capabilities: coding, architecture, ai-integration, testing
    - Status: active
-   
 2. **Lubna** - UI/UX Designer
    - Capabilities: design, prototyping, user-research, figma
    - Status: active
-   
 3. **Zara** - Content Strategist
    - Capabilities: writing, content-strategy, seo, documentation
    - Status: active
-   
 4. **Khalid** - DevOps Engineer
    - Capabilities: devops, cloud-infrastructure, ci-cd, monitoring
    - Status: idle
 
 ### Clients (1)
+
 - **TechCorp Inc.** (`techcorp`)
   - Industry: Technology
   - Contact: Sarah Johnson (sarah@techcorp.com)
 
 ### Missions / Projects (3)
+
 1. **AI Dashboard Redesign**
    - Status: active
    - Owner: Lubna
    - Icon: 🎨
-   
 2. **Agent Evolution System**
    - Status: active
    - Owner: Devi
    - Icon: 🧠
-   
 3. **Content Strategy Overhaul**
    - Status: planning
    - Owner: Zara
    - Icon: ✍️
 
 ### Actions / Tasks (5)
+
 - Tasks distributed across missions
 - Mix of statuses: done, in_progress, todo
 - Assigned to various agents
 
 ### Knowledge Entries (2)
+
 - RAG System Best Practices (by Devi)
 - Design System Component Naming (by Lubna)
 
 ### Audit Logs (5)
+
 - Recent activity from all agents
 - Task updates, project creation, knowledge creation
 - Agent status changes
@@ -72,6 +74,7 @@
 **Supabase Project:** rfwscvklcokzuofyzqwx.supabase.co
 
 **Tables Populated:**
+
 - ✅ organizations
 - ✅ agents
 - ✅ clients
@@ -87,6 +90,7 @@
 ## ✅ Verification
 
 Run verification anytime:
+
 ```bash
 cd ~/Projects/cohortix
 pnpm tsx scripts/verify-seed.ts
@@ -97,6 +101,7 @@ pnpm tsx scripts/verify-seed.ts
 ## 🚀 Next Steps for Frontend
 
 The database is ready. Frontend can now:
+
 1. Connect to Supabase
 2. Query agents, missions, actions
 3. Display dashboard with real data

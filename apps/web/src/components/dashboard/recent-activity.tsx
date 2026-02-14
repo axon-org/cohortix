@@ -1,24 +1,24 @@
-import Link from 'next/link'
-import { MoreHorizontal, Activity as ActivityIcon } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
+import Link from 'next/link';
+import { MoreHorizontal, Activity as ActivityIcon } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface Activity {
-  id: string
-  event_type: string
-  event_data: any
-  created_at: string
+  id: string;
+  event_type: string;
+  event_data: any;
+  created_at: string;
   actor_agent?: {
-    name: string
-    avatar_url?: string
-  }
+    name: string;
+    avatar_url?: string;
+  };
   actor_user?: {
-    display_name: string
-    avatar_url?: string
-  }
+    display_name: string;
+    avatar_url?: string;
+  };
 }
 
 interface RecentActivityProps {
-  activities: Activity[]
+  activities: Activity[];
 }
 
 export function RecentActivity({ activities }: RecentActivityProps) {
@@ -27,10 +27,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Recent Activity</h3>
-        <Link
-          href="/activity"
-          className="text-sm text-primary hover:underline"
-        >
+        <Link href="/activity" className="text-sm text-primary hover:underline">
           View All
         </Link>
       </div>
@@ -42,22 +39,20 @@ export function RecentActivity({ activities }: RecentActivityProps) {
             <p className="text-sm">No recent activity</p>
           </div>
         ) : (
-          activities.map((activity) => (
-            <ActivityItem key={activity.id} activity={activity} />
-          ))
+          activities.map((activity) => <ActivityItem key={activity.id} activity={activity} />)
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function ActivityItem({ activity }: { activity: Activity }) {
   // Determine actor name and avatar
-  const actorName = activity.actor_agent?.name || activity.actor_user?.display_name || 'System'
-  const actorAvatar = activity.actor_agent?.avatar_url || activity.actor_user?.avatar_url
+  const actorName = activity.actor_agent?.name || activity.actor_user?.display_name || 'System';
+  const actorAvatar = activity.actor_agent?.avatar_url || activity.actor_user?.avatar_url;
 
   // Format event message
-  const eventMessage = formatEventMessage(activity.event_type, activity.event_data)
+  const eventMessage = formatEventMessage(activity.event_type, activity.event_data);
 
   return (
     <div className="flex items-start gap-3 group">
@@ -73,8 +68,7 @@ function ActivityItem({ activity }: { activity: Activity }) {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <p className="text-sm">
-          <span className="font-medium">{actorName}</span>
-          {' '}
+          <span className="font-medium">{actorName}</span>{' '}
           <span className="text-muted-foreground">{eventMessage}</span>
         </p>
         <p className="text-xs text-muted-foreground mt-1">
@@ -87,26 +81,26 @@ function ActivityItem({ activity }: { activity: Activity }) {
         <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
       </button>
     </div>
-  )
+  );
 }
 
 function formatEventMessage(eventType: string, eventData: any): string {
   switch (eventType) {
     case 'task.created':
-      return 'created a new mission'
+      return 'created a new mission';
     case 'task.updated':
-      return 'updated a mission'
+      return 'updated a mission';
     case 'task.completed':
-      return 'completed a mission'
+      return 'completed a mission';
     case 'project.created':
-      return 'created a new cohort'
+      return 'created a new cohort';
     case 'agent.created':
-      return 'added a new ally'
+      return 'added a new ally';
     case 'agent.status_changed':
-      return `changed status to ${eventData?.status || 'active'}`
+      return `changed status to ${eventData?.status || 'active'}`;
     case 'knowledge.created':
-      return 'added new knowledge'
+      return 'added new knowledge';
     default:
-      return eventType.replace(/[._]/g, ' ')
+      return eventType.replace(/[._]/g, ' ');
   }
 }

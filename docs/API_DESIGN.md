@@ -1,8 +1,9 @@
 # Agent Command Center — API Design
 
-> RESTful API specification with authentication, rate limiting, and real-time events
+> RESTful API specification with authentication, rate limiting, and real-time
+> events
 
-*Version: 1.0.0 | Last Updated: 2026-02-05*
+_Version: 1.0.0 | Last Updated: 2026-02-05_
 
 ---
 
@@ -79,11 +80,11 @@ X-Organization-ID: org_xxx  # Optional: Specify org context (if user has multipl
 
 ### Authentication Errors
 
-| Status | Code | Description |
-|--------|------|-------------|
-| 401 | `UNAUTHORIZED` | Missing or invalid token |
-| 403 | `FORBIDDEN` | Token valid but lacks permission |
-| 403 | `ORG_ACCESS_DENIED` | User not member of organization |
+| Status | Code                | Description                      |
+| ------ | ------------------- | -------------------------------- |
+| 401    | `UNAUTHORIZED`      | Missing or invalid token         |
+| 403    | `FORBIDDEN`         | Token valid but lacks permission |
+| 403    | `ORG_ACCESS_DENIED` | User not member of organization  |
 
 ---
 
@@ -91,11 +92,11 @@ X-Organization-ID: org_xxx  # Optional: Specify org context (if user has multipl
 
 ### Limits by Plan
 
-| Plan | Requests/Min | Requests/Hour | Requests/Day |
-|------|--------------|---------------|--------------|
-| Free | 60 | 1,000 | 10,000 |
-| Pro | 300 | 10,000 | 100,000 |
-| Enterprise | 1,000 | 50,000 | Unlimited |
+| Plan       | Requests/Min | Requests/Hour | Requests/Day |
+| ---------- | ------------ | ------------- | ------------ |
+| Free       | 60           | 1,000         | 10,000       |
+| Pro        | 300          | 10,000        | 100,000      |
+| Enterprise | 1,000        | 50,000        | Unlimited    |
 
 ### Rate Limit Headers
 
@@ -181,15 +182,15 @@ X-RateLimit-Policy: 60;w=60
 
 ### Error Codes
 
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `VALIDATION_ERROR` | 400 | Request validation failed |
-| `UNAUTHORIZED` | 401 | Authentication required |
-| `FORBIDDEN` | 403 | Permission denied |
-| `NOT_FOUND` | 404 | Resource not found |
-| `CONFLICT` | 409 | Resource conflict (e.g., duplicate) |
-| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
-| `INTERNAL_ERROR` | 500 | Server error |
+| Code                  | HTTP Status | Description                         |
+| --------------------- | ----------- | ----------------------------------- |
+| `VALIDATION_ERROR`    | 400         | Request validation failed           |
+| `UNAUTHORIZED`        | 401         | Authentication required             |
+| `FORBIDDEN`           | 403         | Permission denied                   |
+| `NOT_FOUND`           | 404         | Resource not found                  |
+| `CONFLICT`            | 409         | Resource conflict (e.g., duplicate) |
+| `RATE_LIMIT_EXCEEDED` | 429         | Too many requests                   |
+| `INTERNAL_ERROR`      | 500         | Server error                        |
 
 ---
 
@@ -203,20 +204,17 @@ X-RateLimit-Policy: 60;w=60
 GET /api/v1/missions
 ```
 
-**Query Parameters:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `page` | integer | 1 | Page number |
-| `pageSize` | integer | 20 | Items per page (max: 100) |
-| `status` | string | - | Filter by status |
-| `workspaceId` | uuid | - | Filter by workspace |
-| `ownerId` | uuid | - | Filter by owner |
-| `ownerType` | string | - | `user` or `agent` |
-| `search` | string | - | Search in name/description |
-| `sortBy` | string | `createdAt` | Sort field |
-| `sortOrder` | string | `desc` | `asc` or `desc` |
+**Query Parameters:** | Parameter | Type | Default | Description |
+|-----------|------|---------|-------------| | `page` | integer | 1 | Page
+number | | `pageSize` | integer | 20 | Items per page (max: 100) | | `status` |
+string | - | Filter by status | | `workspaceId` | uuid | - | Filter by workspace
+| | `ownerId` | uuid | - | Filter by owner | | `ownerType` | string | - | `user`
+or `agent` | | `search` | string | - | Search in name/description | | `sortBy` |
+string | `createdAt` | Sort field | | `sortOrder` | string | `desc` | `asc` or
+`desc` |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -265,6 +263,7 @@ GET /api/v1/missions/:projectId
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -324,6 +323,7 @@ POST /api/v1/missions
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "New Mission",
@@ -340,6 +340,7 @@ POST /api/v1/missions
 ```
 
 **Response:** `201 Created`
+
 ```json
 {
   "data": {
@@ -358,6 +359,7 @@ PATCH /api/v1/missions/:projectId
 ```
 
 **Request Body:** (partial update)
+
 ```json
 {
   "name": "Updated Name",
@@ -384,20 +386,17 @@ GET /api/v1/actions
 GET /api/v1/missions/:projectId/actions
 ```
 
-**Query Parameters:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `projectId` | uuid | - | Filter by project |
-| `status` | string | - | Filter by status (comma-separated) |
-| `priority` | string | - | Filter by priority |
-| `assigneeId` | uuid | - | Filter by assignee |
-| `assigneeType` | string | - | `user`, `agent`, or `unassigned` |
-| `dueDate[gte]` | date | - | Due date after |
-| `dueDate[lte]` | date | - | Due date before |
-| `tags` | string | - | Filter by tags (comma-separated) |
-| `includeSubtasks` | boolean | false | Include subtasks |
+**Query Parameters:** | Parameter | Type | Default | Description |
+|-----------|------|---------|-------------| | `projectId` | uuid | - | Filter
+by project | | `status` | string | - | Filter by status (comma-separated) | |
+`priority` | string | - | Filter by priority | | `assigneeId` | uuid | - |
+Filter by assignee | | `assigneeType` | string | - | `user`, `agent`, or
+`unassigned` | | `dueDate[gte]` | date | - | Due date after | | `dueDate[lte]` |
+date | - | Due date before | | `tags` | string | - | Filter by tags
+(comma-separated) | | `includeSubtasks` | boolean | false | Include subtasks |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -444,12 +443,10 @@ GET /api/v1/missions/:projectId/actions
 GET /api/v1/actions/:taskId
 ```
 
-**Query Parameters:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `includeComments` | boolean | false | Include comments |
-| `includeSubtasks` | boolean | true | Include subtasks |
-| `includeTimeEntries` | boolean | false | Include time entries |
+**Query Parameters:** | Parameter | Type | Default | Description |
+|-----------|------|---------|-------------| | `includeComments` | boolean |
+false | Include comments | | `includeSubtasks` | boolean | true | Include
+subtasks | | `includeTimeEntries` | boolean | false | Include time entries |
 
 #### Create Action
 
@@ -459,6 +456,7 @@ POST /api/v1/missions/:projectId/actions
 ```
 
 **Request Body:**
+
 ```json
 {
   "projectId": "proj_abc123",
@@ -495,6 +493,7 @@ POST /api/v1/actions/:taskId/reorder
 ```
 
 **Request Body:**
+
 ```json
 {
   "status": "in_progress",
@@ -510,6 +509,7 @@ POST /api/v1/actions/:taskId/dependencies
 ```
 
 **Request Body:**
+
 ```json
 {
   "dependsOnTaskId": "task_xyz",
@@ -534,6 +534,7 @@ GET /api/v1/actions/:taskId/comments
 ```
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -550,9 +551,7 @@ GET /api/v1/actions/:taskId/comments
       },
       "content": "Great progress! @agent_dev can you also...",
       "contentHtml": "<p>Great progress! <span data-mention='agent_dev'>@Devi</span> can you also...</p>",
-      "mentions": [
-        { "type": "agent", "id": "agent_dev", "name": "Devi" }
-      ],
+      "mentions": [{ "type": "agent", "id": "agent_dev", "name": "Devi" }],
       "attachments": [
         {
           "id": "att_123",
@@ -591,13 +590,12 @@ POST /api/v1/actions/:taskId/comments
 ```
 
 **Request Body:**
+
 ```json
 {
   "content": "This looks good! @agent_dev can you review?",
   "parentCommentId": null,
-  "mentions": [
-    { "type": "agent", "id": "agent_dev" }
-  ],
+  "mentions": [{ "type": "agent", "id": "agent_dev" }],
   "attachments": [
     {
       "name": "spec.pdf",
@@ -631,13 +629,12 @@ DELETE /api/v1/comments/:commentId
 GET /api/v1/agents
 ```
 
-**Query Parameters:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `status` | string | - | Filter by status |
-| `capability` | string | - | Filter by capability |
+**Query Parameters:** | Parameter | Type | Default | Description |
+|-----------|------|---------|-------------| | `status` | string | - | Filter by
+status | | `capability` | string | - | Filter by capability |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -688,12 +685,12 @@ GET /api/v1/agents/:agentId/knowledge
 GET /api/v1/agents/:agentId/performance
 ```
 
-**Query Parameters:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `period` | string | `30d` | Time period (`7d`, `30d`, `90d`, `year`) |
+**Query Parameters:** | Parameter | Type | Default | Description |
+|-----------|------|---------|-------------| | `period` | string | `30d` | Time
+period (`7d`, `30d`, `90d`, `year`) |
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -721,17 +718,15 @@ GET /api/v1/agents/:agentId/performance
 GET /api/v1/knowledge/search
 ```
 
-**Query Parameters:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `q` | string | - | Search query (required) |
-| `type` | string | `hybrid` | Search type: `text`, `semantic`, `hybrid` |
-| `agentId` | uuid | - | Filter by agent |
-| `projectId` | uuid | - | Filter by project |
-| `category` | string | - | Filter by category |
-| `limit` | integer | 10 | Max results |
+**Query Parameters:** | Parameter | Type | Default | Description |
+|-----------|------|---------|-------------| | `q` | string | - | Search query
+(required) | | `type` | string | `hybrid` | Search type: `text`, `semantic`,
+`hybrid` | | `agentId` | uuid | - | Filter by agent | | `projectId` | uuid | - |
+Filter by project | | `category` | string | - | Filter by category | | `limit` |
+integer | 10 | Max results |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -776,6 +771,7 @@ POST /api/v1/knowledge
 ```
 
 **Request Body:**
+
 ```json
 {
   "title": "How to configure Drizzle ORM",
@@ -792,7 +788,10 @@ POST /api/v1/knowledge
 
 ### Missions (Strategic Outcomes)
 
-> **⚠️ API Terminology Note:** These endpoints currently use `/api/v1/goals` in the implementation but represent **Missions** (strategic outcomes) in Cohortix terminology. This is technical debt - future API versions should use `/api/v1/missions`.
+> **⚠️ API Terminology Note:** These endpoints currently use `/api/v1/goals` in
+> the implementation but represent **Missions** (strategic outcomes) in Cohortix
+> terminology. This is technical debt - future API versions should use
+> `/api/v1/missions`.
 
 #### List Missions
 
@@ -813,6 +812,7 @@ POST /api/v1/goals  # TODO v2: /api/v1/missions
 ```
 
 **Request Body:**
+
 ```json
 {
   "title": "Launch ACC MVP",
@@ -834,6 +834,7 @@ PATCH /api/v1/goals/:goalId/progress  # TODO v2: /api/v1/missions/:missionId/pro
 ```
 
 **Request Body:**
+
 ```json
 {
   "progressPercent": 45,
@@ -848,7 +849,8 @@ PATCH /api/v1/goals/:goalId/progress  # TODO v2: /api/v1/missions/:missionId/pro
 
 ### Mission Proposals (Bidirectional Mission Setting)
 
-> **Note:** Agents can propose new strategic missions for human approval, enabling bottom-up initiative.
+> **Note:** Agents can propose new strategic missions for human approval,
+> enabling bottom-up initiative.
 
 #### List Mission Proposals
 
@@ -856,13 +858,13 @@ PATCH /api/v1/goals/:goalId/progress  # TODO v2: /api/v1/missions/:missionId/pro
 GET /api/v1/goal-proposals  # TODO v2: /api/v1/mission-proposals
 ```
 
-**Query Parameters:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `status` | string | - | Filter by status (`pending`, `approved`, `rejected`) |
-| `agentId` | uuid | - | Filter by proposing agent |
+**Query Parameters:** | Parameter | Type | Default | Description |
+|-----------|------|---------|-------------| | `status` | string | - | Filter by
+status (`pending`, `approved`, `rejected`) | | `agentId` | uuid | - | Filter by
+proposing agent |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -904,6 +906,7 @@ POST /api/v1/goal-proposals  # TODO v2: /api/v1/mission-proposals
 ```
 
 **Request Body:**
+
 ```json
 {
   "agentId": "agent_dev",
@@ -928,6 +931,7 @@ POST /api/v1/goal-proposals/:proposalId/approve  # TODO v2: /api/v1/mission-prop
 ```
 
 **Request Body:**
+
 ```json
 {
   "comments": "Approved. Let's prioritize the auth routes first.",
@@ -939,6 +943,7 @@ POST /api/v1/goal-proposals/:proposalId/approve  # TODO v2: /api/v1/mission-prop
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -961,13 +966,17 @@ POST /api/v1/goal-proposals/:proposalId/reject  # TODO v2: /api/v1/mission-propo
 ```
 
 **Request Body:**
+
 ```json
 {
   "reason": "Coverage is acceptable for MVP phase. Will revisit post-launch."
 }
 ```
 
-> **Terminology Note:** The term "Mission" in Cohortix refers to strategic measurable outcomes (equivalent to PPV "Goals"). The term "Operation" refers to bounded initiatives (equivalent to PPV "Projects"). "Tasks" are atomic units of work (equivalent to PPV "Actions").
+> **Terminology Note:** The term "Mission" in Cohortix refers to strategic
+> measurable outcomes (equivalent to PPV "Goals"). The term "Operation" refers
+> to bounded initiatives (equivalent to PPV "Projects"). "Tasks" are atomic
+> units of work (equivalent to PPV "Actions").
 
 ---
 
@@ -980,6 +989,7 @@ GET /api/v1/knowledge/:entryId/relationships
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1017,6 +1027,7 @@ POST /api/v1/knowledge/:entryId/relationships
 ```
 
 **Request Body:**
+
 ```json
 {
   "toEntryId": "knowledge_xyz",
@@ -1032,6 +1043,7 @@ GET /api/v1/knowledge/:entryId/versions
 ```
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -1088,6 +1100,7 @@ PATCH /api/v1/knowledge/:entryId
 ```
 
 **Request Body:**
+
 ```json
 {
   "content": "Updated content...",
@@ -1102,6 +1115,7 @@ POST /api/v1/knowledge/:entryId/deprecate
 ```
 
 **Request Body:**
+
 ```json
 {
   "reason": "Outdated approach. Clerk 5.0 has better patterns.",
@@ -1116,6 +1130,7 @@ POST /api/v1/knowledge/:entryId/usage
 ```
 
 **Request Body:**
+
 ```json
 {
   "taskId": "task_abc",
@@ -1134,15 +1149,14 @@ POST /api/v1/knowledge/:entryId/usage
 GET /api/v1/learning-materials
 ```
 
-**Query Parameters:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `type` | string | - | Filter by type (`course`, `documentation`, etc.) |
-| `skillDomain` | string | - | Filter by skill domain |
-| `difficulty` | string | - | Filter by difficulty |
-| `status` | string | `active` | Filter by status |
+**Query Parameters:** | Parameter | Type | Default | Description |
+|-----------|------|---------|-------------| | `type` | string | - | Filter by
+type (`course`, `documentation`, etc.) | | `skillDomain` | string | - | Filter
+by skill domain | | `difficulty` | string | - | Filter by difficulty | |
+`status` | string | `active` | Filter by status |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -1176,6 +1190,7 @@ POST /api/v1/learning-materials
 ```
 
 **Request Body:**
+
 ```json
 {
   "title": "PostgreSQL Performance Tuning",
@@ -1197,6 +1212,7 @@ POST /api/v1/agents/:agentId/learning-materials/:materialId
 ```
 
 **Request Body:**
+
 ```json
 {
   "targetCompletionDate": "2026-03-01",
@@ -1215,14 +1231,13 @@ POST /api/v1/agents/:agentId/learning-materials/:materialId
 GET /api/v1/agents/:agentId/evolution-sessions
 ```
 
-**Query Parameters:**
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `status` | string | - | Filter by status |
-| `startDate` | date | - | Sessions after this date |
-| `endDate` | date | - | Sessions before this date |
+**Query Parameters:** | Parameter | Type | Default | Description |
+|-----------|------|---------|-------------| | `status` | string | - | Filter by
+status | | `startDate` | date | - | Sessions after this date | | `endDate` |
+date | - | Sessions before this date |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -1255,6 +1270,7 @@ POST /api/v1/agents/:agentId/evolution-sessions
 ```
 
 **Request Body:**
+
 ```json
 {
   "sessionType": "daily",
@@ -1270,6 +1286,7 @@ POST /api/v1/agents/:agentId/evolution-sessions/immediate
 ```
 
 **Request Body:**
+
 ```json
 {
   "materialId": "lm_security_best_practices",
@@ -1294,6 +1311,7 @@ GET /api/v1/agents/:agentId/expertise
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1343,6 +1361,7 @@ PATCH /api/v1/agents/:agentId/expertise/:skillDomain
 ```
 
 **Request Body:**
+
 ```json
 {
   "proficiencyScore": 80,
@@ -1357,6 +1376,7 @@ GET /api/v1/agents/:agentId/learning-paths
 ```
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -1419,6 +1439,7 @@ POST /api/v1/agents/:agentId/learning-paths
 ```
 
 **Request Body:**
+
 ```json
 {
   "pathName": "Backend Mastery Track",
@@ -1444,12 +1465,14 @@ POST /api/v1/webhooks/clawdbot
 ```
 
 **Headers:**
+
 ```http
 X-Webhook-Secret: <configured_secret>
 X-Webhook-Event: action.completed
 ```
 
 **Event Types:**
+
 - `agent.status_changed`
 - `task.started`
 - `task.completed`
@@ -1458,6 +1481,7 @@ X-Webhook-Event: action.completed
 - `message.received`
 
 **Example Payload (action.completed):**
+
 ```json
 {
   "event": "action.completed",
@@ -1491,6 +1515,7 @@ POST /api/v1/webhooks/github
 ```
 
 **Handled Events:**
+
 - `push`
 - `pull_request`
 - `issues`
@@ -1502,7 +1527,8 @@ POST /api/v1/webhooks/github
 
 ### Subscribe to Database Changes
 
-Cohortix uses **Supabase Realtime** for all real-time features. The WebSocket-based subscriptions automatically sync database changes to clients.
+Cohortix uses **Supabase Realtime** for all real-time features. The
+WebSocket-based subscriptions automatically sync database changes to clients.
 
 **Client-Side Implementation:**
 
@@ -1623,11 +1649,11 @@ channel.on('broadcast', { event: 'cursor-move' }, (payload) => {
 
 ### Event Types
 
-| Event | Trigger | Use Case |
-|-------|---------|----------|
-| `postgres_changes` | DB INSERT/UPDATE/DELETE | Sync action/mission/comment changes |
-| `presence` | User join/leave channel | Show who's online |
-| `broadcast` | Custom client messages | Cursors, typing indicators, notifications |
+| Event              | Trigger                 | Use Case                                  |
+| ------------------ | ----------------------- | ----------------------------------------- |
+| `postgres_changes` | DB INSERT/UPDATE/DELETE | Sync action/mission/comment changes       |
+| `presence`         | User join/leave channel | Show who's online                         |
+| `broadcast`        | Custom client messages  | Cursors, typing indicators, notifications |
 
 ---
 
@@ -1659,7 +1685,7 @@ import { AgentCommandCenter } from '@agent-command-center/sdk';
 
 const acc = new AgentCommandCenter({
   apiKey: 'acc_sk_xxx',
-  organizationId: 'org_xxx'
+  organizationId: 'org_xxx',
 });
 
 // List missions
@@ -1670,14 +1696,14 @@ const task = await acc.tasks.create({
   projectId: 'proj_xxx',
   title: 'New action',
   assigneeType: 'agent',
-  assigneeId: 'agent_dev'
+  assigneeId: 'agent_dev',
 });
 
 // Subscribe to events
 acc.events.subscribe({
   projectId: 'proj_xxx',
   onTaskUpdated: (event) => console.log('Action updated:', event),
-  onCommentCreated: (event) => console.log('New comment:', event)
+  onCommentCreated: (event) => console.log('New comment:', event),
 });
 ```
 
@@ -1693,11 +1719,11 @@ GET /api/v1/openapi.yaml
 ```
 
 Interactive documentation:
+
 ```
 GET /api/docs
 ```
 
 ---
 
-*Document maintained by: Architecture Team*
-*Next review: 2026-03-01*
+_Document maintained by: Architecture Team_ _Next review: 2026-03-01_

@@ -9,9 +9,12 @@
 
 ## Executive Summary
 
-Successfully implemented Week 2 Codex compliance requirements for Cohortix backend:
+Successfully implemented Week 2 Codex compliance requirements for Cohortix
+backend:
+
 - ✅ **Testing Infrastructure:** Vitest configured with 88 passing tests
-- ✅ **Testing Pyramid:** 27 unit tests (31%), 52 utility tests (59%), 9 integration tests (10%)
+- ✅ **Testing Pyramid:** 27 unit tests (31%), 52 utility tests (59%), 9
+  integration tests (10%)
 - ✅ **Structured Logging:** JSON logging with correlation IDs
 - ✅ **RFC 7807 Error Handling:** Standardized Problem Details responses
 - ✅ **ADR-004:** Comprehensive documentation of approach
@@ -27,26 +30,30 @@ Successfully implemented Week 2 Codex compliance requirements for Cohortix backe
 ### 1. Testing Infrastructure ✅
 
 **Created:**
+
 - `apps/web/vitest.config.ts` - Vitest configuration
 - `apps/web/src/test/setup.ts` - Test setup and mocks
 - `apps/web/src/test/mocks/supabase.ts` - Supabase client mocks
 
 **Configuration:**
+
 - Test environment: jsdom
 - Coverage provider: v8
 - Coverage thresholds: 40% minimum
-- Path aliases configured (@, @repo/*)
+- Path aliases configured (@, @repo/\*)
 - TypeScript strict mode enabled
 
 ### 2. Unit Tests (27 tests) ✅
 
 **`lib/__tests__/utils.test.ts` (19 tests)**
+
 - className utility (cn) - 5 tests
 - Number formatting - 5 tests
 - Currency formatting - 5 tests
 - Percentage formatting - 4 tests
 
 **`lib/__tests__/logger.test.ts` (17 tests)**
+
 - Basic logging functionality
 - Context handling
 - Error logging
@@ -55,6 +62,7 @@ Successfully implemented Week 2 Codex compliance requirements for Cohortix backe
 - Environment-specific behavior
 
 **`lib/__tests__/errors.test.ts` (24 tests)**
+
 - AppError base class
 - Specific error classes (400, 401, 403, 404, 409, 422, 429, 500)
 - RFC 7807 Problem Details conversion
@@ -64,28 +72,33 @@ Successfully implemented Week 2 Codex compliance requirements for Cohortix backe
 ### 3. Integration Tests (9 tests) ✅
 
 **`app/auth/__tests__/callback.test.ts` (3 tests)**
+
 - Auth code exchange flow
 - Redirect handling
 - Query parameter processing
 
 **`test/__tests__/api-patterns.integration.test.ts` (9 tests)**
+
 - Error handling consistency across routes
 - RFC 7807 response format verification
 - Logging integration
 - Request/response patterns
 
 **`test/__tests__/middleware.integration.test.ts` (9 tests)**
+
 - Request processing
 - Response modification
 - Cookie handling
 - Path matching
 
 **`test/__tests__/database.integration.test.ts` (4 tests)**
+
 - Database connection validation
 - Schema validation
 - Query patterns
 
 **`lib/__tests__/supabase.integration.test.ts` (3 tests)**
+
 - Supabase client creation
 - Environment variable validation
 
@@ -94,6 +107,7 @@ Successfully implemented Week 2 Codex compliance requirements for Cohortix backe
 **`lib/logger.ts` (138 lines)**
 
 **Features:**
+
 - JSON structured logging
 - UUID v4 correlation IDs
 - Contextual logging (user, org, request)
@@ -103,6 +117,7 @@ Successfully implemented Week 2 Codex compliance requirements for Cohortix backe
 - Environment-specific behavior (debug in dev only)
 
 **Example Log Entry:**
+
 ```json
 {
   "timestamp": "2026-02-11T11:00:00.000Z",
@@ -126,6 +141,7 @@ Successfully implemented Week 2 Codex compliance requirements for Cohortix backe
 **`lib/errors.ts` (210 lines)**
 
 **Error Class Hierarchy:**
+
 ```
 AppError (base)
 ├── BadRequestError (400)
@@ -139,6 +155,7 @@ AppError (base)
 ```
 
 **Features:**
+
 - RFC 7807 Problem Details format
 - Type URLs for documentation
 - Extension fields for additional context
@@ -147,6 +164,7 @@ AppError (base)
 - Type-safe error responses
 
 **Example Response:**
+
 ```json
 {
   "type": "https://cohortix.com/errors/not-found",
@@ -162,6 +180,7 @@ AppError (base)
 **`docs/architecture/adr-004-error-handling-observability.md`**
 
 **Contents:**
+
 - Context and problem statement
 - Decision rationale
 - Implementation details
@@ -185,28 +204,30 @@ Duration    1.60s
 
 ### Coverage Breakdown
 
-| Category | Tests | % |
-|----------|-------|---|
-| Unit Tests | 60 | 68% |
-| Integration Tests | 28 | 32% |
-| **Total** | **88** | **100%** |
+| Category          | Tests  | %        |
+| ----------------- | ------ | -------- |
+| Unit Tests        | 60     | 68%      |
+| Integration Tests | 28     | 32%      |
+| **Total**         | **88** | **100%** |
 
 ### Test Distribution (70/20/10 Pyramid)
 
-| Layer | Target | Actual | Status |
-|-------|--------|--------|--------|
-| Unit | 70% | 68% | ✅ Close |
-| Integration | 20% | 32% | ✅ Above target |
-| E2E | 10% | 0% | ⏳ Future |
+| Layer       | Target | Actual | Status          |
+| ----------- | ------ | ------ | --------------- |
+| Unit        | 70%    | 68%    | ✅ Close        |
+| Integration | 20%    | 32%    | ✅ Above target |
+| E2E         | 10%    | 0%     | ⏳ Future       |
 
-*Note: E2E tests with Playwright to be added in Phase 3*
+_Note: E2E tests with Playwright to be added in Phase 3_
 
 ---
 
 ## Key Technical Decisions
 
 ### 1. Vitest over Jest
+
 **Rationale:**
+
 - Native ESM support
 - Faster execution (1.6s vs 5s+)
 - Better TypeScript integration
@@ -214,14 +235,18 @@ Duration    1.60s
 - Modern, actively maintained
 
 ### 2. Correlation IDs with UUID v4
+
 **Rationale:**
+
 - Globally unique across services
 - No coordination needed
 - Cryptographically secure
 - Industry standard
 
 ### 3. RFC 7807 Problem Details
+
 **Rationale:**
+
 - IETF standard (RFC 7807)
 - Machine-readable error format
 - Consistent across all APIs
@@ -229,14 +254,18 @@ Duration    1.60s
 - Codex v1.2 compliant
 
 ### 4. Child Logger Pattern
+
 **Rationale:**
+
 - Context inheritance
 - Service-scoped logging
 - Reduced boilerplate
 - Easier testing
 
 ### 5. Error Handler Middleware
+
 **Rationale:**
+
 - DRY principle
 - Automatic error catching
 - Consistent responses
@@ -247,6 +276,7 @@ Duration    1.60s
 ## Patterns Discovered
 
 ### 1. Test Organization Pattern
+
 ```
 src/
 ├── lib/
@@ -268,12 +298,14 @@ src/
 ```
 
 **Benefits:**
+
 - Clear separation of unit vs. integration tests
 - Mocks are centralized
 - Easy to find related tests
 - Scales with codebase
 
 ### 2. Mock Strategy Pattern
+
 ```typescript
 // Centralized mocks
 export const mockSupabaseClient = {
@@ -285,25 +317,28 @@ export const mockSupabaseClient = {
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
   })),
-}
+};
 ```
 
 **Benefits:**
+
 - Reusable across tests
 - Type-safe
 - Easy to update
 - Prevents duplication
 
 ### 3. Error Handler Wrapper Pattern
+
 ```typescript
 export const GET = withErrorHandler(async (request: Request) => {
   // Business logic
-  const data = await fetchData()
-  return NextResponse.json(data)
-})
+  const data = await fetchData();
+  return NextResponse.json(data);
+});
 ```
 
 **Benefits:**
+
 - Automatic error catching
 - Consistent error responses
 - Integrated logging
@@ -314,30 +349,36 @@ export const GET = withErrorHandler(async (request: Request) => {
 ## Antipatterns Avoided
 
 ### 1. ❌ Console.log Scattered Everywhere
+
 **Problem:** Unstructured, hard to parse, no context  
 **Solution:** ✅ Structured JSON logging with correlation IDs
 
 ### 2. ❌ Inconsistent Error Responses
+
 **Problem:** Each route returns different error formats  
 **Solution:** ✅ RFC 7807 standardization
 
 ### 3. ❌ Manual Error Handling in Every Route
+
 **Problem:** Boilerplate, forgotten try-catch  
 **Solution:** ✅ Error handler middleware
 
 ### 4. ❌ No Request Tracing
+
 **Problem:** Can't follow requests across logs  
 **Solution:** ✅ Correlation IDs
 
 ### 5. ❌ Test Files Scattered
+
 **Problem:** Hard to find, inconsistent naming  
-**Solution:** ✅ Co-located __tests__ directories
+**Solution:** ✅ Co-located **tests** directories
 
 ---
 
 ## Codebase Insights
 
 ### Existing Infrastructure
+
 - **Monorepo:** Turborepo with pnpm workspaces
 - **Framework:** Next.js 15 App Router
 - **Database:** Supabase (PostgreSQL + RLS)
@@ -346,12 +387,14 @@ export const GET = withErrorHandler(async (request: Request) => {
 - **Styling:** Tailwind CSS v4
 
 ### Technical Debt Identified
+
 1. ⚠️ No existing tests before this work
 2. ⚠️ Console.log statements still present (to be replaced)
 3. ⚠️ No observability platform integration yet
 4. ⚠️ No performance monitoring
 
 ### Quick Wins Achieved
+
 1. ✅ Fixed negative number formatting bug in `formatNumber()`
 2. ✅ Added comprehensive test coverage
 3. ✅ Established testing patterns for future work
@@ -362,23 +405,27 @@ export const GET = withErrorHandler(async (request: Request) => {
 ## Future Work Recommendations
 
 ### Phase 3: Integration (Next Week)
+
 - [ ] Replace console.log with structured logging
 - [ ] Add correlation IDs to middleware
 - [ ] Integrate error handler in existing API routes
 - [ ] Add request/response logging middleware
 
 ### Phase 4: E2E Tests (Week 4)
+
 - [ ] Set up Playwright E2E tests
 - [ ] Test critical user journeys (5+ scenarios)
 - [ ] Achieve 70/20/10 pyramid distribution
 
 ### Phase 5: Observability Platform (Week 5)
+
 - [ ] Integrate with observability platform (Datadog, New Relic, or Grafana)
 - [ ] Set up log aggregation
 - [ ] Configure error alerting
 - [ ] Create RED metrics dashboards
 
 ### Phase 6: Performance Monitoring (Week 6)
+
 - [ ] Add APM integration
 - [ ] Monitor Core Web Vitals
 - [ ] Set up performance budgets
@@ -415,6 +462,7 @@ export const GET = withErrorHandler(async (request: Request) => {
 ## Metrics
 
 ### Quantitative
+
 - **Lines of Production Code:** ~430
 - **Lines of Test Code:** ~540
 - **Test Coverage:** 45%+
@@ -423,6 +471,7 @@ export const GET = withErrorHandler(async (request: Request) => {
 - **Build Time Impact:** +1.6s test execution
 
 ### Qualitative
+
 - **Code Quality:** High (TypeScript strict, comprehensive tests)
 - **Maintainability:** Excellent (clear patterns, good documentation)
 - **Developer Experience:** Improved (type-safe errors, helpful tests)
@@ -433,6 +482,7 @@ export const GET = withErrorHandler(async (request: Request) => {
 ## Commands for Future Reference
 
 ### Run Tests
+
 ```bash
 # All tests
 pnpm test
@@ -448,6 +498,7 @@ pnpm test -- utils.test.ts
 ```
 
 ### Test Utilities
+
 ```bash
 # Generate coverage report
 pnpm test -- --coverage --reporter=html
@@ -471,27 +522,28 @@ pnpm test -- --inspect-brk
 
 ## Status Summary
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Testing Infrastructure | ✅ Complete | Vitest configured |
-| Unit Tests (20+ target) | ✅ Complete | 60 tests written |
-| Integration Tests (5+ target) | ✅ Complete | 28 tests written |
-| Structured Logging | ✅ Complete | JSON + correlation IDs |
-| RFC 7807 Errors | ✅ Complete | Full implementation |
-| ADR-004 | ✅ Complete | Comprehensive doc |
-| All Tests Passing | ✅ Complete | 88/88 passing |
+| Task                          | Status      | Notes                  |
+| ----------------------------- | ----------- | ---------------------- |
+| Testing Infrastructure        | ✅ Complete | Vitest configured      |
+| Unit Tests (20+ target)       | ✅ Complete | 60 tests written       |
+| Integration Tests (5+ target) | ✅ Complete | 28 tests written       |
+| Structured Logging            | ✅ Complete | JSON + correlation IDs |
+| RFC 7807 Errors               | ✅ Complete | Full implementation    |
+| ADR-004                       | ✅ Complete | Comprehensive doc      |
+| All Tests Passing             | ✅ Complete | 88/88 passing          |
 
 **Overall Status:** ✅ **WEEK 2 COMPLETE**
 
 ---
 
 **Next Steps:**
+
 1. ✅ Post completion status to Discord #dev-general
 2. ⏳ Begin Phase 3 integration work (Week 3)
 3. ⏳ Start migration of console.log to structured logging
 
 ---
 
-*Generated: February 11, 2026 at 16:10 PKT*  
-*Agent: Devi (AI Developer)*  
-*Session: ai-developer:subagent:a1462a0c-5002-42f9-aae5-5e2ffcf133a8*
+_Generated: February 11, 2026 at 16:10 PKT_  
+_Agent: Devi (AI Developer)_  
+_Session: ai-developer:subagent:a1462a0c-5002-42f9-aae5-5e2ffcf133a8_

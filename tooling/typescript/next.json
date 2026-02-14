@@ -10,7 +10,7 @@
     "incremental": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
-    
+
     // Next.js paths
     "baseUrl": ".",
     "paths": {
@@ -45,11 +45,5 @@
     ".next/types/**/*.ts",
     "src/**/*"
   ],
-  "exclude": [
-    "node_modules",
-    ".next",
-    "out",
-    "dist",
-    "build"
-  ]
+  "exclude": ["node_modules", ".next", "out", "dist", "build"]
 }

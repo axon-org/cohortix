@@ -19,11 +19,13 @@
   - Action (create/update)
   - Time Entry (create/update)
 - Reusable schemas: UUID, Email, Pagination, Date Range
-- Validation middleware: `validateRequest()`, `validateData()`, `withValidation()`
+- Validation middleware: `validateRequest()`, `validateData()`,
+  `withValidation()`
 - Type-safe API handlers with automatic error responses
 - **Tests:** 32 test cases covering validation logic
 
 **Key Features:**
+
 - Automatic type inference from schemas
 - Field-level error messages
 - RFC 7807 error responses on validation failure
@@ -40,11 +42,12 @@
   - Strict: 5 req/min (auth, payments)
   - Standard: 100 req/min (general APIs)
   - Generous: 300 req/min (read-only)
-- Rate limit headers (X-RateLimit-*)
+- Rate limit headers (X-RateLimit-\*)
 - Custom key generators and skip conditions
 - **Tests:** 23 test cases covering token bucket logic
 
 **Key Features:**
+
 - In-memory store with automatic cleanup
 - Separate limits per IP/user
 - RFC 7807 error responses with Retry-After
@@ -53,12 +56,14 @@
 ### ✅ 3. E2E Tests (Playwright)
 
 **Implementation:**
+
 - `apps/web/playwright.config.ts` - Configuration
 - `apps/web/e2e/auth.spec.ts` - Authentication flow tests
 - `apps/web/e2e/dashboard.spec.ts` - Dashboard loading tests
 - `apps/web/e2e/mission-creation.spec.ts` - Mission creation flow tests
 
 **Test Coverage:**
+
 - **Authentication:** 8 tests
   - Sign-in page elements and validation
   - Navigation to sign-up/forgot password
@@ -76,6 +81,7 @@
   - Server error handling
 
 **Key Features:**
+
 - Multi-browser testing (Chromium, Firefox, WebKit)
 - Mobile viewport testing
 - Automated accessibility scanning with axe-core
@@ -86,6 +92,7 @@
 **Implementation:** `apps/web/src/lib/resilience.ts`
 
 **Retry with Exponential Backoff:**
+
 - Configurable max retries (default: 3)
 - Exponential backoff with jitter (prevents thundering herd)
 - Intelligent retry decision (only retryable errors)
@@ -93,6 +100,7 @@
 - `withRetry()` function wrapper
 
 **Circuit Breaker:**
+
 - Three states: CLOSED, OPEN, HALF_OPEN
 - Failure threshold: 5 consecutive failures → OPEN
 - Reset timeout: 60s before attempting HALF_OPEN
@@ -101,6 +109,7 @@
 - `CircuitBreaker` class with metrics
 
 **Combined Pattern:**
+
 - `withResilientCall()` combines retry + circuit breaker
 - Optimal for external service calls (Supabase)
 - Prevents cascading failures
@@ -124,6 +133,7 @@
   - Screen reader compatibility
 
 **Coverage:**
+
 - Sign-in page accessibility scan
 - Sign-up page accessibility scan
 - Forgot password page accessibility scan
@@ -136,6 +146,7 @@
 **Total Tests:** 148 passed ✅
 
 **Breakdown:**
+
 - Validation tests: 32 ✅
 - Rate limiting tests: 23 ✅
 - Resilience tests: 27 ✅
@@ -154,6 +165,7 @@
 **Status:** Accepted
 
 **Key Decisions:**
+
 1. Implement retry with exponential backoff for transient failures
 2. Use circuit breaker to prevent cascading failures
 3. In-memory state for circuit breaker (sufficient for current scale)
@@ -161,6 +173,7 @@
 5. Jitter enabled by default to prevent thundering herd
 
 **Trade-offs:**
+
 - Increased latency for failed requests (bounded by timeouts)
 - Complexity in testing and state management
 - Benefits outweigh costs for production resilience
@@ -170,6 +183,7 @@
 ## 📖 Documentation Updates
 
 **New Files:**
+
 - `apps/web/src/lib/validation.ts` - Input validation library
 - `apps/web/src/lib/rate-limit.ts` - Rate limiting middleware
 - `apps/web/src/lib/resilience.ts` - Resilience patterns library
@@ -179,6 +193,7 @@
 - `docs/week3-backend-hardening-summary.md` - This summary
 
 **Test Files:**
+
 - `apps/web/src/lib/__tests__/validation.test.ts` - Validation tests
 - `apps/web/src/lib/__tests__/rate-limit.test.ts` - Rate limiting tests
 - `apps/web/src/lib/__tests__/resilience.test.ts` - Resilience tests
@@ -293,6 +308,7 @@
 ## 📈 Metrics
 
 **Code Additions:**
+
 - New files: 8
 - Lines of code: ~3,500
 - Test files: 6
@@ -300,6 +316,7 @@
 - Test coverage: 45%+
 
 **Time Investment:**
+
 - Implementation: ~4 hours
 - Testing: ~2 hours
 - Documentation: ~1 hour

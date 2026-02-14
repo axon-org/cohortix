@@ -1,7 +1,8 @@
 # Cohortix Database Schema Build Summary
 
 **Date:** February 11, 2026  
-**Task:** Implement Cohortix database schema using Drizzle ORM + Supabase PostgreSQL  
+**Task:** Implement Cohortix database schema using Drizzle ORM + Supabase
+PostgreSQL  
 **Status:** ✅ Complete (Schema + Migration + Seed + RLS Policies)
 
 ---
@@ -17,7 +18,8 @@ All schema files have been created in `packages/database/src/schema/`:
 - ✅ **org-memberships.ts** — User ↔ Organization relationships with roles
 - ✅ **clients.ts** — Client entities for multi-client support
 - ✅ **workspaces.ts** — Optional team-level grouping
-- ✅ **agents.ts** — AI allies (name, role, status, capabilities, runtime_config)
+- ✅ **agents.ts** — AI allies (name, role, status, capabilities,
+  runtime_config)
 - ✅ **agent-assignments.ts** — Agent ↔ Project and Agent ↔ Client assignments
 - ✅ **goals.ts** — Goals/objectives with OKR-style key results
 - ✅ **projects.ts** — Projects/cohorts tied to organizations
@@ -25,13 +27,16 @@ All schema files have been created in `packages/database/src/schema/`:
 - ✅ **tasks.ts** — Missions/tasks with parent_task_id for hierarchy
 - ✅ **comments.ts** — Task comments with threading support
 - ✅ **time-entries.ts** — Agent time tracking
-- ✅ **knowledge-entries.ts** — Knowledge base with tags, categories, scope hierarchy
+- ✅ **knowledge-entries.ts** — Knowledge base with tags, categories, scope
+  hierarchy
 - ✅ **audit-logs.ts** — Full audit trail of all changes
 - ✅ **index.ts** — Barrel export for all schemas
 
 **Key Adjustments Made:**
+
 - ✅ Replaced `clerk_id` references with Supabase Auth (`auth.uid()`)
-- ✅ Proper indexes added for common queries (org_id lookups, status filters, date sorting)
+- ✅ Proper indexes added for common queries (org_id lookups, status filters,
+  date sorting)
 - ✅ All schemas use Supabase Auth integration (no Clerk)
 
 ### 2. Database Client & Configuration
@@ -55,7 +60,8 @@ All schema files have been created in `packages/database/src/schema/`:
 
 ### 4. Supabase Migration with RLS Policies
 
-- ✅ **src/migrations/0000_initial_with_rls.sql** — Complete SQL migration including:
+- ✅ **src/migrations/0000_initial_with_rls.sql** — Complete SQL migration
+  including:
   - All table CREATE statements
   - All enum types
   - Proper foreign key constraints
@@ -66,11 +72,13 @@ All schema files have been created in `packages/database/src/schema/`:
   - Auto-update triggers for `updated_at` columns
   - Grants for Supabase authenticated role
 
-**RLS Strategy:** Shared database with Row-Level Security using Supabase's `auth.uid()` function for automatic tenant context.
+**RLS Strategy:** Shared database with Row-Level Security using Supabase's
+`auth.uid()` function for automatic tenant context.
 
 ### 5. Package.json Scripts Updated
 
 Root `package.json` now includes:
+
 ```json
 {
   "scripts": {
@@ -84,6 +92,7 @@ Root `package.json` now includes:
 ```
 
 Database package `packages/database/package.json`:
+
 ```json
 {
   "scripts": {
@@ -98,6 +107,7 @@ Database package `packages/database/package.json`:
 ### 6. Dependencies
 
 All required dependencies are already installed:
+
 - ✅ `drizzle-orm@^0.30.0`
 - ✅ `drizzle-kit@^0.20.18`
 - ✅ `postgres@^3.4.0`
@@ -119,6 +129,7 @@ pnpm db:generate
 **Result:** Successfully generated migration file with 16 tables and 14 enums.
 
 Output:
+
 ```
 16 tables
 organizations 8 columns 0 indexes 0 fks
@@ -152,7 +163,8 @@ agent_status [active, idle, busy, offline, error]
 
 ### 1. Set Up Supabase Database Credentials
 
-The `.env.local` file has placeholder credentials. Replace them with actual Supabase project credentials:
+The `.env.local` file has placeholder credentials. Replace them with actual
+Supabase project credentials:
 
 ```bash
 # In .env.local, update:
@@ -165,6 +177,7 @@ SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
 ```
 
 Get these from your Supabase project settings:
+
 - Project Settings → Database → Connection string
 - Project Settings → API → Project API keys
 
@@ -185,7 +198,8 @@ CREATE EXTENSION IF NOT EXISTS "pg_trgm"; -- For full-text search
 **Option A: Using the custom SQL migration (Recommended for RLS)**
 
 1. Open Supabase SQL Editor
-2. Paste the entire content of `packages/database/src/migrations/0000_initial_with_rls.sql`
+2. Paste the entire content of
+   `packages/database/src/migrations/0000_initial_with_rls.sql`
 3. Execute the migration
 
 **Option B: Using Drizzle Kit push (Development only)**
@@ -194,7 +208,9 @@ CREATE EXTENSION IF NOT EXISTS "pg_trgm"; -- For full-text search
 pnpm db:push
 ```
 
-**Note:** This skips migrations and directly pushes schema. The custom SQL migration includes RLS policies that won't be created by `db:push`, so Option A is strongly recommended.
+**Note:** This skips migrations and directly pushes schema. The custom SQL
+migration includes RLS policies that won't be created by `db:push`, so Option A
+is strongly recommended.
 
 ### 4. Verify Migration Success
 
@@ -204,6 +220,7 @@ pnpm db:studio
 ```
 
 Check that:
+
 - All 16 tables exist
 - All 14 enum types are created
 - RLS policies are enabled (check Supabase Dashboard → Database → Policies)
@@ -215,6 +232,7 @@ pnpm db:seed
 ```
 
 Expected output:
+
 ```
 🌱 Seeding database...
 
@@ -254,6 +272,7 @@ Create a test user via Supabase Auth and verify:
 ### 7. Configure Supabase Auth Providers
 
 In Supabase Dashboard → Authentication → Providers:
+
 - ✅ Enable Email/Password authentication
 - ✅ Enable Magic Links (optional)
 - ✅ Configure OAuth providers (Google, GitHub, etc.)
@@ -265,9 +284,12 @@ In Supabase Dashboard → Authentication → Providers:
 
 ### Multi-Tenant Isolation
 
-All tenant tables include `organization_id` and are protected by RLS policies that automatically filter data based on the authenticated user's organization membership.
+All tenant tables include `organization_id` and are protected by RLS policies
+that automatically filter data based on the authenticated user's organization
+membership.
 
 **How it works:**
+
 ```sql
 -- RLS policy example
 CREATE POLICY "Tenant isolation" ON projects
@@ -284,6 +306,7 @@ Every query is automatically scoped to the user's organization(s).
 ### Knowledge Scoping Hierarchy
 
 Knowledge entries support three scope levels:
+
 - **Company-level** — Available to all agents in the organization
 - **Client-level** — Only for agents assigned to that client
 - **Project-level** — Specific to agents working on that project
@@ -293,6 +316,7 @@ This enables fine-grained knowledge access control.
 ### Polymorphic Ownership
 
 Several tables support polymorphic ownership (can be owned by user OR agent):
+
 - **Projects** — Can be human-led or agent-led
 - **Tasks** — Can be assigned to users or agents
 - **Goals** — Can be proposed by humans or agents
@@ -301,11 +325,13 @@ This enables bidirectional goal setting and autonomous agent operation.
 
 ### Hierarchical Tasks
 
-Tasks support parent-child relationships via `parent_task_id` for subtasks and epic-level organization.
+Tasks support parent-child relationships via `parent_task_id` for subtasks and
+epic-level organization.
 
 ### Agent Runtime Abstraction
 
 The `agents` table includes:
+
 - `runtime_type` — Currently 'clawdbot', future-proofed for custom runtimes
 - `runtime_config` — JSONB for runtime-specific configuration
 
@@ -327,24 +353,25 @@ This avoids vendor lock-in and allows switching agent platforms later.
 ## 🔒 Security Features
 
 ✅ **Row-Level Security (RLS)** enabled on all tenant tables  
-✅ **Helper functions** for permission checks (`is_org_member`, `is_org_admin`)  
+✅ **Helper functions** for permission checks (`is_org_member`,
+`is_org_admin`)  
 ✅ **Tenant isolation policies** prevent cross-tenant data access  
 ✅ **Supabase Auth integration** for user authentication  
 ✅ **Foreign key cascades** properly configured for data integrity  
-✅ **Audit logging** for all critical operations  
+✅ **Audit logging** for all critical operations
 
 ---
 
 ## 📚 Key Files Reference
 
-| File | Purpose |
-|------|---------|
-| `packages/database/src/schema/*.ts` | Drizzle schema definitions |
-| `packages/database/drizzle.config.ts` | Drizzle Kit configuration |
-| `packages/database/src/client.ts` | Database client |
-| `packages/database/src/migrations/0000_initial_with_rls.sql` | Initial migration with RLS |
-| `scripts/seed-db.ts` | Database seed script |
-| `.env.local` | Environment variables (update with real credentials) |
+| File                                                         | Purpose                                              |
+| ------------------------------------------------------------ | ---------------------------------------------------- |
+| `packages/database/src/schema/*.ts`                          | Drizzle schema definitions                           |
+| `packages/database/drizzle.config.ts`                        | Drizzle Kit configuration                            |
+| `packages/database/src/client.ts`                            | Database client                                      |
+| `packages/database/src/migrations/0000_initial_with_rls.sql` | Initial migration with RLS                           |
+| `scripts/seed-db.ts`                                         | Database seed script                                 |
+| `.env.local`                                                 | Environment variables (update with real credentials) |
 
 ---
 
@@ -370,6 +397,7 @@ This avoids vendor lock-in and allows switching agent platforms later.
 ## 🚀 Ready to Deploy
 
 The schema is production-ready with:
+
 - ✅ Proper multi-tenant isolation
 - ✅ Performance-optimized indexes
 - ✅ Comprehensive RLS policies
@@ -377,7 +405,8 @@ The schema is production-ready with:
 - ✅ Type-safe Drizzle ORM integration
 - ✅ Supabase Auth integration
 
-Once you update the credentials and apply the migration, you're ready to start building the Cohortix application!
+Once you update the credentials and apply the migration, you're ready to start
+building the Cohortix application!
 
 ---
 

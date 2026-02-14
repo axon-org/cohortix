@@ -1,12 +1,12 @@
 /**
  * Spacing Design Tokens
- * 
+ *
  * Based on 8px grid system (Tailwind defaults)
  * All spacing values are multiples or half-multiples of 8px
- * 
+ *
  * See: docs/design/DDR-003-responsive-breakpoint-strategy.md
  * Reference: TOOLS.md "Spacing Scale (8px Base)"
- * 
+ *
  * @packageDocumentation
  */
 
@@ -85,7 +85,7 @@ export const spacing = {
   80: '20rem',
   /** 384px (24rem) - 48 units */
   96: '24rem',
-} as const
+} as const;
 
 /**
  * Layout-specific spacing values
@@ -116,7 +116,7 @@ export const layout = {
   cardGapDesktop: spacing[6], // 24px
   /** Max content width (container) */
   maxContentWidth: '1440px',
-} as const
+} as const;
 
 /**
  * Component-specific spacing
@@ -154,7 +154,7 @@ export const component = {
   avatarDefault: spacing[10], // 40px
   /** Avatar size (large) */
   avatarLarge: spacing[20], // 80px
-} as const
+} as const;
 
 /**
  * Touch target minimum sizes (WCAG 2.5.5)
@@ -166,7 +166,7 @@ export const touchTarget = {
   recommended: '48px',
   /** Minimum gap between targets */
   minimumGap: spacing[2], // 8px
-} as const
+} as const;
 
 /**
  * Border radius scale
@@ -191,7 +191,7 @@ export const borderRadius = {
   '3xl': '1.5rem',
   /** 9999px - Full rounding (pills, circles) */
   full: '9999px',
-} as const
+} as const;
 
 /**
  * Shadow scale
@@ -214,7 +214,7 @@ export const shadows = {
   inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
   /** No shadow */
   none: 'none',
-} as const
+} as const;
 
 /**
  * Z-index scale
@@ -237,7 +237,7 @@ export const zIndex = {
   popover: 1060,
   /** Tooltip content */
   tooltip: 1070,
-} as const
+} as const;
 
 /**
  * Responsive spacing utilities
@@ -250,11 +250,11 @@ export const responsive = {
   cardPadding: (breakpoint: 'mobile' | 'tablet' | 'desktop') => {
     switch (breakpoint) {
       case 'mobile':
-        return layout.cardPaddingMobile
+        return layout.cardPaddingMobile;
       case 'tablet':
-        return layout.cardPaddingTablet
+        return layout.cardPaddingTablet;
       case 'desktop':
-        return layout.cardPaddingDesktop
+        return layout.cardPaddingDesktop;
     }
   },
 
@@ -264,11 +264,11 @@ export const responsive = {
   contentPadding: (breakpoint: 'mobile' | 'tablet' | 'desktop') => {
     switch (breakpoint) {
       case 'mobile':
-        return layout.contentPaddingMobile
+        return layout.contentPaddingMobile;
       case 'tablet':
-        return layout.contentPaddingTablet
+        return layout.contentPaddingTablet;
       case 'desktop':
-        return layout.contentPaddingDesktop
+        return layout.contentPaddingDesktop;
     }
   },
 
@@ -276,11 +276,11 @@ export const responsive = {
    * Get grid gap for card layouts at different breakpoints
    */
   cardGap: (breakpoint: 'mobile' | 'desktop') => {
-    return breakpoint === 'mobile' ? layout.cardGapMobile : layout.cardGapDesktop
+    return breakpoint === 'mobile' ? layout.cardGapMobile : layout.cardGapDesktop;
   },
-} as const
+} as const;
 
 /**
  * Export default spacing object for Tailwind config
  */
-export default spacing
+export default spacing;

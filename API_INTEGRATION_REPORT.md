@@ -11,6 +11,7 @@
 ### 1. Infrastructure Setup
 
 #### TanStack Query Provider
+
 - **Created:** `src/components/providers/query-provider.tsx`
 - **Features:**
   - Client-side React Query setup
@@ -19,10 +20,12 @@
   - Retry and refetch policies configured
 
 #### Root Layout Integration
+
 - **Updated:** `src/app/layout.tsx`
 - **Changes:** Wrapped app with `QueryProvider` for client-side data fetching
 
 #### API Client
+
 - **Created:** `src/lib/api/client.ts`
 - **Features:**
   - Centralized API call functions
@@ -33,6 +36,7 @@
 ### 2. API Endpoints Integrated
 
 #### Dashboard Mission Control API
+
 - **Endpoint:** `/api/v1/dashboard/mission-control`
 - **Hook:** `useDashboardKPIs()` in `src/hooks/use-dashboard.ts`
 - **Returns:**
@@ -43,6 +47,7 @@
   - Trend data for all metrics
 
 #### Cohorts List API
+
 - **Endpoint:** `/api/v1/cohorts`
 - **Hook:** `useCohorts(params)` in `src/hooks/use-cohorts.ts`
 - **Features:**
@@ -55,6 +60,7 @@
 ### 3. UI Components Updated
 
 #### Mission Control Dashboard
+
 - **File:** `src/app/(dashboard)/page.tsx`
 - **Changes:**
   - Replaced hardcoded KPI data with API calls
@@ -62,6 +68,7 @@
   - Maintained server-side rendering for activity and alerts
 
 #### KPI Cards (New Client Component)
+
 - **Created:** `src/components/dashboard/kpi-cards-client.tsx`
 - **Features:**
   - Real-time KPI data from API
@@ -71,6 +78,7 @@
   - Dynamic sparkline data generation
 
 #### Cohorts Table (New Client Component)
+
 - **Created:** `src/components/cohorts/cohorts-table-client.tsx`
 - **Features:**
   - Real-time cohort data from API
@@ -80,6 +88,7 @@
   - Data transformation (API → Table format)
 
 #### Cohorts Page
+
 - **File:** `src/app/(dashboard)/cohorts/page.tsx`
 - **Changes:**
   - Removed mock data
@@ -102,28 +111,28 @@ All API responses and requests are fully typed:
 // Dashboard KPIs
 interface DashboardKPIs {
   kpis: {
-    activeCohortsCount: number
-    totalAllies: number
-    avgEngagement: number
-    atRiskCount: number
-  }
+    activeCohortsCount: number;
+    totalAllies: number;
+    avgEngagement: number;
+    atRiskCount: number;
+  };
   trends: {
-    activeCohortsChange: number
-    totalAlliesChange: number
-    avgEngagementChange: number
-    atRiskChange: number
-  }
+    activeCohortsChange: number;
+    totalAlliesChange: number;
+    avgEngagementChange: number;
+    atRiskChange: number;
+  };
 }
 
 // Cohorts
 interface Cohort {
-  id: string
-  name: string
-  slug: string
-  status: 'active' | 'paused' | 'at-risk' | 'completed'
-  member_count: number
-  engagement_percent: string
-  start_date?: string
+  id: string;
+  name: string;
+  slug: string;
+  status: 'active' | 'paused' | 'at-risk' | 'completed';
+  member_count: number;
+  engagement_percent: string;
+  start_date?: string;
   // ...more fields
 }
 ```
@@ -131,6 +140,7 @@ interface Cohort {
 ### 6. Bug Fixes
 
 #### Supabase Server Client Export
+
 - **Issue:** API routes were importing `createClient` which didn't exist
 - **Fixed:** Added export alias in `src/lib/supabase/server.ts`
 - **Impact:** All API routes now compile without errors
@@ -217,12 +227,15 @@ Component Renders with Data
 
 ### ⏸️ Still Using Server-Side Data
 
-These components were already working with server-side queries and didn't need client-side conversion:
+These components were already working with server-side queries and didn't need
+client-side conversion:
 
 - Recent Activity feed (uses `getRecentActivity()`)
 - Urgent Alerts (uses `getActiveAlerts()`)
 
-**Why:** These are server-rendered components that fetch data on the server. They're already using real data from the database, not mock data. No changes needed.
+**Why:** These are server-rendered components that fetch data on the server.
+They're already using real data from the database, not mock data. No changes
+needed.
 
 ### 🚫 Not in Scope
 
@@ -264,7 +277,9 @@ These components were already working with server-side queries and didn't need c
 ### Automated Testing
 
 Current test files may need updates:
-- `src/components/cohorts/__tests__/cohorts-table.test.tsx` — May need mocked API responses
+
+- `src/components/cohorts/__tests__/cohorts-table.test.tsx` — May need mocked
+  API responses
 
 ---
 
@@ -301,7 +316,8 @@ Current test files may need updates:
 
 ### Non-Blocking Issues
 
-1. **Test Files:** TypeScript errors in `__tests__` files (Vitest matchers not typed)
+1. **Test Files:** TypeScript errors in `__tests__` files (Vitest matchers not
+   typed)
    - Impact: Tests may not run, but app works fine
    - Fix: Add `@vitest/expect` types to tsconfig
 
@@ -364,10 +380,10 @@ import { useDashboardKPIs } from '@/hooks/use-dashboard'
 
 function MyComponent() {
   const { data, isLoading, error } = useDashboardKPIs()
-  
+
   if (isLoading) return <Loading />
   if (error) return <Error message={error.message} />
-  
+
   return <div>Active Cohorts: {data.kpis.activeCohortsCount}</div>
 }
 ```
@@ -387,7 +403,7 @@ function MyComponent() {
     sortBy: 'memberCount',
     sortOrder: 'desc',
   })
-  
+
   return (
     <ul>
       {data?.data.map(cohort => (
@@ -407,7 +423,7 @@ import { useCreateCohort } from '@/hooks/use-cohorts'
 
 function CreateCohortButton() {
   const createMutation = useCreateCohort()
-  
+
   const handleCreate = () => {
     createMutation.mutate({
       name: 'New Cohort',
@@ -415,7 +431,7 @@ function CreateCohortButton() {
       description: 'My new cohort',
     })
   }
-  
+
   return (
     <button onClick={handleCreate} disabled={createMutation.isPending}>
       {createMutation.isPending ? 'Creating...' : 'Create Cohort'}

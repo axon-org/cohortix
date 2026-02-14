@@ -2,7 +2,7 @@
 
 > Comprehensive security design for enterprise-grade multi-tenant SaaS
 
-*Version: 1.0.0 | Last Updated: 2026-02-05*
+_Version: 1.0.0 | Last Updated: 2026-02-05_
 
 ---
 
@@ -137,7 +137,9 @@ export async function middleware(request: NextRequest) {
   await supabase.auth.getSession();
 
   // Protect dashboard routes
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard');
 
   if (isProtectedRoute && !session) {
@@ -160,13 +162,13 @@ export const config = {
 
 ### Session Management
 
-| Setting | Value | Rationale |
-|---------|-------|-----------|
-| Session Duration | 7 days | Balance security/UX |
-| Token Refresh | Rolling (on activity) | Keep active users logged in |
-| Inactivity Timeout | 30 minutes | Protect unattended sessions |
-| Single Session | Optional (per org) | Enterprise requirement |
-| MFA | Optional (encouraged) | Added security layer |
+| Setting            | Value                 | Rationale                   |
+| ------------------ | --------------------- | --------------------------- |
+| Session Duration   | 7 days                | Balance security/UX         |
+| Token Refresh      | Rolling (on activity) | Keep active users logged in |
+| Inactivity Timeout | 30 minutes            | Protect unattended sessions |
+| Single Session     | Optional (per org)    | Enterprise requirement      |
+| MFA                | Optional (encouraged) | Added security layer        |
 
 ### Multi-Factor Authentication
 
@@ -177,6 +179,7 @@ Supabase Auth provides MFA support:
 - **Recovery Codes**: Backup codes for account recovery
 
 **Implementation:**
+
 ```typescript
 // Enroll MFA
 const { data, error } = await supabase.auth.mfa.enroll({
@@ -198,6 +201,7 @@ const { data, error } = await supabase.auth.mfa.verify({
 ```
 
 **Enforcement Levels:**
+
 - Free tier: Optional
 - Pro tier: Encouraged for admins
 - Enterprise: Required for all users via RLS policies
@@ -242,25 +246,25 @@ const { data, error } = await supabase.auth.mfa.verify({
 
 ### Permission Matrix
 
-| Permission | Owner | Admin | Member | Viewer |
-|------------|-------|-------|--------|--------|
-| View missions | ✅ | ✅ | ✅ | ✅ |
-| Create missions | ✅ | ✅ | ✅ | ❌ |
-| Delete missions | ✅ | ✅ | ❌ | ❌ |
-| View actions | ✅ | ✅ | ✅ | ✅ |
-| Create/edit actions | ✅ | ✅ | ✅ | ❌ |
-| Delete actions | ✅ | ✅ | ✅ | ❌ |
-| Manage agents | ✅ | ✅ | ❌ | ❌ |
-| View knowledge | ✅ | ✅ | ✅ | ✅ |
-| Add knowledge | ✅ | ✅ | ✅ | ❌ |
-| Invite members | ✅ | ✅ | ❌ | ❌ |
-| Remove members | ✅ | ✅ | ❌ | ❌ |
-| Change member roles | ✅ | ✅ | ❌ | ❌ |
-| Manage billing | ✅ | ❌ | ❌ | ❌ |
-| Delete organization | ✅ | ❌ | ❌ | ❌ |
-| Manage integrations | ✅ | ✅ | ❌ | ❌ |
-| View audit logs | ✅ | ✅ | ❌ | ❌ |
-| API key management | ✅ | ✅ | ❌ | ❌ |
+| Permission          | Owner | Admin | Member | Viewer |
+| ------------------- | ----- | ----- | ------ | ------ |
+| View missions       | ✅    | ✅    | ✅     | ✅     |
+| Create missions     | ✅    | ✅    | ✅     | ❌     |
+| Delete missions     | ✅    | ✅    | ❌     | ❌     |
+| View actions        | ✅    | ✅    | ✅     | ✅     |
+| Create/edit actions | ✅    | ✅    | ✅     | ❌     |
+| Delete actions      | ✅    | ✅    | ✅     | ❌     |
+| Manage agents       | ✅    | ✅    | ❌     | ❌     |
+| View knowledge      | ✅    | ✅    | ✅     | ✅     |
+| Add knowledge       | ✅    | ✅    | ✅     | ❌     |
+| Invite members      | ✅    | ✅    | ❌     | ❌     |
+| Remove members      | ✅    | ✅    | ❌     | ❌     |
+| Change member roles | ✅    | ✅    | ❌     | ❌     |
+| Manage billing      | ✅    | ❌    | ❌     | ❌     |
+| Delete organization | ✅    | ❌    | ❌     | ❌     |
+| Manage integrations | ✅    | ✅    | ❌     | ❌     |
+| View audit logs     | ✅    | ✅    | ❌     | ❌     |
+| API key management  | ✅    | ✅    | ❌     | ❌     |
 
 ### Authorization Implementation
 
@@ -305,11 +309,7 @@ export const rolePermissions: Record<OrgRole, Permission[]> = {
     'knowledge:read',
     'knowledge:create',
   ],
-  viewer: [
-    'missions:read',
-    'actions:read',
-    'knowledge:read',
-  ],
+  viewer: ['missions:read', 'actions:read', 'knowledge:read'],
 };
 
 // Check permission
@@ -319,11 +319,10 @@ export function hasPermission(
 ): boolean {
   const permissions = rolePermissions[userRole];
   if (permissions.includes('*')) return true;
-  
+
   const [resource, action] = permission.split(':');
   return (
-    permissions.includes(permission) ||
-    permissions.includes(`${resource}:*`)
+    permissions.includes(permission) || permissions.includes(`${resource}:*`)
   );
 }
 ```
@@ -349,7 +348,10 @@ export async function requirePermission(permission: Permission) {
     }
   );
 
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
   if (error || !user) {
     throw new UnauthorizedError('Authentication required');
@@ -383,7 +385,7 @@ export async function DELETE(
   { params }: { params: { projectId: string } }
 ) {
   const { orgId } = await requirePermission('missions:delete');
-  
+
   // Delete mission (RLS will ensure it belongs to orgId)
   const supabase = createServerClient(/* ... */);
   await supabase.from('missions').delete().eq('id', params.projectId);
@@ -455,9 +457,7 @@ export function createClient() {
 const supabase = createClient();
 
 // This query automatically filters by user's org
-const { data: missions } = await supabase
-  .from('missions')
-  .select('*');
+const { data: missions } = await supabase.from('missions').select('*');
 // Returns only missions from user's organization
 
 // Attempting to access other org's data returns empty/error
@@ -469,11 +469,13 @@ const { data } = await supabase
 ```
 
 **Key Security Benefits:**
+
 1. **Database-enforced**: Isolation happens at database level, not application
 2. **Automatic**: No manual context setting required
 3. **JWT-based**: User identity extracted from JWT token
 4. **Fail-secure**: If JWT is invalid, auth.uid() returns NULL → no data access
-5. **Zero-trust**: Even if application has bugs, database blocks unauthorized access
+5. **Zero-trust**: Even if application has bugs, database blocks unauthorized
+   access
 
 ### Agent Isolation
 
@@ -491,7 +493,7 @@ async function verifyAgentProjectAccess(
       eq(agentAssignments.projectId, projectId)
     ),
   });
-  
+
   return !!assignment;
 }
 ```
@@ -517,19 +519,22 @@ const createTaskSchema = z.object({
 
 export async function POST(request: Request) {
   const body = await request.json();
-  
+
   // Validate and sanitize input
   const validated = createTaskSchema.safeParse(body);
-  
+
   if (!validated.success) {
-    return Response.json({
-      error: {
-        code: 'VALIDATION_ERROR',
-        details: validated.error.issues,
+    return Response.json(
+      {
+        error: {
+          code: 'VALIDATION_ERROR',
+          details: validated.error.issues,
+        },
       },
-    }, { status: 400 });
+      { status: 400 }
+    );
   }
-  
+
   // Use validated.data (typed and sanitized)
 }
 ```
@@ -554,21 +559,21 @@ export const rateLimiters = {
     analytics: true,
     prefix: 'ratelimit:api',
   }),
-  
+
   auth: new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(5, '1 m'),
     analytics: true,
     prefix: 'ratelimit:auth',
   }),
-  
+
   search: new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(30, '1 m'),
     analytics: true,
     prefix: 'ratelimit:search',
   }),
-  
+
   webhook: new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(100, '1 m'),
@@ -584,14 +589,14 @@ export async function applyRateLimit(
 ) {
   const limiter = rateLimiters[type];
   const { success, remaining, reset } = await limiter.limit(identifier);
-  
+
   if (!success) {
     throw new RateLimitError({
       remaining,
       resetAt: new Date(reset),
     });
   }
-  
+
   return { remaining, reset };
 }
 ```
@@ -608,7 +613,9 @@ const nextConfig = {
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: process.env.ALLOWED_ORIGINS || 'https://app.agentcommandcenter.com',
+            value:
+              process.env.ALLOWED_ORIGINS ||
+              'https://app.agentcommandcenter.com',
           },
           {
             key: 'Access-Control-Allow-Methods',
@@ -667,7 +674,7 @@ export function verifyWebhookSignature(
   const expectedSignature = createHmac('sha256', secret)
     .update(payload)
     .digest('hex');
-  
+
   // Timing-safe comparison to prevent timing attacks
   return timingSafeEqual(
     Buffer.from(signature),
@@ -679,11 +686,13 @@ export function verifyWebhookSignature(
 export async function POST(request: Request) {
   const payload = await request.text();
   const signature = request.headers.get('X-Webhook-Signature');
-  
-  if (!verifyWebhookSignature(payload, signature!, process.env.WEBHOOK_SECRET!)) {
+
+  if (
+    !verifyWebhookSignature(payload, signature!, process.env.WEBHOOK_SECRET!)
+  ) {
     return Response.json({ error: 'Invalid signature' }, { status: 401 });
   }
-  
+
   // Process webhook...
 }
 ```
@@ -694,12 +703,12 @@ export async function POST(request: Request) {
 
 ### Encryption at Rest
 
-| Data | Encryption | Key Management |
-|------|------------|----------------|
-| Database | AES-256 (provider managed) | AWS/Neon KMS |
-| File Storage | AES-256 (Vercel/S3) | Provider KMS |
-| Redis Cache | TLS + encryption | Upstash managed |
-| Backups | AES-256 | Provider KMS |
+| Data         | Encryption                 | Key Management  |
+| ------------ | -------------------------- | --------------- |
+| Database     | AES-256 (provider managed) | AWS/Neon KMS    |
+| File Storage | AES-256 (Vercel/S3)        | Provider KMS    |
+| Redis Cache  | TLS + encryption           | Upstash managed |
+| Backups      | AES-256                    | Provider KMS    |
 
 ### Encryption in Transit
 
@@ -719,27 +728,27 @@ const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex');
 export function encrypt(plaintext: string): string {
   const iv = randomBytes(16);
   const cipher = createCipheriv(ALGORITHM, KEY, iv);
-  
+
   let encrypted = cipher.update(plaintext, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  
+
   const authTag = cipher.getAuthTag();
-  
+
   return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
 }
 
 export function decrypt(ciphertext: string): string {
   const [ivHex, authTagHex, encrypted] = ciphertext.split(':');
-  
+
   const iv = Buffer.from(ivHex, 'hex');
   const authTag = Buffer.from(authTagHex, 'hex');
   const decipher = createDecipheriv(ALGORITHM, KEY, iv);
-  
+
   decipher.setAuthTag(authTag);
-  
+
   let decrypted = decipher.update(encrypted, 'hex', 'utf8');
   decrypted += decipher.final('utf8');
-  
+
   return decrypted;
 }
 
@@ -752,12 +761,12 @@ const integration = await db.insert(integrations).values({
 
 ### PII Handling
 
-| PII Type | Storage | Retention | Deletion |
-|----------|---------|-----------|----------|
-| Email | Database | Account lifetime | On deletion |
-| Name | Database | Account lifetime | On deletion |
-| IP Address | Logs only | 90 days | Auto-purge |
-| Session Data | Redis | 7 days | Auto-expire |
+| PII Type     | Storage   | Retention        | Deletion    |
+| ------------ | --------- | ---------------- | ----------- |
+| Email        | Database  | Account lifetime | On deletion |
+| Name         | Database  | Account lifetime | On deletion |
+| IP Address   | Logs only | 90 days          | Auto-purge  |
+| Session Data | Redis     | 7 days           | Auto-expire |
 
 ### Data Retention
 
@@ -769,11 +778,11 @@ BEGIN
   -- Delete audit logs older than 2 years
   DELETE FROM audit_logs
   WHERE created_at < NOW() - INTERVAL '2 years';
-  
+
   -- Delete notifications older than 90 days
   DELETE FROM notifications
   WHERE created_at < NOW() - INTERVAL '90 days';
-  
+
   -- Delete soft-deleted records older than 30 days
   DELETE FROM missions
   WHERE deleted_at IS NOT NULL
@@ -856,10 +865,7 @@ const history = await db.query.auditLogs.findMany({
 
 // Get user activity
 const activity = await db.query.auditLogs.findMany({
-  where: and(
-    eq(auditLogs.actorType, 'user'),
-    eq(auditLogs.actorId, userId)
-  ),
+  where: and(eq(auditLogs.actorType, 'user'), eq(auditLogs.actorId, userId)),
   orderBy: desc(auditLogs.createdAt),
   limit: 50,
 });
@@ -871,13 +877,13 @@ const activity = await db.query.auditLogs.findMany({
 
 ### Alerts Configuration
 
-| Alert | Condition | Severity | Response |
-|-------|-----------|----------|----------|
-| Failed Logins | > 5 per minute | High | Temporary block, notify user |
-| Rate Limit Spike | > 1000% normal | Medium | Investigate source |
-| Suspicious Activity | Unusual patterns | High | Manual review |
-| Data Export | Large export | Medium | Log and monitor |
-| Permission Escalation | Role change | Low | Log for audit |
+| Alert                 | Condition        | Severity | Response                     |
+| --------------------- | ---------------- | -------- | ---------------------------- |
+| Failed Logins         | > 5 per minute   | High     | Temporary block, notify user |
+| Rate Limit Spike      | > 1000% normal   | Medium   | Investigate source           |
+| Suspicious Activity   | Unusual patterns | High     | Manual review                |
+| Data Export           | Large export     | Medium   | Log and monitor              |
+| Permission Escalation | Role change      | Low      | Log for audit                |
 
 ### Security Incident Response
 
@@ -952,5 +958,4 @@ interface UserConsent {
 
 ---
 
-*Document maintained by: Security Team*
-*Next review: 2026-03-01*
+_Document maintained by: Security Team_ _Next review: 2026-03-01_

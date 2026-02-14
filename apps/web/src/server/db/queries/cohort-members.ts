@@ -1,6 +1,6 @@
 /**
  * Cohort Members Queries Module
- * 
+ *
  * Server-side data fetching for cohort members (agents/allies in cohorts).
  * Supports the Cohort Detail screen with member list, engagement scores, and statuses.
  */
@@ -49,7 +49,8 @@ export async function getCohortMembers(cohortId: string): Promise<CohortMember[]
 
   const { data, error } = await supabase
     .from('cohort_members')
-    .select(`
+    .select(
+      `
       id,
       cohort_id,
       agent_id,
@@ -64,7 +65,8 @@ export async function getCohortMembers(cohortId: string): Promise<CohortMember[]
         status,
         last_active_at
       )
-    `)
+    `
+    )
     .eq('cohort_id', cohortId)
     .order('engagement_score', { ascending: false });
 
@@ -123,7 +125,7 @@ export async function getCohortAvgEngagement(cohortId: string): Promise<number> 
     return 0;
   }
 
-  const scores = data.map(m => parseFloat(m.engagement_score) || 0);
+  const scores = data.map((m) => parseFloat(m.engagement_score) || 0);
   const avg = scores.reduce((sum, score) => sum + score, 0) / scores.length;
   return Math.round(avg * 100) / 100; // Round to 2 decimals
 }

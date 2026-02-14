@@ -10,6 +10,7 @@
 ## Context
 
 As Cohortix scales, we need standardized error handling and observability to:
+
 1. Provide consistent API error responses to clients
 2. Enable effective debugging in production
 3. Trace requests across distributed systems
@@ -17,6 +18,7 @@ As Cohortix scales, we need standardized error handling and observability to:
 5. Comply with Codex v1.2 standards
 
 **Current State:**
+
 - Ad-hoc error handling across API routes
 - Console.log statements scattered throughout codebase
 - No correlation IDs for request tracing
@@ -24,6 +26,7 @@ As Cohortix scales, we need standardized error handling and observability to:
 - Limited observability into production issues
 
 **Requirements:**
+
 - RFC 7807 Problem Details for HTTP APIs
 - Structured JSON logging with correlation IDs
 - Request tracing across services
@@ -35,7 +38,8 @@ As Cohortix scales, we need standardized error handling and observability to:
 
 ## Decision
 
-We will implement a comprehensive error handling and logging infrastructure consisting of:
+We will implement a comprehensive error handling and logging infrastructure
+consisting of:
 
 ### 1. RFC 7807 Error Responses
 
@@ -68,6 +72,7 @@ AppError (base)
 ```
 
 **Features:**
+
 - Type URLs for error documentation
 - Consistent status codes
 - Detailed error messages
@@ -103,6 +108,7 @@ All log entries follow structured JSON format:
 ```
 
 **Log Levels:**
+
 - `debug` - Verbose development information (dev only)
 - `info` - General informational messages
 - `warn` - Warning conditions
@@ -110,6 +116,7 @@ All log entries follow structured JSON format:
 - `fatal` - Severe errors causing failure
 
 **Features:**
+
 - Correlation IDs for request tracing
 - Contextual information (user, org, request)
 - Error object serialization
@@ -123,17 +130,18 @@ All log entries follow structured JSON format:
 ```typescript
 export const GET = withErrorHandler(async (request: Request) => {
   // Route logic that may throw errors
-  const mission = await getMission(id)
-  
+  const mission = await getMission(id);
+
   if (!mission) {
-    throw new NotFoundError('Mission', id)
+    throw new NotFoundError('Mission', id);
   }
-  
-  return NextResponse.json(mission)
-})
+
+  return NextResponse.json(mission);
+});
 ```
 
 **Benefits:**
+
 - Automatic error catching
 - Consistent error responses
 - Integrated logging
@@ -143,12 +151,14 @@ export const GET = withErrorHandler(async (request: Request) => {
 ### 4. Correlation ID Strategy
 
 **Generation:**
+
 - UUID v4 generated per request
 - Propagated through entire request lifecycle
 - Included in all log entries
 - Returned in error responses (optional)
 
 **Use Cases:**
+
 - Trace request across multiple services
 - Debug distributed transactions
 - Correlate logs from different sources
@@ -215,78 +225,85 @@ export const GET = withErrorHandler(async (request: Request) => {
 
 ```typescript
 // apps/web/src/app/api/missions/[id]/route.ts
-import { withErrorHandler, NotFoundError, UnauthorizedError } from '@/lib/errors'
-import { logger } from '@/lib/logger'
-import { NextResponse } from 'next/server'
+import {
+  withErrorHandler,
+  NotFoundError,
+  UnauthorizedError,
+} from '@/lib/errors';
+import { logger } from '@/lib/logger';
+import { NextResponse } from 'next/server';
 
 export const GET = withErrorHandler(async (request: Request, context: any) => {
-  const { id } = context.params
-  const correlationId = logger.generateCorrelationId()
-  
+  const { id } = context.params;
+  const correlationId = logger.generateCorrelationId();
+
   // Set request context
-  logger.setContext({ correlationId, path: `/api/missions/${id}` })
-  
-  logger.info('Fetching mission', { missionId: id })
-  
+  logger.setContext({ correlationId, path: `/api/missions/${id}` });
+
+  logger.info('Fetching mission', { missionId: id });
+
   // Verify authentication
-  const user = await getUser(request)
+  const user = await getUser(request);
   if (!user) {
-    throw new UnauthorizedError()
+    throw new UnauthorizedError();
   }
-  
+
   // Fetch mission
   const mission = await db.query.missions.findFirst({
-    where: eq(missions.id, id)
-  })
-  
+    where: eq(missions.id, id),
+  });
+
   if (!mission) {
-    throw new NotFoundError('Mission', id)
+    throw new NotFoundError('Mission', id);
   }
-  
+
   // Verify authorization
   if (mission.organizationId !== user.organizationId) {
-    throw new ForbiddenError('Access denied to this mission')
+    throw new ForbiddenError('Access denied to this mission');
   }
-  
-  logger.info('Mission fetched successfully', { missionId: id })
-  
-  return NextResponse.json(mission)
-})
+
+  logger.info('Mission fetched successfully', { missionId: id });
+
+  return NextResponse.json(mission);
+});
 ```
 
 ### Service Layer with Logging
 
 ```typescript
 // apps/web/src/server/services/mission-service.ts
-import { logger } from '@/lib/logger'
-import { NotFoundError, ValidationError } from '@/lib/errors'
+import { logger } from '@/lib/logger';
+import { NotFoundError, ValidationError } from '@/lib/errors';
 
 export class MissionService {
-  private logger = logger.child({ service: 'MissionService' })
-  
+  private logger = logger.child({ service: 'MissionService' });
+
   async createMission(data: CreateMissionInput, userId: string) {
-    this.logger.info('Creating mission', { userId, title: data.title })
-    
+    this.logger.info('Creating mission', { userId, title: data.title });
+
     try {
       // Validate
       if (!data.title || data.title.length < 3) {
         throw new ValidationError('Invalid mission title', {
-          errors: { title: ['Must be at least 3 characters'] }
-        })
+          errors: { title: ['Must be at least 3 characters'] },
+        });
       }
-      
+
       // Create
-      const mission = await db.insert(missions).values({
-        ...data,
-        createdById: userId,
-      }).returning()
-      
-      this.logger.info('Mission created', { missionId: mission.id })
-      
-      return mission
+      const mission = await db
+        .insert(missions)
+        .values({
+          ...data,
+          createdById: userId,
+        })
+        .returning();
+
+      this.logger.info('Mission created', { missionId: mission.id });
+
+      return mission;
     } catch (error) {
-      this.logger.error('Failed to create mission', error as Error, { userId })
-      throw error
+      this.logger.error('Failed to create mission', error as Error, { userId });
+      throw error;
     }
   }
 }
@@ -297,11 +314,13 @@ export class MissionService {
 ## Testing Strategy
 
 **Unit Tests:** (✅ Completed - 27 tests)
+
 - `lib/__tests__/errors.test.ts` - Error classes and responses
 - `lib/__tests__/logger.test.ts` - Logging functionality
 - `lib/__tests__/utils.test.ts` - Utility functions
 
 **Integration Tests:** (✅ Completed - 5 tests)
+
 - `test/__tests__/api-patterns.integration.test.ts` - Error handling patterns
 - `test/__tests__/middleware.integration.test.ts` - Request/response flow
 - `app/auth/__tests__/callback.test.ts` - Auth flow integration
@@ -358,12 +377,12 @@ export class MissionService {
 
 ## Decision Log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-02-11 | Adopt RFC 7807 | Industry standard for API errors |
-| 2026-02-11 | Use JSON structured logging | Machine-parseable, observability-friendly |
-| 2026-02-11 | Implement correlation IDs | Enable distributed tracing |
-| 2026-02-11 | Create error class hierarchy | Type safety and consistency |
+| Date       | Decision                     | Rationale                                 |
+| ---------- | ---------------------------- | ----------------------------------------- |
+| 2026-02-11 | Adopt RFC 7807               | Industry standard for API errors          |
+| 2026-02-11 | Use JSON structured logging  | Machine-parseable, observability-friendly |
+| 2026-02-11 | Implement correlation IDs    | Enable distributed tracing                |
+| 2026-02-11 | Create error class hierarchy | Type safety and consistency               |
 
 ---
 

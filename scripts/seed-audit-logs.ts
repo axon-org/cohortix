@@ -6,7 +6,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://rfwscvklcokzuofyzqwx.supabase.co';
-const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmd3NjdmtsY29renVvZnl6cXd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDcyNDYyNCwiZXhwIjoyMDg2MzAwNjI0fQ.DtEf0p3b_tBCvzO5g3Al6QqCkDg-Y8K6-xRI4rcKqNM';
+const serviceRoleKey =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmd3NjdmtsY29renVvZnl6cXd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDcyNDYyNCwiZXhwIjoyMDg2MzAwNjI0fQ.DtEf0p3b_tBCvzO5g3Al6QqCkDg-Y8K6-xRI4rcKqNM';
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: {
@@ -129,7 +130,6 @@ async function seedAuditLogs() {
 
     console.log(`✅ Created ${createdLogs.length} audit log entries`);
     console.log('✨ Database seed is now complete!\n');
-
   } catch (error) {
     console.error('❌ Failed to add audit logs:', error);
     process.exit(1);

@@ -1,4 +1,5 @@
 # Cohortix Mockup Design Specifications
+
 **Version:** v5 - Monochrome (Linear.app Aesthetic)  
 **Date:** February 11, 2026  
 **Designer:** Lubna (UI Designer Agent)
@@ -6,6 +7,7 @@
 ## Design System
 
 ### Color Palette (STRICT - NO DEVIATIONS)
+
 ```
 Background:     #0A0A0B (pure black)
 Surface Cards:  #1A1A1E (dark gray)
@@ -20,6 +22,7 @@ Status Colors (ONLY for tiny indicators):
 ```
 
 ### Typography
+
 ```
 Headings:   Inter/SF Pro Display, 24px, Weight 600
 Body:       Inter/SF Pro Text, 14px, Weight 400
@@ -28,6 +31,7 @@ Data:       SF Mono, 13px (for numbers/metrics)
 ```
 
 ### Spacing
+
 ```
 Grid:       8px base
 Padding:    16px (cards), 24px (containers), 32px (main sections)
@@ -35,6 +39,7 @@ Gap:        12px (elements), 16px (cards), 24px (sections)
 ```
 
 ### Effects
+
 ```
 Card Shadow:    0 2px 8px rgba(0,0,0,0.4)
 Glow Effect:    0 0 20px rgba(255,255,255,0.1) (white glow)
@@ -46,6 +51,7 @@ Border Radius:  8px (cards), 4px (buttons), 6px (inputs)
 ## Screen 1: Mission Control Dashboard (1440x900)
 
 ### Layout Structure
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ [Sidebar]  [Header: Mission Control]                     [User] │
@@ -62,6 +68,7 @@ Border Radius:  8px (cards), 4px (buttons), 6px (inputs)
 ### Component Breakdown
 
 #### Sidebar (240px wide)
+
 - **Background:** #0A0A0B
 - **Logo area:** Top, 64px height
 - **Navigation items:** White icons (24x24), no labels
@@ -73,23 +80,29 @@ Border Radius:  8px (cards), 4px (buttons), 6px (inputs)
 - **Active indicator:** Thin white line on left edge
 
 #### Header Bar
+
 - **Background:** #1A1A1E
 - **Height:** 64px
 - **Title:** "Mission Control" in white (#F2F2F2), 24px, weight 600
 - **Right side:** User avatar (32x32, circular) + dropdown icon
 
 #### KPI Cards (4 cards, equal width with gaps)
+
 Each card:
+
 - **Background:** #1A1A1E
 - **Border radius:** 8px
 - **Padding:** 20px
 - **Shadow:** 0 2px 8px rgba(0,0,0,0.4)
-- **Layout:** 
-  - Label (top): 12px, #888, "Active Cohorts" / "Total Members" / "Avg Engagement" / "Conversions"
+- **Layout:**
+  - Label (top): 12px, #888, "Active Cohorts" / "Total Members" / "Avg
+    Engagement" / "Conversions"
   - Value (center): 36px, #F2F2F2, "24" / "1,847" / "68%" / "342"
-  - Trend indicator (bottom right): Tiny status dot (green/amber/red) + small arrow
+  - Trend indicator (bottom right): Tiny status dot (green/amber/red) + small
+    arrow
 
 #### Health Trend Chart
+
 - **Background:** #1A1A1E
 - **Height:** 280px
 - **Chart type:** Line chart
@@ -100,6 +113,7 @@ Each card:
 - **Title:** "Cohort Health Over Time" (top left, 16px, #F2F2F2)
 
 #### Activity Feed (Left column, below chart)
+
 - **Background:** #1A1A1E
 - **Each item:**
   - Tiny status dot (green/amber/red)
@@ -111,6 +125,7 @@ Each card:
   - 🟡 "15m ago: Cohort 'Trial Q1' engagement dropped"
 
 #### Alerts Panel (Right column, below chart)
+
 - **Background:** #1A1A1E
 - **Border left:** 2px solid #EF4444 (red accent for urgent)
 - **Items:**
@@ -124,6 +139,7 @@ Each card:
 ## Screen 2: Cohort Grid View (1440x900)
 
 ### Layout Structure
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ [Sidebar]  [Header: Cohorts]                             [User] │
@@ -143,14 +159,17 @@ Each card:
 ### Component Breakdown
 
 #### Sidebar
+
 - Same as Screen 1
 - "Cohorts" icon active with white left border
 
 #### Header Bar
+
 - Same structure as Screen 1
 - Title: "Cohorts"
 
 #### Search & Filter Bar
+
 - **Background:** #0A0A0B
 - **Height:** 56px
 - **Search input:**
@@ -171,6 +190,7 @@ Each card:
   - Hover: slight opacity change
 
 #### Data Table
+
 - **Background:** #1A1A1E
 - **Header row:**
   - Background: #0A0A0B
@@ -196,6 +216,7 @@ Each card:
   - Start Date: 20%
 
 #### Interactions
+
 - **Row hover:** Subtle highlight (#202025)
 - **Row click:** Navigate to detail view
 - **Checkbox (left of name):** For bulk actions
@@ -218,11 +239,13 @@ Each card:
 ## Google Stitch Prompts (Optimized)
 
 ### Prompt 1: Mission Control
+
 ```
 Create a premium desktop web dashboard (1440x900) for Cohortix Mission Control. MONOCHROME dark theme exactly like Linear.app — pure black background (#0A0A0B), white text (#F2F2F2), dark gray surface cards (#1A1A1E). NO colored accent — black and white with subtle grays only. White glow effects. Left sidebar with white icons. 4 KPI cards, health trend chart with white/gray line, activity feed, alerts panel. Only color for status indicators (green=active, amber=paused, red=at-risk). Clean minimal high-contrast SaaS dashboard.
 ```
 
 ### Prompt 2: Cohort Grid
+
 ```
 Create a premium desktop data table (1440x900) for Cohortix Cohorts. MONOCHROME dark theme like Linear.app — pure black background, white text, dark gray rows. NO colored accent. Search bar, filters, data table with columns (Name, Status, Members, Engagement, Start Date). Status chips only color: green Active, amber Paused, red At-Risk. Monochrome aesthetic. High contrast. Production SaaS.
 ```
@@ -230,6 +253,7 @@ Create a premium desktop data table (1440x900) for Cohortix Cohorts. MONOCHROME 
 ---
 
 ## Notes for Implementation
+
 - Export from Stitch at 2x resolution for retina displays
 - Verify all contrast ratios before final export
 - Status colors are the ONLY exception to monochrome rule

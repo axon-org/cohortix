@@ -12,19 +12,24 @@
 
 **What design problem or user experience challenge requires a decision?**
 
-[Describe the design challenge, user pain point, or UX requirement that necessitates a decision. Provide context for why this matters to users and the product.]
+[Describe the design challenge, user pain point, or UX requirement that
+necessitates a decision. Provide context for why this matters to users and the
+product.]
 
 **User Context:**
+
 - **User Persona:** [Who is affected by this design decision?]
 - **User Goal:** [What are users trying to accomplish?]
 - **Current Pain Point:** [What makes the current experience suboptimal?]
 
 **Design Constraints:**
+
 - [Constraint 1: e.g., Must work on mobile screens (320px wide)]
 - [Constraint 2: e.g., Accessibility: WCAG 2.2 AA compliance required]
 - [Constraint 3: e.g., Brand guideline: Colors must match brand palette]
 
 **Assumptions:**
+
 - [Assumption 1: e.g., Users are familiar with standard e-commerce patterns]
 - [Assumption 2: e.g., Most users access the app on mobile devices]
 
@@ -34,10 +39,12 @@
 
 **What design choice are we making?**
 
-[State the design decision clearly. Include specific details like colors, spacing, component choices, interaction patterns, etc.]
+[State the design decision clearly. Include specific details like colors,
+spacing, component choices, interaction patterns, etc.]
 
 **Example:**  
-"We will use a bottom tab bar navigation pattern instead of a hamburger menu for mobile navigation."
+"We will use a bottom tab bar navigation pattern instead of a hamburger menu for
+mobile navigation."
 
 **Rationale:**
 
@@ -58,10 +65,12 @@
 [Link to Figma, screenshot, or mockup]
 
 **Pros:**
+
 - [Pro 1: e.g., Familiar to desktop users]
 - [Pro 2]
 
 **Cons:**
+
 - [Con 1: e.g., Poor discoverability on mobile]
 - [Con 2]
 
@@ -79,10 +88,12 @@
 [Link to Figma, screenshot, or mockup]
 
 **Pros:**
+
 - [Pro 1: e.g., High discoverability on mobile]
 - [Pro 2: e.g., Follows iOS/Android platform conventions]
 
 **Cons:**
+
 - [Con 1: e.g., Takes up screen real estate]
 - [Con 2]
 
@@ -100,9 +111,11 @@
 [Link to Figma, screenshot, or mockup]
 
 **Pros:**
+
 - [Pro 1]
 
 **Cons:**
+
 - [Con 1: e.g., Novel pattern, may confuse users]
 - [Con 2]
 
@@ -116,6 +129,7 @@
 ### Visual Design
 
 **Colors:**
+
 ```
 Primary Action: #007AFF (Blue)
 Secondary Action: #8E8E93 (Gray)
@@ -127,6 +141,7 @@ Text Secondary: #8E8E93 (Gray)
 ```
 
 **Typography:**
+
 ```
 Heading 1: 32px, Bold, Line height 1.25
 Heading 2: 24px, Semibold, Line height 1.3
@@ -135,6 +150,7 @@ Small Text: 14px, Regular, Line height 1.4
 ```
 
 **Spacing:**
+
 ```
 Spacing Scale: 4px base unit (4, 8, 12, 16, 24, 32, 48, 64)
 Component Padding: 16px
@@ -142,6 +158,7 @@ Component Margin: 24px between major sections
 ```
 
 **Responsive Breakpoints:**
+
 ```
 Mobile: <640px
 Tablet: 640px - 1024px
@@ -151,14 +168,17 @@ Desktop: >1024px
 ### Interaction Design
 
 **Behavior:**
+
 - [Describe how the component/pattern behaves]
 - [Example: "Tab bar icons animate on tap with a 0.2s ease-out transition"]
 
 **Micro-interactions:**
+
 - [Detail subtle animations or feedback]
 - [Example: "Active tab icon scales to 1.1x and shows label"]
 
 **States:**
+
 - Default: [Description]
 - Hover: [Description]
 - Active/Selected: [Description]
@@ -169,13 +189,16 @@ Desktop: >1024px
 
 **WCAG 2.2 AA Compliance:**
 
-- [ ] **Color Contrast:** All text meets 4.5:1 contrast ratio (7:1 for large text)
-- [ ] **Keyboard Navigation:** All interactive elements accessible via keyboard (Tab, Enter, Space)
+- [ ] **Color Contrast:** All text meets 4.5:1 contrast ratio (7:1 for large
+      text)
+- [ ] **Keyboard Navigation:** All interactive elements accessible via keyboard
+      (Tab, Enter, Space)
 - [ ] **Screen Reader Support:** Proper ARIA labels and landmarks
 - [ ] **Focus Indicators:** Visible focus state for all interactive elements
 - [ ] **Touch Targets:** Minimum 44x44px for mobile tap targets
 
 **Assistive Technology Testing:**
+
 - [ ] Tested with VoiceOver (iOS/macOS)
 - [ ] Tested with TalkBack (Android)
 - [ ] Tested with NVDA (Windows)
@@ -223,11 +246,10 @@ Desktop: >1024px
 ### Frontend Implementation
 
 **Tailwind CSS Classes:**
+
 ```jsx
 <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
-  <div className="flex justify-around items-center h-16">
-    {/* Tab items */}
-  </div>
+  <div className="flex justify-around items-center h-16">{/* Tab items */}</div>
 </nav>
 ```
 
@@ -256,10 +278,12 @@ Desktop: >1024px
 **Participants:** [Number and type of users]  
 **Method:** [Usability test, A/B test, survey, etc.]  
 **Key Findings:**
+
 - [Finding 1: e.g., 90% of users found navigation intuitive]
 - [Finding 2: e.g., 2 users confused by icon meaning]
 
 **Iteration Based on Feedback:**
+
 - [Change 1: e.g., Added labels to icons for clarity]
 
 ---
@@ -267,14 +291,17 @@ Desktop: >1024px
 ## References
 
 **Design Inspiration:**
+
 - [Link to design systems: Material Design, Apple HIG, etc.]
 - [Link to competitor analysis or pattern libraries]
 
 **Research & Best Practices:**
+
 - [Link to usability studies or articles]
 - [Link to accessibility guidelines]
 
 **Related Work:**
+
 - [DDR-XXX: Related design decision]
 - [Spec FEAT-XXX: Feature that uses this design]
 
@@ -282,11 +309,11 @@ Desktop: >1024px
 
 ## Status History
 
-| Date | Status | Notes |
-|------|--------|-------|
-| YYYY-MM-DD | Proposed | Initial draft by [Author] |
-| YYYY-MM-DD | Accepted | Approved by [Reviewer] |
-| YYYY-MM-DD | Deprecated | Superseded by DDR-XXX |
+| Date       | Status     | Notes                     |
+| ---------- | ---------- | ------------------------- |
+| YYYY-MM-DD | Proposed   | Initial draft by [Author] |
+| YYYY-MM-DD | Accepted   | Approved by [Reviewer]    |
+| YYYY-MM-DD | Deprecated | Superseded by DDR-XXX     |
 
 ---
 
@@ -296,4 +323,4 @@ Desktop: >1024px
 
 ---
 
-*This template follows the Axon Codex v1.2 DDR Standards (§5.1.4).*
+_This template follows the Axon Codex v1.2 DDR Standards (§5.1.4)._

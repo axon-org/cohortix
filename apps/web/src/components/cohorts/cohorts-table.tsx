@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import { useMemo } from 'react'
-import { type ColumnDef } from '@tanstack/react-table'
-import { DataTable, SortableHeader } from '@/components/ui/data-table'
-import { Button } from '@/components/ui/button'
-import { StatusChip, type CohortStatus } from '@/components/ui/status-chip'
-import { formatDate } from '@/lib/utils'
+import { useMemo } from 'react';
+import { type ColumnDef } from '@tanstack/react-table';
+import { DataTable, SortableHeader } from '@/components/ui/data-table';
+import { Button } from '@/components/ui/button';
+import { StatusChip, type CohortStatus } from '@/components/ui/status-chip';
+import { formatDate } from '@/lib/utils';
 
 export interface Cohort {
-  id: string
-  name: string
-  status: CohortStatus
-  members: number
-  engagement: number
-  startDate: string
+  id: string;
+  name: string;
+  status: CohortStatus;
+  members: number;
+  engagement: number;
+  startDate: string;
 }
 
 interface CohortsTableProps {
-  data: Cohort[]
+  data: Cohort[];
 }
 
 export function CohortsTable({ data }: CohortsTableProps) {
@@ -47,7 +47,7 @@ export function CohortsTable({ data }: CohortsTableProps) {
         accessorKey: 'engagement',
         header: ({ column }) => <SortableHeader column={column}>Engagement</SortableHeader>,
         cell: ({ row }) => {
-          const engagement = row.getValue<number>('engagement')
+          const engagement = row.getValue<number>('engagement');
           return (
             <div className="flex items-center gap-2">
               <span className="font-mono">{engagement}%</span>
@@ -55,7 +55,7 @@ export function CohortsTable({ data }: CohortsTableProps) {
                 <div className="h-full bg-foreground" style={{ width: `${engagement}%` }} />
               </div>
             </div>
-          )
+          );
         },
       },
       {
@@ -67,7 +67,7 @@ export function CohortsTable({ data }: CohortsTableProps) {
       },
     ],
     []
-  )
+  );
 
   return (
     <DataTable
@@ -76,7 +76,7 @@ export function CohortsTable({ data }: CohortsTableProps) {
       searchKey="name"
       searchPlaceholder="Search cohorts..."
       onRowClick={(cohort) => {
-        window.location.href = `/cohorts/${cohort.id}`
+        window.location.href = `/cohorts/${cohort.id}`;
       }}
       emptyMessage="No cohorts found."
       toolbar={(table) => (
@@ -112,5 +112,5 @@ export function CohortsTable({ data }: CohortsTableProps) {
         </div>
       )}
     />
-  )
+  );
 }

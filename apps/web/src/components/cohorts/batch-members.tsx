@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { cn } from '@/lib/utils'
-import { formatDistanceToNow } from 'date-fns'
-import type { CohortMember } from '@/lib/api/client'
+import { cn } from '@/lib/utils';
+import { formatDistanceToNow } from 'date-fns';
+import type { CohortMember } from '@/lib/api/client';
 
 interface BatchMembersProps {
-  members: CohortMember[]
+  members: CohortMember[];
 }
 
 const statusConfig = {
@@ -14,7 +14,7 @@ const statusConfig = {
   busy: { label: 'Syncing', dotColor: 'bg-warning' },
   offline: { label: 'Offline', dotColor: 'bg-muted-foreground' },
   error: { label: 'Error', dotColor: 'bg-destructive' },
-} as const
+} as const;
 
 export function BatchMembers({ members }: BatchMembersProps) {
   return (
@@ -22,9 +22,7 @@ export function BatchMembers({ members }: BatchMembersProps) {
       {/* Header */}
       <div className="px-6 py-4 border-b border-border">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">
-            Batch Members ({members.length})
-          </h2>
+          <h2 className="text-lg font-semibold">Batch Members ({members.length})</h2>
           <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Filter allies...
           </button>
@@ -55,10 +53,7 @@ export function BatchMembers({ members }: BatchMembersProps) {
           </thead>
           <tbody className="divide-y divide-border">
             {members.map((member) => (
-              <tr
-                key={member.id}
-                className="hover:bg-background/50 transition-colors"
-              >
+              <tr key={member.id} className="hover:bg-background/50 transition-colors">
                 {/* AI Ally */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
@@ -77,18 +72,14 @@ export function BatchMembers({ members }: BatchMembersProps) {
                     </div>
                     <div>
                       <div className="font-medium">{member.agent_name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {member.agent_slug}
-                      </div>
+                      <div className="text-xs text-muted-foreground">{member.agent_slug}</div>
                     </div>
                   </div>
                 </td>
 
                 {/* Role */}
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-foreground">
-                    {member.agent_role || '—'}
-                  </span>
+                  <span className="text-sm text-foreground">{member.agent_role || '—'}</span>
                 </td>
 
                 {/* Status */}
@@ -100,9 +91,7 @@ export function BatchMembers({ members }: BatchMembersProps) {
                         statusConfig[member.agent_status].dotColor
                       )}
                     />
-                    <span className="text-sm">
-                      {statusConfig[member.agent_status].label}
-                    </span>
+                    <span className="text-sm">{statusConfig[member.agent_status].label}</span>
                   </div>
                 </td>
 
@@ -125,9 +114,7 @@ export function BatchMembers({ members }: BatchMembersProps) {
 
                 {/* Actions */}
                 <td className="px-6 py-4 whitespace-nowrap text-right">
-                  <button className="text-muted-foreground hover:text-foreground text-xl">
-                    ⋯
-                  </button>
+                  <button className="text-muted-foreground hover:text-foreground text-xl">⋯</button>
                 </td>
               </tr>
             ))}
@@ -144,5 +131,5 @@ export function BatchMembers({ members }: BatchMembersProps) {
         </div>
       )}
     </div>
-  )
+  );
 }

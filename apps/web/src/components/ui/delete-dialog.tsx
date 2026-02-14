@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from './button'
-import { Trash2, X } from 'lucide-react'
+import { useState } from 'react';
+import { Button } from './button';
+import { Trash2, X } from 'lucide-react';
 
 interface DeleteDialogProps {
-  title: string
-  description: string
-  onConfirm: () => void
-  isDeleting?: boolean
-  trigger?: React.ReactNode
+  title: string;
+  description: string;
+  onConfirm: () => void;
+  isDeleting?: boolean;
+  trigger?: React.ReactNode;
 }
 
 export function DeleteDialog({
@@ -19,7 +19,7 @@ export function DeleteDialog({
   isDeleting,
   trigger,
 }: DeleteDialogProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -39,10 +39,7 @@ export function DeleteDialog({
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setOpen(false)}
-          />
+          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
           <div className="relative bg-card border border-border rounded-lg p-6 w-full max-w-sm shadow-2xl">
             <button
               onClick={() => setOpen(false)}
@@ -53,19 +50,15 @@ export function DeleteDialog({
             <h3 className="text-lg font-semibold mb-2">{title}</h3>
             <p className="text-sm text-muted-foreground mb-6">{description}</p>
             <div className="flex gap-3 justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setOpen(false)}
-              >
+              <Button variant="outline" size="sm" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button
                 size="sm"
                 className="bg-destructive text-white hover:bg-destructive/90"
                 onClick={() => {
-                  onConfirm()
-                  setOpen(false)
+                  onConfirm();
+                  setOpen(false);
                 }}
                 disabled={isDeleting}
               >
@@ -76,5 +69,5 @@ export function DeleteDialog({
         </div>
       )}
     </>
-  )
+  );
 }

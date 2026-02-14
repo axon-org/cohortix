@@ -1,18 +1,18 @@
-import { getAuthContext } from '@/lib/auth-helper'
+import { getAuthContext } from '@/lib/auth-helper';
 
 export async function getTasks() {
-  const { supabase, organizationId } = await getAuthContext()
-  
+  const { supabase, organizationId } = await getAuthContext();
+
   const { data, error } = await supabase
     .from('tasks')
     .select('*, projects!project_id(id, name, status)')
     .eq('organization_id', organizationId)
     .order('position', { ascending: true })
-    .order('created_at', { ascending: false })
-  
+    .order('created_at', { ascending: false });
+
   if (error) {
-    console.error('Error fetching tasks:', error)
-    return []
+    console.error('Error fetching tasks:', error);
+    return [];
   }
-  return data || []
+  return data || [];
 }

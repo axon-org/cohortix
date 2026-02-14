@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query';
 import {
   getCohortDetail,
   getCohortMembers,
@@ -10,14 +10,14 @@ import {
   type CohortMembersResponse,
   type CohortTimelineResponse,
   type CohortActivityResponse,
-} from '@/lib/api/client'
+} from '@/lib/api/client';
 
 export function useCohortDetail(id: string) {
   return useQuery<CohortDetail>({
     queryKey: ['cohort', id],
     queryFn: () => getCohortDetail(id),
     enabled: !!id,
-  })
+  });
 }
 
 export function useCohortMembers(id: string) {
@@ -25,7 +25,7 @@ export function useCohortMembers(id: string) {
     queryKey: ['cohort', id, 'members'],
     queryFn: () => getCohortMembers(id),
     enabled: !!id,
-  })
+  });
 }
 
 export function useCohortTimeline(id: string, days: number = 30) {
@@ -33,7 +33,7 @@ export function useCohortTimeline(id: string, days: number = 30) {
     queryKey: ['cohort', id, 'timeline', days],
     queryFn: () => getCohortTimeline(id, days),
     enabled: !!id,
-  })
+  });
 }
 
 export function useCohortActivity(id: string, limit: number = 20) {
@@ -41,5 +41,5 @@ export function useCohortActivity(id: string, limit: number = 20) {
     queryKey: ['cohort', id, 'activity', limit],
     queryFn: () => getCohortActivity(id, limit),
     enabled: !!id,
-  })
+  });
 }

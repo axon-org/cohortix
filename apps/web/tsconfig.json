@@ -2,11 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "preserve",
     "incremental": true,
     "plugins": [
@@ -16,43 +12,18 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/components/*": [
-        "./src/components/*"
-      ],
-      "@/lib/*": [
-        "./src/lib/*"
-      ],
-      "@/server/*": [
-        "./src/server/*"
-      ],
-      "@/types/*": [
-        "./src/types/*"
-      ],
-      "@repo/database": [
-        "../../packages/database/src"
-      ],
-      "@repo/types": [
-        "../../packages/types/src"
-      ],
-      "@repo/ui": [
-        "../../packages/ui/src"
-      ],
-      "@repo/utils": [
-        "../../packages/utils/src"
-      ]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/server/*": ["./src/server/*"],
+      "@/types/*": ["./src/types/*"],
+      "@repo/database": ["../../packages/database/src"],
+      "@repo/types": ["../../packages/types/src"],
+      "@repo/ui": ["../../packages/ui/src"],
+      "@repo/utils": ["../../packages/utils/src"]
     },
     "allowJs": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

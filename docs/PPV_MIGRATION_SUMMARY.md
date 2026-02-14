@@ -8,7 +8,9 @@
 
 ## Overview
 
-Implemented complete PPV Pro hierarchy for Cohortix with dual human+agent ownership. All entities support polymorphic `owner_type` (user/agent) and `owner_id`.
+Implemented complete PPV Pro hierarchy for Cohortix with dual human+agent
+ownership. All entities support polymorphic `owner_type` (user/agent) and
+`owner_id`.
 
 ---
 
@@ -16,37 +18,40 @@ Implemented complete PPV Pro hierarchy for Cohortix with dual human+agent owners
 
 ### Alignment Zone (The Pyramid)
 
-| Table | PPV Pro Term | User-Facing | Purpose | Key Fields |
-|-------|--------------|-------------|---------|------------|
-| `domains` | Pillars & Purpose | Domain | Core life/expertise areas | name, color, icon, owner_type, owner_id |
-| `visions` | Life Aspirations | Vision | Emotional north stars | title, why_statement, domain_id, status |
-| `rhythms` | Routines | Rhythm | Recurring habits (no end date) | name, frequency, mission_id, streak tracking |
+| Table     | PPV Pro Term      | User-Facing | Purpose                        | Key Fields                                   |
+| --------- | ----------------- | ----------- | ------------------------------ | -------------------------------------------- |
+| `domains` | Pillars & Purpose | Domain      | Core life/expertise areas      | name, color, icon, owner_type, owner_id      |
+| `visions` | Life Aspirations  | Vision      | Emotional north stars          | title, why_statement, domain_id, status      |
+| `rhythms` | Routines          | Rhythm      | Recurring habits (no end date) | name, frequency, mission_id, streak tracking |
 
 ### Knowledge Zone
 
-| Table | PPV Pro Term | User-Facing | Purpose | Key Fields |
-|-------|--------------|-------------|---------|------------|
-| `intelligence` | Topic Vault | Intelligence | Knowledge organized by topic | name, parent_topic_id, insight_count |
-| `insights` | NeuroBits | Insight | Individual learning captures | title, content, source_type, intelligence_id |
+| Table          | PPV Pro Term | User-Facing  | Purpose                      | Key Fields                                   |
+| -------------- | ------------ | ------------ | ---------------------------- | -------------------------------------------- |
+| `intelligence` | Topic Vault  | Intelligence | Knowledge organized by topic | name, parent_topic_id, insight_count         |
+| `insights`     | NeuroBits    | Insight      | Individual learning captures | title, content, source_type, intelligence_id |
 
 ### Rhythm Zone (Reviews)
 
-| Table | PPV Pro Term | User-Facing | Purpose | Key Fields |
-|-------|--------------|-------------|---------|------------|
-| `debriefs` | Daily/Weekly/Cycle Review | Debrief | Reflection and review entries | type, period_start/end, wins, challenges, learnings |
+| Table      | PPV Pro Term              | User-Facing | Purpose                       | Key Fields                                          |
+| ---------- | ------------------------- | ----------- | ----------------------------- | --------------------------------------------------- |
+| `debriefs` | Daily/Weekly/Cycle Review | Debrief     | Reflection and review entries | type, period_start/end, wins, challenges, learnings |
 
 ---
 
 ## Modified Tables
 
 ### `goals` (missions table)
+
 - **Added:** `vision_id UUID` — Links Missions to Visions
 - **Index:** `idx_goals_vision`
 
 ### `tasks` table
+
 - **Added:** `rhythm_id UUID` — Links Tasks to Rhythms
 - **Modified:** `project_id` now nullable (tasks can belong to rhythms instead)
-- **Constraint:** `tasks_project_or_rhythm_check` — Task must belong to EITHER project OR rhythm
+- **Constraint:** `tasks_project_or_rhythm_check` — Task must belong to EITHER
+  project OR rhythm
 - **Index:** `idx_tasks_rhythm`
 
 ---
@@ -91,7 +96,8 @@ Created/Updated:
 4. ✅ `packages/database/src/schema/intelligence.ts` (NEW)
 5. ✅ `packages/database/src/schema/insights.ts` (NEW)
 6. ✅ `packages/database/src/schema/debriefs.ts` (NEW)
-7. ✅ `packages/database/src/schema/missions.ts` (UPDATED - added vision_id comment)
+7. ✅ `packages/database/src/schema/missions.ts` (UPDATED - added vision_id
+   comment)
 8. ✅ `packages/database/src/schema/tasks.ts` (UPDATED - added rhythm_id field)
 9. ✅ `packages/database/src/schema/index.ts` (UPDATED - exports all new tables)
 
@@ -100,11 +106,13 @@ Created/Updated:
 ## Security (RLS)
 
 All new tables have comprehensive Row-Level Security:
+
 - ✅ Service role bypass (for admin operations)
 - ✅ Tenant isolation (organization-scoped access)
 - ✅ SELECT, INSERT, UPDATE, DELETE policies
 
 Pattern:
+
 ```sql
 -- Service role can access all
 CREATE POLICY {table}_service_role_all ON {table}
@@ -129,23 +137,29 @@ CREATE POLICY {table}_tenant_select ON {table}
 Each table has strategic indexes for common query patterns:
 
 **Domains:**
+
 - Organization lookup
 - Owner lookup (polymorphic)
 - Ordering within owner
 
 **Visions:**
+
 - Organization, owner, domain, status
 
 **Rhythms:**
+
 - Organization, owner, mission, status, next_occurrence
 
 **Intelligence:**
+
 - Organization, owner, parent (for nested topics)
 
 **Insights:**
+
 - Organization, owner, intelligence, source_type
 
 **Debriefs:**
+
 - Organization, owner, type, period range
 
 ---
@@ -177,18 +191,21 @@ export type Aspiration = Vision;
 ## Deployment Checklist
 
 ### Pre-Deployment
+
 - [ ] Review migration SQL for syntax errors
 - [ ] Verify Drizzle schema files match migration
 - [ ] Test migration on staging database
 - [ ] Backup production database
 
 ### Deployment
+
 - [ ] Run migration: `psql -f migrations/0006_ppv_terminology_alignment.sql`
 - [ ] Verify tables created: Check verification queries in migration file
 - [ ] Test RLS policies: Ensure tenant isolation works
 - [ ] Regenerate Drizzle types: `npm run db:generate` (or equivalent)
 
 ### Post-Deployment
+
 - [ ] Update API routes to use new terminology
 - [ ] Update UI components to use new terminology
 - [ ] Update GraphQL schema (if applicable)
@@ -201,18 +218,18 @@ Run these manually to verify migration success:
 
 ```sql
 -- Verify all new tables exist
-SELECT tablename FROM pg_tables 
-WHERE schemaname = 'public' 
+SELECT tablename FROM pg_tables
+WHERE schemaname = 'public'
 AND tablename IN ('domains', 'visions', 'rhythms', 'intelligence', 'insights', 'debriefs')
 ORDER BY tablename;
 
 -- Verify column additions
-SELECT column_name, data_type 
-FROM information_schema.columns 
+SELECT column_name, data_type
+FROM information_schema.columns
 WHERE table_name = 'goals' AND column_name = 'vision_id';
 
-SELECT column_name, data_type 
-FROM information_schema.columns 
+SELECT column_name, data_type
+FROM information_schema.columns
 WHERE table_name = 'tasks' AND column_name = 'rhythm_id';
 
 -- Verify RLS policies
@@ -227,11 +244,13 @@ ORDER BY tablename, policyname;
 ## Next Steps (Implementation)
 
 ### Phase 1: Core CRUD Operations
+
 1. Create API endpoints for new entities (domains, visions, rhythms, etc.)
 2. Implement service layer with business logic
 3. Add GraphQL mutations/queries (if using GraphQL)
 
 ### Phase 2: UI Components
+
 1. Domain management UI
 2. Vision board/tracking
 3. Rhythm scheduler with streak tracking
@@ -240,12 +259,14 @@ ORDER BY tablename, policyname;
 6. Debrief templates (daily/weekly/cycle)
 
 ### Phase 3: Integration
+
 1. Link existing missions to visions
 2. Convert recurring tasks to rhythms
 3. Migrate knowledge entries to intelligence/insights structure
 4. Build debrief automation (scheduled prompts)
 
 ### Phase 4: Advanced Features
+
 1. AI-powered vision-mission alignment suggestions
 2. Rhythm completion reminders
 3. Intelligence topic auto-categorization
@@ -256,9 +277,12 @@ ORDER BY tablename, policyname;
 
 ## Reference
 
-- **Authoritative Source:** `/Users/alimai/Projects/cohortix/docs/TERMINOLOGY.md`
-- **Migration File:** `/Users/alimai/Projects/cohortix/migrations/0006_ppv_terminology_alignment.sql`
-- **Schema Files:** `/Users/alimai/Projects/cohortix/packages/database/src/schema/`
+- **Authoritative Source:**
+  `/Users/alimai/Projects/cohortix/docs/TERMINOLOGY.md`
+- **Migration File:**
+  `/Users/alimai/Projects/cohortix/migrations/0006_ppv_terminology_alignment.sql`
+- **Schema Files:**
+  `/Users/alimai/Projects/cohortix/packages/database/src/schema/`
 
 ---
 

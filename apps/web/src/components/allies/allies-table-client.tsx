@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { useAllies } from '@/hooks/use-allies'
-import { AlliesTable, type AllyRow } from './allies-table'
-import { Skeleton } from '@/components/ui/skeleton'
+import { useAllies } from '@/hooks/use-allies';
+import { AlliesTable, type AllyRow } from './allies-table';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function AlliesTableClient() {
-  const { data, isLoading, error } = useAllies()
+  const { data, isLoading, error } = useAllies();
 
   if (isLoading) {
     return (
@@ -13,7 +13,9 @@ export function AlliesTableClient() {
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-full max-w-md" />
           <div className="flex items-center gap-2">
-            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-9 w-20" />)}
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-9 w-20" />
+            ))}
           </div>
         </div>
         <div className="bg-card border border-border rounded-lg p-6">
@@ -30,7 +32,7 @@ export function AlliesTableClient() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -39,7 +41,7 @@ export function AlliesTableClient() {
         <p className="text-destructive font-medium">Failed to load allies</p>
         <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
       </div>
-    )
+    );
   }
 
   if (!data?.data || data.data.length === 0) {
@@ -48,7 +50,7 @@ export function AlliesTableClient() {
         <p className="text-muted-foreground">No allies found.</p>
         <p className="text-sm text-muted-foreground mt-1">Add your first ally to get started.</p>
       </div>
-    )
+    );
   }
 
   const tableData: AllyRow[] = data.data.map((ally) => ({
@@ -59,7 +61,7 @@ export function AlliesTableClient() {
     capabilities: ally.capabilities,
     totalTasksCompleted: ally.total_tasks_completed,
     lastActiveAt: ally.last_active_at || null,
-  }))
+  }));
 
-  return <AlliesTable data={tableData} />
+  return <AlliesTable data={tableData} />;
 }

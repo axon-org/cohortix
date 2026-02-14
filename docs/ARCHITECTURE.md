@@ -2,13 +2,15 @@
 
 > Enterprise-grade architecture for an Agents-as-a-Service (AaaS) platform
 
-*Version: 1.0.0 | Last Updated: 2026-02-05*
+_Version: 1.0.0 | Last Updated: 2026-02-05_
 
 ---
 
 ## Executive Summary
 
-Agent Command Center is a multi-tenant SaaS platform that enables organizations to orchestrate AI agents for mission management, action automation, and knowledge capture. The architecture is designed for:
+Agent Command Center is a multi-tenant SaaS platform that enables organizations
+to orchestrate AI agents for mission management, action automation, and
+knowledge capture. The architecture is designed for:
 
 - **Scale**: Support millions of actions across thousands of tenants
 - **Security**: Enterprise-grade multi-tenant isolation
@@ -112,7 +114,8 @@ Agent Command Center is a multi-tenant SaaS platform that enables organizations 
 
 ### Client Entity Integration
 
-The data model now includes a **Clients** entity that sits between Organizations and Missions:
+The data model now includes a **Clients** entity that sits between Organizations
+and Missions:
 
 ```
 Organization (Tenant)
@@ -133,10 +136,13 @@ Organization (Tenant)
 ```
 
 **Key Design Points:**
-- **Optional Client Association:** Missions and goals can optionally belong to a client
+
+- **Optional Client Association:** Missions and goals can optionally belong to a
+  client
 - **Agent-Client Assignment:** Tracks which agents work on which client accounts
 - **Client Metadata:** Industry, contact info, custom fields for client context
-- **Knowledge Segregation:** RLS policies ensure agents only see knowledge for clients they're assigned to
+- **Knowledge Segregation:** RLS policies ensure agents only see knowledge for
+  clients they're assigned to
 
 ---
 
@@ -144,12 +150,12 @@ Organization (Tenant)
 
 ### 1. Client Layer
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **Web Application** | Next.js 15 + React 19 | Primary interface for humans |
-| **Mobile PWA** | Same Next.js app | Responsive mobile experience |
-| **CLI Tool** | Node.js (Future v2.0) | Power user/developer access |
-| **Public API Clients** | OpenAPI spec | Third-party integrations |
+| Component              | Technology            | Purpose                      |
+| ---------------------- | --------------------- | ---------------------------- |
+| **Web Application**    | Next.js 15 + React 19 | Primary interface for humans |
+| **Mobile PWA**         | Same Next.js app      | Responsive mobile experience |
+| **CLI Tool**           | Node.js (Future v2.0) | Power user/developer access  |
+| **Public API Clients** | OpenAPI spec          | Third-party integrations     |
 
 ### 2. API Gateway Layer
 
@@ -209,15 +215,15 @@ interface AgentRuntime {
   createAgent(config: AgentConfig): Promise<Agent>;
   startAgent(agentId: string): Promise<void>;
   stopAgent(agentId: string): Promise<void>;
-  
+
   // Action execution
   assignTask(agentId: string, action: Action): Promise<TaskExecution>;
   getTaskStatus(executionId: string): Promise<TaskStatus>;
-  
+
   // Communication
   sendMessage(agentId: string, message: Message): Promise<Response>;
   subscribeToEvents(agentId: string, callback: EventCallback): Subscription;
-  
+
   // Knowledge
   addKnowledge(agentId: string, knowledge: Knowledge): Promise<void>;
   queryKnowledge(agentId: string, query: string): Promise<Knowledge[]>;
@@ -243,15 +249,15 @@ interface EvolutionPipeline {
   // Learning material management
   ingestLearningMaterial(material: LearningMaterial): Promise<void>;
   getLearningPath(agentId: string, targetSkill: string): Promise<Course[]>;
-  
+
   // Daily evolution
   scheduleEvolutionSession(agentId: string, time: Date): Promise<void>;
   runEvolutionSession(agentId: string): Promise<EvolutionReport>;
-  
+
   // Expertise tracking
   updateExpertise(agentId: string, skill: string, delta: number): Promise<void>;
   getExpertiseMatrix(agentId: string): Promise<SkillMatrix>;
-  
+
   // Self-improvement
   identifyKnowledgeGaps(agentId: string): Promise<Gap[]>;
   proposeTraining(agentId: string, gap: Gap): Promise<TrainingProposal>;
@@ -259,6 +265,7 @@ interface EvolutionPipeline {
 ```
 
 **Evolution Session Flow:**
+
 ```
 Daily 9 AM Evolution Session
          │
@@ -326,7 +333,9 @@ Daily 9 AM Evolution Session
 ```
 
 **Key Components:**
-- **Mission Source Tracking:** Every mission tagged with `source: 'human' | 'agent'`
+
+- **Mission Source Tracking:** Every mission tagged with
+  `source: 'human' | 'agent'`
 - **Approval Workflow:** Agent proposals require human review
 - **Justification System:** Agents must provide evidence for proposals
 - **Modification Support:** Humans can adjust scope/priority before approval
@@ -336,6 +345,7 @@ Daily 9 AM Evolution Session
 #### Primary Database: PostgreSQL + pgvector
 
 **Why PostgreSQL:**
+
 - Battle-tested for enterprise workloads
 - pgvector extension for semantic search (intelligence base)
 - Row-Level Security (RLS) for multi-tenant isolation
@@ -356,11 +366,11 @@ SELECT * FROM missions; -- Only returns org's missions
 
 #### Supporting Data Stores
 
-| Store | Technology | Purpose |
-|-------|------------|---------|
-| **Cache** | Redis (Upstash) | Sessions, rate limits, real-time pub/sub |
-| **Blob Storage** | Vercel Blob / S3 | File attachments, agent assets |
-| **Search** | PostgreSQL FTS (v1) → Meilisearch (v2) | Full-text search |
+| Store            | Technology                             | Purpose                                  |
+| ---------------- | -------------------------------------- | ---------------------------------------- |
+| **Cache**        | Redis (Upstash)                        | Sessions, rate limits, real-time pub/sub |
+| **Blob Storage** | Vercel Blob / S3                       | File attachments, agent assets           |
+| **Search**       | PostgreSQL FTS (v1) → Meilisearch (v2) | Full-text search                         |
 
 ### 5. External Integrations
 
@@ -560,7 +570,8 @@ Webhook-based integrations with event-driven architecture:
 
 **Key Architectural Decisions:**
 
-1. **Graph Storage:** Use PostgreSQL JSONB + foreign keys for relationships (not Neo4j)
+1. **Graph Storage:** Use PostgreSQL JSONB + foreign keys for relationships (not
+   Neo4j)
    - Simpler ops, same database
    - Sufficient for knowledge graph at this scale
    - Can migrate to Neo4j if graph queries become complex
@@ -575,7 +586,7 @@ Webhook-based integrations with event-driven architecture:
    - Link to superseding entry
    - Keep for historical reference
 
-4. **Cross-Ally Sharing:** 
+4. **Cross-Ally Sharing:**
    - All knowledge visible to all allies in same HQ (tenant isolation)
    - Attribution tracking for reputation
    - Usage metrics for quality signals
@@ -708,6 +719,7 @@ SELECT * FROM search_knowledge_semantic(
 ```
 
 **Key Security Features:**
+
 - **Database-level enforcement** via PostgreSQL RLS (can't bypass in app code)
 - **Agent context in session** variable (`app.current_agent_id`)
 - **Audit trail** in knowledge_usage table
@@ -784,6 +796,7 @@ SELECT * FROM search_knowledge_semantic(
 ```
 
 **Phase 1 (MVP) Implementation:**
+
 - Schema fields exist and tracked
 - `relevance_score` defaults to 1.0
 - `access_count` and `last_accessed_at` updated on search
@@ -791,6 +804,7 @@ SELECT * FROM search_knowledge_semantic(
 - No background decay jobs (manual review only)
 
 **Phase 2 (Post-MVP) Implementation:**
+
 - Daily cron job applies decay algorithm
 - Notification system alerts when knowledge falls below threshold
 - Admin UI for reviewing low-relevance knowledge
@@ -840,7 +854,8 @@ SELECT * FROM search_knowledge_semantic(
 
 ### Data Isolation Strategy
 
-1. **Row-Level Security (RLS)**: Every table with tenant data has `organization_id`
+1. **Row-Level Security (RLS)**: Every table with tenant data has
+   `organization_id`
 2. **Context Injection**: Middleware sets `app.current_org_id` per request
 3. **Query Enforcement**: All queries automatically filtered
 4. **Cross-Tenant Prevention**: Foreign keys enforce referential integrity
@@ -865,13 +880,13 @@ Phase 1 (MVP - 2026)           Phase 2 (Growth - 2027)        Phase 3 (Enterpris
 
 ### Performance Targets
 
-| Metric | Target | Strategy |
-|--------|--------|----------|
-| API Response (P95) | < 100ms | Edge caching, connection pooling |
-| Search Latency | < 200ms | pgvector HNSW index |
-| Real-time Updates | < 50ms | Redis pub/sub |
-| Page Load (LCP) | < 2.5s | Server components, streaming |
-| Concurrent Users | 10K | Stateless design, horizontal scale |
+| Metric             | Target  | Strategy                           |
+| ------------------ | ------- | ---------------------------------- |
+| API Response (P95) | < 100ms | Edge caching, connection pooling   |
+| Search Latency     | < 200ms | pgvector HNSW index                |
+| Real-time Updates  | < 50ms  | Redis pub/sub                      |
+| Page Load (LCP)    | < 2.5s  | Server components, streaming       |
+| Concurrent Users   | 10K     | Stateless design, horizontal scale |
 
 ---
 
@@ -928,13 +943,13 @@ POST https://clawdbot.api/v1/tasks
 
 ### External Service Integrations
 
-| Service | Integration Method | Data Flow |
-|---------|-------------------|-----------|
-| GitHub | OAuth + Webhooks | Bi-directional |
-| Figma | OAuth + API | Read |
-| Slack | OAuth + Events API | Bi-directional |
-| Telegram | Bot API | Bi-directional |
-| Google Workspace | OAuth + API | Bi-directional |
+| Service          | Integration Method | Data Flow      |
+| ---------------- | ------------------ | -------------- |
+| GitHub           | OAuth + Webhooks   | Bi-directional |
+| Figma            | OAuth + API        | Read           |
+| Slack            | OAuth + Events API | Bi-directional |
+| Telegram         | Bot API            | Bi-directional |
+| Google Workspace | OAuth + API        | Bi-directional |
 
 ---
 
@@ -945,6 +960,7 @@ POST https://clawdbot.api/v1/tasks
 **Decision**: Monolithic BFF within Next.js
 
 **Rationale**:
+
 - Faster time to market
 - Simpler deployment (single Vercel mission)
 - Full-stack type safety with TypeScript
@@ -955,6 +971,7 @@ POST https://clawdbot.api/v1/tasks
 **Decision**: PostgreSQL with pgvector extension
 
 **Rationale**:
+
 - Single database to manage
 - ACID transactions across relational + vector data
 - Sufficient for millions of embeddings
@@ -965,6 +982,7 @@ POST https://clawdbot.api/v1/tasks
 **Decision**: Supabase Auth (see TECH_STACK.md for full analysis)
 
 **Rationale**:
+
 - Integrated with database (same service)
 - Native Row-Level Security (RLS) support
 - OAuth + magic links built-in
@@ -977,6 +995,7 @@ POST https://clawdbot.api/v1/tasks
 **Decision**: Shared database with Row-Level Security
 
 **Rationale**:
+
 - Scales to millions of tenants
 - Lower operational overhead
 - Consistent schema across tenants
@@ -988,11 +1007,11 @@ POST https://clawdbot.api/v1/tasks
 
 ### Backup Strategy
 
-| Data | RPO | RTO | Method |
-|------|-----|-----|--------|
-| PostgreSQL | 1 hour | 4 hours | Automated snapshots + WAL archiving |
-| Redis | N/A | 15 min | Ephemeral (rebuild from source) |
-| Blob Storage | 0 | 1 hour | S3 cross-region replication |
+| Data         | RPO    | RTO     | Method                              |
+| ------------ | ------ | ------- | ----------------------------------- |
+| PostgreSQL   | 1 hour | 4 hours | Automated snapshots + WAL archiving |
+| Redis        | N/A    | 15 min  | Ephemeral (rebuild from source)     |
+| Blob Storage | 0      | 1 hour  | S3 cross-region replication         |
 
 ### Failover Plan
 
@@ -1006,17 +1025,16 @@ POST https://clawdbot.api/v1/tasks
 
 ### Technology Compatibility Matrix
 
-| Component | Alternatives Considered | Selection |
-|-----------|------------------------|-----------|
-| Frontend | React, Vue, Svelte | Next.js (React) |
-| Backend | FastAPI, Express, Hono | Next.js API Routes |
-| Database | MySQL, MongoDB, Supabase | PostgreSQL + pgvector |
-| ORM | Prisma, TypeORM | Drizzle ORM |
-| Auth | NextAuth, Auth0, Custom | Clerk |
-| Cache | Memcached, KeyDB | Redis (Upstash) |
-| Hosting | AWS, GCP, Railway | Vercel |
+| Component | Alternatives Considered  | Selection             |
+| --------- | ------------------------ | --------------------- |
+| Frontend  | React, Vue, Svelte       | Next.js (React)       |
+| Backend   | FastAPI, Express, Hono   | Next.js API Routes    |
+| Database  | MySQL, MongoDB, Supabase | PostgreSQL + pgvector |
+| ORM       | Prisma, TypeORM          | Drizzle ORM           |
+| Auth      | NextAuth, Auth0, Custom  | Clerk                 |
+| Cache     | Memcached, KeyDB         | Redis (Upstash)       |
+| Hosting   | AWS, GCP, Railway        | Vercel                |
 
 ---
 
-*Document maintained by: Architecture Team*
-*Next review: 2026-03-01*
+_Document maintained by: Architecture Team_ _Next review: 2026-03-01_

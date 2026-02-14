@@ -11,16 +11,16 @@ if (!connectionString) {
 
 /**
  * Connection Pool Configuration (Codex §2.2.3)
- * 
+ *
  * Explicit pool limits prevent connection exhaustion and ensure
  * proper resource cleanup in production environments.
  */
 const poolConfig = {
-  max: 20,                    // Maximum pool size (default: 10)
-  idle_timeout: 30,           // Close idle connections after 30s (default: unlimited)
-  connect_timeout: 10,        // Connection timeout 10s (default: 30s)
-  max_lifetime: 60 * 30,      // Close connections after 30 min (default: unlimited)
-}
+  max: 20, // Maximum pool size (default: 10)
+  idle_timeout: 30, // Close idle connections after 30s (default: unlimited)
+  connect_timeout: 10, // Connection timeout 10s (default: 30s)
+  max_lifetime: 60 * 30, // Close connections after 30 min (default: unlimited)
+};
 
 // For query purposes
 const queryClient = postgres(connectionString, poolConfig);

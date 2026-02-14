@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { TrendingUp, TrendingDown } from 'lucide-react'
-import { formatNumber, formatPercentage } from '@/lib/utils'
-import { Sparkline } from '@/components/ui/sparkline'
-import { useDashboardKPIs } from '@/hooks/use-dashboard'
-import { Skeleton } from '@/components/ui/skeleton'
+import { TrendingUp, TrendingDown } from 'lucide-react';
+import { formatNumber, formatPercentage } from '@/lib/utils';
+import { Sparkline } from '@/components/ui/sparkline';
+import { useDashboardKPIs } from '@/hooks/use-dashboard';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function KpiCardsClient() {
-  const { data, isLoading, error } = useDashboardKPIs()
+  const { data, isLoading, error } = useDashboardKPIs();
 
   if (isLoading) {
-    return <KpiSkeleton />
+    return <KpiSkeleton />;
   }
 
   if (error) {
@@ -19,11 +19,11 @@ export function KpiCardsClient() {
         <p className="text-destructive font-medium">Failed to load KPIs</p>
         <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
       </div>
-    )
+    );
   }
 
   if (!data) {
-    return null
+    return null;
   }
 
   const kpiData = [
@@ -60,7 +60,7 @@ export function KpiCardsClient() {
       isPositive: data.trends.atRiskChange <= 0, // Lower is better for at-risk
       sparklineData: generateSparklineData(data.kpis.atRiskCount),
     },
-  ]
+  ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -68,7 +68,7 @@ export function KpiCardsClient() {
         <KpiCard key={kpi.label} {...kpi} />
       ))}
     </div>
-  )
+  );
 }
 
 function KpiSkeleton() {
@@ -82,18 +82,18 @@ function KpiSkeleton() {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 interface KpiCardProps {
-  label: string
-  value: number
-  change: number
-  changeLabel: string
-  isPositive: boolean
-  isPercentage?: boolean
-  isCurrency?: boolean
-  sparklineData: number[]
+  label: string;
+  value: number;
+  change: number;
+  changeLabel: string;
+  isPositive: boolean;
+  isPercentage?: boolean;
+  isCurrency?: boolean;
+  sparklineData: number[];
 }
 
 function KpiCard({
@@ -107,16 +107,14 @@ function KpiCard({
   sparklineData,
 }: KpiCardProps) {
   const formatValue = () => {
-    if (isPercentage) return `${value}%`
-    return formatNumber(value)
-  }
+    if (isPercentage) return `${value}%`;
+    return formatNumber(value);
+  };
 
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       {/* Label */}
-      <div className="text-xs font-medium text-muted-foreground tracking-wider mb-2">
-        {label}
-      </div>
+      <div className="text-xs font-medium text-muted-foreground tracking-wider mb-2">{label}</div>
 
       {/* Value & Change */}
       <div className="flex items-end justify-between mb-4">
@@ -129,9 +127,7 @@ function KpiCard({
               <TrendingDown className="w-4 h-4 text-destructive" />
             )}
             <span
-              className={`text-sm font-medium ${
-                isPositive ? 'text-success' : 'text-destructive'
-              }`}
+              className={`text-sm font-medium ${isPositive ? 'text-success' : 'text-destructive'}`}
             >
               {changeLabel}
             </span>
@@ -144,16 +140,16 @@ function KpiCard({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // Helper to generate sparkline data based on current value
 function generateSparklineData(currentValue: number): number[] {
-  const base = Math.max(1, Math.floor(currentValue * 0.7))
-  const variance = Math.max(1, Math.floor(currentValue * 0.3))
-  
+  const base = Math.max(1, Math.floor(currentValue * 0.7));
+  const variance = Math.max(1, Math.floor(currentValue * 0.3));
+
   return Array.from({ length: 8 }, (_, i) => {
-    if (i === 7) return currentValue
-    return base + Math.floor(Math.random() * variance)
-  })
+    if (i === 7) return currentValue;
+    return base + Math.floor(Math.random() * variance);
+  });
 }

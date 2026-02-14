@@ -1,6 +1,6 @@
 /**
  * Cohort Engagement Timeline API Route
- * 
+ *
  * GET /api/cohorts/:id/timeline - Get engagement timeline data for graph
  */
 
@@ -30,13 +30,13 @@ export async function GET(request: NextRequest, context: RouteContext) {
     // Fetch engagement timeline data
     const timeline = await getCohortEngagementTimeline(id, daysBack);
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       timeline,
       period: {
         days: daysBack,
         start: timeline[0]?.date,
         end: timeline[timeline.length - 1]?.date,
-      }
+      },
     });
   } catch (error: any) {
     console.error(`GET /api/cohorts/${id}/timeline error:`, error);

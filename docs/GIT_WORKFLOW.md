@@ -2,13 +2,14 @@
 
 > Branch strategy, PR process, and environment promotion pipeline
 
-*Version: 1.0.0 | Last Updated: 2026-02-05*
+_Version: 1.0.0 | Last Updated: 2026-02-05_
 
 ---
 
 ## Overview
 
-This document defines the Git workflow and CI/CD pipeline for Agent Command Center. The strategy is designed for:
+This document defines the Git workflow and CI/CD pipeline for Agent Command
+Center. The strategy is designed for:
 
 - **Safety**: Code reviewed before production
 - **Velocity**: Fast iteration with preview deployments
@@ -64,14 +65,14 @@ This document defines the Git workflow and CI/CD pipeline for Agent Command Cent
 <type>/<ticket-id>-<short-description>
 ```
 
-| Type | Purpose | Example |
-|------|---------|---------|
-| `feature/` | New feature | `feature/ACC-123-user-authentication` |
-| `bugfix/` | Bug fix | `bugfix/ACC-200-login-redirect` |
-| `hotfix/` | Urgent production fix | `hotfix/ACC-300-security-patch` |
-| `chore/` | Maintenance | `chore/update-dependencies` |
-| `refactor/` | Code refactoring | `refactor/ACC-150-api-cleanup` |
-| `docs/` | Documentation | `docs/api-documentation` |
+| Type        | Purpose               | Example                               |
+| ----------- | --------------------- | ------------------------------------- |
+| `feature/`  | New feature           | `feature/ACC-123-user-authentication` |
+| `bugfix/`   | Bug fix               | `bugfix/ACC-200-login-redirect`       |
+| `hotfix/`   | Urgent production fix | `hotfix/ACC-300-security-patch`       |
+| `chore/`    | Maintenance           | `chore/update-dependencies`           |
+| `refactor/` | Code refactoring      | `refactor/ACC-150-api-cleanup`        |
+| `docs/`     | Documentation         | `docs/api-documentation`              |
 
 ### Branch Lifecycle
 
@@ -145,11 +146,11 @@ protection_rules:
   - require_status_checks:
       strict: true
       contexts:
-        - "ci / lint"
-        - "ci / type-check"
-        - "ci / test"
-        - "ci / build"
-        - "e2e / test"
+        - 'ci / lint'
+        - 'ci / type-check'
+        - 'ci / test'
+        - 'ci / build'
+        - 'e2e / test'
   - require_branches_to_be_up_to_date: true
   - enforce_admins: true
   - allow_force_pushes: false
@@ -167,10 +168,10 @@ protection_rules:
   - require_status_checks:
       strict: true
       contexts:
-        - "ci / lint"
-        - "ci / type-check"
-        - "ci / test"
-        - "ci / build"
+        - 'ci / lint'
+        - 'ci / type-check'
+        - 'ci / test'
+        - 'ci / build'
   - allow_force_pushes: false
 ```
 
@@ -182,9 +183,9 @@ protection_rules:
       required_approving_review_count: 1
   - require_status_checks:
       contexts:
-        - "ci / lint"
-        - "ci / type-check"
-        - "ci / test"
+        - 'ci / lint'
+        - 'ci / type-check'
+        - 'ci / test'
 ```
 
 ---
@@ -203,32 +204,32 @@ protection_rules:
 
 ### Types
 
-| Type | Description | Example |
-|------|-------------|---------|
-| `feat` | New feature | `feat(auth): add OAuth login` |
-| `fix` | Bug fix | `fix(tasks): resolve drag-drop issue` |
-| `docs` | Documentation | `docs(api): update endpoint docs` |
-| `style` | Formatting | `style: format with prettier` |
-| `refactor` | Code refactoring | `refactor(db): optimize queries` |
-| `test` | Tests | `test(api): add project tests` |
-| `chore` | Maintenance | `chore(deps): update dependencies` |
-| `perf` | Performance | `perf(search): optimize vector search` |
-| `ci` | CI/CD | `ci: add e2e workflow` |
+| Type       | Description      | Example                                |
+| ---------- | ---------------- | -------------------------------------- |
+| `feat`     | New feature      | `feat(auth): add OAuth login`          |
+| `fix`      | Bug fix          | `fix(tasks): resolve drag-drop issue`  |
+| `docs`     | Documentation    | `docs(api): update endpoint docs`      |
+| `style`    | Formatting       | `style: format with prettier`          |
+| `refactor` | Code refactoring | `refactor(db): optimize queries`       |
+| `test`     | Tests            | `test(api): add project tests`         |
+| `chore`    | Maintenance      | `chore(deps): update dependencies`     |
+| `perf`     | Performance      | `perf(search): optimize vector search` |
+| `ci`       | CI/CD            | `ci: add e2e workflow`                 |
 
 ### Scopes
 
-| Scope | Description |
-|-------|-------------|
-| `auth` | Authentication |
-| `api` | API routes |
-| `db` | Database |
-| `ui` | UI components |
-| `tasks` | Task management |
-| `projects` | Project management |
-| `agents` | Agent features |
-| `knowledge` | Knowledge base |
-| `search` | Search functionality |
-| `deps` | Dependencies |
+| Scope       | Description          |
+| ----------- | -------------------- |
+| `auth`      | Authentication       |
+| `api`       | API routes           |
+| `db`        | Database             |
+| `ui`        | UI components        |
+| `tasks`     | Task management      |
+| `projects`  | Project management   |
+| `agents`    | Agent features       |
+| `knowledge` | Knowledge base       |
+| `search`    | Search functionality |
+| `deps`      | Dependencies         |
 
 ### Examples
 
@@ -289,7 +290,7 @@ Closes #123
 ## Screenshots (if applicable)
 
 | Before | After |
-|--------|-------|
+| ------ | ----- |
 | img    | img   |
 
 ## Testing
@@ -429,21 +430,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
-          
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Run linter
         run: pnpm lint
 
@@ -452,21 +453,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
-          
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Run type check
         run: pnpm type-check
 
@@ -475,24 +476,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
-          
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Run tests
         run: pnpm test -- --coverage
-        
+
       - name: Upload coverage
         uses: codecov/codecov-action@v4
         with:
@@ -504,18 +505,18 @@ jobs:
     needs: [lint, type-check, test]
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
-          
+
       - name: Setup Turborepo cache
         uses: actions/cache@v4
         with:
@@ -523,14 +524,15 @@ jobs:
           key: ${{ runner.os }}-turbo-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-turbo-
-            
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Build
         run: pnpm build
         env:
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
+            ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
 ```
 
 #### E2E Tests Workflow (`.github/workflows/e2e.yml`)
@@ -551,32 +553,32 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
-          
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
-        
+
       - name: Build application
         run: pnpm build
-        
+
       - name: Run E2E tests
         run: pnpm test:e2e
         env:
           BASE_URL: ${{ secrets.STAGING_URL }}
-          
+
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -605,21 +607,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
-          
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Generate changelog
         id: changelog
         uses: TriPSs/conventional-changelog-action@v5
@@ -629,7 +631,7 @@ jobs:
           skip-version-file: false
           skip-commit: false
           skip-tag: false
-          
+
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
@@ -817,12 +819,12 @@ vercel rollback <deployment-url>
 
 ### Deployment Alerts
 
-| Event | Channel | Recipients |
-|-------|---------|------------|
-| Deploy to staging | Slack #deploys | Team |
+| Event                | Channel        | Recipients     |
+| -------------------- | -------------- | -------------- |
+| Deploy to staging    | Slack #deploys | Team           |
 | Deploy to production | Slack #deploys | Team + On-call |
-| Deploy failed | Slack #alerts | On-call |
-| Rollback triggered | Slack #alerts | Team + On-call |
+| Deploy failed        | Slack #alerts  | On-call        |
+| Rollback triggered   | Slack #alerts  | Team + On-call |
 
 ### Health Checks
 
@@ -834,21 +836,23 @@ export async function GET() {
     redis: await checkRedis(),
     external: await checkExternalServices(),
   };
-  
-  const healthy = Object.values(checks).every(c => c.status === 'ok');
-  
-  return Response.json({
-    status: healthy ? 'healthy' : 'degraded',
-    checks,
-    version: process.env.VERCEL_GIT_COMMIT_SHA,
-    timestamp: new Date().toISOString(),
-  }, {
-    status: healthy ? 200 : 503
-  });
+
+  const healthy = Object.values(checks).every((c) => c.status === 'ok');
+
+  return Response.json(
+    {
+      status: healthy ? 'healthy' : 'degraded',
+      checks,
+      version: process.env.VERCEL_GIT_COMMIT_SHA,
+      timestamp: new Date().toISOString(),
+    },
+    {
+      status: healthy ? 200 : 503,
+    }
+  );
 }
 ```
 
 ---
 
-*Document maintained by: Architecture Team*
-*Next review: 2026-03-01*
+_Document maintained by: Architecture Team_ _Next review: 2026-03-01_

@@ -2,19 +2,23 @@
 
 **Date:** 2025-02-11  
 **Agent:** Devi (AI Developer Specialist)  
-**Task:** Seed the Cohortix database and wire real data into the Mission Control dashboard
+**Task:** Seed the Cohortix database and wire real data into the Mission Control
+dashboard
 
 ---
 
 ## ✅ Phase 1: Database Seeding — COMPLETE
 
 ### Execution
+
 ```bash
 cd /Users/alimai/Projects/cohortix && pnpm tsx scripts/seed-supabase.ts
 ```
 
 ### Results
+
 Successfully seeded the Supabase database with:
+
 - ✅ **1 Organization**: Axon HQ (ID: `9e455be7-b783-41bd-b688-852336d2b913`)
 - ✅ **4 AI Allies** (Agents):
   - **Devi** — AI Developer Specialist
@@ -30,6 +34,7 @@ Successfully seeded the Supabase database with:
 - ✅ **2 Knowledge Entries** for AI allies
 
 ### Seed Script
+
 - **Location:** `scripts/seed-supabase.ts`
 - **Method:** Uses Supabase service role key (bypasses RLS)
 - **Database:** Live Supabase instance at `rfwscvklcokzuofyzqwx.supabase.co`
@@ -39,7 +44,9 @@ Successfully seeded the Supabase database with:
 ## ✅ Phase 2: Dashboard Data Wiring — COMPLETE
 
 ### 1. Dashboard Page (`apps/web/src/app/(dashboard)/page.tsx`)
+
 **Changes:**
+
 - ✅ Converted from static to **async server component**
 - ✅ Integrated `getDashboardData()` query function
 - ✅ Added **loading skeleton states** for async data
@@ -47,6 +54,7 @@ Successfully seeded the Supabase database with:
 - ✅ Added authentication redirect (redirects to `/auth/login` if no user)
 
 **Key Features:**
+
 ```tsx
 // Fetch real data server-side
 const dashboardData = await getDashboardData()
@@ -65,32 +73,39 @@ const dashboardData = await getDashboardData()
 ---
 
 ### 2. KPI Cards (`components/dashboard/kpi-cards.tsx`)
+
 **Changes:**
+
 - ✅ Removed hardcoded mock data
 - ✅ Added typed props interface: `KpiCardsProps`
 - ✅ Dynamic KPI calculation based on real database counts
 - ✅ Sparkline data generated from real values
 
 **Props Structure:**
+
 ```tsx
 interface KpiCardsProps {
-  activeCohorts: number
-  missionsInProgress: number
-  activeAllies: number
-  completionRate: number
+  activeCohorts: number;
+  missionsInProgress: number;
+  activeAllies: number;
+  completionRate: number;
 }
 ```
 
 **Displayed Metrics:**
+
 - **Active Cohorts** — Count of projects with `status = 'active'`
-- **Missions in Progress** — Count of tasks with `status IN ('todo', 'in_progress')`
+- **Missions in Progress** — Count of tasks with
+  `status IN ('todo', 'in_progress')`
 - **Active Allies** — Count of agents with `status = 'active'`
 - **Completion Rate** — Percentage of completed tasks (done / total)
 
 ---
 
 ### 3. Recent Activity (`components/dashboard/recent-activity.tsx`)
+
 **Changes:**
+
 - ✅ Removed hardcoded mock activities
 - ✅ Added typed `Activity` interface for audit logs
 - ✅ Dynamic rendering from `audit_logs` table
@@ -99,6 +114,7 @@ interface KpiCardsProps {
 - ✅ Empty state: "No recent activity" when data is empty
 
 **Data Source:**
+
 ```sql
 SELECT *,
   actor_agent:agents(name, avatar_url),
@@ -110,6 +126,7 @@ LIMIT 10
 ```
 
 **Event Types Supported:**
+
 - `task.created`, `task.updated`, `task.completed`
 - `project.created`
 - `agent.created`, `agent.status_changed`
@@ -118,24 +135,28 @@ LIMIT 10
 ---
 
 ### 4. Urgent Alerts (`components/dashboard/urgent-alerts.tsx`)
+
 **Changes:**
+
 - ✅ Removed hardcoded mock alerts
 - ✅ Added typed `Alert` interface with union type for `type` field
 - ✅ Dynamic alert generation based on database conditions
 - ✅ Empty state: "✨ All systems operational" when no alerts
 - ✅ Action links to filter views (e.g., `/missions?filter=urgent-unassigned`)
 
-**Alert Conditions:**
-| Alert Type | Condition | Priority |
-|------------|-----------|----------|
-| **Unassigned Urgent Missions** | Tasks with `priority='urgent'` AND `assignee_id IS NULL` | `warning` |
-| **Overdue Missions** | Tasks with `status IN ('todo','in_progress')` AND `target_date < today` | `error` |
-| **Blocked Missions** | Tasks with `status='blocked'` | `info` |
+**Alert Conditions:** | Alert Type | Condition | Priority |
+|------------|-----------|----------| | **Unassigned Urgent Missions** | Tasks
+with `priority='urgent'` AND `assignee_id IS NULL` | `warning` | | **Overdue
+Missions** | Tasks with `status IN ('todo','in_progress')` AND
+`target_date < today` | `error` | | **Blocked Missions** | Tasks with
+`status='blocked'` | `info` |
 
 ---
 
 ### 5. Sidebar User Display (`components/dashboard/sidebar.tsx`)
+
 **Changes:**
+
 - ✅ Removed hardcoded "Alex Chen" user
 - ✅ Added typed `SidebarProps` with `user` prop
 - ✅ Dynamic user display from authenticated session
@@ -144,16 +165,20 @@ LIMIT 10
 - ✅ Shows user email as secondary text
 
 **User Resolution:**
+
 ```tsx
-const displayName = user?.profile?.display_name || user?.email?.split('@')[0] || 'User'
-const userEmail = user?.email || ''
-const avatarUrl = user?.profile?.avatar_url
+const displayName =
+  user?.profile?.display_name || user?.email?.split('@')[0] || 'User';
+const userEmail = user?.email || '';
+const avatarUrl = user?.profile?.avatar_url;
 ```
 
 ---
 
 ### 6. Dashboard Layout (`app/(dashboard)/layout.tsx`)
+
 **Changes:**
+
 - ✅ Integrated `getCurrentUser()` query for user profile
 - ✅ Pass user to `<Sidebar user={currentUser} />`
 - ✅ Authentication check: redirects to `/sign-in` if no user
@@ -163,12 +188,14 @@ const avatarUrl = user?.profile?.avatar_url
 ## ✅ Phase 3: Infrastructure & Fixes
 
 ### New Components Created
+
 1. **Skeleton Component** (`components/ui/skeleton.tsx`)
    - Loading state for async data
    - Animated pulse effect
    - Used in dashboard suspense fallbacks
 
 ### TypeScript Fixes
+
 1. **Dashboard Queries** (`server/db/queries/dashboard.ts`)
    - ✅ Fixed `cookies()` to be async (Next.js 15 requirement)
    - ✅ Updated all `createClient()` calls to use `await`
@@ -188,18 +215,20 @@ const avatarUrl = user?.profile?.avatar_url
 ### Dashboard Queries (`server/db/queries/dashboard.ts`)
 
 #### Core Functions
-| Function | Purpose | Returns |
-|----------|---------|---------|
-| `getCurrentUser()` | Get authenticated user + profile | `User & { profile }` or `null` |
-| `getUserOrganization(userId)` | Get user's org membership | `Membership & { organization }` |
-| `getDashboardKPIs(orgId)` | Calculate KPI metrics | `{ activeCohorts, missionsInProgress, activeAllies, completionRate }` |
-| `getRecentActivity(orgId, limit)` | Fetch audit logs | `Activity[]` |
-| `getActiveAlerts(orgId)` | Generate alert conditions | `Alert[]` |
-| `getActiveCohorts(orgId, limit)` | List active projects with stats | `Cohort[]` |
-| `getActiveAllies(orgId)` | List agents with workload | `Agent[]` |
-| `getDashboardData()` | **Main entry point** — fetches all dashboard data | Complete dashboard payload |
+
+| Function                          | Purpose                                           | Returns                                                               |
+| --------------------------------- | ------------------------------------------------- | --------------------------------------------------------------------- |
+| `getCurrentUser()`                | Get authenticated user + profile                  | `User & { profile }` or `null`                                        |
+| `getUserOrganization(userId)`     | Get user's org membership                         | `Membership & { organization }`                                       |
+| `getDashboardKPIs(orgId)`         | Calculate KPI metrics                             | `{ activeCohorts, missionsInProgress, activeAllies, completionRate }` |
+| `getRecentActivity(orgId, limit)` | Fetch audit logs                                  | `Activity[]`                                                          |
+| `getActiveAlerts(orgId)`          | Generate alert conditions                         | `Alert[]`                                                             |
+| `getActiveCohorts(orgId, limit)`  | List active projects with stats                   | `Cohort[]`                                                            |
+| `getActiveAllies(orgId)`          | List agents with workload                         | `Agent[]`                                                             |
+| `getDashboardData()`              | **Main entry point** — fetches all dashboard data | Complete dashboard payload                                            |
 
 #### Row-Level Security (RLS)
+
 - All queries use **anon key** with RLS enabled
 - Automatic tenant isolation via `organization_id`
 - Seed script uses **service role key** to bypass RLS for data insertion
@@ -209,6 +238,7 @@ const avatarUrl = user?.profile?.avatar_url
 ## 🚀 Verification
 
 ### Type Checking
+
 ```bash
 cd /Users/alimai/Projects/cohortix/apps/web
 pnpm type-check
@@ -216,6 +246,7 @@ pnpm type-check
 ```
 
 ### Dev Server
+
 ```bash
 pnpm dev
 ✅ Server running at http://localhost:3000
@@ -223,6 +254,7 @@ pnpm dev
 ```
 
 ### Database State
+
 - **Organization:** Axon HQ
 - **Agents:** 4 active allies
 - **Projects:** 3 cohorts (2 active, 1 planning)
@@ -234,25 +266,35 @@ pnpm dev
 ## 📝 Notes & Known Issues
 
 ### 1. Audit Logs (Activity Feed)
-**Current State:** The first seed run did NOT include audit logs in the seed script. The updated seed script now includes:
+
+**Current State:** The first seed run did NOT include audit logs in the seed
+script. The updated seed script now includes:
+
 - 5 audit log entries (task completed, updated, project created, etc.)
 - Timestamps spread over 8 hours for realistic activity feed
 
-**Issue:** Since the database already has data (duplicate key constraint), the updated seed with audit logs was not re-run.
+**Issue:** Since the database already has data (duplicate key constraint), the
+updated seed with audit logs was not re-run.
 
 **Resolution Options:**
+
 1. **Manual SQL insert** to add audit logs to existing organization
 2. **Clear & re-seed** — Drop all data and re-run seed script
-3. **Leave as-is** — Activity feed will show empty state until real actions occur
+3. **Leave as-is** — Activity feed will show empty state until real actions
+   occur
 
 ### 2. Authentication Required
+
 The dashboard requires an authenticated user. Without a user session:
+
 - ✅ Redirects to `/auth/login` (implemented)
 - ⚠️ No user exists in Supabase Auth yet
 - **Next Step:** Create auth flow or test user account
 
 ### 3. Empty States Handled
+
 All components gracefully handle empty data:
+
 - ✅ KPI Cards: Display `0` values
 - ✅ Recent Activity: "No recent activity"
 - ✅ Urgent Alerts: "✨ All systems operational"
@@ -276,7 +318,9 @@ All components gracefully handle empty data:
 ## 🚧 Follow-Up Tasks
 
 ### Immediate (to make dashboard fully functional):
+
 1. **Add Audit Logs to Database**
+
    ```sql
    -- Manual insert or update seed script and clear DB
    INSERT INTO audit_logs (organization_id, actor_type, actor_id, event_type, event_data, created_at)
@@ -294,6 +338,7 @@ All components gracefully handle empty data:
    - Verify alerts generate from real conditions
 
 ### Enhancement (future):
+
 - Add real-time subscriptions for live updates
 - Implement drill-down from KPIs to detail views
 - Add filtering/sorting to activity feed
@@ -338,6 +383,7 @@ scripts/
 **Mission Status:** ✅ **COMPLETE**
 
 The Cohortix Mission Control dashboard is now wired to real Supabase data with:
+
 - Dynamic KPIs reflecting actual database counts
 - Audit log-driven activity feed
 - Condition-based urgent alerts
@@ -345,7 +391,8 @@ The Cohortix Mission Control dashboard is now wired to real Supabase data with:
 - Loading states for async data fetching
 - Full TypeScript type safety (0 errors)
 
-The dashboard is **production-ready** once authentication is configured and audit logs are seeded.
+The dashboard is **production-ready** once authentication is configured and
+audit logs are seeded.
 
 **Next Owner:** Ahmad or project lead to configure auth and test user flows.
 

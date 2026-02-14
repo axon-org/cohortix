@@ -10,13 +10,19 @@
 
 ## Executive Summary
 
-All API endpoints and database schema required for the Cohort Detail Screen (as shown in `/mockups/v3/03-cohort-detail-linear-dark.png`) have been implemented and are ready for frontend integration.
+All API endpoints and database schema required for the Cohort Detail Screen (as
+shown in `/mockups/v3/03-cohort-detail-linear-dark.png`) have been implemented
+and are ready for frontend integration.
 
 ### What the Detail Screen Needs:
-1. ✅ **Cohort Header** - Name, status badge, date range → `GET /api/cohorts/:id`
-2. ✅ **Engagement Timeline Graph** - Daily interaction counts → `GET /api/cohorts/:id/timeline`
+
+1. ✅ **Cohort Header** - Name, status badge, date range →
+   `GET /api/cohorts/:id`
+2. ✅ **Engagement Timeline Graph** - Daily interaction counts →
+   `GET /api/cohorts/:id/timeline`
 3. ✅ **Activity Log** - Recent events → `GET /api/cohorts/:id/activity`
-4. ✅ **Batch Members List** - Allies with engagement scores → `GET /api/cohorts/:id/members`
+4. ✅ **Batch Members List** - Allies with engagement scores →
+   `GET /api/cohorts/:id/members`
 
 ---
 
@@ -27,6 +33,7 @@ All API endpoints and database schema required for the Cohort Detail Screen (as 
 **Table:** `cohort_members` (many-to-many: cohorts ↔ agents)
 
 **Features:**
+
 - Links agents (allies) to cohorts
 - Tracks engagement scores (0-100) per agent per cohort
 - Auto-updates parent cohort stats via triggers
@@ -41,9 +48,12 @@ All API endpoints and database schema required for the Cohort Detail Screen (as 
 ### 🔌 New API Endpoints
 
 #### 1. `GET /api/cohorts/:id/members`
-**Purpose:** Fetch all allies in a cohort with their engagement scores and statuses
+
+**Purpose:** Fetch all allies in a cohort with their engagement scores and
+statuses
 
 **Response:**
+
 ```json
 {
   "members": [
@@ -63,9 +73,11 @@ All API endpoints and database schema required for the Cohort Detail Screen (as 
 ---
 
 #### 2. `GET /api/cohorts/:id/timeline?days=30`
+
 **Purpose:** Get daily engagement data for the timeline graph
 
 **Response:**
+
 ```json
 {
   "timeline": [
@@ -81,9 +93,11 @@ All API endpoints and database schema required for the Cohort Detail Screen (as 
 ---
 
 #### 3. `GET /api/cohorts/:id/activity?limit=20`
+
 **Purpose:** Get recent activity log for the cohort
 
 **Response:**
+
 ```json
 {
   "activities": [
@@ -126,10 +140,11 @@ All API endpoints and database schema required for the Cohort Detail Screen (as 
 ### For Sami (Frontend)
 
 1. **Apply Database Migration**
+
    ```bash
    # Open Supabase SQL Editor:
    # https://supabase.com/dashboard/project/rfwscvklcokzuofyzqwx/sql/new
-   
+
    # Copy and paste: /migrations/0003_cohort_members_table.sql
    # Execute the migration
    ```
@@ -173,19 +188,19 @@ Before frontend integration:
 
 From mockup analysis:
 
-| UI Element | Data Source | API Endpoint |
-|-----------|-------------|--------------|
-| **"Alpha Batch 2025"** (header) | `cohort.name` | `GET /api/cohorts/:id` |
-| **"ACTIVE"** badge | `cohort.status` | `GET /api/cohorts/:id` |
-| **"Jan 2025 - Dec 2025"** | `cohort.start_date`, `end_date` | `GET /api/cohorts/:id` |
-| **"+ Invite AI Ally"** button | Manual action | (Future: `POST /api/cohorts/:id/members`) |
-| **Engagement Timeline** graph | `timeline[]` | `GET /api/cohorts/:id/timeline` |
-| **"Batch Members (8)"** count | `count` | `GET /api/cohorts/:id/members` |
-| **"Nexus-7"** member row | `members[0]` | `GET /api/cohorts/:id/members` |
-| **"Strategic"** role | `member.agent_role` | `GET /api/cohorts/:id/members` |
-| **Green "Optimal" dot** | `member.agent_status` | `GET /api/cohorts/:id/members` |
-| **"94"** engagement score | `member.engagement_score` | `GET /api/cohorts/:id/members` |
-| **Activity Log** entries | `activities[]` | `GET /api/cohorts/:id/activity` |
+| UI Element                      | Data Source                     | API Endpoint                              |
+| ------------------------------- | ------------------------------- | ----------------------------------------- |
+| **"Alpha Batch 2025"** (header) | `cohort.name`                   | `GET /api/cohorts/:id`                    |
+| **"ACTIVE"** badge              | `cohort.status`                 | `GET /api/cohorts/:id`                    |
+| **"Jan 2025 - Dec 2025"**       | `cohort.start_date`, `end_date` | `GET /api/cohorts/:id`                    |
+| **"+ Invite AI Ally"** button   | Manual action                   | (Future: `POST /api/cohorts/:id/members`) |
+| **Engagement Timeline** graph   | `timeline[]`                    | `GET /api/cohorts/:id/timeline`           |
+| **"Batch Members (8)"** count   | `count`                         | `GET /api/cohorts/:id/members`            |
+| **"Nexus-7"** member row        | `members[0]`                    | `GET /api/cohorts/:id/members`            |
+| **"Strategic"** role            | `member.agent_role`             | `GET /api/cohorts/:id/members`            |
+| **Green "Optimal" dot**         | `member.agent_status`           | `GET /api/cohorts/:id/members`            |
+| **"94"** engagement score       | `member.engagement_score`       | `GET /api/cohorts/:id/members`            |
+| **Activity Log** entries        | `activities[]`                  | `GET /api/cohorts/:id/activity`           |
 
 ---
 
@@ -216,6 +231,7 @@ From mockup analysis:
 ## Questions?
 
 If anything is unclear or you hit issues:
+
 1. Check `/COHORT_DETAIL_API_READY.md` first (detailed guide)
 2. Check browser Network tab for API errors
 3. Check Supabase logs for database errors

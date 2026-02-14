@@ -1,6 +1,6 @@
 /**
  * Cohort API Routes (COH-B4)
- * 
+ *
  * GET  /api/cohorts - List cohorts with filters
  * POST /api/cohorts - Create a new cohort
  */
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const filters = {
-    status: searchParams.get('status') as any || undefined,
+    status: (searchParams.get('status') as any) || undefined,
     search: searchParams.get('search') || undefined,
     startDateFrom: searchParams.get('startDateFrom') || undefined,
     startDateTo: searchParams.get('startDateTo') || undefined,
@@ -61,7 +61,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(cohort, { status: 201 });
   } catch (error: any) {
     if (error.name === 'ZodError') {
-      return NextResponse.json({ error: 'Validation failed', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      );
     }
     console.error('POST /api/cohorts error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { useMissions } from '@/hooks/use-missions'
-import { MissionsTable, type MissionRow } from './missions-table'
-import { Skeleton } from '@/components/ui/skeleton'
+import { useMissions } from '@/hooks/use-missions';
+import { MissionsTable, type MissionRow } from './missions-table';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function MissionsTableClient() {
-  const { data, isLoading, error } = useMissions()
+  const { data, isLoading, error } = useMissions();
 
   if (isLoading) {
     return (
@@ -13,7 +13,9 @@ export function MissionsTableClient() {
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-full max-w-md" />
           <div className="flex items-center gap-2">
-            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-9 w-20" />)}
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-9 w-20" />
+            ))}
           </div>
         </div>
         <div className="bg-card border border-border rounded-lg p-6">
@@ -30,7 +32,7 @@ export function MissionsTableClient() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -39,16 +41,18 @@ export function MissionsTableClient() {
         <p className="text-destructive font-medium">Failed to load missions</p>
         <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
       </div>
-    )
+    );
   }
 
   if (!data?.data || data.data.length === 0) {
     return (
       <div className="bg-card border border-border rounded-lg p-12 text-center">
         <p className="text-muted-foreground">No missions found.</p>
-        <p className="text-sm text-muted-foreground mt-1">Create your first mission to get started.</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Create your first mission to get started.
+        </p>
       </div>
-    )
+    );
   }
 
   const tableData: MissionRow[] = data.data.map((mission: any) => ({
@@ -60,7 +64,7 @@ export function MissionsTableClient() {
     completedAt: mission.completed_at || null,
     operationCount: mission.operation_count?.[0]?.count ?? 0,
     progress: mission.progress ?? 0,
-  }))
+  }));
 
-  return <MissionsTable data={tableData} />
+  return <MissionsTable data={tableData} />;
 }

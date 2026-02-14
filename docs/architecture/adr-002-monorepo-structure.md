@@ -13,13 +13,18 @@
 **What is the problem or situation that requires a decision?**
 
 Cohortix needs a repository structure that supports:
-- **Code sharing:** UI components, database schemas, TypeScript types, utilities shared between web app, mobile PWA (future), and CLI (future)
-- **Independent deployment:** Web app and API can be deployed independently if needed
+
+- **Code sharing:** UI components, database schemas, TypeScript types, utilities
+  shared between web app, mobile PWA (future), and CLI (future)
+- **Independent deployment:** Web app and API can be deployed independently if
+  needed
 - **Fast builds:** Incremental builds, caching, parallel task execution
 - **Type safety across packages:** Shared types that stay in sync
-- **Developer experience:** Single `git clone`, unified tooling, one `pnpm install`
+- **Developer experience:** Single `git clone`, unified tooling, one
+  `pnpm install`
 
 **Constraints:**
+
 - Must support multiple apps (web, mobile PWA, docs site)
 - Must support shared packages (database, UI, types, utils)
 - Must integrate with Vercel deployment (monorepo-aware)
@@ -27,6 +32,7 @@ Cohortix needs a repository structure that supports:
 - Type errors in one package must not block unrelated packages
 
 **Assumptions:**
+
 - Team uses pnpm as package manager (faster than npm/yarn)
 - Vercel deployment is primary (monorepo support required)
 - Multiple apps will exist in future (mobile PWA, docs site, admin dashboard)
@@ -67,15 +73,20 @@ cohortix/
 
 **Rationale:**
 
-1. **Turborepo for caching:** Intelligent build caching (local + remote) prevents rebuilding unchanged packages. Speeds up CI/CD by 3-5x.
+1. **Turborepo for caching:** Intelligent build caching (local + remote)
+   prevents rebuilding unchanged packages. Speeds up CI/CD by 3-5x.
 
-2. **pnpm workspaces:** Efficient disk usage (shared dependencies via symlinks), fast installs, strict dependency management (no phantom dependencies).
+2. **pnpm workspaces:** Efficient disk usage (shared dependencies via symlinks),
+   fast installs, strict dependency management (no phantom dependencies).
 
-3. **Clear separation:** `apps/` (deployable), `packages/` (shared code), `tooling/` (configs). Easy to understand, follows Vercel conventions.
+3. **Clear separation:** `apps/` (deployable), `packages/` (shared code),
+   `tooling/` (configs). Easy to understand, follows Vercel conventions.
 
-4. **Vercel-native support:** Vercel detects Turborepo automatically, builds only changed apps, uses remote caching.
+4. **Vercel-native support:** Vercel detects Turborepo automatically, builds
+   only changed apps, uses remote caching.
 
-5. **Future-proof:** Easy to add new apps (mobile PWA, admin dashboard) without restructuring.
+5. **Future-proof:** Easy to add new apps (mobile PWA, admin dashboard) without
+   restructuring.
 
 ---
 
@@ -84,26 +95,32 @@ cohortix/
 ### Option 1: Polyrepo (Separate Repositories)
 
 **Pros:**
+
 - Complete isolation between projects
 - Independent versioning
 - Smaller repository size
 
 **Cons:**
+
 - Code duplication (UI components, types, utils copied across repos)
 - Type drift (shared types fall out of sync)
 - Complex dependency management (need to publish internal packages to npm)
-- Slower development (change in shared code requires publishing, version bumping)
+- Slower development (change in shared code requires publishing, version
+  bumping)
 - Poor DX for agents (need to clone multiple repos)
 
 **Why not chosen:**  
-Code sharing is critical for Cohortix. Duplicating database schema, types, and UI components across repos leads to bugs and maintenance burden.
+Code sharing is critical for Cohortix. Duplicating database schema, types, and
+UI components across repos leads to bugs and maintenance burden.
 
 ---
 
 ### Option 2: Turborepo + pnpm ✅ **SELECTED**
 
 **Pros:**
-- **Shared code without publishing:** Packages consumed directly via workspace protocol
+
+- **Shared code without publishing:** Packages consumed directly via workspace
+  protocol
 - **Type safety:** Changes to types are immediately reflected across packages
 - **Fast builds:** Turborepo caching (local + remote)
 - **Single source of truth:** One `git clone`, one `pnpm install`
@@ -111,29 +128,34 @@ Code sharing is critical for Cohortix. Duplicating database schema, types, and U
 - **Incremental adoption:** Start with one app, add more later
 
 **Cons:**
+
 - Slightly more complex setup than single-app repo
 - Build configuration spans multiple files (turbo.json, root package.json)
 - Need to understand workspace protocol (`workspace:*`)
 
 **Why chosen:**  
-Best balance of code sharing, type safety, and build performance. Turborepo's caching is critical for CI/CD speed.
+Best balance of code sharing, type safety, and build performance. Turborepo's
+caching is critical for CI/CD speed.
 
 ---
 
 ### Option 3: Nx Monorepo
 
 **Pros:**
+
 - More powerful than Turborepo (advanced features like affected commands)
 - Strong Angular ecosystem (if we used Angular)
 
 **Cons:**
+
 - Overkill for our use case (we don't need Nx's advanced features)
 - Steeper learning curve
 - Turborepo is Vercel-native (same team maintains both)
 - Nx is more opinionated (enforces stricter conventions)
 
 **Why not chosen:**  
-Turborepo provides everything we need with simpler mental model. Vercel's first-class Turborepo support is a major advantage.
+Turborepo provides everything we need with simpler mental model. Vercel's
+first-class Turborepo support is a major advantage.
 
 ---
 
@@ -145,19 +167,25 @@ Turborepo provides everything we need with simpler mental model. Vercel's first-
 - ✅ **Type safety:** TypeScript errors surface immediately across packages
 - ✅ **Fast CI/CD:** Turborepo remote cache (Vercel) speeds up builds by 3-5x
 - ✅ **Easy testing:** Run `pnpm test` at root to test entire monorepo
-- ✅ **Future-ready:** Adding mobile app or admin dashboard requires only `apps/mobile/` directory
+- ✅ **Future-ready:** Adding mobile app or admin dashboard requires only
+  `apps/mobile/` directory
 
 ### Negative Consequences
 
-- ❌ **Learning curve:** Developers must understand workspace protocol, Turborepo tasks
+- ❌ **Learning curve:** Developers must understand workspace protocol,
+  Turborepo tasks
 - ❌ **Build complexity:** Incorrect task pipelines can break builds
-- ❌ **Global dependency conflicts:** All apps share root pnpm lock file (harder to use different versions)
+- ❌ **Global dependency conflicts:** All apps share root pnpm lock file (harder
+  to use different versions)
 
 ### Mitigation Strategies
 
-- **Learning curve:** Document monorepo patterns in AGENTS.md. Provide examples in CLAUDE.md.
-- **Build complexity:** Test `turbo.json` changes in CI before merging. Use `turbo --dry` to preview task execution.
-- **Dependency conflicts:** Use pnpm overrides sparingly. Prefer unified versions across packages (enforced by Renovate).
+- **Learning curve:** Document monorepo patterns in AGENTS.md. Provide examples
+  in CLAUDE.md.
+- **Build complexity:** Test `turbo.json` changes in CI before merging. Use
+  `turbo --dry` to preview task execution.
+- **Dependency conflicts:** Use pnpm overrides sparingly. Prefer unified
+  versions across packages (enforced by Renovate).
 
 ---
 
@@ -191,11 +219,13 @@ Turborepo provides everything we need with simpler mental model. Vercel's first-
 ## References
 
 **Supporting Documents:**
+
 - [Turborepo Documentation](https://turbo.build/repo/docs)
 - [pnpm Workspaces Guide](https://pnpm.io/workspaces)
 - [Vercel Monorepo Guide](https://vercel.com/docs/monorepos)
 
 **Related Work:**
+
 - ADR-001: Tech stack selection
 - `docs/FOLDER_STRUCTURE.md` — Detailed repository layout
 
@@ -203,10 +233,10 @@ Turborepo provides everything we need with simpler mental model. Vercel's first-
 
 ## Status History
 
-| Date | Status | Notes |
-|------|--------|-------|
-| 2026-02-05 | Proposed | Chosen during project setup |
-| 2026-02-05 | Accepted | Implemented by Devi |
+| Date       | Status     | Notes                                                 |
+| ---------- | ---------- | ----------------------------------------------------- |
+| 2026-02-05 | Proposed   | Chosen during project setup                           |
+| 2026-02-05 | Accepted   | Implemented by Devi                                   |
 | 2026-02-11 | Documented | Formalized as ADR-002 during Codex compliance rollout |
 
 ---
@@ -216,6 +246,7 @@ Turborepo provides everything we need with simpler mental model. Vercel's first-
 **Turborepo Task Pipeline:**
 
 Our `turbo.json` defines these tasks:
+
 - `build` — Build all apps and packages (depends on `^build` of dependencies)
 - `dev` — Start dev server (no caching)
 - `lint` — Run ESLint (caching enabled)
@@ -223,11 +254,13 @@ Our `turbo.json` defines these tasks:
 - `test` — Run tests (caching enabled)
 
 **Cache Inputs:** Turborepo caches based on:
+
 - File content hashes (all files in package directory)
 - Environment variables (if specified in `turbo.json`)
 - Task outputs (defined in `turbo.json`)
 
-**Remote Cache:** Vercel provides free remote caching for Turborepo. Shared across team members and CI.
+**Remote Cache:** Vercel provides free remote caching for Turborepo. Shared
+across team members and CI.
 
 **Workspace Protocol Example:**
 
@@ -241,8 +274,9 @@ Our `turbo.json` defines these tasks:
 }
 ```
 
-The `workspace:*` protocol resolves to the local package in `packages/database/`, no publishing required.
+The `workspace:*` protocol resolves to the local package in
+`packages/database/`, no publishing required.
 
 ---
 
-*This ADR follows the Axon Codex v1.2 ADR Standards (§5.1.3).*
+_This ADR follows the Axon Codex v1.2 ADR Standards (§5.1.3)._

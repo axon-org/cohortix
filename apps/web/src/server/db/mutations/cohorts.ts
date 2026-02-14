@@ -1,6 +1,6 @@
 /**
  * Cohort Mutations Module (COH-B3)
- * 
+ *
  * Server-side write operations for cohorts.
  * Uses Supabase client with RLS for automatic tenant isolation.
  */
@@ -28,22 +28,24 @@ async function createClient() {
 // Validation Schemas
 // ============================================================================
 
-export const createCohortSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(255),
-  description: z.string().optional(),
-  status: z.enum(['active', 'paused', 'at-risk', 'completed']).default('active'),
-  start_date: z.string().nullable().optional(),
-  end_date: z.string().nullable().optional(),
-  settings: z.record(z.unknown()).optional(),
-}).refine(
-  (data) => {
-    if (data.start_date && data.end_date) {
-      return new Date(data.end_date) >= new Date(data.start_date);
-    }
-    return true;
-  },
-  { message: 'End date must be after start date', path: ['end_date'] }
-);
+export const createCohortSchema = z
+  .object({
+    name: z.string().min(1, 'Name is required').max(255),
+    description: z.string().optional(),
+    status: z.enum(['active', 'paused', 'at-risk', 'completed']).default('active'),
+    start_date: z.string().nullable().optional(),
+    end_date: z.string().nullable().optional(),
+    settings: z.record(z.unknown()).optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.start_date && data.end_date) {
+        return new Date(data.end_date) >= new Date(data.start_date);
+      }
+      return true;
+    },
+    { message: 'End date must be after start date', path: ['end_date'] }
+  );
 
 export const updateCohortSchema = z.object({
   name: z.string().min(1).max(255).optional(),

@@ -1,14 +1,14 @@
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import tsconfigPaths from 'vite-tsconfig-paths'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [
-    react(), 
+    react(),
     tsconfigPaths({
       projects: ['./tsconfig.json'],
     }),
@@ -41,8 +41,11 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: /^@\/(.*)$/, replacement: path.resolve(__dirname, './src/$1') },
-      { find: '@repo/database', replacement: path.resolve(__dirname, '../../packages/database/src') },
+      {
+        find: '@repo/database',
+        replacement: path.resolve(__dirname, '../../packages/database/src'),
+      },
       { find: '@repo/types', replacement: path.resolve(__dirname, '../../packages/types/src') },
     ],
   },
-})
+});

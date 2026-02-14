@@ -1,17 +1,18 @@
 #!/usr/bin/env tsx
 /**
  * Database Seed Script (Supabase Client)
- * 
+ *
  * Seeds the database with sample data using Supabase client.
  * This works even if direct postgres connection is not available.
- * 
+ *
  * Run: pnpm tsx scripts/seed-supabase.ts
  */
 
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://rfwscvklcokzuofyzqwx.supabase.co';
-const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmd3NjdmtsY29renVvZnl6cXd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDcyNDYyNCwiZXhwIjoyMDg2MzAwNjI0fQ.DtEf0p3b_tBCvzO5g3Al6QqCkDg-Y8K6-xRI4rcKqNM';
+const serviceRoleKey =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmd3NjdmtsY29renVvZnl6cXd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDcyNDYyNCwiZXhwIjoyMDg2MzAwNjI0fQ.DtEf0p3b_tBCvzO5g3Al6QqCkDg-Y8K6-xRI4rcKqNM';
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: {
@@ -55,7 +56,7 @@ async function seed() {
 
     // 2. Create Sample Allies
     console.log('🤖 Creating AI allies...');
-    
+
     const allies = [
       {
         name: 'Devi',
@@ -188,7 +189,7 @@ async function seed() {
     ];
 
     const { data: createdMissions, error: missionsError } = await supabase
-      .from('projects')  // Database table name (unchanged for backwards compatibility)
+      .from('projects') // Database table name (unchanged for backwards compatibility)
       .insert(
         missions.map((mission) => ({
           organization_id: org.id,
@@ -270,7 +271,7 @@ async function seed() {
     ];
 
     const { data: createdActions, error: actionsError } = await supabase
-      .from('tasks')  // Database table name (unchanged for backwards compatibility)
+      .from('tasks') // Database table name (unchanged for backwards compatibility)
       .insert(
         actions.map((action, index) => ({
           organization_id: org.id,
@@ -303,7 +304,8 @@ async function seed() {
       {
         agent_id: createdAllies.find((a: any) => a.slug === 'devi')!.id,
         title: 'RAG System Best Practices',
-        content: 'When building RAG systems: chunk strategically, use hybrid search, implement re-ranking...',
+        content:
+          'When building RAG systems: chunk strategically, use hybrid search, implement re-ranking...',
         category: 'technical',
         source_type: 'research',
         tags: ['rag', 'llm', 'best-practices'],
@@ -434,7 +436,6 @@ async function seed() {
     console.log(`  • ${createdAuditLogs.length} audit log entries`);
     console.log('\n🚀 Ready to develop!');
     console.log('═══════════════════════════════════════════\n');
-
   } catch (error) {
     console.error('❌ Seeding failed:', error);
     process.exit(1);

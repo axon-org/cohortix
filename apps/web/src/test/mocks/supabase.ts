@@ -1,5 +1,5 @@
-import { vi } from 'vitest'
-import type { SupabaseClient } from '@supabase/supabase-js'
+import { vi } from 'vitest';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const mockSupabaseClient: Partial<SupabaseClient> = {
   auth: {
@@ -21,10 +21,10 @@ export const mockSupabaseClient: Partial<SupabaseClient> = {
     single: vi.fn(),
     then: vi.fn(),
   })) as any,
-}
+};
 
 export const createMockSupabaseClient = (): Partial<SupabaseClient> => {
   return {
     ...mockSupabaseClient,
-  }
-}
+  };
+};

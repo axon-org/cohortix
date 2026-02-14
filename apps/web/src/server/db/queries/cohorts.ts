@@ -1,9 +1,9 @@
 /**
  * Cohort Queries Module (COH-B2)
- * 
+ *
  * Server-side data fetching for cohorts.
  * Uses Supabase client with RLS for automatic tenant isolation.
- * 
+ *
  * Database: cohorts table with cohort_status enum (active, paused, at-risk, completed)
  */
 
@@ -102,11 +102,7 @@ export async function getCohorts(organizationId: string, filters: CohortFilters 
 export async function getCohortById(cohortId: string) {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from('cohorts')
-    .select('*')
-    .eq('id', cohortId)
-    .single();
+  const { data, error } = await supabase.from('cohorts').select('*').eq('id', cohortId).single();
 
   if (error) {
     if (error.code === 'PGRST116') return null; // Not found
@@ -137,7 +133,10 @@ export async function getCohortStats(cohortId: string) {
   // Calculate days active
   const startDate = cohort.start_date ? new Date(cohort.start_date) : new Date(cohort.created_at);
   const endDate = cohort.end_date ? new Date(cohort.end_date) : new Date();
-  const daysActive = Math.max(1, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
+  const daysActive = Math.max(
+    1,
+    Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+  );
 
   return {
     memberCount: cohort.member_count,

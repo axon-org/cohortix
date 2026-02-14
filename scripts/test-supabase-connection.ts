@@ -15,7 +15,7 @@ async function testConnection() {
   // Test 1: Basic connection with anon key
   console.log('Test 1: Anon key connection');
   const supabaseAnon = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  
+
   try {
     const { data, error } = await supabaseAnon.from('_test').select('*').limit(1);
     if (error && error.code !== 'PGRST116') {
@@ -31,7 +31,7 @@ async function testConnection() {
   // Test 2: Service role key connection
   console.log('\nTest 2: Service role key connection');
   const supabaseService = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-  
+
   try {
     const { data, error } = await supabaseService.from('_test').select('*').limit(1);
     if (error && error.code !== 'PGRST116') {
@@ -47,7 +47,7 @@ async function testConnection() {
   console.log('\nTest 3: Checking required PostgreSQL extensions');
   try {
     const { data: extensions, error } = await supabaseService.rpc('get_extensions');
-    
+
     if (error) {
       // Try alternative query
       const query = `

@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
-import { BatchMembers } from '../batch-members'
-import type { CohortMember } from '@/lib/api/client'
+import { describe, it, expect } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
+import { BatchMembers } from '../batch-members';
+import type { CohortMember } from '@/lib/api/client';
 
 const mockMembers: CohortMember[] = [
   {
@@ -62,111 +62,111 @@ const mockMembers: CohortMember[] = [
     engagement_score: 10,
     joined_at: '2026-01-20T00:00:00Z',
   },
-]
+];
 
-const emptyMembers: CohortMember[] = []
+const emptyMembers: CohortMember[] = [];
 
 describe('BatchMembers', () => {
   it('renders header with member count', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    expect(screen.getByText('Batch Members (5)')).toBeInTheDocument()
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    expect(screen.getByText('Batch Members (5)')).toBeInTheDocument();
+  });
 
   it('renders filter button', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    expect(screen.getByText('Filter allies...')).toBeInTheDocument()
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    expect(screen.getByText('Filter allies...')).toBeInTheDocument();
+  });
 
   it('renders table headers', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    expect(screen.getByText('AI Ally')).toBeInTheDocument()
-    expect(screen.getByText('Role')).toBeInTheDocument()
-    expect(screen.getByText('Status')).toBeInTheDocument()
-    expect(screen.getByText('Engagement Score')).toBeInTheDocument()
-    expect(screen.getByText('Actions')).toBeInTheDocument()
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    expect(screen.getByText('AI Ally')).toBeInTheDocument();
+    expect(screen.getByText('Role')).toBeInTheDocument();
+    expect(screen.getByText('Status')).toBeInTheDocument();
+    expect(screen.getByText('Engagement Score')).toBeInTheDocument();
+    expect(screen.getByText('Actions')).toBeInTheDocument();
+  });
 
   it('renders all member names', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    expect(screen.getByText('Alim')).toBeInTheDocument()
-    expect(screen.getByText('Sami')).toBeInTheDocument()
-    expect(screen.getByText('Nina')).toBeInTheDocument()
-    expect(screen.getByText('Noah')).toBeInTheDocument()
-    expect(screen.getByText('ErrorBot')).toBeInTheDocument()
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    expect(screen.getByText('Alim')).toBeInTheDocument();
+    expect(screen.getByText('Sami')).toBeInTheDocument();
+    expect(screen.getByText('Nina')).toBeInTheDocument();
+    expect(screen.getByText('Noah')).toBeInTheDocument();
+    expect(screen.getByText('ErrorBot')).toBeInTheDocument();
+  });
 
   it('renders member slugs', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    expect(screen.getByText('alim-ceo')).toBeInTheDocument()
-    expect(screen.getByText('sami-frontend')).toBeInTheDocument()
-    expect(screen.getByText('nina-qa')).toBeInTheDocument()
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    expect(screen.getByText('alim-ceo')).toBeInTheDocument();
+    expect(screen.getByText('sami-frontend')).toBeInTheDocument();
+    expect(screen.getByText('nina-qa')).toBeInTheDocument();
+  });
 
   it('renders member roles', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    expect(screen.getByText('CEO')).toBeInTheDocument()
-    expect(screen.getByText('Frontend Developer')).toBeInTheDocument()
-    expect(screen.getByText('QA Engineer')).toBeInTheDocument()
-    expect(screen.getByText('DevOps')).toBeInTheDocument()
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    expect(screen.getByText('CEO')).toBeInTheDocument();
+    expect(screen.getByText('Frontend Developer')).toBeInTheDocument();
+    expect(screen.getByText('QA Engineer')).toBeInTheDocument();
+    expect(screen.getByText('DevOps')).toBeInTheDocument();
+  });
 
   it('renders correct status labels for each status type', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    expect(screen.getByText('Optimal')).toBeInTheDocument() // active
-    expect(screen.getByText('Syncing')).toBeInTheDocument() // busy
-    expect(screen.getAllByText('Idle').length).toBeGreaterThan(0) // idle
-    expect(screen.getByText('Offline')).toBeInTheDocument() // offline
-    expect(screen.getByText('Error')).toBeInTheDocument() // error
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    expect(screen.getByText('Optimal')).toBeInTheDocument(); // active
+    expect(screen.getByText('Syncing')).toBeInTheDocument(); // busy
+    expect(screen.getAllByText('Idle').length).toBeGreaterThan(0); // idle
+    expect(screen.getByText('Offline')).toBeInTheDocument(); // offline
+    expect(screen.getByText('Error')).toBeInTheDocument(); // error
+  });
 
   it('renders engagement scores', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    expect(screen.getByText('95')).toBeInTheDocument()
-    expect(screen.getByText('78')).toBeInTheDocument()
-    expect(screen.getByText('62')).toBeInTheDocument()
-    expect(screen.getByText('45')).toBeInTheDocument()
-    expect(screen.getByText('10')).toBeInTheDocument()
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    expect(screen.getByText('95')).toBeInTheDocument();
+    expect(screen.getByText('78')).toBeInTheDocument();
+    expect(screen.getByText('62')).toBeInTheDocument();
+    expect(screen.getByText('45')).toBeInTheDocument();
+    expect(screen.getByText('10')).toBeInTheDocument();
+  });
 
   it('renders avatar image when avatar_url is provided', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    const avatarImg = screen.getByAltText('Alim')
-    expect(avatarImg).toBeInTheDocument()
-    expect(avatarImg).toHaveAttribute('src', 'https://example.com/alim.png')
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    const avatarImg = screen.getByAltText('Alim');
+    expect(avatarImg).toBeInTheDocument();
+    expect(avatarImg).toHaveAttribute('src', 'https://example.com/alim.png');
+  });
 
   it('renders initials fallback when no avatar_url', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
+    render(<BatchMembers members={mockMembers} />);
+
     // Sami has no avatar_url, should show initials 'SA'
-    expect(screen.getByText('SA')).toBeInTheDocument()
+    expect(screen.getByText('SA')).toBeInTheDocument();
     // Nina should show 'NI'
-    expect(screen.getByText('NI')).toBeInTheDocument()
-  })
+    expect(screen.getByText('NI')).toBeInTheDocument();
+  });
 
   it('renders actions button for each member', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    const actionButtons = screen.getAllByText('⋯')
-    expect(actionButtons).toHaveLength(5)
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    const actionButtons = screen.getAllByText('⋯');
+    expect(actionButtons).toHaveLength(5);
+  });
 
   it('renders empty table when no members', () => {
-    render(<BatchMembers members={emptyMembers} />)
-    
-    expect(screen.getByText('Batch Members (0)')).toBeInTheDocument()
+    render(<BatchMembers members={emptyMembers} />);
+
+    expect(screen.getByText('Batch Members (0)')).toBeInTheDocument();
     // Table headers should still be visible
-    expect(screen.getByText('AI Ally')).toBeInTheDocument()
-  })
+    expect(screen.getByText('AI Ally')).toBeInTheDocument();
+  });
 
   it('shows footer when more than 8 members', () => {
     const manyMembers: CohortMember[] = Array.from({ length: 10 }, (_, i) => ({
@@ -178,33 +178,33 @@ describe('BatchMembers', () => {
       agent_status: 'active' as const,
       engagement_score: 50,
       joined_at: '2026-01-01T00:00:00Z',
-    }))
-    
-    render(<BatchMembers members={manyMembers} />)
-    
-    expect(screen.getByText('View Full Audit Trail')).toBeInTheDocument()
-  })
+    }));
+
+    render(<BatchMembers members={manyMembers} />);
+
+    expect(screen.getByText('View Full Audit Trail')).toBeInTheDocument();
+  });
 
   it('does not show footer when 8 or fewer members', () => {
-    render(<BatchMembers members={mockMembers} />)
-    
-    expect(screen.queryByText('View Full Audit Trail')).not.toBeInTheDocument()
-  })
+    render(<BatchMembers members={mockMembers} />);
+
+    expect(screen.queryByText('View Full Audit Trail')).not.toBeInTheDocument();
+  });
 
   it('renders within a card container with proper styling', () => {
-    const { container } = render(<BatchMembers members={mockMembers} />)
-    
-    const cardContainer = container.firstChild as HTMLElement
-    expect(cardContainer).toHaveClass('bg-card')
-    expect(cardContainer).toHaveClass('border')
-    expect(cardContainer).toHaveClass('rounded-lg')
-  })
+    const { container } = render(<BatchMembers members={mockMembers} />);
+
+    const cardContainer = container.firstChild as HTMLElement;
+    expect(cardContainer).toHaveClass('bg-card');
+    expect(cardContainer).toHaveClass('border');
+    expect(cardContainer).toHaveClass('rounded-lg');
+  });
 
   it('renders engagement progress bar with correct width', () => {
-    const { container } = render(<BatchMembers members={mockMembers} />)
-    
+    const { container } = render(<BatchMembers members={mockMembers} />);
+
     // Find progress bars by looking for the styled div with dynamic width
-    const progressBars = container.querySelectorAll('[style*="width: 95%"]')
-    expect(progressBars.length).toBeGreaterThan(0)
-  })
-})
+    const progressBars = container.querySelectorAll('[style*="width: 95%"]');
+    expect(progressBars.length).toBeGreaterThan(0);
+  });
+});

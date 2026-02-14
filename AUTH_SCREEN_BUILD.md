@@ -2,16 +2,19 @@
 
 **Date:** February 11, 2026  
 **Task:** Build premium/cinematic auth screens matching mockup design  
-**Mockup Reference:** `/Users/alimai/clawd/cohortix-mockups/v3/06-auth-login-linear-dark.png`
+**Mockup Reference:**
+`/Users/alimai/clawd/cohortix-mockups/v3/06-auth-login-linear-dark.png`
 
 ---
 
 ## ✅ Completed
 
 ### 1. **Sign-In Page** (`/sign-in`)
+
 **Location:** `apps/web/src/app/sign-in/page.tsx`
 
 **Features Implemented:**
+
 - ✅ Premium dark theme with cinematic feel
 - ✅ Radial gradient glow effect (blue/violet) behind card
 - ✅ Cohortix branding with logo icon
@@ -25,15 +28,18 @@
 - ✅ Redirects to `/` (dashboard) after successful login
 
 **Design Tokens Used:**
+
 - Background: `#0A0A0B`
 - Accent: `#5E6AD2`
 - Borders: `#27282D`
 - Text: `#F2F2F2`, `#D1D5DB`, `#6B7280`, `#9CA3AF`
 
 ### 2. **Sign-Up Page** (`/sign-up`)
+
 **Location:** `apps/web/src/app/sign-up/page.tsx`
 
 **Features Implemented:**
+
 - ✅ Matching premium design from sign-in
 - ✅ Email field
 - ✅ Password field with strength hint
@@ -46,9 +52,11 @@
 - ✅ Error handling & loading states
 
 ### 3. **Forgot Password Page** (`/forgot-password`)
+
 **Location:** `apps/web/src/app/forgot-password/page.tsx`
 
 **Features Implemented:**
+
 - ✅ Matching premium design
 - ✅ Email input for password reset
 - ✅ Success state showing confirmation
@@ -56,9 +64,11 @@
 - ✅ Supabase Auth integration
 
 ### 4. **OAuth Callback Handler** (`/auth/callback`)
+
 **Location:** `apps/web/src/app/auth/callback/route.ts`
 
 **Features Implemented:**
+
 - ✅ Handles OAuth redirect flow
 - ✅ Exchanges code for session
 - ✅ Redirects to dashboard
@@ -68,7 +78,9 @@
 ## 🎨 Design Highlights
 
 ### Premium/Cinematic Elements
-1. **Radial Glow Effect:** Subtle blue/violet gradient behind auth card creates depth
+
+1. **Radial Glow Effect:** Subtle blue/violet gradient behind auth card creates
+   depth
 2. **Glassmorphism:** Semi-transparent card with backdrop blur
 3. **Focus States:** Interactive focus rings with accent color
 4. **Hover Effects:** Smooth transitions on buttons and links
@@ -76,6 +88,7 @@
 6. **Consistent Branding:** Logo, name, and tagline at the top of every page
 
 ### Component Details
+
 - **Logo:** Layered stack icon in accent color (`#5E6AD2`)
 - **Card:** Semi-transparent dark background with border
 - **Inputs:** Dark backgrounds with focus states
@@ -87,12 +100,14 @@
 ## 🔐 Authentication Flow
 
 ### Sign-In Flow
+
 1. User enters email + password
 2. Supabase validates credentials
 3. Session created
 4. Redirect to `/` (dashboard)
 
 ### Sign-Up Flow
+
 1. User enters email + password (x2)
 2. Password validation (length, match)
 3. Supabase creates user account
@@ -100,6 +115,7 @@
 5. Redirect to dashboard
 
 ### OAuth Flow
+
 1. User clicks GitHub/Google button
 2. Redirect to OAuth provider
 3. Provider authentication
@@ -108,6 +124,7 @@
 6. Redirect to dashboard
 
 ### Password Reset Flow
+
 1. User enters email on forgot password page
 2. Supabase sends reset link
 3. User clicks link in email
@@ -137,12 +154,14 @@ apps/web/src/app/
 ## 🔧 Technical Details
 
 ### Dependencies Used
+
 - `@supabase/ssr` - Supabase SSR client
 - `@repo/database/supabase` - Custom Supabase client wrapper
 - `next/navigation` - Next.js routing
 - `next/link` - Next.js Link component
 
 ### Key Functions
+
 - `createClient()` - Creates Supabase browser client
 - `signInWithPassword()` - Email/password sign-in
 - `signUp()` - User registration
@@ -151,7 +170,9 @@ apps/web/src/app/
 - `exchangeCodeForSession()` - OAuth callback handling
 
 ### Middleware Integration
+
 The existing middleware at `apps/web/src/middleware.ts` already handles:
+
 - Session validation
 - Protected route checks
 - Auth state synchronization
@@ -160,27 +181,28 @@ The existing middleware at `apps/web/src/middleware.ts` already handles:
 
 ## ✨ Design Comparison: Mockup vs. Implementation
 
-| Feature | Mockup | Implementation | Status |
-|---------|--------|----------------|--------|
-| Dark background | ✅ | ✅ `#0A0A0B` | ✅ Match |
-| Radial glow | ✅ | ✅ Blue/violet gradient | ✅ Match |
-| Cohortix logo | ✅ | ✅ Stack icon | ✅ Match |
-| Tagline | ✅ | ✅ "Your AI crew..." | ✅ Match |
-| Email field | ✅ | ✅ With label | ✅ Match |
-| Password field | ✅ | ✅ With label | ✅ Match |
-| Forgot password link | ✅ | ✅ Top-right of field | ✅ Match |
-| Sign in button | ✅ | ✅ Accent color | ✅ Match |
-| Divider | ✅ | ✅ "or continue with" | ✅ Match |
-| GitHub OAuth | ✅ | ✅ With icon | ✅ Match |
-| Google OAuth | ✅ | ✅ With icon | ✅ Match |
-| Sign up link | ✅ | ✅ At bottom | ✅ Match |
-| Premium feel | ✅ | ✅ Cinematic design | ✅ Match |
+| Feature              | Mockup | Implementation          | Status   |
+| -------------------- | ------ | ----------------------- | -------- |
+| Dark background      | ✅     | ✅ `#0A0A0B`            | ✅ Match |
+| Radial glow          | ✅     | ✅ Blue/violet gradient | ✅ Match |
+| Cohortix logo        | ✅     | ✅ Stack icon           | ✅ Match |
+| Tagline              | ✅     | ✅ "Your AI crew..."    | ✅ Match |
+| Email field          | ✅     | ✅ With label           | ✅ Match |
+| Password field       | ✅     | ✅ With label           | ✅ Match |
+| Forgot password link | ✅     | ✅ Top-right of field   | ✅ Match |
+| Sign in button       | ✅     | ✅ Accent color         | ✅ Match |
+| Divider              | ✅     | ✅ "or continue with"   | ✅ Match |
+| GitHub OAuth         | ✅     | ✅ With icon            | ✅ Match |
+| Google OAuth         | ✅     | ✅ With icon            | ✅ Match |
+| Sign up link         | ✅     | ✅ At bottom            | ✅ Match |
+| Premium feel         | ✅     | ✅ Cinematic design     | ✅ Match |
 
 ---
 
 ## 🧪 Testing Recommendations
 
 ### Manual Testing Checklist
+
 - [ ] Sign-in with valid credentials
 - [ ] Sign-in with invalid credentials (error display)
 - [ ] Sign-up with new email
@@ -196,13 +218,16 @@ The existing middleware at `apps/web/src/middleware.ts` already handles:
 - [ ] Navigation between sign-in/sign-up pages
 
 ### Configuration Required
+
 Before testing, ensure environment variables are set:
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 ```
 
 And configure OAuth providers in Supabase dashboard:
+
 1. Go to Authentication → Providers
 2. Enable GitHub and Google
 3. Add OAuth credentials
@@ -213,12 +238,14 @@ And configure OAuth providers in Supabase dashboard:
 ## 🚀 Next Steps
 
 ### Immediate
+
 1. Configure Supabase OAuth providers (GitHub, Google)
 2. Test sign-in/sign-up flows locally
 3. Verify email verification emails are sent
 4. Test password reset flow
 
 ### Future Enhancements
+
 1. Add email verification reminder page
 2. Add reset password page (for link from email)
 3. Add organization setup flow after sign-up
@@ -232,9 +259,11 @@ And configure OAuth providers in Supabase dashboard:
 
 ## 📸 Screenshots
 
-See mockup at: `/Users/alimai/clawd/cohortix-mockups/v3/06-auth-login-linear-dark.png`
+See mockup at:
+`/Users/alimai/clawd/cohortix-mockups/v3/06-auth-login-linear-dark.png`
 
 Implementation faithfully recreates:
+
 - Premium dark aesthetic
 - Cinematic glow effect
 - Clean, centered layout

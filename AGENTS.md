@@ -10,7 +10,8 @@
 ## Quick Reference
 
 **Location:** `~/Projects/cohortix/` (NEVER ~/clawd/cohortix/)  
-**Context:** Read PROJECT_BRIEF.md (quick overview), CLAUDE.md (detailed context)  
+**Context:** Read PROJECT_BRIEF.md (quick overview), CLAUDE.md (detailed
+context)  
 **Compliance:** Follow `docs/CODEX-COMPLIANCE-PLAN.md` for current priorities
 
 ---
@@ -49,6 +50,7 @@ pnpm clean                      # Clean build artifacts
 ### When to Write Tests (MANDATORY)
 
 ✅ **Always test:**
+
 - Authentication flows (sign-in, sign-up, password reset)
 - Multi-tenant isolation (RLS policies)
 - API route handlers (all CRUD operations)
@@ -57,6 +59,7 @@ pnpm clean                      # Clean build artifacts
 - Service layer business logic
 
 ✅ **Test before merging:**
+
 - New features require tests (70% coverage minimum)
 - Bug fixes require regression test
 - Refactors maintain existing test coverage
@@ -78,7 +81,8 @@ pnpm clean                      # Clean build artifacts
 
 - **70% Unit Tests** — Fast, isolated, test single functions/components
 - **20% Integration Tests** — API routes, database queries, service interactions
-- **10% E2E Tests** — Critical user journeys only (sign-in, create mission, assign action)
+- **10% E2E Tests** — Critical user journeys only (sign-in, create mission,
+  assign action)
 
 ---
 
@@ -109,6 +113,7 @@ cohortix/
 ```
 
 **Import Aliases:**
+
 ```typescript
 import { Button } from '@/components/ui/button';
 import { db } from '@repo/database';
@@ -120,16 +125,20 @@ import type { Mission } from '@repo/types';
 ## Code Style
 
 ### TypeScript
+
 - **Strict mode:** Enabled (no `any` types, explicit return types)
 - **Validation:** Use Zod schemas for all external input (API, forms)
 - **Naming:** camelCase (functions, variables), PascalCase (components, types)
 
 ### React
-- **Default to Server Components** — Use `"use client"` only when needed (state, effects, browser APIs)
+
+- **Default to Server Components** — Use `"use client"` only when needed (state,
+  effects, browser APIs)
 - **File naming:** kebab-case (`project-card.tsx`)
 - **Max component length:** 300 lines (split into smaller components)
 
 ### Functions
+
 - **Max length:** 50 lines
 - **Max parameters:** 5 (use object destructuring for more)
 - **Naming:** Descriptive (`getUserById`, not `get`)
@@ -139,6 +148,7 @@ import type { Mission } from '@repo/types';
 ## Git Workflow
 
 ### Branch Naming
+
 ```
 <type>/<ticket-id>-<short-description>
 
@@ -149,6 +159,7 @@ chore/update-dependencies
 ```
 
 ### Commit Messages (Conventional Commits)
+
 ```
 <type>(<scope>): <subject>
 
@@ -161,6 +172,7 @@ docs(readme): update setup instructions
 **Types:** feat, fix, docs, style, refactor, test, chore, perf, ci
 
 ### Before Opening PR
+
 ```bash
 pnpm lint              # Must pass
 pnpm type-check        # Must pass
@@ -201,7 +213,9 @@ pnpm build             # Must succeed
 ## Spec-Driven Development (MANDATORY starting Week 2)
 
 **Workflow:**
-1. **Discovery** — Ask 5 question categories (Intent, Scope, Tech, Edge Cases, Acceptance)
+
+1. **Discovery** — Ask 5 question categories (Intent, Scope, Tech, Edge Cases,
+   Acceptance)
 2. **Spec** — Create `docs/specs/NNN-feature-name.md` using template
 3. **Approval** — Wait for human approval
 4. **Implementation** — Build per spec
@@ -215,6 +229,7 @@ pnpm build             # Must succeed
 ## Decision Records
 
 ### When to Create ADR (Architecture Decision Record)
+
 - New tech stack choices
 - Database schema changes
 - Authentication/authorization patterns
@@ -223,6 +238,7 @@ pnpm build             # Must succeed
 **Template:** `docs/architecture/adr-000-template.md`
 
 ### When to Create DDR (Design Decision Record)
+
 - Design system changes (colors, typography, components)
 - UX/terminology decisions
 - API naming conventions
@@ -234,6 +250,7 @@ pnpm build             # Must succeed
 ## Expertise & Learning
 
 **As you work, document:**
+
 - What patterns work well for this project
 - Common gotchas and how to avoid them
 - Lessons learned from debugging

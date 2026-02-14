@@ -1,47 +1,45 @@
-'use client'
+'use client';
 
-import { CohortHeader } from './cohort-header'
-import { EngagementTimeline } from './engagement-timeline'
-import { BatchMembers } from './batch-members'
-import { ActivityLog } from './activity-log'
-import { Skeleton } from '@/components/ui/skeleton'
+import { CohortHeader } from './cohort-header';
+import { EngagementTimeline } from './engagement-timeline';
+import { BatchMembers } from './batch-members';
+import { ActivityLog } from './activity-log';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   useCohortDetail,
   useCohortMembers,
   useCohortTimeline,
   useCohortActivity,
-} from '@/hooks/use-cohort-detail'
-import type { CohortStatus } from '@/components/ui/status-chip'
+} from '@/hooks/use-cohort-detail';
+import type { CohortStatus } from '@/components/ui/status-chip';
 
 interface CohortDetailClientProps {
-  id: string
+  id: string;
 }
 
 export function CohortDetailClient({ id }: CohortDetailClientProps) {
-  const { data: cohort, isLoading: cohortLoading, error: cohortError } = useCohortDetail(id)
-  const { data: membersData, isLoading: membersLoading } = useCohortMembers(id)
-  const { data: timelineData, isLoading: timelineLoading } = useCohortTimeline(id, 30)
-  const { data: activityData, isLoading: activityLoading } = useCohortActivity(id, 20)
+  const { data: cohort, isLoading: cohortLoading, error: cohortError } = useCohortDetail(id);
+  const { data: membersData, isLoading: membersLoading } = useCohortMembers(id);
+  const { data: timelineData, isLoading: timelineLoading } = useCohortTimeline(id, 30);
+  const { data: activityData, isLoading: activityLoading } = useCohortActivity(id, 20);
 
   // Error state
   if (cohortError) {
     return (
       <div className="space-y-8">
         <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-12 text-center">
-          <h2 className="text-xl font-semibold text-destructive mb-2">
-            Failed to Load Cohort
-          </h2>
+          <h2 className="text-xl font-semibold text-destructive mb-2">Failed to Load Cohort</h2>
           <p className="text-sm text-muted-foreground">
             {cohortError.message || 'An error occurred while loading the cohort details.'}
           </p>
         </div>
       </div>
-    )
+    );
   }
 
   // Loading state
   if (cohortLoading) {
-    return <CohortDetailSkeleton />
+    return <CohortDetailSkeleton />;
   }
 
   if (!cohort) {
@@ -51,7 +49,7 @@ export function CohortDetailClient({ id }: CohortDetailClientProps) {
           <p className="text-muted-foreground">Cohort not found</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -100,7 +98,7 @@ export function CohortDetailClient({ id }: CohortDetailClientProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function CohortDetailSkeleton() {
@@ -128,5 +126,5 @@ function CohortDetailSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

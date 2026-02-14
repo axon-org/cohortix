@@ -8,7 +8,7 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "exactOptionalPropertyTypes": false,
-    
+
     // Modules
     "target": "ES2022",
     "lib": ["ES2022"],
@@ -16,19 +16,19 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "jsx": "preserve",
-    
+
     // Emit
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "noEmit": true,
-    
+
     // Interop Constraints
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    
+
     // Skip Lib Check
     "skipLibCheck": true
   },

@@ -64,10 +64,13 @@ Database query executes with tenant isolation
 1. Go to Supabase Dashboard → **Project Settings** → **Authentication**
 2. Scroll to **JWT Settings**
 3. Add Clerk's **JWKS URL**:
+
    ```
    https://[YOUR_CLERK_DOMAIN]/.well-known/jwks.json
    ```
-   Example: `https://prepared-squirrel-12.clerk.accounts.dev/.well-known/jwks.json`
+
+   Example:
+   `https://prepared-squirrel-12.clerk.accounts.dev/.well-known/jwks.json`
 
 4. Set **JWT Secret** → Use "Custom JWT Secret" mode
 5. Paste your Clerk **Publishable Key** as the issuer
@@ -272,7 +275,9 @@ describe('RLS Policies', () => {
     const { data } = await supabase.from('agents').select('*');
 
     // All agents should belong to test user's org
-    expect(data?.every(agent => agent.organization_id === TEST_ORG_ID)).toBe(true);
+    expect(data?.every((agent) => agent.organization_id === TEST_ORG_ID)).toBe(
+      true
+    );
   });
 
   it('should prevent creating agents for other orgs', async () => {
@@ -315,6 +320,7 @@ describe('RLS Policies', () => {
 **Cause:** JWT not being sent to Supabase
 
 **Fix:**
+
 1. Check JWT template name matches in client code
 2. Verify `getToken({ template: 'supabase' })` is correct
 3. Inspect network request — `Authorization` header should be present
@@ -324,6 +330,7 @@ describe('RLS Policies', () => {
 **Cause:** User doesn't have access OR JWT claims missing
 
 **Fix:**
+
 1. Decode JWT (jwt.io) — check `user_metadata.org_id`
 2. Verify RLS policy logic — test with SQL:
    ```sql
@@ -336,6 +343,7 @@ describe('RLS Policies', () => {
 **Cause:** Clerk JWT has default 60s expiry
 
 **Fix:**
+
 1. Go to Clerk Dashboard → **JWT Templates** → Edit template
 2. Set **Lifetime** to `3600` (1 hour) or longer
 3. Client will auto-refresh via `@clerk/nextjs`
@@ -345,6 +353,7 @@ describe('RLS Policies', () => {
 **Cause:** JWT not configured for Supabase Realtime
 
 **Fix:**
+
 1. Verify JWT is passed when creating channel:
    ```typescript
    const channel = supabase

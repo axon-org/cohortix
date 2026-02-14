@@ -1,6 +1,7 @@
 # Cohortix Mockup Generation Steps
 
 ## Current Status
+
 - Google Stitch is open at: https://stitch.withgoogle.com/
 - Browser automation is experiencing timeouts
 - Screenshot functionality works
@@ -33,10 +34,13 @@
 6. **Save as:** `02-cohort-grid-monochrome.png`
 
 ## Technical Issues Encountered
+
 - Browser `snapshot` action: timeout after 20s
 - Browser `console` action: timeout after 20s
 - Only `screenshot` action working reliably
 - Skyvern API: authentication/credentials issue
 
 ## Alternative Approach: Direct Generation
-Since automation is blocked, I'll create design specifications manually and provide high-fidelity descriptions for manual implementation.
+
+Since automation is blocked, I'll create design specifications manually and
+provide high-fidelity descriptions for manual implementation.

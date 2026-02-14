@@ -1,10 +1,10 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
-export type MissionStatus = 'planning' | 'active' | 'on_hold' | 'completed' | 'archived'
+export type MissionStatus = 'planning' | 'active' | 'on_hold' | 'completed' | 'archived';
 
 interface MissionStatusChipProps {
-  status: MissionStatus
-  className?: string
+  status: MissionStatus;
+  className?: string;
 }
 
 const statusConfig: Record<MissionStatus, { label: string; className: string }> = {
@@ -13,13 +13,19 @@ const statusConfig: Record<MissionStatus, { label: string; className: string }> 
   on_hold: { label: 'On Hold', className: 'bg-[#F59E0B] text-background' },
   completed: { label: 'Completed', className: 'bg-muted text-foreground' },
   archived: { label: 'Archived', className: 'bg-muted text-muted-foreground' },
-}
+};
 
 export function MissionStatusChip({ status, className }: MissionStatusChipProps) {
-  const config = statusConfig[status]
+  const config = statusConfig[status];
   return (
-    <span className={cn('inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold', config.className, className)}>
+    <span
+      className={cn(
+        'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold',
+        config.className,
+        className
+      )}
+    >
       {config.label}
     </span>
-  )
+  );
 }

@@ -6,7 +6,9 @@
 
 ## Problem Statement
 
-Missions, Operations, and Tasks pages were ALL querying the same `projects` table, violating the PPV hierarchy principle. They needed to be separated into distinct tables.
+Missions, Operations, and Tasks pages were ALL querying the same `projects`
+table, violating the PPV hierarchy principle. They needed to be separated into
+distinct tables.
 
 ## PPV Hierarchy (Implemented)
 
@@ -15,6 +17,7 @@ Domain → Vision → Mission → Operation/Rhythm → Task
 ```
 
 **Current Implementation:**
+
 - **Mission** = measurable goal → `missions` table (NEW)
 - **Operation** = bounded project → `projects` table (existing)
 - **Task** = atomic work → `tasks` table (existing)
@@ -24,9 +27,11 @@ Domain → Vision → Mission → Operation/Rhythm → Task
 ### 1. Database Schema
 
 #### Created `missions` Table
+
 **File:** `supabase/migrations/20260213185300_create_missions_table.sql`
 
 **Schema:**
+
 ```sql
 CREATE TABLE missions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -45,6 +50,7 @@ CREATE TABLE missions (
 ```
 
 **Key Features:**
+
 - Multi-tenant isolation via `organization_id`
 - Optional link to `visions` table
 - Progress tracking (0-100%)
@@ -52,6 +58,7 @@ CREATE TABLE missions (
 - Triggers for `updated_at` timestamp
 
 #### Updated `projects` Table
+
 - Added `mission_id UUID REFERENCES missions(id)` column
 - Operations can now link to parent Missions
 - Maintains backward compatibility (nullable foreign key)
@@ -59,11 +66,14 @@ CREATE TABLE missions (
 ### 2. API Routes Updated
 
 #### Missions API (`/api/v1/missions`)
+
 **Files:**
+
 - `apps/web/src/app/api/v1/missions/route.ts` (GET, POST)
 - `apps/web/src/app/api/v1/missions/[id]/route.ts` (GET, PATCH, DELETE)
 
 **Changes:**
+
 - ✅ Changed table query from `projects` → `missions`
 - ✅ Updated field mappings (`name` → `title`)
 - ✅ Removed slug generation (not needed for missions)
@@ -71,27 +81,32 @@ CREATE TABLE missions (
 - ✅ Simplified search to use `title` instead of `name`
 
 **Before:**
+
 ```ts
 const { data: missions } = await supabase
   .from('projects')
   .select('*')
-  .eq('organization_id', organizationId)
+  .eq('organization_id', organizationId);
 ```
 
 **After:**
+
 ```ts
 const { data: missions } = await supabase
   .from('missions')
   .select('*')
-  .eq('organization_id', organizationId)
+  .eq('organization_id', organizationId);
 ```
 
 #### Operations API (`/api/v1/operations`)
+
 **Files:**
+
 - `apps/web/src/app/api/v1/operations/route.ts`
 - `apps/web/src/app/api/v1/operations/[id]/route.ts`
 
 **Changes:**
+
 - ✅ Kept querying `projects` table (correct)
 - ✅ Can now link operations to missions via `mission_id`
 - ✅ Updated comments to clarify PPV hierarchy
@@ -99,9 +114,11 @@ const { data: missions } = await supabase
 ### 3. Server-Side Queries
 
 #### Dashboard Queries
+
 **File:** `apps/web/src/server/db/queries/dashboard.ts`
 
 **Changes:**
+
 - ✅ Updated `getDashboardKPIs()` to query `missions` table
 - ✅ Updated `getActiveMissions()` to query `missions` table
 - ✅ Enhanced mission stats to include:
@@ -110,27 +127,30 @@ const { data: missions } = await supabase
   - Progress tracking
 
 **New Query Structure:**
+
 ```ts
 // Missions query
 const { data: missions } = await supabase
   .from('missions')
   .select('*')
   .eq('organization_id', organizationId)
-  .eq('status', 'active')
+  .eq('status', 'active');
 
 // For each mission, count linked operations
 const { count: operationsCount } = await supabase
   .from('projects')
   .select('*', { count: 'exact' })
-  .eq('mission_id', mission.id)
+  .eq('mission_id', mission.id);
 ```
 
 ### 4. Seed Data
 
 #### PPV Hierarchy Seed Script
+
 **File:** `scripts/seed-ppv-hierarchy.ts`
 
 **Creates:**
+
 - **4 Missions:**
   1. "Launch Cohortix MVP" (60% progress, target: 2026-03-15)
   2. "Achieve 100 Beta Users" (15% progress, target: 2026-04-30)
@@ -150,6 +170,7 @@ const { count: operationsCount } = await supabase
   - 2 tasks for "Design Marketplace UI"
 
 **Also:**
+
 - Links existing operations to missions (distributes evenly)
 - Proper status distribution (done, in_progress, todo)
 - Realistic priority levels (urgent, high, medium)
@@ -157,6 +178,7 @@ const { count: operationsCount } = await supabase
 ### 5. Migration Tools
 
 Created helper scripts:
+
 - `scripts/run-migration.ts` - Migration runner using Supabase client
 - `scripts/apply-migration.ts` - Direct SQL executor
 - `scripts/direct-migrate.ts` - REST API approach
@@ -167,11 +189,13 @@ Created helper scripts:
 ### Step 1: Run Migration
 
 **Option A: Supabase SQL Editor (Recommended)**
+
 1. Go to: https://supabase.com/dashboard/project/rfwscvklcokzuofyzqwx/sql/new
 2. Copy `supabase/migrations/20260213185300_create_missions_table.sql`
 3. Paste and click "Run"
 
 **Option B: Script (if available)**
+
 ```bash
 pnpm tsx scripts/apply-migration.ts supabase/migrations/20260213185300_create_missions_table.sql
 ```
@@ -192,7 +216,7 @@ SELECT COUNT(*) FROM missions; -- Should return 4
 SELECT COUNT(*) FROM projects WHERE mission_id IS NOT NULL;
 
 -- Check PPV hierarchy
-SELECT 
+SELECT
   m.title as mission,
   COUNT(DISTINCT p.id) as operations,
   COUNT(t.id) as tasks
@@ -219,6 +243,7 @@ GROUP BY m.id, m.title;
 ## Files Changed
 
 ### Created
+
 - `supabase/migrations/20260213185300_create_missions_table.sql`
 - `scripts/seed-ppv-hierarchy.ts`
 - `scripts/run-migration.ts`
@@ -228,13 +253,16 @@ GROUP BY m.id, m.title;
 - `PPV_DATA_MODEL_IMPLEMENTATION.md` (this file)
 
 ### Modified
+
 - `apps/web/src/app/api/v1/missions/route.ts`
 - `apps/web/src/app/api/v1/missions/[id]/route.ts`
 - `apps/web/src/server/db/queries/dashboard.ts`
 
 ### Unchanged (but verified)
+
 - `apps/web/src/app/api/v1/operations/route.ts` (queries `projects` - correct)
-- `apps/web/src/app/api/v1/operations/[id]/route.ts` (queries `projects` - correct)
+- `apps/web/src/app/api/v1/operations/[id]/route.ts` (queries `projects` -
+  correct)
 
 ## Rollback Plan
 
@@ -249,6 +277,7 @@ DROP TABLE IF EXISTS missions CASCADE;
 ```
 
 Then revert Git changes:
+
 ```bash
 git checkout apps/web/src/app/api/v1/missions/route.ts
 git checkout apps/web/src/app/api/v1/missions/[id]/route.ts
@@ -268,10 +297,14 @@ git checkout apps/web/src/server/db/queries/dashboard.ts
 
 ## Notes
 
-- **Backward Compatibility:** Existing operations (projects) will continue to work. The `mission_id` column is nullable.
-- **Visions Table:** The migration references a `visions` table which may not exist yet. The foreign key is nullable, so this is safe.
-- **RLS Policies:** Match existing patterns from `projects` and `tasks` tables for consistency.
-- **Validation Schema:** May need to update Zod schemas in `lib/validations/mission.ts` to match new field names.
+- **Backward Compatibility:** Existing operations (projects) will continue to
+  work. The `mission_id` column is nullable.
+- **Visions Table:** The migration references a `visions` table which may not
+  exist yet. The foreign key is nullable, so this is safe.
+- **RLS Policies:** Match existing patterns from `projects` and `tasks` tables
+  for consistency.
+- **Validation Schema:** May need to update Zod schemas in
+  `lib/validations/mission.ts` to match new field names.
 
 ---
 

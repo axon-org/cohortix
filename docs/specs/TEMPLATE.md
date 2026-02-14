@@ -16,7 +16,8 @@
 
 ### 1.2 Who Is This For?
 
-**Target User Persona:** [End customer, internal admin, API consumer, agent, etc.]  
+**Target User Persona:** [End customer, internal admin, API consumer, agent,
+etc.]  
 **User Expertise Level:** [Beginner, Intermediate, Expert]
 
 ### 1.3 Success Metrics
@@ -30,9 +31,11 @@
 ### 1.4 Context & Priority
 
 **Why Now?**  
-[Explain urgency: P0 (production broken), P1 (customer commitment), P2 (nice-to-have)]
+[Explain urgency: P0 (production broken), P1 (customer commitment), P2
+(nice-to-have)]
 
-**Related Work:**  
+**Related Work:**
+
 - [Link to related specs, ADRs, or PRs]
 
 ---
@@ -55,26 +58,31 @@
 ### 2.2 Non-Functional Requirements
 
 **Performance:**
+
 - [ ] API response time: <500ms at p95
 - [ ] Page load time: <2.5s LCP (Largest Contentful Paint)
 - [ ] Concurrent users supported: [number]
 
 **Security:**
+
 - [ ] Authentication required: Yes/No
 - [ ] Authorization level: [Public, User, Admin, etc.]
 - [ ] PII handling: [None, Encrypted, Anonymized, etc.]
 - [ ] Compliance: [GDPR, HIPAA, SOC2, etc.]
 
 **Accessibility:**
+
 - [ ] WCAG 2.2 AA compliance required: Yes/No
 - [ ] Screen reader tested: Yes/No
 - [ ] Keyboard navigation: Yes/No
 
 **Scalability:**
+
 - [ ] Expected data volume: [number of records]
 - [ ] Expected request volume: [requests/minute]
 
 **Reliability:**
+
 - [ ] Uptime target: [99.9%, 99.99%, etc.]
 - [ ] Recovery time objective (RTO): [minutes/hours]
 
@@ -95,18 +103,19 @@ User → Frontend (Next.js) → API Gateway → Backend Service → Database
 
 **Component Breakdown:**
 
-| Component | Technology | Responsibility |
-|-----------|------------|----------------|
-| Frontend | Next.js 15, React 19 | User interface, form validation |
-| API | Node.js, Express | Business logic, authentication |
-| Database | PostgreSQL | Data persistence |
-| Cache | Redis | Session storage, rate limiting |
+| Component | Technology           | Responsibility                  |
+| --------- | -------------------- | ------------------------------- |
+| Frontend  | Next.js 15, React 19 | User interface, form validation |
+| API       | Node.js, Express     | Business logic, authentication  |
+| Database  | PostgreSQL           | Data persistence                |
+| Cache     | Redis                | Session storage, rate limiting  |
 
 ### 3.2 API Contracts (If Applicable)
 
 **Endpoint:** `POST /api/v1/[resource]`
 
 **Request:**
+
 ```json
 {
   "field1": "string",
@@ -116,6 +125,7 @@ User → Frontend (Next.js) → API Gateway → Backend Service → Database
 ```
 
 **Response (Success - 200 OK):**
+
 ```json
 {
   "id": "uuid-v4",
@@ -125,6 +135,7 @@ User → Frontend (Next.js) → API Gateway → Backend Service → Database
 ```
 
 **Response (Error - 400 Bad Request):**
+
 ```json
 {
   "type": "https://api.example.com/errors/validation-error",
@@ -136,11 +147,13 @@ User → Frontend (Next.js) → API Gateway → Backend Service → Database
 ```
 
 **Error Handling:**
+
 - 400 Bad Request — Invalid input
 - 401 Unauthorized — Authentication required
 - 403 Forbidden — Insufficient permissions
 - 404 Not Found — Resource does not exist
-- 500 Internal Server Error — Server-side failure (retry with exponential backoff)
+- 500 Internal Server Error — Server-side failure (retry with exponential
+  backoff)
 
 ### 3.3 Data Models
 
@@ -160,6 +173,7 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 ```
 
 **Relationships:**
+
 - [Describe foreign keys, joins, or relationships]
 
 ### 3.4 State Management (Frontend)
@@ -172,6 +186,7 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 4. **Client State** — useState/useReducer for interactive UI
 
 **Example:**
+
 - User preferences → URL state (`?sort=asc&filter=active`)
 - Product list → Server state (Server Component)
 - Search form → Form state (React Hook Form + Zod)
@@ -181,11 +196,12 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 
 **External Services:**
 
-| Service | Purpose | Authentication | Failure Handling |
-|---------|---------|----------------|------------------|
+| Service        | Purpose        | Authentication         | Failure Handling                   |
+| -------------- | -------------- | ---------------------- | ---------------------------------- |
 | [Service Name] | [What it does] | [API key, OAuth, etc.] | [Circuit breaker, fallback, retry] |
 
 **Resilience Patterns (Codex §2.4):**
+
 - [ ] Circuit Breaker implemented
 - [ ] Exponential backoff with jitter
 - [ ] Timeout configured (default: 5s)
@@ -209,14 +225,17 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 ### 4.2 Error Handling Strategy
 
 **User-Facing Errors:**
+
 - Show user-friendly messages (no stack traces)
 - Provide actionable guidance (e.g., "Try again" button)
 
 **Internal Errors:**
+
 - Log full error details with correlation ID
 - Alert on-call if critical
 
 **Error Communication:**
+
 - UI: Toast notification or inline error message
 - API: RFC 7807 Problem Details JSON
 
@@ -224,12 +243,12 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 
 **What happens when:**
 
-| Failure Scenario | Expected Behavior |
-|------------------|-------------------|
-| Database is unavailable | Return 503 Service Unavailable, retry automatically |
-| External API times out | Circuit breaker opens, return cached data or graceful degradation |
-| User provides invalid input | Return 400 Bad Request with validation errors |
-| Concurrent requests conflict | Use optimistic locking or queue requests |
+| Failure Scenario             | Expected Behavior                                                 |
+| ---------------------------- | ----------------------------------------------------------------- |
+| Database is unavailable      | Return 503 Service Unavailable, retry automatically               |
+| External API times out       | Circuit breaker opens, return cached data or graceful degradation |
+| User provides invalid input  | Return 400 Bad Request with validation errors                     |
+| Concurrent requests conflict | Use optimistic locking or queue requests                          |
 
 ---
 
@@ -238,16 +257,20 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 ### 5.1 Handoff Protocol
 
 **Development → QA:**
+
 - [ ] Developer creates test plan: `docs/test-plans/[feature-id]-test.md`
 - [ ] Developer tags QA agent: `@agent-qa`
 - [ ] Developer provides test data and reproduction steps
 
 **QA → DevOps:**
-- [ ] QA agent creates deployment doc: `docs/deployment/[feature-id]-deployment.md`
+
+- [ ] QA agent creates deployment doc:
+      `docs/deployment/[feature-id]-deployment.md`
 - [ ] QA agent tags DevOps agent: `@agent-devops`
 - [ ] QA agent confirms all tests pass
 
 **DevOps → Final Review:**
+
 - [ ] DevOps agent deploys to staging
 - [ ] DevOps agent monitors metrics
 - [ ] DevOps agent confirms production readiness
@@ -255,11 +278,13 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 ### 5.2 Coordination Notes
 
 **Agents Involved:**
+
 - **Devi (Backend):** [Specific responsibilities]
 - **Lubna (Frontend):** [Specific responsibilities]
 - **Hafiz (QA + DevOps):** [Specific responsibilities]
 
 **Communication Channel:**
+
 - Real-time: Discord `#dev-updates`
 - Async: Progress logs in `docs/progress/[feature-id].md`
 
@@ -276,6 +301,7 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 - [ ] [Acceptance criterion 3]
 
 **Example:**
+
 - [ ] User can create an account with email and password
 - [ ] User receives email confirmation within 5 minutes
 - [ ] User can log in with valid credentials
@@ -293,12 +319,14 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 - [ ] All tests pass in CI/CD
 
 **Code Quality:**
+
 - [ ] ESLint passes with no warnings
 - [ ] TypeScript strict mode enabled, no `any` types
 - [ ] Code reviewed and approved
 - [ ] No known security vulnerabilities (SAST clean)
 
 **Documentation:**
+
 - [ ] API documentation updated (if applicable)
 - [ ] README updated (if applicable)
 - [ ] ADR created (if architectural decision made)
@@ -307,16 +335,19 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 ### 6.3 Non-Functional Acceptance
 
 **Performance:**
+
 - [ ] API response time <500ms at p95 (measured with k6)
 - [ ] Frontend LCP <2.5s (measured with Lighthouse)
 - [ ] No N+1 query issues
 
 **Accessibility:**
+
 - [ ] Passes axe-core accessibility scan (0 violations)
 - [ ] Tested with screen reader (VoiceOver or NVDA)
 - [ ] Keyboard navigation works
 
 **Security:**
+
 - [ ] Input validation implemented
 - [ ] SQL injection tests pass
 - [ ] XSS prevention verified
@@ -329,6 +360,7 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 **See:** `docs/test-plans/[feature-id]-test.md` (created by Hafiz)
 
 **Summary:**
+
 - Unit tests: [List critical units to test]
 - Integration tests: [List integration points to test]
 - E2E tests: [List critical user journeys if applicable]
@@ -340,6 +372,7 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 **See:** `docs/deployment/[feature-id]-deployment.md` (created by Hafiz post-QA)
 
 **Summary:**
+
 - Deployment strategy: [Canary, Blue-Green, Rolling]
 - Rollback plan: [How to revert if issues arise]
 - Monitoring: [What metrics to watch post-deploy]
@@ -349,12 +382,14 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 ## 9. Timeline & Milestones
 
 **Estimated Effort:**
+
 - Spec writing: [hours]
 - Development: [hours/days]
 - Testing: [hours/days]
 - Deployment: [hours]
 
 **Milestones:**
+
 - [ ] Spec approved: [YYYY-MM-DD]
 - [ ] Implementation complete: [YYYY-MM-DD]
 - [ ] QA complete: [YYYY-MM-DD]
@@ -370,6 +405,7 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 
 **Spec Author:** [Agent Name]  
 **Reviewed By:**
+
 - [ ] PM (Project Manager)
 - [ ] [Other reviewers if applicable]
 
@@ -380,15 +416,16 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 
 ## 11. Changelog
 
-| Date | Author | Change |
-|------|--------|--------|
-| YYYY-MM-DD | [Agent] | Initial draft |
+| Date       | Author  | Change                           |
+| ---------- | ------- | -------------------------------- |
+| YYYY-MM-DD | [Agent] | Initial draft                    |
 | YYYY-MM-DD | [Agent] | Updated based on review feedback |
-| YYYY-MM-DD | [PM] | Approved |
+| YYYY-MM-DD | [PM]    | Approved                         |
 
 ---
 
 **Status Definitions:**
+
 - **Draft** — Work in progress, not ready for review
 - **Under Review** — Awaiting feedback from PM or stakeholders
 - **Approved** — Ready for implementation
@@ -397,4 +434,5 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 
 ---
 
-*This template follows the Axon Codex v1.2 Feature Specification Template (§1.4.1).*
+_This template follows the Axon Codex v1.2 Feature Specification Template
+(§1.4.1)._

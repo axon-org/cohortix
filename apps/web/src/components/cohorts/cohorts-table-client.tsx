@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useCohorts } from '@/hooks/use-cohorts'
-import { CohortsTable, type Cohort } from './cohorts-table'
-import { Skeleton } from '@/components/ui/skeleton'
+import { useCohorts } from '@/hooks/use-cohorts';
+import { CohortsTable, type Cohort } from './cohorts-table';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function CohortsTableClient() {
-  const { data, isLoading, error } = useCohorts()
+  const { data, isLoading, error } = useCohorts();
 
   if (isLoading) {
-    return <CohortsTableSkeleton />
+    return <CohortsTableSkeleton />;
   }
 
   if (error) {
@@ -17,7 +17,7 @@ export function CohortsTableClient() {
         <p className="text-destructive font-medium">Failed to load cohorts</p>
         <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
       </div>
-    )
+    );
   }
 
   if (!data?.data || data.data.length === 0) {
@@ -28,7 +28,7 @@ export function CohortsTableClient() {
           Create your first cohort to get started.
         </p>
       </div>
-    )
+    );
   }
 
   // Transform API data to table format
@@ -39,9 +39,9 @@ export function CohortsTableClient() {
     members: cohort.member_count,
     engagement: parseFloat(cohort.engagement_percent),
     startDate: cohort.start_date || cohort.created_at,
-  }))
+  }));
 
-  return <CohortsTable data={tableData} />
+  return <CohortsTable data={tableData} />;
 }
 
 function CohortsTableSkeleton() {
@@ -73,5 +73,5 @@ function CohortsTableSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

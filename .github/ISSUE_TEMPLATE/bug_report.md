@@ -1,7 +1,7 @@
 ---
 name: 🐛 Bug Report
 about: Report a bug to help us improve
-title: "[BUG] "
+title: '[BUG] '
 labels: bug, needs-triage
 assignees: ''
 ---
@@ -9,8 +9,6 @@ assignees: ''
 ## 🐛 Bug Description
 
 <!-- A clear and concise description of what the bug is -->
-
-
 
 ## 📋 Steps to Reproduce
 
@@ -25,43 +23,39 @@ assignees: ''
 
 <!-- What you expected to happen -->
 
-
-
 ## ❌ Actual Behavior
 
 <!-- What actually happened -->
 
-
-
 ## 📸 Screenshots / Videos
 
 <!-- If applicable, add screenshots or videos to help explain your problem -->
-
-
 
 ## 🌍 Environment
 
 <!-- Please complete the following information -->
 
 **Browser:**
+
 - Name: <!-- e.g., Chrome, Firefox, Safari -->
 - Version: <!-- e.g., 120.0.6099.109 -->
 
 **Device:**
+
 - Type: <!-- e.g., Desktop, Mobile, Tablet -->
 - OS: <!-- e.g., macOS 14.2, Windows 11, iOS 17, Android 14 -->
 - Screen size: <!-- e.g., 1920x1080, Mobile 375x812 -->
 
 **Application:**
+
 - Environment: <!-- e.g., Production, Staging, Development -->
 - URL: <!-- e.g., https://app.cohortix.com -->
 - Version/Commit: <!-- if known -->
 
 **User Account:**
+
 - Account type: <!-- e.g., Free, Pro, Enterprise -->
 - User role: <!-- e.g., Admin, Member, Viewer -->
-
-
 
 ## 🔍 Additional Context
 
@@ -79,8 +73,6 @@ assignees: ''
 
 <!-- If there are network errors, describe them or attach screenshots -->
 
-
-
 ## 🔄 Reproduction Rate
 
 <!-- How often can you reproduce this issue? -->
@@ -91,8 +83,6 @@ assignees: ''
 - [ ] Rarely (<10%)
 - [ ] Only once
 
-
-
 ## 💥 Impact
 
 <!-- What is the impact of this bug? -->
@@ -102,13 +92,9 @@ assignees: ''
 - [ ] 🟡 **Medium** - Feature partially broken, workaround exists
 - [ ] 🟢 **Low** - Minor issue, cosmetic, minimal impact
 
-
-
 ## 🔧 Possible Solution
 
 <!-- If you have suggestions on how to fix the bug, describe them here -->
-
-
 
 ## 📚 Related Issues
 
@@ -116,8 +102,6 @@ assignees: ''
 
 - Related to #
 - Duplicate of #
-
-
 
 ## ✅ Bug Report Checklist
 
@@ -129,8 +113,6 @@ assignees: ''
 - [ ] I have attached screenshots/videos if applicable
 - [ ] I have checked the console for errors and included them
 - [ ] I have tested on the latest version
-
-
 
 ---
 

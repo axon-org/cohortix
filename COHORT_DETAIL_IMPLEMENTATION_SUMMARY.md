@@ -9,7 +9,8 @@
 
 ## What Was Built
 
-Implemented the complete data layer for the Cohort Detail screen to support the Linear-inspired UI design in `/mockups/v3/03-cohort-detail-linear-dark.png`.
+Implemented the complete data layer for the Cohort Detail screen to support the
+Linear-inspired UI design in `/mockups/v3/03-cohort-detail-linear-dark.png`.
 
 ---
 
@@ -25,6 +26,7 @@ Implemented the complete data layer for the Cohort Detail screen to support the 
 - Created SQL function `get_cohort_engagement_timeline()`
 
 **Key features:**
+
 - Unique constraint on `(cohort_id, agent_id)`
 - Auto-updates `cohorts.member_count` on insert/delete
 - Auto-updates `cohorts.engagement_percent` on score changes
@@ -36,13 +38,15 @@ Implemented the complete data layer for the Cohort Detail screen to support the 
 
 **File:** `/apps/web/src/server/db/queries/cohort-members.ts` (NEW)
 
-- `getCohortMembers(cohortId)` - Fetch all allies in a cohort with engagement scores
+- `getCohortMembers(cohortId)` - Fetch all allies in a cohort with engagement
+  scores
 - `getCohortMemberCount(cohortId)` - Count members
 - `getCohortAvgEngagement(cohortId)` - Calculate average engagement
 
 **File:** `/apps/web/src/server/db/queries/cohorts.ts` (UPDATED)
 
-- Added `getCohortEngagementTimeline(cohortId, daysBack)` - Daily interaction counts for graph
+- Added `getCohortEngagementTimeline(cohortId, daysBack)` - Daily interaction
+  counts for graph
 
 ---
 
@@ -51,23 +55,27 @@ Implemented the complete data layer for the Cohort Detail screen to support the 
 All routes have authentication, RLS enforcement, and error handling.
 
 #### **GET `/api/cohorts/:id/members`** (NEW)
+
 - **File:** `/apps/web/src/app/api/cohorts/[id]/members/route.ts`
 - **Purpose:** List all allies in a cohort with engagement scores and statuses
 - **Response:** Array of `CohortMember` objects
 
 #### **GET `/api/cohorts/:id/timeline`** (NEW)
+
 - **File:** `/apps/web/src/app/api/cohorts/[id]/timeline/route.ts`
 - **Purpose:** Get daily engagement data for timeline graph
 - **Query Params:** `days` (default: 30, max: 365)
 - **Response:** Array of `{ date, interaction_count }`
 
 #### **GET `/api/cohorts/:id/activity`** (NEW)
+
 - **File:** `/apps/web/src/app/api/cohorts/[id]/activity/route.ts`
 - **Purpose:** Get recent activity log for cohort
 - **Query Params:** `limit` (default: 20, max: 100)
 - **Response:** Array of audit log entries
 
 #### **GET `/api/cohorts/:id`** (EXISTING)
+
 - **Status:** Already implemented, no changes needed
 - **Purpose:** Get cohort details with stats
 - **Response:** Full cohort object with stats
@@ -78,20 +86,21 @@ All routes have authentication, RLS enforcement, and error handling.
 
 Based on mockup analysis:
 
-| UI Section | API Endpoint | Data Used |
-|-----------|--------------|-----------|
-| **Header** (Name, Status, Date) | `GET /api/cohorts/:id` | `name`, `status`, `start_date`, `end_date` |
-| **"Invite AI Ally" Button** | Manual action | Opens modal (future: `POST /api/cohorts/:id/members`) |
-| **Engagement Timeline** | `GET /api/cohorts/:id/timeline` | `timeline[]` array |
-| **Activity Log** | `GET /api/cohorts/:id/activity` | `activities[]` array |
-| **Batch Members (8)** | `GET /api/cohorts/:id/members` | `members[]` array |
-| **Member Card** (Nexus-7, etc.) | - | `agent_name`, `agent_role`, `agent_status`, `engagement_score` |
+| UI Section                      | API Endpoint                    | Data Used                                                      |
+| ------------------------------- | ------------------------------- | -------------------------------------------------------------- |
+| **Header** (Name, Status, Date) | `GET /api/cohorts/:id`          | `name`, `status`, `start_date`, `end_date`                     |
+| **"Invite AI Ally" Button**     | Manual action                   | Opens modal (future: `POST /api/cohorts/:id/members`)          |
+| **Engagement Timeline**         | `GET /api/cohorts/:id/timeline` | `timeline[]` array                                             |
+| **Activity Log**                | `GET /api/cohorts/:id/activity` | `activities[]` array                                           |
+| **Batch Members (8)**           | `GET /api/cohorts/:id/members`  | `members[]` array                                              |
+| **Member Card** (Nexus-7, etc.) | -                               | `agent_name`, `agent_role`, `agent_status`, `engagement_score` |
 
 ---
 
 ## Response Schemas
 
 ### GET `/api/cohorts/:id/members`
+
 ```json
 {
   "members": [
@@ -114,6 +123,7 @@ Based on mockup analysis:
 ```
 
 ### GET `/api/cohorts/:id/timeline?days=30`
+
 ```json
 {
   "timeline": [
@@ -129,6 +139,7 @@ Based on mockup analysis:
 ```
 
 ### GET `/api/cohorts/:id/activity?limit=20`
+
 ```json
 {
   "activities": [
@@ -161,6 +172,7 @@ Based on mockup analysis:
 ```
 
 **What the migration does:**
+
 - Creates `cohort_members` table
 - Enables RLS with tenant isolation
 - Creates `get_cohort_engagement_timeline()` function
@@ -193,7 +205,8 @@ Based on mockup analysis:
 
 ### Manual Testing Required
 
-Since the `cohort_members` table doesn't exist yet (migration not applied), the endpoints can't be fully tested until:
+Since the `cohort_members` table doesn't exist yet (migration not applied), the
+endpoints can't be fully tested until:
 
 1. Migration is applied in Supabase
 2. Test data is seeded
@@ -205,8 +218,8 @@ Since the `cohort_members` table doesn't exist yet (migration not applied), the 
 # (Paste 0003_cohort_members_table.sql into Supabase SQL Editor)
 
 # 2. Seed test data
-INSERT INTO cohort_members (cohort_id, agent_id, engagement_score) 
-SELECT 
+INSERT INTO cohort_members (cohort_id, agent_id, engagement_score)
+SELECT
   c.id as cohort_id,
   a.id as agent_id,
   (RANDOM() * 100)::numeric(5,2) as engagement_score
@@ -223,6 +236,7 @@ curl http://localhost:3000/api/cohorts/{cohort-id}/activity
 ### Type Safety
 
 All endpoints use TypeScript with proper types:
+
 - ✅ Zod schemas for validation (inherited from existing patterns)
 - ✅ TypeScript interfaces for responses
 - ✅ Proper error handling with RFC 7807
@@ -232,6 +246,7 @@ All endpoints use TypeScript with proper types:
 ## Security & RLS
 
 All endpoints enforce:
+
 - ✅ Authentication (`getCurrentUser()`)
 - ✅ Organization membership check (`getUserOrganization()`)
 - ✅ RLS policies on database level (tenant isolation)
@@ -242,28 +257,34 @@ All endpoints enforce:
 ## Known Limitations
 
 ### 1. Timeline Data Dependency
+
 - Assumes `audit_logs` table tracks agent activity
 - Assumes `audit_logs.user_id` can be matched to `agent_id`
 - May need schema adjustment if assumptions are incorrect
 
 ### 2. Activity Log Format
+
 - Returns raw audit log entries
 - Frontend may need to transform/format for better UX
 - Consider adding activity type categorization
 
 ### 3. Member Management Missing
+
 - No endpoints to add/remove members yet
-- Future: `POST /api/cohorts/:id/members` and `DELETE /api/cohorts/:id/members/:memberId`
+- Future: `POST /api/cohorts/:id/members` and
+  `DELETE /api/cohorts/:id/members/:memberId`
 
 ---
 
 ## Next Steps
 
 ### For Backend (Devi)
+
 - ✅ Complete - All endpoints created
 - ⏳ Pending: Apply migration and test with real data
 
 ### For Frontend (Sami)
+
 1. Review `/COHORT_DETAIL_API_READY.md` for integration guide
 2. Apply database migration in Supabase
 3. Build UI components:
@@ -276,6 +297,7 @@ All endpoints enforce:
 6. Style according to Linear-inspired design
 
 ### For PM/Review
+
 - All endpoints follow existing conventions
 - RLS policies ensure multi-tenant isolation
 - Error handling follows RFC 7807
@@ -290,10 +312,12 @@ All endpoints enforce:
 ✅ **API routes:** 3 new endpoints + 1 existing  
 ✅ **Query functions:** Member listing, timeline, activity  
 ✅ **Documentation:** Integration guide for frontend  
-✅ **Migration:** SQL file ready to execute  
+✅ **Migration:** SQL file ready to execute
 
-**Status:** Data layer complete. Frontend can start building the UI after applying the migration.
+**Status:** Data layer complete. Frontend can start building the UI after
+applying the migration.
 
 ---
 
-**Questions or issues?** Ping Devi in #dev-general or check `/COHORT_DETAIL_API_READY.md` for detailed integration guide.
+**Questions or issues?** Ping Devi in #dev-general or check
+`/COHORT_DETAIL_API_READY.md` for detailed integration guide.

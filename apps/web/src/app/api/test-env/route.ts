@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
@@ -7,17 +7,20 @@ export async function GET() {
       NEXT_PUBLIC_SUPABASE_URL_EXISTS: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
       NEXT_PUBLIC_SUPABASE_ANON_KEY_EXISTS: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       SUPABASE_URL_VAL: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 10) + '...',
-    }
-    
+    };
+
     return NextResponse.json({
       success: true,
-      env: envVars
-    })
+      env: envVars,
+    });
   } catch (error: any) {
-    return NextResponse.json({
-      success: false,
-      error: 'Catch block',
-      message: error?.message || String(error)
-    }, { status: 500 })
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Catch block',
+        message: error?.message || String(error),
+      },
+      { status: 500 }
+    );
   }
 }

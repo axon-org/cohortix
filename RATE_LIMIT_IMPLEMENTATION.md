@@ -6,7 +6,8 @@
 
 ## Summary
 
-Implemented in-memory rate limiting for all `/api/v1/` endpoints in the Cohortix Next.js web app to prevent abuse and ensure fair resource usage.
+Implemented in-memory rate limiting for all `/api/v1/` endpoints in the Cohortix
+Next.js web app to prevent abuse and ensure fair resource usage.
 
 ## Implementation Details
 
@@ -18,10 +19,11 @@ Added `authRateLimit` preset to `apps/web/src/lib/rate-limit.ts`:
 export const authRateLimit: RateLimitConfig = {
   maxRequests: 20,
   windowMs: 60 * 1000, // 1 minute
-}
+};
 ```
 
 **Existing presets:**
+
 - `strictRateLimit`: 5 req/min (for sensitive operations)
 - `authRateLimit`: 20 req/min (for auth endpoints) — **NEW**
 - `standardRateLimit`: 100 req/min (for general API endpoints)
@@ -29,15 +31,20 @@ export const authRateLimit: RateLimitConfig = {
 
 ### 2. Combined Middleware Function
 
-Created `withMiddleware()` helper in `apps/web/src/lib/rate-limit.ts` that combines:
+Created `withMiddleware()` helper in `apps/web/src/lib/rate-limit.ts` that
+combines:
+
 - **Rate limiting** (using token bucket algorithm)
 - **RFC 7807 error handling** (Problem Details format)
 
-This replaces the previous pattern of `withErrorHandler()` wrapping handlers separately.
+This replaces the previous pattern of `withErrorHandler()` wrapping handlers
+separately.
 
 **Benefits:**
+
 - Single wrapper for both concerns
-- Automatic rate limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`, `Retry-After`)
+- Automatic rate limit headers (`X-RateLimit-Limit`, `X-RateLimit-Remaining`,
+  `Retry-After`)
 - Proper 429 responses with RFC 7807 Problem Details
 - Handles all custom `AppError` types
 - Comprehensive error logging
@@ -66,14 +73,17 @@ Updated 11 route files:
 // Before
 export const GET = withErrorHandler(async (request: NextRequest) => {
   // handler code
-})
+});
 
 // After
-import { withMiddleware, standardRateLimit } from '@/lib/rate-limit'
+import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 
-export const GET = withMiddleware(standardRateLimit, async (request: NextRequest) => {
-  // handler code
-})
+export const GET = withMiddleware(
+  standardRateLimit,
+  async (request: NextRequest) => {
+    // handler code
+  }
+);
 ```
 
 All endpoints now use `standardRateLimit` (100 requests/min per IP).
@@ -81,21 +91,25 @@ All endpoints now use `standardRateLimit` (100 requests/min per IP).
 ### 4. Rate Limiting Strategy
 
 **Algorithm:** Token Bucket
+
 - Bucket starts with `maxRequests` tokens
 - Each request consumes 1 token
 - Bucket refills at rate of `(maxRequests / windowMs)` tokens per millisecond
 - Request is allowed if bucket has ≥1 token
 
 **Identifier:** IP address or user ID
+
 - Extracted from `x-forwarded-for` or `x-real-ip` headers
 - Falls back to user ID from auth headers if available
 - Key format: `ip:192.168.1.1` or `user:uuid`
 
 **Storage:** In-memory `Map`
+
 - Automatic cleanup every 5 minutes (removes entries older than 1 hour)
 - **Note:** Not suitable for multi-instance deployments without Redis/Upstash
 
 **Response Headers:**
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 99
@@ -122,10 +136,10 @@ When rate limit is exceeded, returns 429 with RFC 7807 Problem Details:
 
 ### Current Limits
 
-| Endpoint Type | Limit | Window | Applied To |
-|--------------|-------|--------|------------|
-| General API | 100 req | 1 min | All `/api/v1/` routes |
-| Auth | 20 req | 1 min | *Not yet applied (no custom auth routes)* |
+| Endpoint Type | Limit   | Window | Applied To                                |
+| ------------- | ------- | ------ | ----------------------------------------- |
+| General API   | 100 req | 1 min  | All `/api/v1/` routes                     |
+| Auth          | 20 req  | 1 min  | _Not yet applied (no custom auth routes)_ |
 
 ### Changing Limits
 
@@ -133,12 +147,12 @@ To adjust limits for specific endpoints:
 
 ```typescript
 // In the route file
-import { withMiddleware, strictRateLimit } from '@/lib/rate-limit'
+import { withMiddleware, strictRateLimit } from '@/lib/rate-limit';
 
 // Use a different preset
 export const POST = withMiddleware(strictRateLimit, async (request) => {
   // handler code
-})
+});
 
 // Or create a custom config
 export const DELETE = withMiddleware(
@@ -146,7 +160,7 @@ export const DELETE = withMiddleware(
   async (request) => {
     // handler code
   }
-)
+);
 ```
 
 ## Production Considerations
@@ -174,6 +188,7 @@ When moving to production, replace in-memory storage with Redis/Upstash:
    - Update `RateLimitStore` class in `rate-limit.ts`
 
 **Migration steps:**
+
 1. Add Redis client to `rate-limit.ts`
 2. Replace `Map` with Redis commands (`INCR`, `EXPIRE`)
 3. Update tests to use Redis mock
@@ -204,6 +219,7 @@ done
 ```
 
 Expected response on rate limit:
+
 ```json
 {
   "type": "https://cohortix.com/errors/rate-limit-exceeded",
@@ -218,11 +234,13 @@ Expected response on rate limit:
 ### Unit Tests
 
 Rate limiting tests exist in:
+
 ```
 apps/web/src/lib/__tests__/rate-limit.test.ts
 ```
 
 Run tests:
+
 ```bash
 pnpm test rate-limit
 ```
@@ -230,12 +248,16 @@ pnpm test rate-limit
 ## Files Modified
 
 ### Core Implementation
-- `apps/web/src/lib/rate-limit.ts` — Added `authRateLimit` preset and `withMiddleware()` function
+
+- `apps/web/src/lib/rate-limit.ts` — Added `authRateLimit` preset and
+  `withMiddleware()` function
 
 ### API Routes (11 files)
+
 - All `/api/v1/` routes updated to use `withMiddleware(standardRateLimit, ...)`
 
 ### Commit
+
 ```
 feat: add API rate limiting (in-memory, 100 req/min)
 
@@ -252,7 +274,8 @@ feat: add API rate limiting (in-memory, 100 req/min)
 2. **Adjust limits** based on actual usage patterns
 3. **Implement Redis** before horizontal scaling
 4. **Add custom limits** for specific high-traffic endpoints
-5. **Consider user-based limits** for authenticated requests (instead of IP-based)
+5. **Consider user-based limits** for authenticated requests (instead of
+   IP-based)
 
 ## References
 
@@ -264,4 +287,4 @@ feat: add API rate limiting (in-memory, 100 req/min)
 
 **Status:** ✅ Complete  
 **Build:** ✅ Passing  
-**Tests:** ⚠️  Manual testing required
+**Tests:** ⚠️ Manual testing required

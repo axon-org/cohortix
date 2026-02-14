@@ -8,13 +8,17 @@
 
 ## Implementation Summary
 
-Built the complete Cohort Detail Screen UI with Linear.app-inspired monochrome aesthetic.
+Built the complete Cohort Detail Screen UI with Linear.app-inspired monochrome
+aesthetic.
 
 ### ✅ Components Created
 
-1. **`cohort-header.tsx`** - Header with name, status badge, date range, "Invite AI Ally" button
-2. **`engagement-timeline.tsx`** - Line chart showing daily interaction counts (Recharts)
-3. **`batch-members.tsx`** - Table of AI allies with engagement scores and status
+1. **`cohort-header.tsx`** - Header with name, status badge, date range, "Invite
+   AI Ally" button
+2. **`engagement-timeline.tsx`** - Line chart showing daily interaction counts
+   (Recharts)
+3. **`batch-members.tsx`** - Table of AI allies with engagement scores and
+   status
 4. **`activity-log.tsx`** - Live feed of cohort activities
 5. **`cohort-detail-client.tsx`** - Client component orchestrating data fetching
 6. **`app/(dashboard)/cohorts/[id]/page.tsx`** - Server component page wrapper
@@ -26,8 +30,8 @@ Built the complete Cohort Detail Screen UI with Linear.app-inspired monochrome a
   - `getCohortMembers(id)` - Fetch batch members list
   - `getCohortTimeline(id, days)` - Fetch engagement timeline data
   - `getCohortActivity(id, limit)` - Fetch activity log
-  
-- **Hooks** (`hooks/use-cohort-detail.ts`) - React Query hooks for data fetching:
+- **Hooks** (`hooks/use-cohort-detail.ts`) - React Query hooks for data
+  fetching:
   - `useCohortDetail(id)`
   - `useCohortMembers(id)`
   - `useCohortTimeline(id, days)`
@@ -35,7 +39,8 @@ Built the complete Cohort Detail Screen UI with Linear.app-inspired monochrome a
 
 ### ✅ Design System Compliance
 
-- **Strict Monochrome:** Black (#0A0A0B), white (#FAFAFA), gray surfaces (#141416)
+- **Strict Monochrome:** Black (#0A0A0B), white (#FAFAFA), gray surfaces
+  (#141416)
 - **Color ONLY for status:** Green (active), amber (paused), red (at-risk)
 - **White glow effects:** Subtle luminosity on hover states
 - **Typography:** Inter for text, SF Mono for numbers/data
@@ -49,6 +54,7 @@ Built the complete Cohort Detail Screen UI with Linear.app-inspired monochrome a
 **File:** `~/Projects/cohortix/migrations/0003_cohort_members_table.sql`
 
 **To Apply:**
+
 1. Open Supabase Dashboard → SQL Editor
    - URL: https://supabase.com/dashboard/project/rfwscvklcokzuofyzqwx/sql/new
 2. Copy the entire contents of `migrations/0003_cohort_members_table.sql`
@@ -56,6 +62,7 @@ Built the complete Cohort Detail Screen UI with Linear.app-inspired monochrome a
 4. Click "Run" to execute
 
 **What the Migration Does:**
+
 - Creates `cohort_members` table (links agents to cohorts)
 - Adds RLS policies for tenant isolation
 - Creates `get_cohort_engagement_timeline()` database function
@@ -104,21 +111,26 @@ Once migration is applied:
 ## Known Limitations
 
 ### Timeline Data Accuracy
+
 - Currently uses `audit_logs` table for interaction counts
 - May need refinement based on domain-specific "interactions" definition
 - If `audit_logs.user_id` doesn't store agent IDs, query needs adjustment
 
 ### Activity Log Format
+
 - Returns raw `audit_logs` entries
 - Could benefit from formatted/transformed activity types
-- Consider adding specific activity types (e.g., "agent_joined", "engagement_spike")
+- Consider adding specific activity types (e.g., "agent_joined",
+  "engagement_spike")
 
 ### Member Management
+
 - No endpoints yet for adding/removing members from cohorts
 - "Invite AI Ally" button is UI-only (no backend handler yet)
 - Future feature: POST/DELETE `/api/cohorts/:id/members`
 
 ### Timeline Period Selector
+
 - 7D, 30D, 90D buttons are UI-only (not functional yet)
 - Currently hardcoded to 30 days
 - TODO: Wire up period selector to refetch with different `days` parameter
@@ -127,7 +139,8 @@ Once migration is applied:
 
 ## Next Steps
 
-1. **Apply Migration** - Run `0003_cohort_members_table.sql` in Supabase SQL Editor
+1. **Apply Migration** - Run `0003_cohort_members_table.sql` in Supabase SQL
+   Editor
 2. **Seed Test Data** - Add test `cohort_members` records to verify UI
 3. **Test Navigation** - Verify clicking cohort rows navigates to detail page
 4. **Implement "Invite AI Ally"** - Build modal/form for adding members
@@ -140,12 +153,12 @@ Once migration is applied:
 
 All endpoints use direct `/api/cohorts/:id` path (not `/api/v1`):
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/cohorts/:id` | GET | Fetch cohort details with stats |
-| `/api/cohorts/:id/members` | GET | Fetch batch members with engagement scores |
-| `/api/cohorts/:id/timeline?days=30` | GET | Fetch engagement timeline data |
-| `/api/cohorts/:id/activity?limit=20` | GET | Fetch activity log entries |
+| Endpoint                             | Method | Purpose                                    |
+| ------------------------------------ | ------ | ------------------------------------------ |
+| `/api/cohorts/:id`                   | GET    | Fetch cohort details with stats            |
+| `/api/cohorts/:id/members`           | GET    | Fetch batch members with engagement scores |
+| `/api/cohorts/:id/timeline?days=30`  | GET    | Fetch engagement timeline data             |
+| `/api/cohorts/:id/activity?limit=20` | GET    | Fetch activity log entries                 |
 
 ---
 

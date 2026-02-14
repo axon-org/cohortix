@@ -19,20 +19,24 @@ const sql = postgres(directUrl, {
 async function run() {
   try {
     console.log('📖 Reading migration 0003...');
-    const migrationSQL = readFileSync(resolve(process.cwd(), 'migrations/0003_cohort_members_table.sql'), 'utf-8');
-    
+    const migrationSQL = readFileSync(
+      resolve(process.cwd(), 'migrations/0003_cohort_members_table.sql'),
+      'utf-8'
+    );
+
     console.log('✅ Migration file loaded\n');
     console.log('🚀 Applying migration 0003_cohort_members_table...\n');
-    
+
     await sql.unsafe(migrationSQL);
-    
+
     console.log('✅ Migration 0003 completed successfully!\n');
-    
+
     // Verify
-    const result = await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'cohort_members' ORDER BY ordinal_position`;
+    const result =
+      await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'cohort_members' ORDER BY ordinal_position`;
     console.log('📊 Cohort Members Table Columns:');
-    result.forEach(row => console.log(`   • ${row.column_name}`));
-    
+    result.forEach((row) => console.log(`   • ${row.column_name}`));
+
     await sql.end();
   } catch (error) {
     console.error('❌ Migration failed:', error);
