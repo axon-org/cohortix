@@ -202,17 +202,21 @@ describe('Logger', () => {
 
   describe('Debug Logging', () => {
     it('should only log debug in development mode', () => {
-      const originalEnv = process.env.NODE_ENV
-
-      Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', writable: true })
+      // Test production mode - debug should not log
+      vi.stubEnv('NODE_ENV', 'production')
       testLogger.debug('Debug message')
       expect(consoleLogSpy).not.toHaveBeenCalled()
 
-      Object.defineProperty(process.env, 'NODE_ENV', { value: 'development', writable: true })
+      // Clear the spy
+      consoleLogSpy.mockClear()
+
+      // Test development mode - debug should log
+      vi.stubEnv('NODE_ENV', 'development')
       testLogger.debug('Debug message')
       expect(consoleLogSpy).toHaveBeenCalled()
 
-      Object.defineProperty(process.env, 'NODE_ENV', { value: originalEnv, writable: true })
+      // Clean up
+      vi.unstubAllEnvs()
     })
   })
 

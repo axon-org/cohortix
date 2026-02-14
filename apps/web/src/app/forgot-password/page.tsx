@@ -106,7 +106,7 @@ export default function ForgotPasswordPage() {
             Reset your password
           </h2>
           <p className="text-sm mb-6" style={{ color: '#9CA3AF' }}>
-            Enter your email address and we'll send you a reset link
+            Enter your email address and we&apos;ll send you a reset link
           </p>
 
           {success ? (
@@ -120,7 +120,7 @@ export default function ForgotPasswordPage() {
             >
               <p className="font-medium mb-1">Check your email!</p>
               <p style={{ color: '#9CA3AF' }}>
-                We've sent a password reset link to {email}
+                We&apos;ve sent a password reset link to {email}
               </p>
             </div>
           ) : (

@@ -17,12 +17,15 @@ import { type Operation } from '@/lib/api/client'
 type Task = {
   id: string
   title: string
+  description?: string
   status: string
   priority?: string
   dueDate?: string
   assigneeId?: string
   projectId?: string
   projects?: { id: string; name: string; status: string }
+  createdAt: string
+  updatedAt?: string
 }
 
 interface KanbanViewProps {
