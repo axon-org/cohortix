@@ -6,7 +6,7 @@ on:
 
 concurrency:
   group: production-${{ github.ref }}
-  cancel-in-progress: false  # Never cancel production deployments
+  cancel-in-progress: false # Never cancel production deployments
 
 env:
   NODE_VERSION: '20'
@@ -166,7 +166,10 @@ jobs:
           TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
           # Production environment variables
           NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -254,10 +257,10 @@ jobs:
         run: |
           DEPLOYMENT_URL="${{ needs.deploy-production.outputs.deployment-url }}"
           echo "Checking health endpoint: $DEPLOYMENT_URL/api/health"
-          
+
           response=$(curl -f -s "$DEPLOYMENT_URL/api/health")
           echo "Response: $response"
-          
+
           if [ $? -eq 0 ]; then
             echo "✓ Health check passed"
           else
@@ -268,15 +271,15 @@ jobs:
       - name: Critical path smoke tests
         run: |
           DEPLOYMENT_URL="${{ needs.deploy-production.outputs.deployment-url }}"
-          
+
           # Test homepage
           curl -f -s "$DEPLOYMENT_URL" > /dev/null || (echo "❌ Homepage failed" && exit 1)
           echo "✓ Homepage accessible"
-          
+
           # Test API endpoint
           curl -f -s "$DEPLOYMENT_URL/api/status" > /dev/null || (echo "❌ API failed" && exit 1)
           echo "✓ API responsive"
-          
+
           echo "✓ All smoke tests passed"
 
   # ═══════════════════════════════════════════════════════════════
@@ -390,7 +393,7 @@ jobs:
       #     subject: Production Deployment - ${{ steps.status.outputs.message }}
       #     body: |
       #       Production deployment completed.
-      #       
+      #
       #       Status: ${{ steps.status.outputs.message }}
       #       Deployment URL: ${{ needs.deploy-production.outputs.deployment-url }}
       #       Commit: ${{ github.sha }}
