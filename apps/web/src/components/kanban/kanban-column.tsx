@@ -14,12 +14,15 @@ import { cn } from '@/lib/utils'
 type Task = {
   id: string
   title: string
+  description?: string
   status: string
   priority?: string
   dueDate?: string
   assigneeId?: string
   projectId?: string
   projects?: { id: string; name: string; status: string }
+  createdAt: string
+  updatedAt?: string
 }
 
 interface KanbanColumnProps {

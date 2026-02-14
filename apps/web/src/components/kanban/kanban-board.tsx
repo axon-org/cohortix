@@ -28,12 +28,15 @@ import { useUpdateOperation } from '@/hooks/use-operations'
 type Task = {
   id: string
   title: string
+  description?: string
   status: string
   priority?: string
   dueDate?: string
   assigneeId?: string
   projectId?: string
   projects?: { id: string; name: string; status: string }
+  createdAt: string
+  updatedAt?: string
 }
 
 export type KanbanStatus = 'planning' | 'active' | 'on_hold' | 'completed' | 'archived'
