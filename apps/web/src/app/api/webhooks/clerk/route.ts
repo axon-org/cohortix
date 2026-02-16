@@ -51,9 +51,8 @@ export async function POST(req: Request) {
     return new NextResponse('Missing svix headers', { status: 400 });
   }
 
-  // Get webhook body
-  const payload = await req.json();
-  const body = JSON.stringify(payload) as string;
+  // Get webhook body as raw text (required for signature verification)
+  const body = await req.text();
 
   // Verify webhook signature
   const wh = new Webhook(webhookSecret);
@@ -80,7 +79,7 @@ export async function POST(req: Request) {
         const primaryEmail = email_addresses.find((e) => e.id === evt.data.primary_email_address_id);
 
         // Create user profile in Supabase
-        const { error } = await supabase.from('users').insert({
+        const { error } = await supabase.from('profiles').insert({
           clerk_user_id: id,
           email: primaryEmail?.email_address || '',
           first_name: first_name || null,
@@ -103,7 +102,7 @@ export async function POST(req: Request) {
 
         // Update user profile in Supabase
         const { error } = await supabase
-          .from('users')
+          .from('profiles')
           .update({
             email: primaryEmail?.email_address || '',
             first_name: first_name || null,
@@ -127,7 +126,7 @@ export async function POST(req: Request) {
 
         // Soft delete user (mark as deleted but keep data for audit)
         const { error } = await supabase
-          .from('users')
+          .from('profiles')
           .update({
             deleted_at: new Date().toISOString(),
           })
@@ -145,11 +144,14 @@ export async function POST(req: Request) {
       case 'organization.created': {
         const { id, name, slug, image_url } = evt.data;
 
+        // Generate slug from name if missing (slug is NOT NULL in schema)
+        const orgSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
         // Create organization in Supabase
         const { error } = await supabase.from('organizations').insert({
           clerk_org_id: id,
           name: name,
-          slug: slug || null,
+          slug: orgSlug,
           logo_url: image_url || null,
         });
 
@@ -167,7 +169,7 @@ export async function POST(req: Request) {
 
         // Get internal IDs
         const { data: user } = await supabase
-          .from('users')
+          .from('profiles')
           .select('id')
           .eq('clerk_user_id', public_user_data.user_id)
           .single();
