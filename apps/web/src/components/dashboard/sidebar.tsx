@@ -30,7 +30,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ user }: SidebarProps) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '/';
   const [collapsed, setCollapsed] = useState(false);
 
   const displayName = user?.profile?.display_name || user?.email?.split('@')[0] || 'User';
