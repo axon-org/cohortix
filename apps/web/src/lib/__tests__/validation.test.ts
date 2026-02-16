@@ -3,7 +3,8 @@
  * Codex v1.2 Section 2.5.1
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import { NextRequest, NextResponse } from 'next/server';
 import {
   createMissionSchema,
   updateMissionSchema,
@@ -12,8 +13,11 @@ import {
   paginationSchema,
   emailSchema,
   uuidSchema,
+  validateRequest,
+  withValidation,
 } from '../validation';
 import { ValidationError } from '../errors';
+import { logger } from '../logger';
 
 describe('Validation Schemas', () => {
   describe('UUID Schema', () => {
@@ -244,5 +248,121 @@ describe('validateData', () => {
       expect(validationError.extensions?.errors).toHaveProperty('title');
       expect(validationError.extensions?.errors).toHaveProperty('status');
     }
+  });
+
+  it('maps empty path validation errors to _root', () => {
+    const literalSchema = createMissionSchema.refine(() => false, {
+      message: 'Mission object is invalid',
+      path: [],
+    });
+
+    expect(() => validateData(literalSchema, { title: 'Valid title', description: 'Valid desc 12345' })).toThrow(
+      ValidationError
+    );
+
+    try {
+      validateData(literalSchema, { title: 'Valid title', description: 'Valid desc 12345' });
+    } catch (error) {
+      const validationError = error as ValidationError;
+      expect(validationError.extensions?.errors).toHaveProperty('_root');
+    }
+  });
+});
+
+describe('validateRequest and withValidation', () => {
+  it('validates query params with coercion and defaults', async () => {
+    const request = new NextRequest('http://localhost:3000/api/test?page=2');
+    const validator = validateRequest(paginationSchema, { target: 'query' });
+
+    const result = await validator(request);
+
+    expect(result).toEqual({ page: 2, limit: 20 });
+  });
+
+  it('throws ValidationError when body JSON is invalid', async () => {
+    const request = new NextRequest('http://localhost:3000/api/test', {
+      method: 'POST',
+      body: '{"broken": ',
+      headers: { 'content-type': 'application/json' },
+    });
+
+    const validator = validateRequest(createMissionSchema, { target: 'body' });
+
+    await expect(validator(request)).rejects.toThrow(ValidationError);
+  });
+
+  it('throws ValidationError for invalid target configuration', async () => {
+    const request = new NextRequest('http://localhost:3000/api/test');
+    const validator = validateRequest(paginationSchema, {
+      target: 'invalid' as never,
+    });
+
+    await expect(validator(request)).rejects.toThrow('Validation failed');
+
+    try {
+      await validator(request);
+    } catch (error) {
+      const validationError = error as ValidationError;
+      expect(validationError.extensions?.errors).toMatchObject({
+        _error: ['Invalid validation target: invalid'],
+      });
+    }
+  });
+
+  it('throws when params target is used without validateData', async () => {
+    const request = new NextRequest('http://localhost:3000/api/test');
+    const validator = validateRequest(paginationSchema, { target: 'params' });
+
+    await expect(validator(request)).rejects.toThrow('Validation failed');
+
+    try {
+      await validator(request);
+    } catch (error) {
+      const validationError = error as ValidationError;
+      expect(validationError.extensions?.errors).toMatchObject({
+        _error: ['Use validateData for params validation'],
+      });
+    }
+  });
+
+  it('logs warn and returns structured field errors on schema validation failure', async () => {
+    const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
+
+    const request = new NextRequest('http://localhost:3000/api/test?page=-1');
+    const validator = validateRequest(paginationSchema, { target: 'query' });
+
+    await expect(validator(request)).rejects.toThrow(ValidationError);
+    expect(warnSpy).toHaveBeenCalledWith(
+      'Validation failed',
+      expect.objectContaining({ target: 'query' })
+    );
+
+    warnSpy.mockRestore();
+  });
+
+  it('withValidation passes validated payload to handler', async () => {
+    const handler = vi.fn(async (_req, data) => NextResponse.json({ title: data.title }));
+    const wrapped = withValidation(createMissionSchema, handler, { target: 'body' });
+
+    const request = new NextRequest('http://localhost:3000/api/test', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: 'Ship PR8 safely',
+        description: 'Add high value tests and close QA gates',
+      }),
+      headers: { 'content-type': 'application/json' },
+    });
+
+    const response = await wrapped(request);
+
+    expect(response.status).toBe(200);
+    expect(handler).toHaveBeenCalledOnce();
+
+    const validatedPayload = handler.mock.calls[0]?.[1];
+    expect(validatedPayload).toBeDefined();
+    expect(validatedPayload).toMatchObject({
+      title: 'Ship PR8 safely',
+      status: 'planning',
+    });
   });
 });

@@ -4,15 +4,17 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import {
   createRateLimiter,
   rateLimitStore,
   strictRateLimit,
   standardRateLimit,
   generousRateLimit,
+  withRateLimit,
+  withMiddleware,
 } from '../rate-limit';
-import { RateLimitError } from '../errors';
+import { AppError, RateLimitError } from '../errors';
 
 describe('Rate Limiting', () => {
   beforeEach(() => {
@@ -273,6 +275,92 @@ describe('Rate Limiting', () => {
 
       // Should work after clear (creates new bucket)
       await expect(rateLimiter(request)).resolves.toBeUndefined();
+    });
+  });
+
+  describe('withRateLimit wrapper', () => {
+    it('returns RFC7807 response with rate limit headers when exceeded', async () => {
+      const wrapped = withRateLimit(
+        { maxRequests: 1, windowMs: 1000 },
+        async () => NextResponse.json({ ok: true })
+      );
+
+      const request = new NextRequest('http://localhost:3000/api/test', {
+        headers: { 'x-forwarded-for': '10.10.10.1' },
+      });
+
+      const first = await wrapped(request);
+      const second = await wrapped(request);
+
+      expect(first.status).toBe(200);
+      expect(second.status).toBe(429);
+      expect(second.headers.get('content-type')).toContain('application/problem+json');
+      expect(second.headers.get('x-ratelimit-limit')).toBe('1');
+      expect(second.headers.get('x-ratelimit-remaining')).toBe('0');
+      expect(Number(second.headers.get('retry-after'))).toBeGreaterThanOrEqual(0);
+    });
+
+    it('rethrows non-rate-limit errors from handler', async () => {
+      const wrapped = withRateLimit(
+        { maxRequests: 5, windowMs: 1000 },
+        async () => {
+          throw new Error('boom');
+        }
+      );
+
+      const request = new NextRequest('http://localhost:3000/api/test');
+      await expect(wrapped(request)).rejects.toThrow('boom');
+    });
+  });
+
+  describe('withMiddleware wrapper', () => {
+    it('converts AppError to RFC7807 response', async () => {
+      const wrapped = withMiddleware({ maxRequests: 10, windowMs: 1000 }, async () => {
+        throw new AppError(403, 'Forbidden', 'Not allowed for this cohort');
+      });
+
+      const request = new NextRequest('http://localhost:3000/api/cohorts/abc');
+      const response = await wrapped(request);
+      const payload = await response.json();
+
+      expect(response.status).toBe(403);
+      expect(payload).toMatchObject({
+        title: 'Forbidden',
+        status: 403,
+        detail: 'Not allowed for this cohort',
+      });
+    });
+
+    it('converts generic Error to 500 with message', async () => {
+      const wrapped = withMiddleware({ maxRequests: 10, windowMs: 1000 }, async () => {
+        throw new Error('database temporarily unavailable');
+      });
+
+      const request = new NextRequest('http://localhost:3000/api/cohorts/abc');
+      const response = await wrapped(request);
+      const payload = await response.json();
+
+      expect(response.status).toBe(500);
+      expect(payload).toMatchObject({
+        title: 'Internal Server Error',
+        detail: 'database temporarily unavailable',
+      });
+    });
+
+    it('converts non-Error throwables to generic 500 response', async () => {
+      const wrapped = withMiddleware({ maxRequests: 10, windowMs: 1000 }, async () => {
+        throw 'panic';
+      });
+
+      const request = new NextRequest('http://localhost:3000/api/cohorts/abc');
+      const response = await wrapped(request);
+      const payload = await response.json();
+
+      expect(response.status).toBe(500);
+      expect(payload).toMatchObject({
+        title: 'Internal Server Error',
+        detail: 'An unexpected error occurred',
+      });
     });
   });
 });

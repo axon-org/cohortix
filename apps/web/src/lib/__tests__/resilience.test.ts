@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { withRetry, CircuitBreaker, CircuitState } from '../resilience';
+import { withRetry, CircuitBreaker, CircuitState, withTimeout, Semaphore } from '../resilience';
 
 describe('Retry Pattern', () => {
   describe('withRetry', () => {
@@ -349,5 +349,56 @@ describe('Circuit Breaker Pattern', () => {
 
       expect(breaker.getState()).toBe(CircuitState.CLOSED);
     });
+  });
+});
+
+describe('Timeout and Bulkhead Patterns', () => {
+  it('withTimeout resolves when operation completes before timeout', async () => {
+    const result = await withTimeout(async () => 'ok', { timeoutMs: 50 });
+    expect(result).toBe('ok');
+  });
+
+  it('withTimeout rejects when operation exceeds timeout', async () => {
+    await expect(
+      withTimeout(
+        async () => {
+          await new Promise((resolve) => setTimeout(resolve, 30));
+          return 'late';
+        },
+        { timeoutMs: 10 }
+      )
+    ).rejects.toThrow('Operation timed out after 10ms');
+  });
+
+  it('withTimeout rejects immediately when signal is already aborted', async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    await expect(
+      withTimeout(async () => 'should-not-run', {
+        timeoutMs: 50,
+        signal: controller.signal,
+      })
+    ).rejects.toThrow('Operation aborted');
+  });
+
+  it('Semaphore enforces max concurrency and releases permits', async () => {
+    const semaphore = new Semaphore(2);
+    let active = 0;
+    let peak = 0;
+
+    const task = async () =>
+      semaphore.acquire(async () => {
+        active += 1;
+        peak = Math.max(peak, active);
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        active -= 1;
+        return 'done';
+      });
+
+    const results = await Promise.all([task(), task(), task(), task()]);
+
+    expect(results).toEqual(['done', 'done', 'done', 'done']);
+    expect(peak).toBeLessThanOrEqual(2);
   });
 });
