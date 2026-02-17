@@ -256,9 +256,9 @@ describe('validateData', () => {
       path: [],
     });
 
-    expect(() => validateData(literalSchema, { title: 'Valid title', description: 'Valid desc 12345' })).toThrow(
-      ValidationError
-    );
+    expect(() =>
+      validateData(literalSchema, { title: 'Valid title', description: 'Valid desc 12345' })
+    ).toThrow(ValidationError);
 
     try {
       validateData(literalSchema, { title: 'Valid title', description: 'Valid desc 12345' });

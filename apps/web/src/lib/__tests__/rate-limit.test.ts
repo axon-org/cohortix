@@ -280,9 +280,8 @@ describe('Rate Limiting', () => {
 
   describe('withRateLimit wrapper', () => {
     it('returns RFC7807 response with rate limit headers when exceeded', async () => {
-      const wrapped = withRateLimit(
-        { maxRequests: 1, windowMs: 1000 },
-        async () => NextResponse.json({ ok: true })
+      const wrapped = withRateLimit({ maxRequests: 1, windowMs: 1000 }, async () =>
+        NextResponse.json({ ok: true })
       );
 
       const request = new NextRequest('http://localhost:3000/api/test', {
@@ -301,12 +300,9 @@ describe('Rate Limiting', () => {
     });
 
     it('rethrows non-rate-limit errors from handler', async () => {
-      const wrapped = withRateLimit(
-        { maxRequests: 5, windowMs: 1000 },
-        async () => {
-          throw new Error('boom');
-        }
-      );
+      const wrapped = withRateLimit({ maxRequests: 5, windowMs: 1000 }, async () => {
+        throw new Error('boom');
+      });
 
       const request = new NextRequest('http://localhost:3000/api/test');
       await expect(wrapped(request)).rejects.toThrow('boom');

@@ -9,9 +9,12 @@
 
 ## Executive Summary
 
-Cohortix has been successfully migrated from Supabase Auth to Clerk for authentication. All code changes are complete, all tests pass, and the application is ready for local testing once Clerk credentials are configured.
+Cohortix has been successfully migrated from Supabase Auth to Clerk for
+authentication. All code changes are complete, all tests pass, and the
+application is ready for local testing once Clerk credentials are configured.
 
 **What changed:**
+
 - ✅ Clerk SDK installed and configured
 - ✅ Middleware replaced (Supabase → Clerk)
 - ✅ Sign-in/sign-up pages replaced with Clerk components
@@ -22,8 +25,10 @@ Cohortix has been successfully migrated from Supabase Auth to Clerk for authenti
 - ✅ Type checking successful
 
 **What didn't change:**
+
 - ✅ Supabase is still used for database operations
-- ✅ API routes use the same `getAuthContext()` helper (implementation updated, interface unchanged)
+- ✅ API routes use the same `getAuthContext()` helper (implementation updated,
+  interface unchanged)
 - ✅ All existing database tables and relationships intact
 
 ---
@@ -56,6 +61,7 @@ BYPASS_AUTH=false  # Set to 'true' for local development without Clerk
 ### 3. Middleware Migration
 
 **Before (Supabase):**
+
 ```typescript
 import { updateSession } from '@/lib/supabase/middleware';
 
@@ -65,6 +71,7 @@ export async function middleware(request: NextRequest) {
 ```
 
 **After (Clerk):**
+
 ```typescript
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
@@ -84,7 +91,7 @@ export default clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {
     await auth.protect();
   }
-  
+
   return NextResponse.next();
 });
 ```
@@ -92,6 +99,7 @@ export default clerkMiddleware(async (auth, request) => {
 ### 4. Auth Pages Replaced
 
 **Sign-In & Sign-Up Pages:**
+
 - Replaced custom forms with Clerk's `<SignIn />` and `<SignUp />` components
 - Applied Cohortix theming (dark mode, brand colors)
 - Removed forgot-password page (Clerk handles this)
@@ -120,6 +128,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 **Path:** `apps/web/src/app/api/webhooks/clerk/route.ts`
 
 **Handles:**
+
 - `user.created` → Creates user in Supabase profiles table
 - `user.updated` → Updates user profile
 - `user.deleted` → Soft deletes user (sets deleted_at)
@@ -133,23 +142,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 **File:** `apps/web/src/lib/auth-helper.ts`
 
 **Before:**
+
 ```typescript
-const { data: { user } } = await supabase.auth.getUser();
+const {
+  data: { user },
+} = await supabase.auth.getUser();
 ```
 
 **After:**
+
 ```typescript
 const { userId: clerkUserId, orgId } = await auth();
 // Then lookup internal user ID from Supabase using clerkUserId
 ```
 
-**Impact:** All API routes continue using `getAuthContext()` with zero changes — the implementation was updated but the interface remains the same.
+**Impact:** All API routes continue using `getAuthContext()` with zero changes —
+the implementation was updated but the interface remains the same.
 
 ### 8. Database Schema Updates
 
 **Migration:** `supabase/migrations/20260214000000_add_clerk_integration.sql`
 
 **Changes:**
+
 ```sql
 -- Profiles table
 ALTER TABLE profiles
@@ -167,9 +182,12 @@ CREATE INDEX idx_profiles_clerk_user_id ON profiles(clerk_user_id);
 CREATE INDEX idx_organizations_clerk_org_id ON organizations(clerk_org_id);
 ```
 
-**RLS Note:** Temporarily disabled RLS on profiles and organizations. The application now uses Supabase service role client with explicit auth checks via Clerk.
+**RLS Note:** Temporarily disabled RLS on profiles and organizations. The
+application now uses Supabase service role client with explicit auth checks via
+Clerk.
 
-**Drizzle Schema:** Updated `packages/database/src/schema/users.ts` and `organizations.ts` to reflect new columns.
+**Drizzle Schema:** Updated `packages/database/src/schema/users.ts` and
+`organizations.ts` to reflect new columns.
 
 ---
 
@@ -200,7 +218,8 @@ CLERK_SECRET_KEY=sk_test_YOUR_KEY_HERE
 ### Step 3: Configure Clerk Webhook
 
 1. Clerk Dashboard → **Webhooks** → **Add Endpoint**
-2. **Endpoint URL:** `http://localhost:3000/api/webhooks/clerk` (for local testing)
+2. **Endpoint URL:** `http://localhost:3000/api/webhooks/clerk` (for local
+   testing)
    - For production: `https://cohortix.com/api/webhooks/clerk`
 3. **Events to subscribe:**
    - ✅ `user.created`
@@ -238,6 +257,7 @@ supabase db push
 ```
 
 Or apply the migration manually in Supabase Studio:
+
 - Open `supabase/migrations/20260214000000_add_clerk_integration.sql`
 - Run in SQL Editor
 
@@ -255,6 +275,7 @@ pnpm dev
 ```
 
 **Expected behavior:**
+
 - Sign-up creates user in Clerk
 - Webhook fires and creates user in Supabase `profiles` table
 - Sign-in redirects to `/dashboard`
@@ -285,12 +306,14 @@ pnpm dev
 ## Architecture Changes
 
 ### Before: Supabase Auth
+
 ```
 User → Next.js → Supabase Auth → auth.users table
                 → Supabase DB → profiles table
 ```
 
 ### After: Clerk + Supabase
+
 ```
 User → Next.js → Clerk Auth → Clerk Users
                 ↓ (webhook)
@@ -298,6 +321,7 @@ User → Next.js → Clerk Auth → Clerk Users
 ```
 
 **Key Points:**
+
 - **Authentication:** Handled by Clerk (JWT tokens, OAuth, MFA)
 - **Database:** Handled by Supabase (profiles, organizations, all data)
 - **Sync:** Clerk webhook keeps Supabase profiles in sync
@@ -315,6 +339,7 @@ pnpm test        # ✅ 312/312 tests passed
 ```
 
 **Test Coverage:**
+
 - Middleware integration tests
 - API route tests
 - Component tests
@@ -384,6 +409,7 @@ git branch -D feature/clerk-migration
 ## Files Changed
 
 **Modified:**
+
 - `apps/web/package.json` — Added @clerk/nextjs, svix
 - `apps/web/.env.example` — Added Clerk variables
 - `apps/web/src/middleware.ts` — Clerk middleware
@@ -395,11 +421,13 @@ git branch -D feature/clerk-migration
 - `packages/database/src/schema/organizations.ts` — clerk_org_id column
 
 **Added:**
+
 - `apps/web/src/app/api/webhooks/clerk/route.ts` — Webhook handler
 - `supabase/migrations/20260214000000_add_clerk_integration.sql` — DB migration
 - `docs/CLERK-MIGRATION-SUMMARY.md` — This file
 
 **Removed:**
+
 - `apps/web/src/app/auth/callback/route.ts` — Clerk handles this
 - `apps/web/src/app/forgot-password/page.tsx` — Clerk handles this
 - `apps/web/src/app/auth/__tests__/callback.test.ts` — No longer needed

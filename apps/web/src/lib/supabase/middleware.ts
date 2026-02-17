@@ -33,7 +33,8 @@ export async function updateSession(request: NextRequest) {
 
   // Skip auth redirect for API routes (they handle auth themselves)
   const isApiRoute = request.nextUrl.pathname.startsWith('/api');
-  const bypassAuth = process.env.BYPASS_AUTH === 'true' || request.headers.get('x-e2e-bypass-auth') === 'true';
+  const bypassAuth =
+    process.env.BYPASS_AUTH === 'true' || request.headers.get('x-e2e-bypass-auth') === 'true';
 
   if (
     !user &&

@@ -1,7 +1,6 @@
-
 async function login(page: any) {
-  await page.goto('/sign-in')
-  await page.locator('input[name="identifier"]').fill('test@cohortix.com') // Ensure this user exists or use mocked auth
+  await page.goto('/sign-in');
+  await page.locator('input[name="identifier"]').fill('test@cohortix.com'); // Ensure this user exists or use mocked auth
   // Wait, E2E tests against real backend usually need a real user.
   // Or we can use Clerk's "testing tokens" if available.
   // Assuming a test user exists for now.

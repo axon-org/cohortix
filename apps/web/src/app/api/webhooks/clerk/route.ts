@@ -163,7 +163,8 @@ export async function POST(req: Request) {
 
   const supabase = createServiceClient();
   const eventType = evt.type;
-  const eventId = evt.data?.id && typeof evt.data.id === 'string' ? `${eventType}:${evt.data.id}` : svix_id;
+  const eventId =
+    evt.data?.id && typeof evt.data.id === 'string' ? `${eventType}:${evt.data.id}` : svix_id;
 
   try {
     const lock = await acquireEventLock(supabase, eventId, eventType, rawBody);
@@ -175,7 +176,9 @@ export async function POST(req: Request) {
       case 'user.created':
       case 'user.updated': {
         const { id, email_addresses, first_name, last_name, image_url } = evt.data;
-        const primaryEmail = email_addresses.find((e) => e.id === evt.data.primary_email_address_id);
+        const primaryEmail = email_addresses.find(
+          (e) => e.id === evt.data.primary_email_address_id
+        );
 
         const { error } = await supabase.from('users').upsert(
           {
