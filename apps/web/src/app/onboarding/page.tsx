@@ -21,7 +21,10 @@ export default function OnboardingPage() {
 
   if (!userLoaded || !orgLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0A0A0B' }}>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: '#0A0A0B' }}
+      >
         <Loader2 className="w-8 h-8 text-[#5E6AD2] animate-spin" />
       </div>
     );
@@ -91,7 +94,10 @@ export default function OnboardingPage() {
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="org-name" className="block text-sm font-medium text-[#D1D5DB] mb-1.5">
+                <label
+                  htmlFor="org-name"
+                  className="block text-sm font-medium text-[#D1D5DB] mb-1.5"
+                >
                   Organization name
                 </label>
                 <input

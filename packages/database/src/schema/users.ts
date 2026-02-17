@@ -8,10 +8,10 @@ import { pgTable, uuid, varchar, text, timestamp, jsonb } from 'drizzle-orm/pg-c
 export const profiles = pgTable('profiles', {
   // Internal ID for foreign key relationships
   id: uuid('id').primaryKey().defaultRandom(),
-  
+
   // Clerk user ID - source of truth for authentication
   clerkUserId: varchar('clerk_user_id', { length: 255 }).unique(),
-  
+
   email: varchar('email', { length: 255 }).notNull(),
   firstName: varchar('first_name', { length: 255 }),
   lastName: varchar('last_name', { length: 255 }),

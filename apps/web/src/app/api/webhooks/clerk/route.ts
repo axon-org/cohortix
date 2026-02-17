@@ -10,6 +10,7 @@
  * - organizationMembership.created: Add user to organization
  */
 
+import { createHash } from 'node:crypto';
 import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -17,6 +18,16 @@ import { createServerClient } from '@supabase/ssr';
 import type { WebhookEvent } from '@clerk/nextjs/server';
 
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
+
+type EventStatus = 'processing' | 'processed' | 'failed';
+
+type WebhookEventRecord = {
+  event_id: string;
+  event_type: string;
+  status: EventStatus;
+  attempts: number;
+  processed_at: string | null;
+};
 
 /**
  * Create Supabase service client (bypasses RLS for admin operations)
@@ -34,14 +45,96 @@ function createServiceClient() {
   );
 }
 
+async function getEventRecord(supabase: ReturnType<typeof createServiceClient>, eventId: string) {
+  const { data, error } = await supabase
+    .from('webhook_events')
+    .select('event_id, event_type, status, attempts, processed_at')
+    .eq('event_id', eventId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data as WebhookEventRecord | null;
+}
+
+async function acquireEventLock(
+  supabase: ReturnType<typeof createServiceClient>,
+  eventId: string,
+  eventType: string,
+  payload: string
+) {
+  const now = new Date().toISOString();
+  const payloadHash = createHash('sha256').update(payload).digest('hex');
+
+  const { error } = await supabase.from('webhook_events').insert({
+    event_id: eventId,
+    event_type: eventType,
+    status: 'processing',
+    attempts: 1,
+    payload_hash: payloadHash,
+    received_at: now,
+    updated_at: now,
+  });
+
+  if (!error) {
+    return { duplicateProcessed: false };
+  }
+
+  if (error.code !== '23505') {
+    throw error;
+  }
+
+  const existing = await getEventRecord(supabase, eventId);
+
+  if (!existing) {
+    throw error;
+  }
+
+  if (existing.status === 'processed') {
+    return { duplicateProcessed: true };
+  }
+
+  const { error: updateError } = await supabase
+    .from('webhook_events')
+    .update({
+      status: 'processing',
+      attempts: (existing.attempts || 0) + 1,
+      updated_at: now,
+      error_message: null,
+    })
+    .eq('event_id', eventId);
+
+  if (updateError) throw updateError;
+
+  return { duplicateProcessed: false };
+}
+
+async function markEventStatus(
+  supabase: ReturnType<typeof createServiceClient>,
+  eventId: string,
+  status: EventStatus,
+  errorMessage?: string
+) {
+  const now = new Date().toISOString();
+  const payload: Record<string, unknown> = {
+    status,
+    updated_at: now,
+    error_message: errorMessage || null,
+  };
+
+  if (status === 'processed') {
+    payload.processed_at = now;
+  }
+
+  const { error } = await supabase.from('webhook_events').update(payload).eq('event_id', eventId);
+  if (error) throw error;
+}
+
 export async function POST(req: Request) {
-  // Check webhook secret is configured
   if (!webhookSecret) {
     console.error('CLERK_WEBHOOK_SECRET is not set');
     return new NextResponse('Webhook secret not configured', { status: 500 });
   }
 
-  // Get webhook headers
   const headerPayload = await headers();
   const svix_id = headerPayload.get('svix-id');
   const svix_timestamp = headerPayload.get('svix-timestamp');
@@ -51,19 +144,17 @@ export async function POST(req: Request) {
     return new NextResponse('Missing svix headers', { status: 400 });
   }
 
-  // Get webhook body
-  const payload = await req.json();
-  const body = JSON.stringify(payload) as string;
+  // IMPORTANT: Signature must be verified against the raw request body bytes/text.
+  const rawBody = await req.text();
 
-  // Verify webhook signature
   const wh = new Webhook(webhookSecret);
   let evt: WebhookEvent;
 
   try {
-    evt = wh.verify(body, {
-      'svix-id': svix_id!,
-      'svix-timestamp': svix_timestamp!,
-      'svix-signature': svix_signature!,
+    evt = wh.verify(rawBody, {
+      'svix-id': svix_id,
+      'svix-timestamp': svix_timestamp,
+      'svix-signature': svix_signature,
     }) as WebhookEvent;
   } catch (err) {
     console.error('Webhook verification failed:', err);
@@ -72,100 +163,72 @@ export async function POST(req: Request) {
 
   const supabase = createServiceClient();
   const eventType = evt.type;
+  const eventId =
+    evt.data?.id && typeof evt.data.id === 'string' ? `${eventType}:${evt.data.id}` : svix_id;
 
   try {
+    const lock = await acquireEventLock(supabase, eventId, eventType, rawBody);
+    if (lock.duplicateProcessed) {
+      return new NextResponse('Duplicate event ignored', { status: 200 });
+    }
+
     switch (eventType) {
-      case 'user.created': {
-        const { id, email_addresses, first_name, last_name, image_url } = evt.data;
-        const primaryEmail = email_addresses.find((e) => e.id === evt.data.primary_email_address_id);
-
-        // Create user profile in Supabase
-        const { error } = await supabase.from('users').insert({
-          clerk_user_id: id,
-          email: primaryEmail?.email_address || '',
-          first_name: first_name || null,
-          last_name: last_name || null,
-          avatar_url: image_url || null,
-        });
-
-        if (error) {
-          console.error('Failed to create user in Supabase:', error);
-          throw error;
-        }
-
-        console.log(`User created: ${id}`);
-        break;
-      }
-
+      case 'user.created':
       case 'user.updated': {
         const { id, email_addresses, first_name, last_name, image_url } = evt.data;
-        const primaryEmail = email_addresses.find((e) => e.id === evt.data.primary_email_address_id);
+        const primaryEmail = email_addresses.find(
+          (e) => e.id === evt.data.primary_email_address_id
+        );
 
-        // Update user profile in Supabase
-        const { error } = await supabase
-          .from('users')
-          .update({
+        const { error } = await supabase.from('users').upsert(
+          {
+            clerk_user_id: id,
             email: primaryEmail?.email_address || '',
             first_name: first_name || null,
             last_name: last_name || null,
             avatar_url: image_url || null,
             updated_at: new Date().toISOString(),
-          })
-          .eq('clerk_user_id', id);
+          },
+          { onConflict: 'clerk_user_id' }
+        );
 
-        if (error) {
-          console.error('Failed to update user in Supabase:', error);
-          throw error;
-        }
-
-        console.log(`User updated: ${id}`);
+        if (error) throw error;
         break;
       }
 
       case 'user.deleted': {
         const { id } = evt.data;
 
-        // Soft delete user (mark as deleted but keep data for audit)
         const { error } = await supabase
           .from('users')
-          .update({
-            deleted_at: new Date().toISOString(),
-          })
+          .update({ deleted_at: new Date().toISOString() })
           .eq('clerk_user_id', id);
 
-        if (error) {
-          console.error('Failed to delete user in Supabase:', error);
-          throw error;
-        }
-
-        console.log(`User deleted: ${id}`);
+        if (error) throw error;
         break;
       }
 
       case 'organization.created': {
         const { id, name, slug, image_url } = evt.data;
 
-        // Create organization in Supabase
-        const { error } = await supabase.from('organizations').insert({
-          clerk_org_id: id,
-          name: name,
-          slug: slug || null,
-          logo_url: image_url || null,
-        });
+        const { error } = await supabase.from('organizations').upsert(
+          {
+            clerk_org_id: id,
+            name,
+            slug: slug || null,
+            logo_url: image_url || null,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'clerk_org_id' }
+        );
 
-        if (error) {
-          console.error('Failed to create organization in Supabase:', error);
-          throw error;
-        }
-
-        console.log(`Organization created: ${id}`);
+        if (error) throw error;
         break;
       }
 
       case 'organizationMembership.created': {
         const { organization, public_user_data } = evt.data;
 
-        // Get internal IDs
         const { data: user } = await supabase
           .from('users')
           .select('id')
@@ -182,19 +245,17 @@ export async function POST(req: Request) {
           throw new Error('User or organization not found in Supabase');
         }
 
-        // Create organization membership
-        const { error } = await supabase.from('organization_memberships').insert({
-          user_id: user.id,
-          organization_id: org.id,
-          role: evt.data.role === 'org:admin' ? 'admin' : 'member',
-        });
+        const { error } = await supabase.from('organization_memberships').upsert(
+          {
+            user_id: user.id,
+            organization_id: org.id,
+            role: evt.data.role === 'org:admin' ? 'admin' : 'member',
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id,organization_id' }
+        );
 
-        if (error) {
-          console.error('Failed to create organization membership in Supabase:', error);
-          throw error;
-        }
-
-        console.log(`User ${public_user_data.user_id} added to organization ${organization.id}`);
+        if (error) throw error;
         break;
       }
 
@@ -202,9 +263,22 @@ export async function POST(req: Request) {
         console.log(`Unhandled event type: ${eventType}`);
     }
 
+    await markEventStatus(supabase, eventId, 'processed');
     return new NextResponse('Webhook processed successfully', { status: 200 });
   } catch (error) {
     console.error(`Error processing webhook ${eventType}:`, error);
+
+    try {
+      await markEventStatus(
+        supabase,
+        eventId,
+        'failed',
+        error instanceof Error ? error.message : 'Unknown webhook processing error'
+      );
+    } catch (markError) {
+      console.error('Failed to persist webhook failure state:', markError);
+    }
+
     return new NextResponse('Internal server error', { status: 500 });
   }
 }

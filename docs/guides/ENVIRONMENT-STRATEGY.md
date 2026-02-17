@@ -8,7 +8,10 @@
 
 ## 🎯 Overview
 
-This guide provides a comprehensive, production-ready environment strategy for Cohortix covering the complete pipeline: **localhost → preview → staging → production**. It addresses Vercel deployment, Supabase database management, Clerk authentication, and secure secrets handling.
+This guide provides a comprehensive, production-ready environment strategy for
+Cohortix covering the complete pipeline: **localhost → preview → staging →
+production**. It addresses Vercel deployment, Supabase database management,
+Clerk authentication, and secure secrets handling.
 
 ---
 
@@ -22,47 +25,47 @@ graph TB
         LOCAL[👨‍💻 Localhost<br/>next dev / vercel dev]
         LOCAL_DB[(🗄️ Local Supabase<br/>Docker)]
     end
-    
+
     subgraph "Git Workflow"
         FEAT[🌿 feature/* branches]
         DEV[🌿 dev branch]
         STAGING[🌿 staging branch]
         MAIN[🌿 main branch]
     end
-    
+
     subgraph "Vercel Environments"
         PREVIEW[🔍 Preview Deployments<br/>PR-specific URLs]
         STAGING_DEPLOY[🧪 Staging<br/>staging.cohortix.app]
         PROD[🚀 Production<br/>cohortix.app]
     end
-    
+
     subgraph "Supabase Environments"
         PREVIEW_DB[(📦 Preview Branches<br/>Auto-created per PR)]
         STAGING_DB[(🧪 Staging Project<br/>Persistent test DB)]
         PROD_DB[(🔒 Production Project<br/>Live customer data)]
     end
-    
+
     subgraph "Clerk Environments"
         DEV_CLERK[🔐 Development Instance<br/>dev/preview keys]
         PROD_CLERK[🔐 Production Instance<br/>production keys]
     end
-    
+
     LOCAL --> FEAT
     FEAT --> DEV
     DEV -.PR merge.-> STAGING
     STAGING -.manual promotion.-> MAIN
-    
+
     FEAT -.auto deploy.-> PREVIEW
     STAGING -.auto deploy.-> STAGING_DEPLOY
     MAIN -.auto deploy.-> PROD
-    
+
     PREVIEW --> PREVIEW_DB
     PREVIEW --> DEV_CLERK
     STAGING_DEPLOY --> STAGING_DB
     STAGING_DEPLOY --> DEV_CLERK
     PROD --> PROD_DB
     PROD --> PROD_CLERK
-    
+
     LOCAL_DB -.migrations sync.-> PREVIEW_DB
     PREVIEW_DB -.merge to staging.-> STAGING_DB
     STAGING_DB -.manual promotion.-> PROD_DB
@@ -77,12 +80,12 @@ graph TB
 
 ### Environment Mapping
 
-| Environment | Git Branch | Vercel Deploy | Supabase DB | Clerk Instance | Purpose |
-|-------------|------------|---------------|-------------|----------------|---------|
-| **Local** | `feature/*` | `vercel dev` | Local Docker | Development | Individual development |
-| **Preview** | `feature/*` (PR) | Auto-deploy | Supabase Branch | Development | PR review & testing |
-| **Staging** | `staging` | Auto-deploy | Staging Project | Development | Integration testing |
-| **Production** | `main` | Auto-deploy | Production Project | Production | Live customer traffic |
+| Environment    | Git Branch       | Vercel Deploy | Supabase DB        | Clerk Instance | Purpose                |
+| -------------- | ---------------- | ------------- | ------------------ | -------------- | ---------------------- |
+| **Local**      | `feature/*`      | `vercel dev`  | Local Docker       | Development    | Individual development |
+| **Preview**    | `feature/*` (PR) | Auto-deploy   | Supabase Branch    | Development    | PR review & testing    |
+| **Staging**    | `staging`        | Auto-deploy   | Staging Project    | Development    | Integration testing    |
+| **Production** | `main`           | Auto-deploy   | Production Project | Production     | Live customer traffic  |
 
 ---
 
@@ -92,9 +95,11 @@ graph TB
 
 #### 1.1 Single Project with Environment-Based Deployment
 
-**Recommendation:** Use a **single Vercel project** with branch-based deployments.
+**Recommendation:** Use a **single Vercel project** with branch-based
+deployments.
 
 **Why?**
+
 - ✅ Unified analytics and logs
 - ✅ Simpler environment variable management
 - ✅ Preview deployments automatically created for PRs
@@ -120,11 +125,13 @@ graph TB
 #### 1.4 Configure Branch-Specific Environment Variables
 
 Vercel supports three environment scopes:
+
 - **Production**: Only `main` branch deploys
 - **Preview**: All non-production branches (PRs)
 - **Development**: Local `vercel dev`
 
 **Critical Setup:**
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -145,11 +152,11 @@ vercel env pull .env.local
 
 **Decision Matrix:**
 
-| Scenario | Solution | Rationale |
-|----------|----------|-----------|
-| PR/feature testing | **Supabase Branching** | Auto-created, isolated, no manual setup |
-| Long-running staging | **Separate Staging Project** | Persistent state for integration tests |
-| Production | **Dedicated Project** | Maximum isolation, backup, monitoring |
+| Scenario             | Solution                     | Rationale                               |
+| -------------------- | ---------------------------- | --------------------------------------- |
+| PR/feature testing   | **Supabase Branching**       | Auto-created, isolated, no manual setup |
+| Long-running staging | **Separate Staging Project** | Persistent state for integration tests  |
+| Production           | **Dedicated Project**        | Maximum isolation, backup, monitoring   |
 
 #### 2.2 Enable Supabase Branching
 
@@ -171,6 +178,7 @@ supabase link --project-ref <your-prod-ref>
 ```
 
 **What happens now:**
+
 - Every PR automatically creates a Supabase preview branch
 - Branch includes schema/functions but **no production data**
 - Merging PR runs migrations on production
@@ -197,14 +205,18 @@ pnpm db:seed
 #### 2.4 Configure Database URLs
 
 **Production Supabase Project:**
+
 - URL: `https://<prod-ref>.supabase.co`
 - DB: `postgresql://postgres:[password]@db.<prod-ref>.supabase.co:5432/postgres`
 
 **Staging Supabase Project:**
+
 - URL: `https://<staging-ref>.supabase.co`
-- DB: `postgresql://postgres:[password]@db.<staging-ref>.supabase.co:5432/postgres`
+- DB:
+  `postgresql://postgres:[password]@db.<staging-ref>.supabase.co:5432/postgres`
 
 **Preview Branches (auto-created):**
+
 - URL: `https://<branch-name>-<prod-ref>.supabase.co`
 - DB: Auto-generated connection string
 
@@ -226,6 +238,7 @@ pnpm db:seed
 ```
 
 **Automatic Mapping:**
+
 - Vercel **Development** + **Preview** → Clerk Development Instance
 - Vercel **Production** → Clerk Production Instance
 
@@ -262,6 +275,7 @@ vercel env add CLERK_SECRET_KEY preview
 #### 3.3 Configure Clerk Application Settings
 
 **Development Instance:**
+
 ```
 Allowed Origins:
 - http://localhost:3000
@@ -275,6 +289,7 @@ Redirect URLs:
 ```
 
 **Production Instance:**
+
 ```
 Allowed Origins:
 - https://cohortix.app
@@ -291,27 +306,27 @@ Redirect URLs:
 
 #### 4.1 Full Variable List
 
-| Variable | Development | Preview | Staging | Production | Security Level |
-|----------|-------------|---------|---------|------------|----------------|
-| `DATABASE_URL` | Local Docker | Supabase Branch | Staging Project | Prod Project | 🔒 Secret |
-| `DIRECT_URL` | Local Docker | Supabase Branch | Staging Project | Prod Project | 🔒 Secret |
-| `NEXT_PUBLIC_SUPABASE_URL` | `http://localhost:54321` | Branch URL | Staging URL | Prod URL | 🌐 Public |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Local key | Branch key | Staging key | Prod key | 🌐 Public |
-| `SUPABASE_SERVICE_ROLE_KEY` | Local key | Branch key | Staging key | Prod key | 🔒 Secret |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Dev instance | Dev instance | Dev instance | Prod instance | 🌐 Public |
-| `CLERK_SECRET_KEY` | Dev instance | Dev instance | Dev instance | Prod instance | 🔒 Secret |
-| `UPSTASH_REDIS_REST_URL` | Local Redis (optional) | Staging Redis | Staging Redis | Prod Redis | 🔒 Secret |
-| `UPSTASH_REDIS_REST_TOKEN` | Local token | Staging token | Staging token | Prod token | 🔒 Secret |
-| `INNGEST_EVENT_KEY` | Test key | Test key | Test key | Prod key | 🔒 Secret |
-| `INNGEST_SIGNING_KEY` | Test key | Test key | Test key | Prod key | 🔒 Secret |
-| `SENTRY_DSN` | (omit) | Staging DSN | Staging DSN | Prod DSN | 🌐 Public |
-| `NEXT_PUBLIC_SENTRY_DSN` | (omit) | Staging DSN | Staging DSN | Prod DSN | 🌐 Public |
-| `OPENAI_API_KEY` | Personal key | Staging key | Staging key | Prod key | 🔒 Secret |
-| `ANTHROPIC_API_KEY` | Personal key | Staging key | Staging key | Prod key | 🔒 Secret |
-| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | Preview URL | `https://staging.cohortix.app` | `https://cohortix.app` | 🌐 Public |
-| `NODE_ENV` | `development` | `development` | `production` | `production` | 🌐 Public |
-| `VERCEL_ENV` | `development` | `preview` | `preview` | `production` | 🌐 Public (auto) |
-| `VERCEL_URL` | (not set) | Preview URL | Staging URL | Prod URL | 🌐 Public (auto) |
+| Variable                            | Development              | Preview         | Staging                        | Production             | Security Level   |
+| ----------------------------------- | ------------------------ | --------------- | ------------------------------ | ---------------------- | ---------------- |
+| `DATABASE_URL`                      | Local Docker             | Supabase Branch | Staging Project                | Prod Project           | 🔒 Secret        |
+| `DIRECT_URL`                        | Local Docker             | Supabase Branch | Staging Project                | Prod Project           | 🔒 Secret        |
+| `NEXT_PUBLIC_SUPABASE_URL`          | `http://localhost:54321` | Branch URL      | Staging URL                    | Prod URL               | 🌐 Public        |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`     | Local key                | Branch key      | Staging key                    | Prod key               | 🌐 Public        |
+| `SUPABASE_SERVICE_ROLE_KEY`         | Local key                | Branch key      | Staging key                    | Prod key               | 🔒 Secret        |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Dev instance             | Dev instance    | Dev instance                   | Prod instance          | 🌐 Public        |
+| `CLERK_SECRET_KEY`                  | Dev instance             | Dev instance    | Dev instance                   | Prod instance          | 🔒 Secret        |
+| `UPSTASH_REDIS_REST_URL`            | Local Redis (optional)   | Staging Redis   | Staging Redis                  | Prod Redis             | 🔒 Secret        |
+| `UPSTASH_REDIS_REST_TOKEN`          | Local token              | Staging token   | Staging token                  | Prod token             | 🔒 Secret        |
+| `INNGEST_EVENT_KEY`                 | Test key                 | Test key        | Test key                       | Prod key               | 🔒 Secret        |
+| `INNGEST_SIGNING_KEY`               | Test key                 | Test key        | Test key                       | Prod key               | 🔒 Secret        |
+| `SENTRY_DSN`                        | (omit)                   | Staging DSN     | Staging DSN                    | Prod DSN               | 🌐 Public        |
+| `NEXT_PUBLIC_SENTRY_DSN`            | (omit)                   | Staging DSN     | Staging DSN                    | Prod DSN               | 🌐 Public        |
+| `OPENAI_API_KEY`                    | Personal key             | Staging key     | Staging key                    | Prod key               | 🔒 Secret        |
+| `ANTHROPIC_API_KEY`                 | Personal key             | Staging key     | Staging key                    | Prod key               | 🔒 Secret        |
+| `NEXT_PUBLIC_APP_URL`               | `http://localhost:3000`  | Preview URL     | `https://staging.cohortix.app` | `https://cohortix.app` | 🌐 Public        |
+| `NODE_ENV`                          | `development`            | `development`   | `production`                   | `production`           | 🌐 Public        |
+| `VERCEL_ENV`                        | `development`            | `preview`       | `preview`                      | `production`           | 🌐 Public (auto) |
+| `VERCEL_URL`                        | (not set)                | Preview URL     | Staging URL                    | Prod URL               | 🌐 Public (auto) |
 
 #### 4.2 Vercel Configuration
 
@@ -484,22 +499,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
-      
+
       - name: Link to staging project
         run: supabase link --project-ref ${{ secrets.SUPABASE_STAGING_REF }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      
+
       - name: Run migrations on staging
         run: supabase db push
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      
+
       - name: Notify Slack
         if: success()
         run: |
@@ -513,37 +528,39 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
-      
+
       - name: Link to production project
         run: supabase link --project-ref ${{ secrets.SUPABASE_PROD_REF }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      
+
       - name: Backup production database
-        run: supabase db dump --db-url "${{ secrets.DATABASE_URL_PROD }}" > backup.sql
-      
+        run:
+          supabase db dump --db-url "${{ secrets.DATABASE_URL_PROD }}" >
+          backup.sql
+
       - name: Run migrations on production
         run: supabase db push
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      
+
       - name: Verify migration
         run: |
           # Add your verification queries here
           echo "SELECT COUNT(*) FROM cohorts;" | psql ${{ secrets.DATABASE_URL_PROD }}
-      
+
       - name: Notify Slack
         if: success()
         run: |
           curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
           -H 'Content-Type: application/json' \
           -d '{"text":"🚀 Database migrations applied to PRODUCTION"}'
-      
+
       - name: Rollback on failure
         if: failure()
         run: |
@@ -579,6 +596,7 @@ vercel dev
 **When:** Every PR to `dev`
 
 **What to test:**
+
 1. **Automated checks (via GitHub Actions):**
    - ✅ Linting: `pnpm lint`
    - ✅ Type checking: `pnpm type-check`
@@ -599,6 +617,7 @@ vercel dev
    ```
 
 **Approval criteria:**
+
 - All automated tests pass ✅
 - Manual QA sign-off ✅
 - Code review approved (2+ reviewers) ✅
@@ -609,6 +628,7 @@ vercel dev
 **When:** After merge to `staging` branch
 
 **What to test:**
+
 1. **Integration tests:**
    - Multi-user workflows
    - Cross-feature interactions
@@ -616,6 +636,7 @@ vercel dev
    - Third-party integrations (Inngest, Sentry)
 
 2. **Smoke tests (automated):**
+
    ```bash
    # Playwright smoke tests against staging
    STAGING_URL=https://staging.cohortix.app pnpm test:e2e:smoke
@@ -627,6 +648,7 @@ vercel dev
    - User acceptance testing (UAT)
 
 **Sign-off required:**
+
 - Product Manager ✅
 - QA Lead (Nina) ✅
 - DevOps (Noah) ✅
@@ -637,7 +659,9 @@ vercel dev
 **When:** After deploy to `main`
 
 **What to test:**
+
 1. **Smoke tests (automated post-deploy):**
+
    ```yaml
    # In GitHub Actions after production deploy
    - name: Production Smoke Tests
@@ -754,7 +778,7 @@ export async function GET(request: Request) {
   // 3. Input validation (never trust client input)
   const { searchParams } = new URL(request.url);
   const cohortId = searchParams.get('id');
-  
+
   if (cohortId && !isValidUUID(cohortId)) {
     return new Response('Invalid cohort ID', { status: 400 });
   }
@@ -781,27 +805,27 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
-            value: 'on'
+            value: 'on',
           },
           {
             key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload'
+            value: 'max-age=63072000; includeSubDomains; preload',
           },
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-Content-Type-Options',
-            value: 'nosniff'
+            value: 'nosniff',
           },
           {
             key: 'X-XSS-Protection',
-            value: '1; mode=block'
+            value: '1; mode=block',
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
+            value: 'origin-when-cross-origin',
           },
           {
             key: 'Content-Security-Policy',
@@ -812,8 +836,8 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: https:",
               "font-src 'self' data:",
               "connect-src 'self' https://*.supabase.co https://clerk.cohortix.app",
-            ].join('; ')
-          }
+            ].join('; '),
+          },
         ],
       },
     ];
@@ -827,18 +851,20 @@ const nextConfig: NextConfig = {
 
 ### Vercel Pricing
 
-| Plan | Cost | Deployment Minutes | Bandwidth | Notes |
-|------|------|-------------------|-----------|-------|
-| **Hobby** | Free | 100 hours/month | 100 GB | **Not recommended for production** |
-| **Pro** | $20/month | 400 hours/month | 1 TB | ✅ **Recommended for startups** |
-| **Enterprise** | Custom | Unlimited | Custom | For scale (1M+ users) |
+| Plan           | Cost      | Deployment Minutes | Bandwidth | Notes                              |
+| -------------- | --------- | ------------------ | --------- | ---------------------------------- |
+| **Hobby**      | Free      | 100 hours/month    | 100 GB    | **Not recommended for production** |
+| **Pro**        | $20/month | 400 hours/month    | 1 TB      | ✅ **Recommended for startups**    |
+| **Enterprise** | Custom    | Unlimited          | Custom    | For scale (1M+ users)              |
 
 **Recommendations:**
+
 - Start with **Pro plan** ($20/month per user)
 - Enable Vercel Analytics (included in Pro)
 - Monitor build minutes (preview deploys count toward quota)
 
 **Optimization tips:**
+
 ```bash
 # Reduce build minutes by skipping unchanged apps
 # In vercel.json:
@@ -850,39 +876,43 @@ const nextConfig: NextConfig = {
 
 ### Supabase Pricing
 
-| Plan | Cost | Database Size | Bandwidth | API Requests |
-|------|------|---------------|-----------|--------------|
-| **Free** | $0 | 500 MB | 5 GB | 500K/month |
-| **Pro** | $25/month | 8 GB included | 250 GB | 500M/month |
-| **Team** | $599/month | 8 GB included | 250 GB | 500M/month |
+| Plan     | Cost       | Database Size | Bandwidth | API Requests |
+| -------- | ---------- | ------------- | --------- | ------------ |
+| **Free** | $0         | 500 MB        | 5 GB      | 500K/month   |
+| **Pro**  | $25/month  | 8 GB included | 250 GB    | 500M/month   |
+| **Team** | $599/month | 8 GB included | 250 GB    | 500M/month   |
 
 **Multi-Environment Costs:**
 
-| Setup | Monthly Cost | Notes |
-|-------|--------------|-------|
-| **Recommended: 1 Production + Branching** | $25/month | Branches included in Pro plan |
-| **With Staging: 2 Projects** | $25 + $25 = $50/month | Production + Staging projects |
-| **Full Separation: 3 Projects** | $75/month | Prod + Staging + Dev (not recommended) |
+| Setup                                     | Monthly Cost          | Notes                                  |
+| ----------------------------------------- | --------------------- | -------------------------------------- |
+| **Recommended: 1 Production + Branching** | $25/month             | Branches included in Pro plan          |
+| **With Staging: 2 Projects**              | $25 + $25 = $50/month | Production + Staging projects          |
+| **Full Separation: 3 Projects**           | $75/month             | Prod + Staging + Dev (not recommended) |
 
 **Branching vs. Multiple Projects:**
 
 ✅ **Use Branching (Recommended):**
+
 - **Cost:** $25/month (1 production project)
 - **Included:** Unlimited preview branches
 - **Best for:** Rapid iteration, PR-based testing
 - **Limitation:** Preview branches auto-delete (no persistent staging)
 
 ✅ **Add Staging Project:**
+
 - **Cost:** $50/month (Prod + Staging)
 - **Use case:** Persistent integration testing environment
 - **When:** You need long-running staging with stable data
 
 ❌ **Avoid 3+ Projects:**
+
 - **Cost:** $75+/month
 - **Complexity:** Manual schema sync, migration drift risk
 - **Only if:** Regulatory compliance requires full environment isolation
 
 **Recommendation for Cohortix:**
+
 ```
 Phase 1 (MVP): 1 Production project + Branching ($25/month)
 Phase 2 (Growth): + 1 Staging project ($50/month)
@@ -891,43 +921,41 @@ Phase 3 (Scale): Stay at 2 projects, scale via compute upgrades
 
 ### Clerk Pricing
 
-| Plan | Cost | MAU Included | Additional MAU | Notes |
-|------|------|--------------|----------------|-------|
-| **Free** | $0 | 10,000 | N/A | Dev-only, no production SLA |
-| **Pro** | $25/month | 10,000 | $0.02/user | ✅ **Recommended for production** |
-| **Enterprise** | Custom | Custom | Custom | For 100K+ MAU |
+| Plan           | Cost      | MAU Included | Additional MAU | Notes                             |
+| -------------- | --------- | ------------ | -------------- | --------------------------------- |
+| **Free**       | $0        | 10,000       | N/A            | Dev-only, no production SLA       |
+| **Pro**        | $25/month | 10,000       | $0.02/user     | ✅ **Recommended for production** |
+| **Enterprise** | Custom    | Custom       | Custom         | For 100K+ MAU                     |
 
 **Multi-Environment Costs:**
 
-| Setup | Monthly Cost | Notes |
-|-------|--------------|-------|
-| **1 Dev + 1 Prod instance** | $0 (dev) + $25 (prod) = $25/month | ✅ Recommended |
-| **Vercel Marketplace integration** | Billed via Vercel Pro | Unified billing |
+| Setup                              | Monthly Cost                      | Notes           |
+| ---------------------------------- | --------------------------------- | --------------- |
+| **1 Dev + 1 Prod instance**        | $0 (dev) + $25 (prod) = $25/month | ✅ Recommended  |
+| **Vercel Marketplace integration** | Billed via Vercel Pro             | Unified billing |
 
-**Note:** Development and Preview environments share the **same Clerk development instance** (no additional cost).
+**Note:** Development and Preview environments share the **same Clerk
+development instance** (no additional cost).
 
 ### Total Monthly Costs (Startup Phase)
 
-| Service | Plan | Cost |
-|---------|------|------|
-| Vercel | Pro (1 user) | $20 |
-| Supabase | Pro (Production only) | $25 |
-| Clerk | Pro | $25 |
-| Upstash Redis | Free tier | $0 |
-| Inngest | Free tier | $0 |
-| Sentry | Team ($26/month for 100K errors) | $26 |
-| **TOTAL** | | **$96/month** |
+| Service       | Plan                             | Cost          |
+| ------------- | -------------------------------- | ------------- |
+| Vercel        | Pro (1 user)                     | $20           |
+| Supabase      | Pro (Production only)            | $25           |
+| Clerk         | Pro                              | $25           |
+| Upstash Redis | Free tier                        | $0            |
+| Inngest       | Free tier                        | $0            |
+| Sentry        | Team ($26/month for 100K errors) | $26           |
+| **TOTAL**     |                                  | **$96/month** |
 
-**With Staging Environment:**
-| Service | Plan | Cost |
-|---------|------|------|
-| Vercel | Pro | $20 |
-| Supabase | 2 Pro Projects | $50 |
-| Clerk | Pro | $25 |
-| Others | Same | $26 |
-| **TOTAL** | | **$121/month** |
+**With Staging Environment:** | Service | Plan | Cost |
+|---------|------|------| | Vercel | Pro | $20 | | Supabase | 2 Pro Projects |
+$50 | | Clerk | Pro | $25 | | Others | Same | $26 | | **TOTAL** | |
+**$121/month** |
 
 **Cost Optimization:**
+
 - Use free tiers for dev/staging (Upstash, Inngest)
 - Delay Staging Supabase project until Post-MVP
 - Share Vercel Pro among 2-3 team members ($60/month)
@@ -941,6 +969,7 @@ Phase 3 (Scale): Stay at 2 projects, scale via compute upgrades
 **Problem:** Preview deploys use production database by accident.
 
 **Solution:**
+
 ```bash
 # Always verify environment in code
 if (process.env.VERCEL_ENV === 'production') {
@@ -953,15 +982,15 @@ if (process.env.VERCEL_ENV === 'production') {
 // apps/web/src/lib/startup-checks.ts
 export function validateEnvironment() {
   const requiredVars = ['DATABASE_URL', 'NEXT_PUBLIC_SUPABASE_URL'];
-  
+
   for (const varName of requiredVars) {
     if (!process.env[varName]) {
       throw new Error(`Missing required environment variable: ${varName}`);
     }
   }
-  
+
   // Verify production vars don't leak to preview
-  if (process.env.VERCEL_ENV !== 'production' && 
+  if (process.env.VERCEL_ENV !== 'production' &&
       process.env.DATABASE_URL?.includes('prod-ref')) {
     throw new Error('🚨 Production database detected in non-production environment!');
   }
@@ -973,6 +1002,7 @@ export function validateEnvironment() {
 **Problem:** Multiple developers create migrations with same timestamp.
 
 **Solution:**
+
 ```bash
 # Use feature-branch workflow
 # Never merge two feature branches directly
@@ -996,11 +1026,13 @@ pnpm db:generate
 **Problem:** PR created, but no Supabase preview branch.
 
 **Root causes:**
+
 - GitHub integration not configured
 - Branch pattern doesn't match (e.g., `feat/` instead of `feature/`)
 - Supabase branching not enabled
 
 **Solution:**
+
 ```bash
 # 1. Verify GitHub integration
 # Supabase Dashboard → Settings → Branching → GitHub
@@ -1023,6 +1055,7 @@ supabase branches create <branch-name> --project-ref <prod-ref>
 **Root cause:** Mismatched redirect URLs between Clerk and application.
 
 **Solution:**
+
 ```bash
 # 1. Verify Clerk environment URLs
 # Development Clerk instance should allow:
@@ -1057,6 +1090,7 @@ export default clerkMiddleware({
 **Root cause:** Each serverless function creates new connection.
 
 **Solution:**
+
 ```typescript
 // packages/database/src/client.ts
 import { drizzle } from 'drizzle-orm/postgres-js';
@@ -1081,6 +1115,7 @@ export const db = drizzle(client);
 **Problem:** Old preview URLs still accessible, confusing QA.
 
 **Solution:**
+
 ```bash
 # Enable automatic preview deletion in Vercel
 # Project Settings → Git → Delete Preview Deployments
@@ -1099,6 +1134,7 @@ vercel remove <deployment-url>
 ### For Developers
 
 **Starting a new feature:**
+
 ```bash
 # 1. Pull latest dev
 git checkout dev
@@ -1135,6 +1171,7 @@ git push origin feature/COH-123-new-cohort-table
 ```
 
 **Debugging preview environment:**
+
 ```bash
 # Pull preview environment variables locally
 vercel env pull .env.preview
@@ -1149,6 +1186,7 @@ vercel dev --env .env.preview
 ### For QA (Nina)
 
 **Testing a PR:**
+
 ```bash
 # 1. Review PR description (acceptance criteria)
 
@@ -1172,6 +1210,7 @@ vercel dev --env .env.preview
 ```
 
 **Staging environment validation:**
+
 ```bash
 # After merge to staging branch:
 
@@ -1189,6 +1228,7 @@ vercel dev --env .env.preview
 ### For DevOps (Noah)
 
 **Monitoring production deploy:**
+
 ```bash
 # 1. Watch GitHub Actions workflow
 # Ensure migrations complete successfully
@@ -1210,6 +1250,7 @@ pnpm test:e2e:smoke
 ```
 
 **Emergency rollback:**
+
 ```bash
 # Option 1: Revert Vercel deployment
 vercel rollback
@@ -1230,6 +1271,7 @@ psql $DATABASE_URL_PROD < backup-YYYYMMDD.sql
 ### For New Developers
 
 **Day 1: Local Setup**
+
 ```bash
 # 1. Clone repo
 git clone git@github.com:your-org/cohortix.git
@@ -1260,12 +1302,14 @@ pnpm dev
 ```
 
 **Week 1: First PR**
+
 - Read: `/docs/GIT_WORKFLOW.md`
 - Pick starter issue labeled `good-first-issue`
 - Follow PR template, request review from 2+ developers
 - Deploy to preview, test with QA
 
 **Week 2: Environment Mastery**
+
 - Read this guide in full
 - Practice: Create test migration, deploy to preview
 - Shadow: Watch senior dev deploy to staging/production
@@ -1275,41 +1319,45 @@ pnpm dev
 
 **Testing Matrix:**
 
-| Environment | When | What to Test | Tools |
-|-------------|------|--------------|-------|
-| **Preview** | Every PR | Feature-specific, acceptance criteria | Playwright, manual |
-| **Staging** | Pre-release | Full integration, user journeys | Automated suite |
-| **Production** | Post-release | Smoke tests, critical paths | Synthetic monitoring |
+| Environment    | When         | What to Test                          | Tools                |
+| -------------- | ------------ | ------------------------------------- | -------------------- |
+| **Preview**    | Every PR     | Feature-specific, acceptance criteria | Playwright, manual   |
+| **Staging**    | Pre-release  | Full integration, user journeys       | Automated suite      |
+| **Production** | Post-release | Smoke tests, critical paths           | Synthetic monitoring |
 
 **QA Checklist Template:**
 
 ```markdown
 ## QA Report: [PR #123] New Cohort Table
 
-**Preview URL:** https://cohortix-git-feature-123.vercel.app
-**Tested by:** Nina
+**Preview URL:** https://cohortix-git-feature-123.vercel.app **Tested by:** Nina
 **Date:** 2026-02-14
 
 ### Acceptance Criteria
+
 - [ ] Users can create cohorts
 - [ ] Cohort members display correctly
 - [ ] RLS prevents cross-organization access
 
 ### Test Results
+
 - ✅ Feature works as expected
 - ✅ No console errors
 - ✅ Responsive on mobile
-- ⚠️  Minor: Button alignment off on iPad (screenshot attached)
+- ⚠️ Minor: Button alignment off on iPad (screenshot attached)
 
 ### Database Validation
+
 - ✅ Migrations applied successfully
 - ✅ RLS policies active
 - ✅ Indexes created
 
 ### Recommendation
+
 **APPROVE** with minor fix (button alignment)
 
 ### Screenshots
+
 [Attach screenshots]
 ```
 
@@ -1318,6 +1366,7 @@ pnpm dev
 ## 📚 Additional Resources
 
 ### Official Documentation
+
 - [Vercel Environment Variables](https://vercel.com/docs/environment-variables)
 - [Supabase Branching](https://supabase.com/features/branching)
 - [Clerk Multi-Environment](https://clerk.com/docs/guides/development/deployment/vercel)
@@ -1325,12 +1374,14 @@ pnpm dev
 - [Drizzle ORM Migrations](https://orm.drizzle.team/docs/migrations)
 
 ### Internal Docs
+
 - `/docs/GIT_WORKFLOW.md` - Branch strategy and PR process
 - `/docs/QA_ENVIRONMENTS.md` - QA testing standards
 - `/docs/SECURITY.md` - Security guidelines
 - `/docs/DATABASE_SCHEMA.md` - Database schema reference
 
 ### Support Channels
+
 - **#dev-general** - General development questions
 - **#devops** - Deployment and infrastructure
 - **#qa-testing** - QA and testing coordination
@@ -1343,6 +1394,7 @@ pnpm dev
 Use this checklist to implement the environment strategy step-by-step:
 
 ### Phase 1: Foundation (Week 1)
+
 - [ ] Enable Vercel Pro plan
 - [ ] Configure Vercel production branch (`main`)
 - [ ] Set up Vercel preview deployments
@@ -1355,6 +1407,7 @@ Use this checklist to implement the environment strategy step-by-step:
 - [ ] Test preview deployment (create dummy PR)
 
 ### Phase 2: CI/CD (Week 2)
+
 - [ ] Create GitHub Actions workflow for database migrations
 - [ ] Add Supabase secrets to GitHub (SUPABASE_ACCESS_TOKEN, etc.)
 - [ ] Test migration workflow on staging branch
@@ -1364,6 +1417,7 @@ Use this checklist to implement the environment strategy step-by-step:
 - [ ] Document rollback procedure
 
 ### Phase 3: QA & Testing (Week 3)
+
 - [ ] Create QA testing checklist template
 - [ ] Set up Playwright E2E test suite
 - [ ] Configure accessibility tests (Axe)
@@ -1372,6 +1426,7 @@ Use this checklist to implement the environment strategy step-by-step:
 - [ ] Document testing workflows
 
 ### Phase 4: Staging Environment (Week 4 - Optional)
+
 - [ ] Create Supabase staging project
 - [ ] Configure staging branch in Git
 - [ ] Add staging environment variables to Vercel
@@ -1380,6 +1435,7 @@ Use this checklist to implement the environment strategy step-by-step:
 - [ ] Test full workflow: dev → staging → production
 
 ### Phase 5: Production Hardening (Week 5)
+
 - [ ] Enable Vercel deployment protection (require approval)
 - [ ] Set up branch protection rules (main, staging)
 - [ ] Configure RLS policies on all tables
@@ -1389,6 +1445,7 @@ Use this checklist to implement the environment strategy step-by-step:
 - [ ] Schedule first production deploy dry run
 
 ### Phase 6: Documentation & Training (Week 6)
+
 - [ ] Onboard all developers (local setup)
 - [ ] Train QA team (preview/staging testing)
 - [ ] Train DevOps (deployment process)
@@ -1401,14 +1458,17 @@ Use this checklist to implement the environment strategy step-by-step:
 ## 🔄 Maintenance & Review
 
 ### Weekly
+
 - **Monday:** Review preview deployments (delete stale ones)
 - **Friday:** Check Vercel build minutes usage
 
 ### Monthly
+
 - **First Monday:** Review environment variable usage (audit access)
 - **Last Friday:** Validate backup/restore procedures
 
 ### Quarterly
+
 - **Q1, Q3:** Rotate production API keys and database passwords
 - **Q2, Q4:** Review and update this guide based on team feedback
 
@@ -1421,4 +1481,5 @@ Use this checklist to implement the environment strategy step-by-step:
 
 ---
 
-*This guide is a living document. Update it as the team learns and the product evolves.* 🚀
+_This guide is a living document. Update it as the team learns and the product
+evolves._ 🚀

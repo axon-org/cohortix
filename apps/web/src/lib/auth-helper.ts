@@ -117,8 +117,10 @@ export async function getAuthContext(): Promise<AuthContext> {
         const orgMembership = await client.organizations.getOrganizationMembershipList({
           organizationId: orgId,
         });
-        const userMembership = orgMembership.data.find((m) => m.publicUserData?.userId === clerkUserId);
-        
+        const userMembership = orgMembership.data.find(
+          (m) => m.publicUserData?.userId === clerkUserId
+        );
+
         if (clerkOrg && userMembership) {
           const { data: newOrg, error: insertOrgError } = await supabase
             .from('organizations')

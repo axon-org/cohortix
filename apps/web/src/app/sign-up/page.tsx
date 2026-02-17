@@ -45,8 +45,7 @@ export default function SignUpPage() {
               headerSubtitle: 'text-[#9CA3AF]',
               socialButtonsBlockButton:
                 'bg-[#0A0A0B] border border-[#27282D] text-[#D1D5DB] hover:border-[#5E6AD2] transition-colors',
-              formButtonPrimary:
-                'bg-[#5E6AD2] hover:bg-[#7C8ADE] transition-colors',
+              formButtonPrimary: 'bg-[#5E6AD2] hover:bg-[#7C8ADE] transition-colors',
               formFieldInput:
                 'bg-[#0A0A0B] border border-[#27282D] text-[#F2F2F2] focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2]',
               formFieldLabel: 'text-[#D1D5DB]',
