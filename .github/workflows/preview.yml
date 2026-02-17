@@ -23,6 +23,7 @@ jobs:
 
   deploy-preview:
     name: Deploy Preview
+    permissions: pull-requests: write
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
