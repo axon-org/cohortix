@@ -32,6 +32,11 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')` */
     baseURL: webBaseUrl,
 
+    /* Force bypass auth for E2E tests if not explicitly disabled */
+    extraHTTPHeaders: {
+      'x-e2e-bypass-auth': 'true',
+    },
+
     /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',
 
