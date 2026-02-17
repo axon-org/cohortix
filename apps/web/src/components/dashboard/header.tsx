@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 function useBreadcrumbs() {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '/';
   const segments = pathname.split('/').filter(Boolean);
 
   if (segments.length === 0) {

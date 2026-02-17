@@ -2,6 +2,10 @@ import { pgTable, uuid, varchar, text, timestamp, jsonb } from 'drizzle-orm/pg-c
 
 export const organizations = pgTable('organizations', {
   id: uuid('id').primaryKey().defaultRandom(),
+
+  // Clerk organization ID for multi-tenant support
+  clerkOrgId: varchar('clerk_org_id', { length: 255 }).unique(),
+
   name: varchar('name', { length: 255 }).notNull(),
   slug: varchar('slug', { length: 100 }).notNull().unique(),
   logoUrl: text('logo_url'),
