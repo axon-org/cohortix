@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS comments (
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     entity_type VARCHAR(50) NOT NULL, -- 'task', 'operation', 'mission'
     entity_id UUID NOT NULL,
-    -- Note: references auth.users (Supabase built-in); there is no public "users" table
-    author_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    -- Note: references profiles (user profiles synced from Clerk)
+    author_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS activity_log (
     entity_type VARCHAR(50) NOT NULL,
     entity_id UUID NOT NULL,
     action VARCHAR(100) NOT NULL, -- 'created', 'updated', 'deleted', 'status_changed'
-    -- Note: references auth.users (Supabase built-in); there is no public "users" table
-    actor_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    -- Note: references profiles (user profiles synced from Clerk)
+    actor_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
     metadata JSONB DEFAULT '{}'::jsonb NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );

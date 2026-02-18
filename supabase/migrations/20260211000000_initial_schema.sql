@@ -59,12 +59,12 @@ CREATE INDEX IF NOT EXISTS idx_organizations_slug ON organizations(slug);
 ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
 
 -- ---------------------------------------------------------------------------
--- profiles  (extends Supabase auth.users)
+-- profiles  (user profiles for Clerk auth)
 -- Required by: add_clerk_integration (adds clerk columns),
 --              rls_clerk_option_a_foundation (RLS policies)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS profiles (
-  id            UUID         PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  id            UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
   email         VARCHAR(255) NOT NULL,
   name          VARCHAR(255),
   avatar_url    TEXT,
@@ -86,10 +86,10 @@ ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 CREATE TABLE IF NOT EXISTS organization_memberships (
   id              UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID         NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-  user_id         UUID         NOT NULL REFERENCES auth.users(id)    ON DELETE CASCADE,
+  user_id         UUID         NOT NULL REFERENCES profiles(id)      ON DELETE CASCADE,
   role            org_role     NOT NULL DEFAULT 'member',
   permissions     JSONB        NOT NULL DEFAULT '{}'::jsonb,
-  invited_by      UUID         REFERENCES auth.users(id),
+  invited_by      UUID         REFERENCES profiles(id),
   invited_at      TIMESTAMPTZ,
   accepted_at     TIMESTAMPTZ,
   created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
