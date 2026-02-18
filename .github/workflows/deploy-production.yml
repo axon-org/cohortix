@@ -137,9 +137,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: production-build-${{ github.sha }}
-          path: |
-            apps/*/dist
-            apps/*/.next
+          path: .vercel/output
           retention-days: 7
 
   # ═══════════════════════════════════════════════════════════════
@@ -166,6 +164,12 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: production-build-${{ github.sha }}
+          path: .vercel/output
 
       - name: Install Vercel CLI
         run: pnpm add -g vercel@latest
