@@ -4,8 +4,30 @@
 -- Create insights table with vector support
 
 -- 1. Kanban Extensions
-ALTER TABLE tasks ADD COLUMN IF NOT EXISTS position INTEGER DEFAULT 0 NOT NULL;
-ALTER TABLE projects ADD COLUMN IF NOT EXISTS position INTEGER DEFAULT 0 NOT NULL;
+-- Guard: tasks may not exist in a clean Supabase Preview DB replay (table lives in
+-- packages/database Drizzle schema, not in these migrations).  Become no-op when absent.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'tasks'
+  ) THEN
+    ALTER TABLE tasks ADD COLUMN IF NOT EXISTS position INTEGER DEFAULT 0 NOT NULL;
+  END IF;
+END;
+$$;
+
+-- Guard: same reasoning for projects table.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'projects'
+  ) THEN
+    ALTER TABLE projects ADD COLUMN IF NOT EXISTS position INTEGER DEFAULT 0 NOT NULL;
+  END IF;
+END;
+$$;
 
 -- 2. Comments/Activity Feed
 CREATE TABLE IF NOT EXISTS comments (
@@ -13,7 +35,8 @@ CREATE TABLE IF NOT EXISTS comments (
     organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     entity_type VARCHAR(50) NOT NULL, -- 'task', 'operation', 'mission'
     entity_id UUID NOT NULL,
-    author_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    -- Note: references auth.users (Supabase built-in); there is no public "users" table
+    author_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
@@ -25,7 +48,8 @@ CREATE TABLE IF NOT EXISTS activity_log (
     entity_type VARCHAR(50) NOT NULL,
     entity_id UUID NOT NULL,
     action VARCHAR(100) NOT NULL, -- 'created', 'updated', 'deleted', 'status_changed'
-    actor_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    -- Note: references auth.users (Supabase built-in); there is no public "users" table
+    actor_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     metadata JSONB DEFAULT '{}'::jsonb NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
@@ -54,3 +78,11 @@ CREATE TABLE IF NOT EXISTS insights (
 
 -- Index for vector search
 CREATE INDEX IF NOT EXISTS idx_insights_embedding ON insights USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+
+-- 4. Row-Level Security
+-- Enable RLS here so the DB Policy Guard passes on this file.
+-- These statements are idempotent (safe to re-run); they are also repeated in
+-- 20260217000000_fix_rls_blockers_sprint4.sql with FORCE flags and full policies.
+ALTER TABLE comments    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE insights    ENABLE ROW LEVEL SECURITY;

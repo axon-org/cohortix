@@ -8,6 +8,7 @@
 import { auth, currentUser, clerkClient } from '@clerk/nextjs/server';
 import { createServerClient } from '@supabase/ssr';
 import { UnauthorizedError, ForbiddenError } from './errors';
+import { generateOrgSlug } from './utils';
 
 // Evaluated at call time, not module load time
 function isBypassAuth() {
@@ -31,6 +32,52 @@ function createServiceClient() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { cookies: { getAll: () => [], setAll: () => {} } }
   );
+}
+
+/**
+ * Resolve or auto-provision user from Clerk
+ * @param supabase Service client
+ * @param clerkUserId Clerk user ID
+ * @returns User with internal ID
+ */
+async function resolveOrProvisionUser(
+  supabase: ReturnType<typeof createServiceClient>,
+  clerkUserId: string
+): Promise<{ id: string }> {
+  // Get internal user ID from Clerk user ID
+  let { data: user, error: userError } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('clerk_user_id', clerkUserId)
+    .single();
+
+  // Auto-provision: user authenticated in Clerk but not yet in DB
+  if (userError || !user) {
+    const clerkUser = await currentUser();
+    if (clerkUser) {
+      const { data: newUser, error: insertError } = await supabase
+        .from('profiles')
+        .insert({
+          clerk_user_id: clerkUserId,
+          email: clerkUser.emailAddresses[0]?.emailAddress || '',
+          first_name: clerkUser.firstName || null,
+          last_name: clerkUser.lastName || null,
+          avatar_url: clerkUser.imageUrl || null,
+        })
+        .select('id')
+        .single();
+
+      if (insertError || !newUser) {
+        console.error('Failed to provision user:', insertError);
+        throw new UnauthorizedError('Failed to provision user');
+      }
+      user = newUser;
+    } else {
+      throw new UnauthorizedError('User not found');
+    }
+  }
+
+  return user;
 }
 
 /**
@@ -67,38 +114,8 @@ export async function getAuthContext(): Promise<AuthContext> {
 
   const supabase = createServiceClient();
 
-  // Get internal user ID from Clerk user ID
-  let { data: user, error: userError } = await supabase
-    .from('users')
-    .select('id')
-    .eq('clerk_user_id', clerkUserId)
-    .single();
-
-  // Auto-provision: user authenticated in Clerk but not yet in DB
-  if (userError || !user) {
-    const clerkUser = await currentUser();
-    if (clerkUser) {
-      const { data: newUser, error: insertError } = await supabase
-        .from('users')
-        .insert({
-          clerk_user_id: clerkUserId,
-          email: clerkUser.emailAddresses[0]?.emailAddress || '',
-          first_name: clerkUser.firstName || null,
-          last_name: clerkUser.lastName || null,
-          avatar_url: clerkUser.imageUrl || null,
-        })
-        .select('id')
-        .single();
-
-      if (insertError || !newUser) {
-        console.error('Failed to provision user:', insertError);
-        throw new UnauthorizedError('Failed to provision user');
-      }
-      user = newUser;
-    } else {
-      throw new UnauthorizedError('User not found');
-    }
-  }
+  // Get or provision user
+  const user = await resolveOrProvisionUser(supabase, clerkUserId);
 
   // If Clerk has an active organization, use it
   if (orgId) {
@@ -122,12 +139,14 @@ export async function getAuthContext(): Promise<AuthContext> {
         );
 
         if (clerkOrg && userMembership) {
+          const slug = clerkOrg.slug || generateOrgSlug(clerkOrg.name, orgId);
+
           const { data: newOrg, error: insertOrgError } = await supabase
             .from('organizations')
             .insert({
               clerk_org_id: orgId,
               name: clerkOrg.name,
-              slug: clerkOrg.slug || null,
+              slug,
               logo_url: clerkOrg.imageUrl || null,
             })
             .select('id')
@@ -150,6 +169,10 @@ export async function getAuthContext(): Promise<AuthContext> {
           throw new ForbiddenError('Organization not found in Clerk');
         }
       } catch (error) {
+        // Re-throw ForbiddenError instances to preserve specific error messages
+        if (error instanceof ForbiddenError) {
+          throw error;
+        }
         console.error('Failed to fetch organization from Clerk:', error);
         throw new ForbiddenError('Organization not found in database');
       }
@@ -203,38 +226,8 @@ export async function getAuthContextBasic(): Promise<{
 
   const supabase = createServiceClient();
 
-  // Get internal user ID from Clerk user ID
-  let { data: user, error: userError } = await supabase
-    .from('users')
-    .select('id')
-    .eq('clerk_user_id', clerkUserId)
-    .single();
-
-  // Auto-provision: user authenticated in Clerk but not yet in DB
-  if (userError || !user) {
-    const clerkUser = await currentUser();
-    if (clerkUser) {
-      const { data: newUser, error: insertError } = await supabase
-        .from('users')
-        .insert({
-          clerk_user_id: clerkUserId,
-          email: clerkUser.emailAddresses[0]?.emailAddress || '',
-          first_name: clerkUser.firstName || null,
-          last_name: clerkUser.lastName || null,
-          avatar_url: clerkUser.imageUrl || null,
-        })
-        .select('id')
-        .single();
-
-      if (insertError || !newUser) {
-        console.error('Failed to provision user:', insertError);
-        throw new UnauthorizedError('Failed to provision user');
-      }
-      user = newUser;
-    } else {
-      throw new UnauthorizedError('User not found');
-    }
-  }
+  // Get or provision user
+  const user = await resolveOrProvisionUser(supabase, clerkUserId);
 
   return {
     supabase,

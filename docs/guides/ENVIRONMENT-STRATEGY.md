@@ -380,8 +380,8 @@ vercel env pull .env.local
 DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
 DIRECT_URL=postgresql://postgres:postgres@localhost:54322/postgres
 NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... (from supabase start)
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... (from supabase start)
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key-from-supabase-start>
+SUPABASE_SERVICE_ROLE_KEY=<service-role-key-from-supabase-start>
 
 # Clerk Development Instance
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxx

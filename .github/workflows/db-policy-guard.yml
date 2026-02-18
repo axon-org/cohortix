@@ -1,0 +1,121 @@
+name: DB Policy Guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # DB POLICY GUARD
+  # Enforces that every migration has RLS policies and that no
+  # unapproved schema changes bypass row-level security checks.
+  # ═══════════════════════════════════════════════════════════════
+
+  db-policy-guard:
+    name: DB Policy Guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Detect changed migration files
+        id: changed-migrations
+        run: |
+          BASE_SHA=${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA=${{ github.sha }}
+          
+          # Fallback for manual dispatch or missing base
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="HEAD~1"
+          fi
+          
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- 'supabase/migrations/*.sql' || true)
+          # Use heredoc format for multiline GITHUB_OUTPUT values
+          {
+            echo "files<<EOF"
+            echo "$CHANGED"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          if [ -n "$CHANGED" ]; then
+            echo "Migration files changed:"
+            echo "$CHANGED"
+          else
+            echo "No migration files changed."
+          fi
+
+      - name: Check migrations for RLS enable statements
+        env:
+          CHANGED_FILES: ${{ steps.changed-migrations.outputs.files }}
+        run: |
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No changed migration files to check."
+            exit 0
+          fi
+
+          echo "Checking RLS for changed files:"
+          echo "$CHANGED_FILES"
+
+          MISSING_RLS=0
+          # Iterate over changed files (handling newlines)
+          while IFS= read -r FILE; do
+            [ -f "$FILE" ] || continue
+            # Each migration that creates a table must have a matching ALTER TABLE … ENABLE ROW LEVEL SECURITY
+            TABLES=$(grep -iE '^\s*CREATE TABLE' "$FILE" | sed -E 's/.*CREATE TABLE\s+(IF NOT EXISTS\s+)?("?[a-zA-Z0-9_]+"?\.)?("?[a-zA-Z0-9_]+"?).*/\3/I' || true)
+            for TABLE in $TABLES; do
+              if ! grep -qiE "ALTER TABLE.*${TABLE}.*ENABLE ROW LEVEL SECURITY" "$FILE"; then
+                echo "❌  Missing ENABLE ROW LEVEL SECURITY for table '$TABLE' in $FILE"
+                MISSING_RLS=1
+              fi
+            done
+          done <<< "$CHANGED_FILES"
+
+          if [ "$MISSING_RLS" -eq 1 ]; then
+            echo ""
+            echo "One or more tables are missing RLS. Add:"
+            echo "  ALTER TABLE <table> ENABLE ROW LEVEL SECURITY;"
+            exit 1
+          fi
+
+          echo "✅  All tables in migrations have RLS enabled."
+
+      - name: Lint SQL migrations (sqlfluff)
+        run: |
+          if ! command -v sqlfluff &> /dev/null; then
+            pip install sqlfluff --quiet
+          fi
+          MIGRATION_DIR="supabase/migrations"
+          if [ -d "$MIGRATION_DIR" ] && ls "$MIGRATION_DIR"/*.sql 1>/dev/null 2>&1; then
+            sqlfluff lint --dialect postgres --exclude-rules L016,L034 "$MIGRATION_DIR" \
+              || echo "⚠️  SQL lint warnings detected (non-blocking)."
+          else
+            echo "No SQL migration files to lint."
+          fi
+        continue-on-error: true

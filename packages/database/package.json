@@ -9,9 +9,9 @@
     "./supabase": "./src/supabase/index.ts"
   },
   "scripts": {
-    "db:generate": "drizzle-kit generate:pg",
+    "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push:pg",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "type-check": "tsc --noEmit"
   },
@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
-    "drizzle-kit": "^0.20.0",
+    "drizzle-kit": "^0.21.4",
     "typescript": "^5.5.0"
   }
 }

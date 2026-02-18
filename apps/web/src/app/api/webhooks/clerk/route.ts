@@ -16,6 +16,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import type { WebhookEvent } from '@clerk/nextjs/server';
+import { generateOrgSlug } from '@/lib/utils';
 
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 
@@ -180,7 +181,7 @@ export async function POST(req: Request) {
           (e) => e.id === evt.data.primary_email_address_id
         );
 
-        const { error } = await supabase.from('users').upsert(
+        const { error } = await supabase.from('profiles').upsert(
           {
             clerk_user_id: id,
             email: primaryEmail?.email_address || '',
@@ -200,7 +201,7 @@ export async function POST(req: Request) {
         const { id } = evt.data;
 
         const { error } = await supabase
-          .from('users')
+          .from('profiles')
           .update({ deleted_at: new Date().toISOString() })
           .eq('clerk_user_id', id);
 
@@ -211,11 +212,13 @@ export async function POST(req: Request) {
       case 'organization.created': {
         const { id, name, slug, image_url } = evt.data;
 
+        const orgSlug = slug || generateOrgSlug(name, id);
+
         const { error } = await supabase.from('organizations').upsert(
           {
             clerk_org_id: id,
             name,
-            slug: slug || null,
+            slug: orgSlug,
             logo_url: image_url || null,
             updated_at: new Date().toISOString(),
           },
@@ -230,7 +233,7 @@ export async function POST(req: Request) {
         const { organization, public_user_data } = evt.data;
 
         const { data: user } = await supabase
-          .from('users')
+          .from('profiles')
           .select('id')
           .eq('clerk_user_id', public_user_data.user_id)
           .single();

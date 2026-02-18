@@ -39,8 +39,34 @@ CREATE INDEX IF NOT EXISTS idx_missions_owner ON missions(owner_type, owner_id);
 CREATE INDEX IF NOT EXISTS idx_missions_target_date ON missions(target_date) WHERE target_date IS NOT NULL;
 
 -- 3. Add mission_id to projects table (operations reference missions)
-ALTER TABLE projects ADD COLUMN IF NOT EXISTS mission_id UUID REFERENCES missions(id) ON DELETE SET NULL;
-CREATE INDEX IF NOT EXISTS idx_projects_mission ON projects(mission_id) WHERE mission_id IS NOT NULL;
+-- Guard: projects table may not exist in a clean Supabase Preview DB replay.
+-- When absent, skip the column addition and index — becomes a safe no-op.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'projects'
+  ) THEN
+    -- ADD COLUMN IF NOT EXISTS is idempotent; use plain ALTER when column absent
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name   = 'projects'
+        AND column_name  = 'mission_id'
+    ) THEN
+      ALTER TABLE projects ADD COLUMN mission_id UUID REFERENCES missions(id) ON DELETE SET NULL;
+    END IF;
+
+    -- Index: only create when the column (and thus the table) exists
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_indexes
+      WHERE schemaname = 'public' AND indexname = 'idx_projects_mission'
+    ) THEN
+      CREATE INDEX idx_projects_mission ON projects(mission_id) WHERE mission_id IS NOT NULL;
+    END IF;
+  END IF;
+END;
+$$;
 
 -- 4. Enable Row-Level Security (RLS)
 ALTER TABLE missions ENABLE ROW LEVEL SECURITY;
@@ -116,4 +142,16 @@ COMMENT ON TABLE missions IS 'PPV Hierarchy: Missions are measurable goals with 
 COMMENT ON COLUMN missions.vision_id IS 'Optional reference to parent Vision (long-term aspiration)';
 COMMENT ON COLUMN missions.progress IS 'Progress percentage (0-100), can be auto-calculated from linked Operations';
 COMMENT ON COLUMN missions.status IS 'Mission status: active, completed, archived';
-COMMENT ON COLUMN projects.mission_id IS 'Optional reference to parent Mission (operations roll up to missions)';
+-- Guard: only set the column comment when projects table actually exists
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name   = 'projects'
+      AND column_name  = 'mission_id'
+  ) THEN
+    EXECUTE $c$COMMENT ON COLUMN projects.mission_id IS 'Optional reference to parent Mission (operations roll up to missions)'$c$;
+  END IF;
+END;
+$$;
