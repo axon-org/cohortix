@@ -51,7 +51,12 @@ jobs:
           BASE_SHA=${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD_SHA=${{ github.sha }}
           CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- 'supabase/migrations/*.sql' || true)
-          echo "files=$CHANGED" >> "$GITHUB_OUTPUT"
+          # Use heredoc format for multiline GITHUB_OUTPUT values
+          {
+            echo "files<<EOF"
+            echo "$CHANGED"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
           if [ -n "$CHANGED" ]; then
             echo "Migration files changed:"
             echo "$CHANGED"
