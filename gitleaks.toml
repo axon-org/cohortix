@@ -1,5 +1,5 @@
 [allowlist]
 paths = [
   '''docs/guides/ENVIRONMENT-STRATEGY.md''',
-  '''scripts/''',
+  '''scripts/.*''',
 ]
