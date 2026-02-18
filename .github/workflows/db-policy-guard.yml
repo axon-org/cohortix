@@ -72,15 +72,20 @@ jobs:
           fi
 
       - name: Check migrations for RLS enable statements
+        env:
+          CHANGED_FILES: ${{ steps.changed-migrations.outputs.files }}
         run: |
-          MIGRATION_DIR="supabase/migrations"
-          if [ ! -d "$MIGRATION_DIR" ]; then
-            echo "No migrations directory found — skipping RLS check."
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No changed migration files to check."
             exit 0
           fi
 
+          echo "Checking RLS for changed files:"
+          echo "$CHANGED_FILES"
+
           MISSING_RLS=0
-          for FILE in "$MIGRATION_DIR"/*.sql; do
+          # Iterate over changed files (handling newlines)
+          while IFS= read -r FILE; do
             [ -f "$FILE" ] || continue
             # Each migration that creates a table must have a matching ALTER TABLE … ENABLE ROW LEVEL SECURITY
             TABLES=$(grep -iE '^\s*CREATE TABLE' "$FILE" | sed -E 's/.*CREATE TABLE\s+(IF NOT EXISTS\s+)?("?[a-zA-Z0-9_]+"?\.)?("?[a-zA-Z0-9_]+"?).*/\3/I' || true)
@@ -90,7 +95,7 @@ jobs:
                 MISSING_RLS=1
               fi
             done
-          done
+          done <<< "$CHANGED_FILES"
 
           if [ "$MISSING_RLS" -eq 1 ]; then
             echo ""
