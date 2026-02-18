@@ -1,6 +1,7 @@
 ## RLS Clerk Option A Implementation - Final Deliverables
 
-**Task:** Implement Clerk-compatible RLS on Cohortix core tenant tables (Option A - Database-level security)  
+**Task:** Implement Clerk-compatible RLS on Cohortix core tenant tables (Option
+A - Database-level security)  
 **Date:** 2026-02-17  
 **Status:** ✅ COMPLETE
 
@@ -9,21 +10,28 @@
 ## Files Created
 
 ### 1. Migration File (Primary Deliverable)
+
 **Path:** `supabase/migrations/20260217010000_rls_clerk_option_a_foundation.sql`
 
 **Contents:**
-- ✅ Helper functions (`set_config`, `get_current_clerk_user_id`, `is_service_role`, `get_user_id_from_clerk`)
+
+- ✅ Helper functions (`set_config`, `get_current_clerk_user_id`,
+  `is_service_role`, `get_user_id_from_clerk`)
 - ✅ RLS policies for `profiles` table (5 policies: service_role + CRUD)
 - ✅ RLS policies for `organizations` table (5 policies: service_role + CRUD)
-- ✅ RLS policies for `organization_memberships` table (5 policies: service_role + CRUD)
+- ✅ RLS policies for `organization_memberships` table (5 policies:
+  service_role + CRUD)
 - ✅ Service role bypass for all tables (webhooks/admin paths)
 - ✅ Performance indexes (5 indexes total)
 - ✅ Documentation comments
 
 ### 2. Verification Script
-**Path:** `supabase/migrations/20260217010000_rls_clerk_option_a_foundation_VERIFICATION.sql`
+
+**Path:**
+`supabase/migrations/20260217010000_rls_clerk_option_a_foundation_VERIFICATION.sql`
 
 **Contents:**
+
 - SQL queries to verify RLS is enabled and forced
 - Policy count verification (5 per table)
 - Security check for USING(true) policies
@@ -33,9 +41,11 @@
 - Final summary checklist query
 
 ### 3. Updated Auth Helper (v2)
+
 **Path:** `apps/web/src/lib/auth-helper-v2.ts`
 
 **Features:**
+
 - `createRLSClient()` - Creates Supabase client with RLS context
 - `createServiceClient()` - Service role bypass for webhooks
 - `createWebhookClient()` - Explicit webhook handler client
@@ -43,9 +53,11 @@
 - Dev bypass mode preserved (`BYPASS_AUTH=true`)
 
 ### 4. Documentation
+
 **Path:** `docs/RLS_CLERK_OPTION_A_IMPLEMENTATION.md`
 
 **Contents:**
+
 - Architecture diagram
 - Security model explanation
 - Application code migration guide
@@ -62,32 +74,32 @@ After running the migration, execute these queries:
 
 ```sql
 -- Check RLS enabled and forced (should return 3 rows, all 't')
-SELECT tablename, rowsecurity, forcerowsecurity 
-FROM pg_tables 
+SELECT tablename, rowsecurity, forcerowsecurity
+FROM pg_tables
 WHERE tablename IN ('profiles', 'organizations', 'organization_memberships');
 
 -- Check service role policies exist (should return 3 rows)
-SELECT tablename, policyname 
-FROM pg_policies 
+SELECT tablename, policyname
+FROM pg_policies
 WHERE tablename IN ('profiles', 'organizations', 'organization_memberships')
   AND policyname LIKE '%service_role%';
 
 -- Check no USING(true) policies (should return 0 rows)
-SELECT COUNT(*) 
-FROM pg_policies 
+SELECT COUNT(*)
+FROM pg_policies
 WHERE tablename IN ('profiles', 'organizations', 'organization_memberships')
   AND (qual::text ILIKE '%true%' OR qual::text ILIKE '%1=1%');
 ```
 
 ### Expected Output Summary
 
-| Check | Expected | Status |
-|-------|----------|--------|
-| RLS Enabled & Forced | 3/3 tables | ✅ PASS |
-| Service-Role Policies | 3/3 tables | ✅ PASS |
-| No USING(true) Policies | 0 found | ✅ PASS |
-| Helper Functions | 3/3 exist | ✅ PASS |
-| Performance Indexes | 5 created | ✅ PASS |
+| Check                   | Expected   | Status  |
+| ----------------------- | ---------- | ------- |
+| RLS Enabled & Forced    | 3/3 tables | ✅ PASS |
+| Service-Role Policies   | 3/3 tables | ✅ PASS |
+| No USING(true) Policies | 0 found    | ✅ PASS |
+| Helper Functions        | 3/3 exist  | ✅ PASS |
+| Performance Indexes     | 5 created  | ✅ PASS |
 
 ---
 
@@ -96,7 +108,7 @@ WHERE tablename IN ('profiles', 'organizations', 'organization_memberships')
 ### Clerk JWT Bridge Pattern
 
 ```
-Clerk JWT (sub claim) 
+Clerk JWT (sub claim)
     ↓
 app.current_clerk_user_id (session config)
     ↓
@@ -155,6 +167,7 @@ psql $DATABASE_URL -f supabase/migrations/20260217010000_rls_clerk_option_a_foun
 ### ✅ PASS
 
 All deliverables complete:
+
 - Migration file created with comprehensive RLS policies
 - Service role bypass exists for each foundation table
 - No USING(true) permissive policies

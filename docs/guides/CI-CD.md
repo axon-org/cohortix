@@ -25,14 +25,14 @@ Manual trigger
 
 ## Workflow Files
 
-| File | Trigger | Purpose |
-|------|---------|---------|
-| `ci.yml` | PR to `dev` or `main` | Lint, type-check, unit tests, security |
-| `preview.yml` | PR to `main` | Vercel preview deploy + E2E tests |
-| `deploy-staging.yml` | Push to `dev` | Auto-deploy to staging |
-| `deploy-production.yml` | Push to `main` | Manual-approval production deploy |
-| `db-migrate.yml` | Manual (`workflow_dispatch`) | Run migrations on any environment |
-| `release.yml` | Push to `main` | Tag release + generate changelog |
+| File                    | Trigger                      | Purpose                                |
+| ----------------------- | ---------------------------- | -------------------------------------- |
+| `ci.yml`                | PR to `dev` or `main`        | Lint, type-check, unit tests, security |
+| `preview.yml`           | PR to `main`                 | Vercel preview deploy + E2E tests      |
+| `deploy-staging.yml`    | Push to `dev`                | Auto-deploy to staging                 |
+| `deploy-production.yml` | Push to `main`               | Manual-approval production deploy      |
+| `db-migrate.yml`        | Manual (`workflow_dispatch`) | Run migrations on any environment      |
+| `release.yml`           | Push to `main`               | Tag release + generate changelog       |
 
 ---
 
@@ -54,19 +54,19 @@ Runs on every PR to `dev` or `main`. All jobs must pass before merge is allowed.
 
 ### Required Secrets for CI
 
-| Secret | Purpose |
-|--------|---------|
-| `TURBO_TOKEN` | Turborepo remote cache (speeds up builds) |
-| `TURBO_TEAM` | Turborepo team name |
-| `NEXT_PUBLIC_APP_URL` | Used at build time |
-| `NEXT_PUBLIC_SUPABASE_URL` | Build-time env |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Build-time env |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Build-time env |
-| `CLERK_SECRET_KEY` | Build-time env |
-| `DATABASE_URL` | Build-time env |
-| `DIRECT_URL` | Build-time env |
-| `SNYK_TOKEN` | Snyk scan (optional — non-blocking) |
-| `CODECOV_TOKEN` | Coverage upload (optional) |
+| Secret                              | Purpose                                   |
+| ----------------------------------- | ----------------------------------------- |
+| `TURBO_TOKEN`                       | Turborepo remote cache (speeds up builds) |
+| `TURBO_TEAM`                        | Turborepo team name                       |
+| `NEXT_PUBLIC_APP_URL`               | Used at build time                        |
+| `NEXT_PUBLIC_SUPABASE_URL`          | Build-time env                            |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`     | Build-time env                            |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Build-time env                            |
+| `CLERK_SECRET_KEY`                  | Build-time env                            |
+| `DATABASE_URL`                      | Build-time env                            |
+| `DIRECT_URL`                        | Build-time env                            |
+| `SNYK_TOKEN`                        | Snyk scan (optional — non-blocking)       |
+| `CODECOV_TOKEN`                     | Coverage upload (optional)                |
 
 ---
 
@@ -88,19 +88,19 @@ push to dev
 
 ### Required Secrets (staging)
 
-| Secret | Value source |
-|--------|-------------|
-| `STAGING_DATABASE_URL` | Supabase cohortix-staging pooler |
-| `STAGING_DIRECT_URL` | Supabase cohortix-staging direct |
-| `STAGING_NEXT_PUBLIC_SUPABASE_URL` | Supabase staging URL |
-| `STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase staging anon key |
-| `STAGING_SUPABASE_SERVICE_ROLE_KEY` | Supabase staging service role |
-| `STAGING_NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk staging pk_test_ key |
-| `STAGING_CLERK_SECRET_KEY` | Clerk staging sk_test_ key |
-| `STAGING_CLERK_WEBHOOK_SECRET` | Clerk staging webhook secret |
-| `VERCEL_TOKEN` | Vercel personal access token |
-| `VERCEL_ORG_ID` | Vercel org ID |
-| `VERCEL_PROJECT_ID` | `prj_vKO7YaKzW39eGKtqCLrlaaIFoDO9` |
+| Secret                                      | Value source                       |
+| ------------------------------------------- | ---------------------------------- |
+| `STAGING_DATABASE_URL`                      | Supabase cohortix-staging pooler   |
+| `STAGING_DIRECT_URL`                        | Supabase cohortix-staging direct   |
+| `STAGING_NEXT_PUBLIC_SUPABASE_URL`          | Supabase staging URL               |
+| `STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY`     | Supabase staging anon key          |
+| `STAGING_SUPABASE_SERVICE_ROLE_KEY`         | Supabase staging service role      |
+| `STAGING_NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk staging pk*test* key         |
+| `STAGING_CLERK_SECRET_KEY`                  | Clerk staging sk*test* key         |
+| `STAGING_CLERK_WEBHOOK_SECRET`              | Clerk staging webhook secret       |
+| `VERCEL_TOKEN`                              | Vercel personal access token       |
+| `VERCEL_ORG_ID`                             | Vercel org ID                      |
+| `VERCEL_PROJECT_ID`                         | `prj_vKO7YaKzW39eGKtqCLrlaaIFoDO9` |
 
 ---
 
@@ -129,7 +129,8 @@ push to main
 
 ### Required Secrets (production environment)
 
-Same as staging but using production values — stored in the `production` GitHub environment (not repository-level secrets).
+Same as staging but using production values — stored in the `production` GitHub
+environment (not repository-level secrets).
 
 ---
 
@@ -137,6 +138,7 @@ Same as staging but using production values — stored in the `production` GitHu
 
 **Trigger:** Manual via GitHub Actions UI  
 **Inputs:**
+
 - `environment` — select `staging` or `production`
 
 ### How to run
@@ -155,6 +157,7 @@ For production, an additional approval gate is required.
 Go to GitHub → Settings → Branches → Add rule for each branch:
 
 ### `main` branch
+
 - ✅ Require pull request before merging
 - ✅ Require approvals: 1
 - ✅ Require status checks: `ci-success`
@@ -163,6 +166,7 @@ Go to GitHub → Settings → Branches → Add rule for each branch:
 - ✅ Require linear history
 
 ### `dev` branch
+
 - ✅ Require pull request before merging
 - ✅ Require status checks: `ci-success`
 - ✅ Require branches to be up to date
@@ -191,7 +195,8 @@ The build uses Turborepo remote cache to speed up repeat builds. Ahmad needs to:
 2. Create a team and generate a token
 3. Add to GitHub Secrets: `TURBO_TOKEN` and `TURBO_TEAM`
 
-Without these, builds still work — just slower (no cache sharing between CI runs).
+Without these, builds still work — just slower (no cache sharing between CI
+runs).
 
 ---
 

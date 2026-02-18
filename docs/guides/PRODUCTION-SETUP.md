@@ -4,7 +4,8 @@
 > **Updated:** 2026-02-18  
 > **Branch:** `main` → deploys to `app.cohortix.ai` (manual approval required)
 
-⚠️ **Production touches real user data. Every step here requires deliberate action.**
+⚠️ **Production touches real user data. Every step here requires deliberate
+action.**
 
 ---
 
@@ -30,8 +31,10 @@ GitHub main branch
    - **Name:** `cohortix-production`
    - **Organization:** your Cohortix org
    - **Region:** `us-east-1` (or closest to your users)
-   - **Database password:** Generate a strong unique password — store in 1Password immediately
-   - **Plan:** Pro (required for production — enables PITR backups, read replicas)
+   - **Database password:** Generate a strong unique password — store in
+     1Password immediately
+   - **Plan:** Pro (required for production — enables PITR backups, read
+     replicas)
 4. After initialization, go to **Settings → API** and copy:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -50,9 +53,11 @@ GitHub main branch
 3. Settings:
    - **Name:** `cohortix-production`
    - **Sign-in options:** Email + Google (match dev config)
-4. Go to **Configure → Restrictions**: review sign-up restrictions for production
+4. Go to **Configure → Restrictions**: review sign-up restrictions for
+   production
 5. Go to **API Keys** and copy:
-   - `Publishable key` (starts with `pk_live_`) → `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+   - `Publishable key` (starts with `pk_live_`) →
+     `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
    - `Secret key` (starts with `sk_live_`) → `CLERK_SECRET_KEY`
 6. Go to **Webhooks → Add endpoint**:
    - URL: `https://app.cohortix.ai/api/webhooks/clerk`
@@ -65,7 +70,8 @@ GitHub main branch
 
 ## Step 3 — Configure Production Domain in Vercel **[AHMAD]**
 
-1. Go to [vercel.com](https://vercel.com) → **cohortix** project → **Settings → Domains**
+1. Go to [vercel.com](https://vercel.com) → **cohortix** project → **Settings →
+   Domains**
 2. Add `app.cohortix.ai` (and `www.cohortix.ai` → redirect to `cohortix.ai`)
 3. Follow Vercel's DNS instructions to point your domain:
    - If on Vercel DNS: automatic
@@ -86,7 +92,8 @@ GitHub main branch
    - ✅ Enable **Prevent self-review** (if available)
 4. Under **Deployment branches**: select **Selected branches** → add `main`
 
-This creates the approval gate: any deploy to production will pause and wait for Ahmad's approval in the GitHub Actions UI.
+This creates the approval gate: any deploy to production will pause and wait for
+Ahmad's approval in the GitHub Actions UI.
 
 ---
 
@@ -96,20 +103,20 @@ Go to GitHub repo → **Settings → Secrets and variables → Actions**.
 
 Add these as **Environment secrets** (select `production` environment):
 
-| Secret Name | Value |
-|------------|-------|
-| `DATABASE_URL` | Transaction pooler URL from production Supabase |
-| `DIRECT_URL` | Direct URL from production Supabase |
-| `NEXT_PUBLIC_SUPABASE_URL` | production Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | production anon key |
-| `SUPABASE_SERVICE_ROLE_KEY` | production service role key |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | production Clerk `pk_live_` key |
-| `CLERK_SECRET_KEY` | production Clerk `sk_live_` key |
-| `CLERK_WEBHOOK_SECRET` | production Clerk webhook signing secret |
-| `NEXT_PUBLIC_APP_URL` | `https://app.cohortix.ai` |
-| `VERCEL_TOKEN` | Vercel personal access token |
-| `VERCEL_ORG_ID` | Vercel org ID |
-| `VERCEL_PROJECT_ID` | `prj_vKO7YaKzW39eGKtqCLrlaaIFoDO9` |
+| Secret Name                         | Value                                           |
+| ----------------------------------- | ----------------------------------------------- |
+| `DATABASE_URL`                      | Transaction pooler URL from production Supabase |
+| `DIRECT_URL`                        | Direct URL from production Supabase             |
+| `NEXT_PUBLIC_SUPABASE_URL`          | production Supabase project URL                 |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`     | production anon key                             |
+| `SUPABASE_SERVICE_ROLE_KEY`         | production service role key                     |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | production Clerk `pk_live_` key                 |
+| `CLERK_SECRET_KEY`                  | production Clerk `sk_live_` key                 |
+| `CLERK_WEBHOOK_SECRET`              | production Clerk webhook signing secret         |
+| `NEXT_PUBLIC_APP_URL`               | `https://app.cohortix.ai`                       |
+| `VERCEL_TOKEN`                      | Vercel personal access token                    |
+| `VERCEL_ORG_ID`                     | Vercel org ID                                   |
+| `VERCEL_PROJECT_ID`                 | `prj_vKO7YaKzW39eGKtqCLrlaaIFoDO9`              |
 
 ---
 
@@ -127,6 +134,7 @@ bash scripts/migrate-production.sh
 ```
 
 The production migration script includes:
+
 - Checklist confirmation (backup, staging test, rollback plan)
 - Double confirmation prompt (`PRODUCTION` must be typed exactly)
 - Masked URL output (no credentials in logs)
@@ -159,11 +167,13 @@ Before approving a production deploy:
 ## Rollback Procedure
 
 ### Application rollback (< 2 minutes)
+
 1. Go to Vercel → cohortix → Deployments
 2. Find the last good deployment
 3. Click **...** → **Redeploy**
 
 ### Database rollback
+
 1. Supabase Dashboard → cohortix-production → Database → Backups
 2. Select a PITR restore point before the migration
 3. Contact Ahmad immediately if data loss is suspected

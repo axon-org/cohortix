@@ -306,27 +306,27 @@ Redirect URLs:
 
 #### 4.1 Full Variable List
 
-| Variable                            | Development              | Preview         | Staging                        | Production             | Security Level   |
-| ----------------------------------- | ------------------------ | --------------- | ------------------------------ | ---------------------- | ---------------- |
-| `DATABASE_URL`                      | Local Docker             | Supabase Branch | Staging Project                | Prod Project           | 🔒 Secret        |
-| `DIRECT_URL`                        | Local Docker             | Supabase Branch | Staging Project                | Prod Project           | 🔒 Secret        |
-| `NEXT_PUBLIC_SUPABASE_URL`          | `http://localhost:54321` | Branch URL      | Staging URL                    | Prod URL               | 🌐 Public        |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY`     | Local key                | Branch key      | Staging key                    | Prod key               | 🌐 Public        |
-| `SUPABASE_SERVICE_ROLE_KEY`         | Local key                | Branch key      | Staging key                    | Prod key               | 🔒 Secret        |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Dev instance             | Dev instance    | Dev instance                   | Prod instance          | 🌐 Public        |
-| `CLERK_SECRET_KEY`                  | Dev instance             | Dev instance    | Dev instance                   | Prod instance          | 🔒 Secret        |
-| `UPSTASH_REDIS_REST_URL`            | Local Redis (optional)   | Staging Redis   | Staging Redis                  | Prod Redis             | 🔒 Secret        |
-| `UPSTASH_REDIS_REST_TOKEN`          | Local token              | Staging token   | Staging token                  | Prod token             | 🔒 Secret        |
-| `INNGEST_EVENT_KEY`                 | Test key                 | Test key        | Test key                       | Prod key               | 🔒 Secret        |
-| `INNGEST_SIGNING_KEY`               | Test key                 | Test key        | Test key                       | Prod key               | 🔒 Secret        |
-| `SENTRY_DSN`                        | (omit)                   | Staging DSN     | Staging DSN                    | Prod DSN               | 🌐 Public        |
-| `NEXT_PUBLIC_SENTRY_DSN`            | (omit)                   | Staging DSN     | Staging DSN                    | Prod DSN               | 🌐 Public        |
-| `OPENAI_API_KEY`                    | Personal key             | Staging key     | Staging key                    | Prod key               | 🔒 Secret        |
-| `ANTHROPIC_API_KEY`                 | Personal key             | Staging key     | Staging key                    | Prod key               | 🔒 Secret        |
+| Variable                            | Development              | Preview         | Staging                       | Production                | Security Level   |
+| ----------------------------------- | ------------------------ | --------------- | ----------------------------- | ------------------------- | ---------------- |
+| `DATABASE_URL`                      | Local Docker             | Supabase Branch | Staging Project               | Prod Project              | 🔒 Secret        |
+| `DIRECT_URL`                        | Local Docker             | Supabase Branch | Staging Project               | Prod Project              | 🔒 Secret        |
+| `NEXT_PUBLIC_SUPABASE_URL`          | `http://localhost:54321` | Branch URL      | Staging URL                   | Prod URL                  | 🌐 Public        |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`     | Local key                | Branch key      | Staging key                   | Prod key                  | 🌐 Public        |
+| `SUPABASE_SERVICE_ROLE_KEY`         | Local key                | Branch key      | Staging key                   | Prod key                  | 🔒 Secret        |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Dev instance             | Dev instance    | Dev instance                  | Prod instance             | 🌐 Public        |
+| `CLERK_SECRET_KEY`                  | Dev instance             | Dev instance    | Dev instance                  | Prod instance             | 🔒 Secret        |
+| `UPSTASH_REDIS_REST_URL`            | Local Redis (optional)   | Staging Redis   | Staging Redis                 | Prod Redis                | 🔒 Secret        |
+| `UPSTASH_REDIS_REST_TOKEN`          | Local token              | Staging token   | Staging token                 | Prod token                | 🔒 Secret        |
+| `INNGEST_EVENT_KEY`                 | Test key                 | Test key        | Test key                      | Prod key                  | 🔒 Secret        |
+| `INNGEST_SIGNING_KEY`               | Test key                 | Test key        | Test key                      | Prod key                  | 🔒 Secret        |
+| `SENTRY_DSN`                        | (omit)                   | Staging DSN     | Staging DSN                   | Prod DSN                  | 🌐 Public        |
+| `NEXT_PUBLIC_SENTRY_DSN`            | (omit)                   | Staging DSN     | Staging DSN                   | Prod DSN                  | 🌐 Public        |
+| `OPENAI_API_KEY`                    | Personal key             | Staging key     | Staging key                   | Prod key                  | 🔒 Secret        |
+| `ANTHROPIC_API_KEY`                 | Personal key             | Staging key     | Staging key                   | Prod key                  | 🔒 Secret        |
 | `NEXT_PUBLIC_APP_URL`               | `http://localhost:3000`  | Preview URL     | `https://staging.cohortix.ai` | `https://app.cohortix.ai` | 🌐 Public        |
-| `NODE_ENV`                          | `development`            | `development`   | `production`                   | `production`           | 🌐 Public        |
-| `VERCEL_ENV`                        | `development`            | `preview`       | `preview`                      | `production`           | 🌐 Public (auto) |
-| `VERCEL_URL`                        | (not set)                | Preview URL     | Staging URL                    | Prod URL               | 🌐 Public (auto) |
+| `NODE_ENV`                          | `development`            | `development`   | `production`                  | `production`              | 🌐 Public        |
+| `VERCEL_ENV`                        | `development`            | `preview`       | `preview`                     | `production`              | 🌐 Public (auto) |
+| `VERCEL_URL`                        | (not set)                | Preview URL     | Staging URL                   | Prod URL                  | 🌐 Public (auto) |
 
 #### 4.2 Vercel Configuration
 
