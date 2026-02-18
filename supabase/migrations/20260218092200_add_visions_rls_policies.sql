@@ -61,7 +61,7 @@ WITH CHECK (
   )
 );
 
--- Create policy for DELETE: user is org member or service role
+-- Create policy for DELETE: user is org admin/owner or service role
 CREATE POLICY "Enable DELETE for organization members and service role"
 ON visions FOR DELETE
 USING (
@@ -72,5 +72,6 @@ USING (
     JOIN profiles p ON om.user_id = p.id
     WHERE om.organization_id = visions.organization_id
       AND p.clerk_user_id = get_current_clerk_user_id()
+      AND om.role IN ('owner', 'admin')
   )
 );
