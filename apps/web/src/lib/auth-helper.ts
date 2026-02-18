@@ -8,6 +8,7 @@
 import { auth, currentUser, clerkClient } from '@clerk/nextjs/server';
 import { createServerClient } from '@supabase/ssr';
 import { UnauthorizedError, ForbiddenError } from './errors';
+import { generateOrgSlug } from './utils';
 
 // Evaluated at call time, not module load time
 function isBypassAuth() {
@@ -138,14 +139,7 @@ export async function getAuthContext(): Promise<AuthContext> {
         );
 
         if (clerkOrg && userMembership) {
-          // Generate slug from name if not provided by Clerk
-          const slug =
-            clerkOrg.slug ||
-            clerkOrg.name
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, '-')
-              .replace(/^-|-$/g, '') ||
-            `org-${orgId.slice(0, 8)}`;
+          const slug = clerkOrg.slug || generateOrgSlug(clerkOrg.name, orgId);
 
           const { data: newOrg, error: insertOrgError } = await supabase
             .from('organizations')

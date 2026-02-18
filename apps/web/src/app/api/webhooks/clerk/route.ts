@@ -16,6 +16,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import type { WebhookEvent } from '@clerk/nextjs/server';
+import { generateOrgSlug } from '@/lib/utils';
 
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 
@@ -211,14 +212,7 @@ export async function POST(req: Request) {
       case 'organization.created': {
         const { id, name, slug, image_url } = evt.data;
 
-        // Generate slug from name if not provided by Clerk
-        const orgSlug =
-          slug ||
-          name
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-|-$/g, '') ||
-          `org-${id.slice(0, 8)}`;
+        const orgSlug = slug || generateOrgSlug(name, id);
 
         const { error } = await supabase.from('organizations').upsert(
           {

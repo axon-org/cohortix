@@ -39,3 +39,18 @@ export function formatDate(dateString: string): string {
     day: 'numeric',
   });
 }
+
+/**
+ * Generate a URL-safe slug from an organization name
+ * @param name Organization name
+ * @param id Organization ID for fallback
+ * @returns URL-safe slug
+ */
+export function generateOrgSlug(name: string, id: string): string {
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  return slug || `org-${id.slice(0, 8)}`;
+}

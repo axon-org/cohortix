@@ -17,8 +17,9 @@ USING (
   EXISTS (
     SELECT 1
     FROM organization_memberships om
+    JOIN profiles p ON om.user_id = p.id
     WHERE om.organization_id = visions.organization_id
-      AND om.user_id = get_current_clerk_user_id()
+      AND p.clerk_user_id = get_current_clerk_user_id()
   )
 );
 
@@ -30,8 +31,9 @@ WITH CHECK (
   EXISTS (
     SELECT 1
     FROM organization_memberships om
+    JOIN profiles p ON om.user_id = p.id
     WHERE om.organization_id = visions.organization_id
-      AND om.user_id = get_current_clerk_user_id()
+      AND p.clerk_user_id = get_current_clerk_user_id()
   )
 );
 
@@ -43,8 +45,9 @@ USING (
   EXISTS (
     SELECT 1
     FROM organization_memberships om
+    JOIN profiles p ON om.user_id = p.id
     WHERE om.organization_id = visions.organization_id
-      AND om.user_id = get_current_clerk_user_id()
+      AND p.clerk_user_id = get_current_clerk_user_id()
   )
 )
 WITH CHECK (
@@ -52,8 +55,9 @@ WITH CHECK (
   EXISTS (
     SELECT 1
     FROM organization_memberships om
+    JOIN profiles p ON om.user_id = p.id
     WHERE om.organization_id = visions.organization_id
-      AND om.user_id = get_current_clerk_user_id()
+      AND p.clerk_user_id = get_current_clerk_user_id()
   )
 );
 
@@ -65,7 +69,8 @@ USING (
   EXISTS (
     SELECT 1
     FROM organization_memberships om
+    JOIN profiles p ON om.user_id = p.id
     WHERE om.organization_id = visions.organization_id
-      AND om.user_id = get_current_clerk_user_id()
+      AND p.clerk_user_id = get_current_clerk_user_id()
   )
 );
