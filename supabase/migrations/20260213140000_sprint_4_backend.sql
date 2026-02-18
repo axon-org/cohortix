@@ -4,8 +4,30 @@
 -- Create insights table with vector support
 
 -- 1. Kanban Extensions
-ALTER TABLE tasks ADD COLUMN IF NOT EXISTS position INTEGER DEFAULT 0 NOT NULL;
-ALTER TABLE projects ADD COLUMN IF NOT EXISTS position INTEGER DEFAULT 0 NOT NULL;
+-- Guard: tasks may not exist in a clean Supabase Preview DB replay (table lives in
+-- packages/database Drizzle schema, not in these migrations).  Become no-op when absent.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'tasks'
+  ) THEN
+    ALTER TABLE tasks ADD COLUMN IF NOT EXISTS position INTEGER DEFAULT 0 NOT NULL;
+  END IF;
+END;
+$$;
+
+-- Guard: same reasoning for projects table.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'projects'
+  ) THEN
+    ALTER TABLE projects ADD COLUMN IF NOT EXISTS position INTEGER DEFAULT 0 NOT NULL;
+  END IF;
+END;
+$$;
 
 -- 2. Comments/Activity Feed
 CREATE TABLE IF NOT EXISTS comments (
