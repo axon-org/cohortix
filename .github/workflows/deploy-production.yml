@@ -1,0 +1,271 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false  # NEVER cancel production deploys
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # FULL CI GATE
+  # Run complete test suite before production
+  # ═══════════════════════════════════════════════════════════════
+  ci-gate:
+    name: CI Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm type-check
+
+      - name: Unit tests
+        run: pnpm test:unit
+
+      - name: Security audit
+        run: pnpm audit --audit-level=moderate || true
+
+  # ═══════════════════════════════════════════════════════════════
+  # MANUAL APPROVAL GATE
+  # Pauses here until Ahmad approves in the GitHub Actions UI
+  # Configure: Settings → Environments → production → Required reviewers
+  # ═══════════════════════════════════════════════════════════════
+  await-approval:
+    name: Awaiting Production Approval
+    runs-on: ubuntu-latest
+    needs: ci-gate
+    environment:
+      name: production
+      url: https://app.cohortix.ai
+    steps:
+      - name: Approval received
+        run: |
+          echo "✅ Production deploy approved by: ${{ github.actor }}"
+          echo "Proceeding with deployment..."
+
+  # ═══════════════════════════════════════════════════════════════
+  # BUILD PRODUCTION ARTIFACTS
+  # ═══════════════════════════════════════════════════════════════
+  build-production:
+    name: Build Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: await-approval
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Turborepo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-production-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-production-
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel production environment info
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build production artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          NODE_ENV: production
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+          # Production — Supabase
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Production — Clerk
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_WEBHOOK_SECRET: ${{ secrets.CLERK_WEBHOOK_SECRET }}
+          # App
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build-${{ github.sha }}
+          path: |
+            apps/*/dist
+            apps/*/.next
+          retention-days: 7
+
+  # ═══════════════════════════════════════════════════════════════
+  # DEPLOY TO PRODUCTION
+  # ═══════════════════════════════════════════════════════════════
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: build-production
+    outputs:
+      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Deploy to Vercel Production
+        id: deploy
+        run: |
+          DEPLOYMENT_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+          echo "🚀 Production deployed to: $DEPLOYMENT_URL"
+
+  # ═══════════════════════════════════════════════════════════════
+  # SMOKE TESTS
+  # Verify the production deployment is healthy
+  # ═══════════════════════════════════════════════════════════════
+  smoke-tests:
+    name: Production Smoke Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: deploy-production
+    steps:
+      - name: Wait for deployment to stabilize
+        run: sleep 30
+
+      - name: Health check
+        run: |
+          PROD_URL="https://app.cohortix.ai"
+          echo "Testing: $PROD_URL/api/health"
+
+          for i in {1..6}; do
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}" \
+              -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+              "$PROD_URL/api/health" || echo "000")
+
+            if [[ "$STATUS" == "200" ]]; then
+              echo "✅ Health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $STATUS — retrying in 10s..."
+            sleep 10
+          done
+
+          echo "❌ Health check failed — consider rollback"
+          exit 1
+
+      - name: Critical path tests
+        run: |
+          PROD_URL="https://app.cohortix.ai"
+
+          check() {
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}" \
+              -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+              "$1" || echo "000")
+            if [[ "$STATUS" =~ ^(200|301|302)$ ]]; then
+              echo "✅ $2 → HTTP $STATUS"
+            else
+              echo "❌ $2 → HTTP $STATUS"
+              return 1
+            fi
+          }
+
+          check "$PROD_URL" "Homepage"
+          check "$PROD_URL/api/health" "API Health"
+          echo "✅ All smoke tests passed"
+
+  # ═══════════════════════════════════════════════════════════════
+  # SUMMARY
+  # ═══════════════════════════════════════════════════════════════
+  notify-success:
+    name: Deployment Summary
+    runs-on: ubuntu-latest
+    needs: [deploy-production, smoke-tests]
+    if: always()
+    steps:
+      - name: Write summary
+        run: |
+          DEPLOY_STATUS="${{ needs.deploy-production.result }}"
+          SMOKE_STATUS="${{ needs.smoke-tests.result }}"
+
+          if [[ "$DEPLOY_STATUS" == "success" ]] && [[ "$SMOKE_STATUS" == "success" ]]; then
+            ICON="🚀"
+            STATUS="SUCCESS"
+          else
+            ICON="❌"
+            STATUS="FAILED"
+          fi
+
+          echo "## $ICON Production Deployment: $STATUS" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployed by | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployment URL | ${{ needs.deploy-production.outputs.deployment-url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Production URL | https://app.cohortix.ai |" >> $GITHUB_STEP_SUMMARY
+          echo "| Time | $(date -u '+%Y-%m-%d %H:%M UTC') |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [[ "$STATUS" == "FAILED" ]]; then
+            echo "### ⚠️ Rollback Instructions" >> $GITHUB_STEP_SUMMARY
+            echo "1. Go to Vercel → cohortix → Deployments" >> $GITHUB_STEP_SUMMARY
+            echo "2. Find the previous successful deployment" >> $GITHUB_STEP_SUMMARY
+            echo "3. Click ··· → Redeploy" >> $GITHUB_STEP_SUMMARY
+          fi
