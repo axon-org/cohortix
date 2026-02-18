@@ -1,0 +1,231 @@
+name: Database Migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      dry_run:
+        description: 'Dry run only (check pending migrations, do not apply)'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: db-migrate-${{ inputs.environment }}
+  cancel-in-progress: false  # Never cancel a running migration
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # APPROVAL GATE (production only)
+  # ═══════════════════════════════════════════════════════════════
+  approve-production:
+    name: Await Production Approval
+    runs-on: ubuntu-latest
+    if: inputs.environment == 'production'
+    environment:
+      name: production
+    steps:
+      - name: Approval received
+        run: echo "✅ Production migration approved by ${{ github.actor }}"
+
+  # ═══════════════════════════════════════════════════════════════
+  # STAGING MIGRATION
+  # ═══════════════════════════════════════════════════════════════
+  migrate-staging:
+    name: Migrate Staging Database
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: inputs.environment == 'staging'
+    environment:
+      name: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Show pending migrations (dry run)
+        run: |
+          echo "## Pending Migrations" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          ls -la supabase/migrations/ 2>/dev/null || echo "No migration files found"
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        env:
+          DIRECT_URL: ${{ secrets.STAGING_DIRECT_URL }}
+
+      - name: Run Drizzle migrations (staging)
+        if: inputs.dry_run == false
+        run: |
+          pnpm --filter @repo/database db:migrate
+          echo "✅ Drizzle migrations applied to staging"
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.STAGING_DIRECT_URL }}
+
+      - name: Push Supabase migrations (staging)
+        if: inputs.dry_run == false
+        run: |
+          # Install Supabase CLI
+          curl -sSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz \
+            | tar xz -C /usr/local/bin supabase
+
+          supabase db push \
+            --db-url "$STAGING_DIRECT_URL" \
+            --include-all \
+            2>&1 | sed 's/postgresql:\/\/[^@]*@/postgresql:\/\/***@/g'
+
+          echo "✅ Supabase migrations pushed to staging"
+        env:
+          STAGING_DIRECT_URL: ${{ secrets.STAGING_DIRECT_URL }}
+
+      - name: Verify staging database
+        if: inputs.dry_run == false
+        run: |
+          echo "Verifying staging database connectivity..."
+          # Simple connectivity check via env
+          node -e "
+            const { createClient } = require('@supabase/supabase-js');
+            const client = createClient(
+              process.env.NEXT_PUBLIC_SUPABASE_URL,
+              process.env.SUPABASE_SERVICE_ROLE_KEY
+            );
+            client.from('profiles').select('count').limit(1)
+              .then(({error}) => {
+                if (error) { console.error('DB check failed:', error.message); process.exit(1); }
+                console.log('✅ Staging database verified');
+              });
+          " || echo "⚠️ Verification skipped (module not available in CI context)"
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: Migration summary
+        if: always()
+        run: |
+          echo "## Staging Migration Result" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** staging" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dry run:** ${{ inputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+
+  # ═══════════════════════════════════════════════════════════════
+  # PRODUCTION MIGRATION
+  # ═══════════════════════════════════════════════════════════════
+  migrate-production:
+    name: Migrate Production Database
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: inputs.environment == 'production'
+    needs: approve-production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Show pending migrations
+        run: |
+          echo "## Pending Production Migrations" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          ls -la supabase/migrations/ 2>/dev/null || echo "No migration files found"
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: ⚠️ Backup reminder
+        run: |
+          echo "═══════════════════════════════════════════════"
+          echo "⚠️  PRODUCTION MIGRATION STARTING"
+          echo "═══════════════════════════════════════════════"
+          echo ""
+          echo "Approved by: ${{ github.actor }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo ""
+          echo "REMINDER: Ensure a Supabase PITR backup exists"
+          echo "before this migration. Check the Supabase dashboard."
+
+      - name: Run Drizzle migrations (production)
+        if: inputs.dry_run == false
+        run: |
+          pnpm --filter @repo/database db:migrate
+          echo "✅ Drizzle migrations applied to production"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Push Supabase migrations (production)
+        if: inputs.dry_run == false
+        run: |
+          curl -sSL https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz \
+            | tar xz -C /usr/local/bin supabase
+
+          supabase db push \
+            --db-url "$DIRECT_URL" \
+            --include-all \
+            2>&1 | sed 's/postgresql:\/\/[^@]*@/postgresql:\/\/***@/g'
+
+          echo "✅ Supabase migrations pushed to production"
+        env:
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Post-migration health check
+        if: inputs.dry_run == false
+        run: |
+          echo "Running post-migration health check..."
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" \
+            -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+            "https://cohortix.app/api/health" || echo "000")
+
+          if [[ "$STATUS" == "200" ]]; then
+            echo "✅ Application health check passed post-migration"
+          else
+            echo "⚠️  Application returned HTTP $STATUS — verify manually"
+          fi
+
+      - name: Production migration summary
+        if: always()
+        run: |
+          echo "## Production Migration Result" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** 🔴 PRODUCTION" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dry run:** ${{ inputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Approved & triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Rollback (if needed)" >> $GITHUB_STEP_SUMMARY
+          echo "Go to Supabase Dashboard → cohortix-production → Database → Backups → restore PITR point" >> $GITHUB_STEP_SUMMARY

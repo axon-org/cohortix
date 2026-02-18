@@ -1,0 +1,171 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [dev]
+
+concurrency:
+  group: staging-${{ github.ref }}
+  cancel-in-progress: true   # OK to cancel staging deploys for newer pushes
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # QUICK CHECKS
+  # Fast gate before spending Vercel build minutes
+  # ═══════════════════════════════════════════════════════════════
+  pre-deploy-checks:
+    name: Pre-Deploy Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm type-check
+
+  # ═══════════════════════════════════════════════════════════════
+  # BUILD & DEPLOY TO STAGING
+  # ═══════════════════════════════════════════════════════════════
+  deploy-staging:
+    name: Build & Deploy to Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: pre-deploy-checks
+    environment:
+      name: staging
+      url: https://staging.cohortix.app
+    outputs:
+      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Turborepo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-staging-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-staging-
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel environment info
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build staging artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          NODE_ENV: production
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+          # Staging — Supabase
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.STAGING_DIRECT_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
+          # Staging — Clerk
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.STAGING_NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.STAGING_CLERK_SECRET_KEY }}
+          CLERK_WEBHOOK_SECRET: ${{ secrets.STAGING_CLERK_WEBHOOK_SECRET }}
+          # App
+          NEXT_PUBLIC_APP_URL: https://staging.cohortix.app
+
+      - name: Deploy to Vercel (staging alias)
+        id: deploy
+        run: |
+          DEPLOYMENT_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+          echo "🚀 Staging deployed to: $DEPLOYMENT_URL"
+
+          # Alias to stable staging URL (requires domain configured in Vercel)
+          vercel alias set "$DEPLOYMENT_URL" staging.cohortix.app \
+            --token=${{ secrets.VERCEL_TOKEN }} || \
+            echo "⚠️  Alias set failed — configure staging.cohortix.app in Vercel dashboard"
+
+  # ═══════════════════════════════════════════════════════════════
+  # SMOKE TEST
+  # Basic health check on staging after deploy
+  # ═══════════════════════════════════════════════════════════════
+  smoke-test-staging:
+    name: Smoke Test Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: deploy-staging
+    steps:
+      - name: Wait for deployment to stabilize
+        run: sleep 15
+
+      - name: Health check
+        run: |
+          STAGING_URL="${{ needs.deploy-staging.outputs.deployment-url }}"
+          echo "Testing: $STAGING_URL/api/health"
+
+          for i in {1..5}; do
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}" \
+              -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+              "$STAGING_URL/api/health" || echo "000")
+
+            if [[ "$STATUS" == "200" ]]; then
+              echo "✅ Health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $STATUS — retrying in 10s..."
+            sleep 10
+          done
+
+          echo "❌ Health check failed after 5 attempts"
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Staging Deploy Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** \`dev\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** ${{ needs.deploy-staging.outputs.deployment-url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Stable URL:** https://staging.cohortix.app" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployed by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
