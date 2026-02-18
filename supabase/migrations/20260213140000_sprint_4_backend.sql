@@ -76,3 +76,11 @@ CREATE TABLE IF NOT EXISTS insights (
 
 -- Index for vector search
 CREATE INDEX IF NOT EXISTS idx_insights_embedding ON insights USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+
+-- 4. Row-Level Security
+-- Enable RLS here so the DB Policy Guard passes on this file.
+-- These statements are idempotent (safe to re-run); they are also repeated in
+-- 20260217000000_fix_rls_blockers_sprint4.sql with FORCE flags and full policies.
+ALTER TABLE comments    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE insights    ENABLE ROW LEVEL SECURITY;
