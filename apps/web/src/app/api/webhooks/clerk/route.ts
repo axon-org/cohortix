@@ -180,7 +180,7 @@ export async function POST(req: Request) {
           (e) => e.id === evt.data.primary_email_address_id
         );
 
-        const { error } = await supabase.from('users').upsert(
+        const { error } = await supabase.from('profiles').upsert(
           {
             clerk_user_id: id,
             email: primaryEmail?.email_address || '',
@@ -200,7 +200,7 @@ export async function POST(req: Request) {
         const { id } = evt.data;
 
         const { error } = await supabase
-          .from('users')
+          .from('profiles')
           .update({ deleted_at: new Date().toISOString() })
           .eq('clerk_user_id', id);
 
@@ -211,11 +211,20 @@ export async function POST(req: Request) {
       case 'organization.created': {
         const { id, name, slug, image_url } = evt.data;
 
+        // Generate slug from name if not provided by Clerk
+        const orgSlug =
+          slug ||
+          name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '') ||
+          `org-${id.slice(0, 8)}`;
+
         const { error } = await supabase.from('organizations').upsert(
           {
             clerk_org_id: id,
             name,
-            slug: slug || null,
+            slug: orgSlug,
             logo_url: image_url || null,
             updated_at: new Date().toISOString(),
           },
@@ -230,7 +239,7 @@ export async function POST(req: Request) {
         const { organization, public_user_data } = evt.data;
 
         const { data: user } = await supabase
-          .from('users')
+          .from('profiles')
           .select('id')
           .eq('clerk_user_id', public_user_data.user_id)
           .single();
