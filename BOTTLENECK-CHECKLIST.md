@@ -8,31 +8,33 @@
 
 ## 🔴 Blocking: Must Complete Before Staging Works
 
-### 1. Create Supabase Staging Project
+### 1. Create Supabase Staging Project ✅ DONE
 - **Where:** https://supabase.com/dashboard → New Project
 - **Name:** `cohortix-staging`
 - **Org:** your Cohortix org
 - **Plan:** Free (staging can stay Free tier)
 - **Reference:** `docs/guides/STAGING-SETUP.md` → Step 1
 - **Output:** Project URL, anon key, service role key, connection strings
+- **Project ref:** `lrgjattslacqfhmqexoe`
+- **URL:** `https://lrgjattslacqfhmqexoe.supabase.co`
 
-### 2. Create Clerk Staging Application
+### 2. Create Clerk Staging Application ✅ DONE
 - **Where:** https://dashboard.clerk.com → Add application
 - **Name:** `cohortix-staging`
 - **Reference:** `docs/guides/STAGING-SETUP.md` → Step 2
 - **Output:** `pk_test_...` key, `sk_test_...` key, webhook signing secret
 
-### 3. Configure Vercel Staging Branch Alias
+### 3. Configure Vercel Staging Branch Alias ✅ DONE
 - **Where:** https://vercel.com → cohortix project → Settings → Domains
-- **Action:** Map `staging.cohortix.app` → `dev` branch deployments
+- **Action:** Map `staging.cohortix.ai` → `dev` branch deployments
 - **Reference:** `docs/guides/STAGING-SETUP.md` → Step 3
 
-### 4. Add Staging GitHub Secrets
+### 4. Add Staging GitHub Secrets ✅ DONE
 - **Where:** GitHub repo → Settings → Secrets and variables → Actions
 - **Secrets to add:** (13 secrets listed in `docs/guides/CI-CD.md` → Staging Deploy section)
 - **Reference:** `docs/guides/STAGING-SETUP.md` → Step 4
 
-### 5. Create GitHub `staging` Environment
+### 5. Create GitHub `staging` Environment ✅ DONE
 - **Where:** GitHub repo → Settings → Environments → New environment
 - **Name:** `staging`
 - **No approval gate needed** (staging auto-deploys)
@@ -41,15 +43,17 @@
 
 ## 🔴 Blocking: Must Complete Before Production Works
 
-### 6. Create Supabase Production Project
+### 6. Create Supabase Production Project ✅ DONE
 - **Where:** https://supabase.com/dashboard → New Project
 - **Name:** `cohortix-production`
 - **Plan:** Pro (required — enables PITR backups, no pausing, read replicas)
 - **Billing:** Requires credit card on file (~$25/month base)
 - **Reference:** `docs/guides/PRODUCTION-SETUP.md` → Step 1
 - **Output:** Project URL, anon key, service role key, connection strings
+- **Project ref:** `qobvewyakovekbuvwjkt`
+- **URL:** `https://qobvewyakovekbuvwjkt.supabase.co`
 
-### 7. Create Clerk Production Application
+### 7. Create Clerk Production Application ✅ DONE
 - **Where:** https://dashboard.clerk.com → Add application
 - **Name:** `cohortix-production`
 - **Output:** `pk_live_...` key, `sk_live_...` key, webhook signing secret
@@ -57,12 +61,12 @@
 - **Reference:** `docs/guides/PRODUCTION-SETUP.md` → Step 2
 
 ### 8. Configure Production Domain (DNS)
-- **Domain:** `cohortix.app` (and `www.cohortix.app`)
+- **Domain:** `cohortix.ai` → marketing site, `app.cohortix.ai` → production app
 - **Where:** Your DNS registrar (Namecheap, Cloudflare, etc.) + Vercel
 - **Action:** Add A record + CNAME per Vercel instructions
 - **Reference:** `docs/guides/PRODUCTION-SETUP.md` → Step 3
 
-### 9. Configure GitHub `production` Environment with Approval Gate
+### 9. Configure GitHub `production` Environment with Approval Gate ✅ DONE
 - **Where:** GitHub repo → Settings → Environments → production
 - **Action:** Enable "Required reviewers" → add yourself as reviewer
 - **Reference:** `docs/guides/PRODUCTION-SETUP.md` → Step 4
@@ -73,7 +77,7 @@
 - **Secrets to add:** DATABASE_URL, DIRECT_URL, NEXT_PUBLIC_SUPABASE_*, SUPABASE_SERVICE_ROLE_KEY, CLERK_* keys, NEXT_PUBLIC_APP_URL, VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
 - **Reference:** `docs/guides/PRODUCTION-SETUP.md` → Step 5
 
-### 11. Configure Branch Protection Rules
+### 11. Configure Branch Protection Rules ✅ DONE
 - **Where:** GitHub repo → Settings → Branches
 - **Rules for `main`:** Require PR, 1 approval, status checks must pass, restrict pushers
 - **Rules for `dev`:** Require PR, status checks must pass
@@ -127,7 +131,7 @@
 
 ## ✅ Already Done (No Action Needed)
 
-- [x] Vercel project created and linked (`prj_vKO7YaKzW39eGKtqCLrlaaIFoDO9`)
+- [x] Vercel project created and linked (`prj_vKO7YaKzW39eGKtqCLrlaaIFoDO9`) — org: `anqs-projects`, project: `cohortix`
 - [x] Local Supabase project exists (`rfwscvklcokzuofyzqwx`)
 - [x] Local Clerk app exists (dev instance)
 - [x] `feature/deployment-pipeline` branch created with all pipeline files
@@ -140,6 +144,27 @@
 - [x] All env example files created
 - [x] All setup guides written
 - [x] Migration scripts with safety checks
+- [x] Supabase staging project created (`lrgjattslacqfhmqexoe`)
+- [x] Supabase production project created (`qobvewyakovekbuvwjkt`)
+- [x] Clerk staging application created
+- [x] Clerk production application created
+- [x] GitHub `staging` environment created
+- [x] GitHub `production` environment created (with approval gate)
+- [x] Branch protection rules configured (`main` + `dev`)
+- [x] GitHub secrets configured
+
+---
+
+## Domain Structure
+
+| Subdomain | Purpose |
+|-----------|---------|
+| `cohortix.ai` | Marketing site |
+| `app.cohortix.ai` | Production app |
+| `staging.cohortix.ai` | Staging environment |
+| `www.cohortix.ai` | Redirect to root |
+| `api.cohortix.ai` | API (future) |
+| `docs.cohortix.ai` | Documentation (future) |
 
 ---
 
@@ -150,7 +175,8 @@ Day 1 (before staging works):
   ✅ Items 1, 2, 3, 4, 5
 
 Day 2 (before production works):
-  ✅ Items 6, 7, 8, 9, 10, 11
+  ✅ Items 6, 7, 9, 11
+  ⏳ Items 8, 10 (DNS + prod secrets still needed)
 
 Anytime (improves reliability):
   ✅ Items 12-19

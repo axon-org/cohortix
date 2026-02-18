@@ -208,7 +208,7 @@ jobs:
           echo "Running post-migration health check..."
           STATUS=$(curl -o /dev/null -s -w "%{http_code}" \
             -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
-            "https://cohortix.app/api/health" || echo "000")
+            "https://app.cohortix.ai/api/health" || echo "000")
 
           if [[ "$STATUS" == "200" ]]; then
             echo "✅ Application health check passed post-migration"

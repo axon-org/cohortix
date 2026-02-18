@@ -73,7 +73,7 @@ Runs on every PR to `dev` or `main`. All jobs must pass before merge is allowed.
 ## Staging Deploy (`deploy-staging.yml`)
 
 **Trigger:** push to `dev` branch  
-**Result:** auto-deploys to `staging.cohortix.app`
+**Result:** auto-deploys to `staging.cohortix.ai`
 
 ### Flow
 
@@ -83,7 +83,7 @@ push to dev
   ├── Build with Turborepo (staging env vars)
   ├── vercel build
   ├── vercel deploy → staging alias
-  └── Smoke test: GET staging.cohortix.app/api/health
+  └── Smoke test: GET staging.cohortix.ai/api/health
 ```
 
 ### Required Secrets (staging)
@@ -118,7 +118,7 @@ push to main
   ├── Build with production env vars
   ├── vercel build --prod
   ├── vercel deploy --prod
-  ├── Smoke test: GET cohortix.app/api/health
+  ├── Smoke test: GET app.cohortix.ai/api/health
   └── Create GitHub Release tag
 ```
 

@@ -2,7 +2,7 @@
 
 > **Audience:** Ahmad (account owner) + DevOps  
 > **Updated:** 2026-02-18  
-> **Branch:** `dev` → auto-deploys to `staging.cohortix.app`
+> **Branch:** `dev` → auto-deploys to `staging.cohortix.ai`
 
 Steps marked **[AHMAD]** require his personal accounts. Everything else is already configured.
 
@@ -53,7 +53,7 @@ GitHub dev branch
    - `Publishable key` (starts with `pk_test_`) → `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
    - `Secret key` (starts with `sk_test_`) → `CLERK_SECRET_KEY`
 5. Go to **Webhooks → Add endpoint**:
-   - URL: `https://staging.cohortix.app/api/webhooks/clerk`
+   - URL: `https://staging.cohortix.ai/api/webhooks/clerk`
    - Events: `user.created`, `user.updated`, `user.deleted`
    - Copy the **Signing Secret** → `CLERK_WEBHOOK_SECRET`
 
@@ -69,9 +69,9 @@ The Vercel project already exists (`prj_vKO7YaKzW39eGKtqCLrlaaIFoDO9`). Configur
 2. Under **Git** → **Production Branch**, confirm it's set to `main`
 3. To add staging as a preview/alias for `dev`:
    - Go to **Settings → Domains**
-   - Add `staging.cohortix.app`
+   - Add `staging.cohortix.ai`
    - Set it to deploy from the `dev` branch
-   - OR: use Vercel's **Git Branch Aliases** — add `dev` → `staging.cohortix.app`
+   - OR: use Vercel's **Git Branch Aliases** — add `dev` → `staging.cohortix.ai`
 4. Confirm automatic deployments are **enabled** for the `dev` branch
 
 > Note: The current `apps/web/vercel.json` has `"deploymentEnabled": false`. This is intentional — deployments are triggered via GitHub Actions (see Phase 4). Don't change this.
@@ -104,7 +104,7 @@ After credentials are in place, run the initial migration against staging:
 
 ```bash
 # Set your staging direct URL
-export STAGING_DIRECT_URL="postgresql://postgres.[staging-ref]:[password]@db.[staging-ref].supabase.co:5432/postgres"
+export STAGING_DIRECT_URL="postgresql://postgres.lrgjattslacqfhmqexoe:[password]@db.lrgjattslacqfhmqexoe.supabase.co:5432/postgres"
 bash scripts/migrate-staging.sh
 ```
 
@@ -116,7 +116,7 @@ Or trigger it via GitHub Actions (see `db-migrate.yml`).
 
 1. Push any commit to `dev` branch
 2. Watch the **deploy-staging** workflow run in GitHub Actions
-3. Visit `https://staging.cohortix.app`
+3. Visit `https://staging.cohortix.ai`
 4. Sign in with a test Clerk account
 5. Verify the DB connection works (dashboard should load data)
 
@@ -133,6 +133,6 @@ See `.env.staging.example` for all required variables with descriptions.
 | Issue | Fix |
 |-------|-----|
 | Vercel build fails — missing env | Add missing secrets in GitHub → Secrets |
-| Clerk auth error on staging | Ensure webhook URL is `staging.cohortix.app/api/webhooks/clerk` |
+| Clerk auth error on staging | Ensure webhook URL is `staging.cohortix.ai/api/webhooks/clerk` |
 | DB connection refused | Check `STAGING_DATABASE_URL` — use port 6543 for pooler |
 | 500 error on staging | Check Vercel deployment logs for the specific error |

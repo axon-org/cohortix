@@ -2,7 +2,7 @@
 
 > **Audience:** Ahmad (account owner) + DevOps  
 > **Updated:** 2026-02-18  
-> **Branch:** `main` → deploys to `cohortix.app` (manual approval required)
+> **Branch:** `main` → deploys to `app.cohortix.ai` (manual approval required)
 
 ⚠️ **Production touches real user data. Every step here requires deliberate action.**
 
@@ -55,7 +55,7 @@ GitHub main branch
    - `Publishable key` (starts with `pk_live_`) → `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
    - `Secret key` (starts with `sk_live_`) → `CLERK_SECRET_KEY`
 6. Go to **Webhooks → Add endpoint**:
-   - URL: `https://cohortix.app/api/webhooks/clerk`
+   - URL: `https://app.cohortix.ai/api/webhooks/clerk`
    - Events: `user.created`, `user.updated`, `user.deleted`, `session.created`
    - Copy the **Signing Secret** → `CLERK_WEBHOOK_SECRET`
 
@@ -66,7 +66,7 @@ GitHub main branch
 ## Step 3 — Configure Production Domain in Vercel **[AHMAD]**
 
 1. Go to [vercel.com](https://vercel.com) → **cohortix** project → **Settings → Domains**
-2. Add `cohortix.app` (and `www.cohortix.app` → redirect to apex)
+2. Add `app.cohortix.ai` (and `www.cohortix.ai` → redirect to `cohortix.ai`)
 3. Follow Vercel's DNS instructions to point your domain:
    - If on Vercel DNS: automatic
    - If on external DNS (Namecheap, Cloudflare, etc.):
@@ -106,7 +106,7 @@ Add these as **Environment secrets** (select `production` environment):
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | production Clerk `pk_live_` key |
 | `CLERK_SECRET_KEY` | production Clerk `sk_live_` key |
 | `CLERK_WEBHOOK_SECRET` | production Clerk webhook signing secret |
-| `NEXT_PUBLIC_APP_URL` | `https://cohortix.app` |
+| `NEXT_PUBLIC_APP_URL` | `https://app.cohortix.ai` |
 | `VERCEL_TOKEN` | Vercel personal access token |
 | `VERCEL_ORG_ID` | Vercel org ID |
 | `VERCEL_PROJECT_ID` | `prj_vKO7YaKzW39eGKtqCLrlaaIFoDO9` |
@@ -122,7 +122,7 @@ Add these as **Environment secrets** (select `production` environment):
 # Go to: Actions → db-migrate → Run workflow → select "production"
 
 # OR run manually (requires direct access):
-export PRODUCTION_DIRECT_URL="postgresql://postgres.[prod-ref]:[password]@db.[prod-ref].supabase.co:5432/postgres"
+export PRODUCTION_DIRECT_URL="postgresql://postgres.qobvewyakovekbuvwjkt:[password]@db.qobvewyakovekbuvwjkt.supabase.co:5432/postgres"
 bash scripts/migrate-production.sh
 ```
 
@@ -139,7 +139,7 @@ The production migration script includes:
 2. The `deploy-production.yml` workflow starts
 3. **It will pause** at the approval gate
 4. Ahmad reviews and clicks **Approve** in GitHub Actions
-5. Deploy proceeds → smoke tests run against `cohortix.app`
+5. Deploy proceeds → smoke tests run against `app.cohortix.ai`
 
 ---
 

@@ -66,7 +66,7 @@ jobs:
     needs: ci-gate
     environment:
       name: production
-      url: https://cohortix.app
+      url: https://app.cohortix.ai
     steps:
       - name: Approval received
         run: |
@@ -192,7 +192,7 @@ jobs:
 
       - name: Health check
         run: |
-          PROD_URL="https://cohortix.app"
+          PROD_URL="https://app.cohortix.ai"
           echo "Testing: $PROD_URL/api/health"
 
           for i in {1..6}; do
@@ -213,7 +213,7 @@ jobs:
 
       - name: Critical path tests
         run: |
-          PROD_URL="https://cohortix.app"
+          PROD_URL="https://app.cohortix.ai"
 
           check() {
             STATUS=$(curl -o /dev/null -s -w "%{http_code}" \
@@ -260,7 +260,7 @@ jobs:
           echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Deployed by | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Deployment URL | ${{ needs.deploy-production.outputs.deployment-url }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Production URL | https://cohortix.app |" >> $GITHUB_STEP_SUMMARY
+          echo "| Production URL | https://app.cohortix.ai |" >> $GITHUB_STEP_SUMMARY
           echo "| Time | $(date -u '+%Y-%m-%d %H:%M UTC') |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [[ "$STATUS" == "FAILED" ]]; then

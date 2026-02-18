@@ -96,4 +96,4 @@ echo -e "${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━�
 echo -e "${GREEN}${BOLD}  Production migrations complete at $(date -u '+%H:%M:%S UTC')${NC}"
 echo -e "${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-info "Post-migration: verify the app is healthy at https://cohortix.app/api/health"
+info "Post-migration: verify the app is healthy at https://app.cohortix.ai/api/health"

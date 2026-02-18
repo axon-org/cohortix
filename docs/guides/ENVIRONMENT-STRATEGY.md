@@ -35,8 +35,8 @@ graph TB
 
     subgraph "Vercel Environments"
         PREVIEW[🔍 Preview Deployments<br/>PR-specific URLs]
-        STAGING_DEPLOY[🧪 Staging<br/>staging.cohortix.app]
-        PROD[🚀 Production<br/>cohortix.app]
+        STAGING_DEPLOY[🧪 Staging<br/>staging.cohortix.ai]
+        PROD[🚀 Production<br/>app.cohortix.ai]
     end
 
     subgraph "Supabase Environments"
@@ -280,24 +280,24 @@ vercel env add CLERK_SECRET_KEY preview
 Allowed Origins:
 - http://localhost:3000
 - https://*.vercel.app (Vercel preview URLs)
-- https://staging.cohortix.app
+- https://staging.cohortix.ai
 
 Redirect URLs:
 - http://localhost:3000/sign-in
 - https://*.vercel.app/sign-in
-- https://staging.cohortix.app/sign-in
+- https://staging.cohortix.ai/sign-in
 ```
 
 **Production Instance:**
 
 ```
 Allowed Origins:
-- https://cohortix.app
-- https://www.cohortix.app
+- https://app.cohortix.ai
+- https://www.cohortix.ai
 
 Redirect URLs:
-- https://cohortix.app/sign-in
-- https://www.cohortix.app/sign-in
+- https://app.cohortix.ai/sign-in
+- https://www.cohortix.ai/sign-in
 ```
 
 ---
@@ -323,7 +323,7 @@ Redirect URLs:
 | `NEXT_PUBLIC_SENTRY_DSN`            | (omit)                   | Staging DSN     | Staging DSN                    | Prod DSN               | 🌐 Public        |
 | `OPENAI_API_KEY`                    | Personal key             | Staging key     | Staging key                    | Prod key               | 🔒 Secret        |
 | `ANTHROPIC_API_KEY`                 | Personal key             | Staging key     | Staging key                    | Prod key               | 🔒 Secret        |
-| `NEXT_PUBLIC_APP_URL`               | `http://localhost:3000`  | Preview URL     | `https://staging.cohortix.app` | `https://cohortix.app` | 🌐 Public        |
+| `NEXT_PUBLIC_APP_URL`               | `http://localhost:3000`  | Preview URL     | `https://staging.cohortix.ai` | `https://app.cohortix.ai` | 🌐 Public        |
 | `NODE_ENV`                          | `development`            | `development`   | `production`                   | `production`           | 🌐 Public        |
 | `VERCEL_ENV`                        | `development`            | `preview`       | `preview`                      | `production`           | 🌐 Public (auto) |
 | `VERCEL_URL`                        | (not set)                | Preview URL     | Staging URL                    | Prod URL               | 🌐 Public (auto) |
@@ -436,7 +436,7 @@ NODE_ENV=development
    ├─ Merge PR to dev
    ├─ Dev → Staging (manual promotion or auto)
    ├─ GitHub Actions runs: supabase db push (to staging project)
-   ├─ Vercel deploys to staging.cohortix.app
+   ├─ Vercel deploys to staging.cohortix.ai
    ├─ Full integration tests run
    ├─ Product team validates
    └─ Sign-off for production
@@ -444,7 +444,7 @@ NODE_ENV=development
 4️⃣ PRODUCTION (Manual Promotion)
    ├─ Staging → Main (manual PR, approved by 2+ reviewers)
    ├─ GitHub Actions runs: supabase db push (to prod project)
-   ├─ Vercel deploys to cohortix.app
+   ├─ Vercel deploys to app.cohortix.ai
    ├─ Smoke tests run automatically
    ├─ Monitor: Sentry, Vercel Analytics
    └─ Rollback plan: git revert + manual DB rollback
@@ -639,7 +639,7 @@ vercel dev
 
    ```bash
    # Playwright smoke tests against staging
-   STAGING_URL=https://staging.cohortix.app pnpm test:e2e:smoke
+   STAGING_URL=https://staging.cohortix.ai pnpm test:e2e:smoke
    ```
 
 3. **Product validation:**
@@ -667,7 +667,7 @@ vercel dev
    - name: Production Smoke Tests
      run: pnpm test:e2e:smoke
      env:
-       PROD_URL: https://cohortix.app
+       PROD_URL: https://app.cohortix.ai
    ```
 
 2. **Manual verification:**
@@ -831,11 +831,11 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clerk.cohortix.app",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clerk.cohortix.ai",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co https://clerk.cohortix.app",
+              "connect-src 'self' https://*.supabase.co https://clerk.cohortix.ai",
             ].join('; '),
           },
         ],
@@ -1215,7 +1215,7 @@ vercel dev --env .env.preview
 # After merge to staging branch:
 
 # 1. Access staging URL
-# https://staging.cohortix.app
+# https://staging.cohortix.ai
 
 # 2. Run full integration tests
 # Test multi-user workflows

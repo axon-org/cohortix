@@ -57,7 +57,7 @@ jobs:
     needs: pre-deploy-checks
     environment:
       name: staging
-      url: https://staging.cohortix.app
+      url: https://staging.cohortix.ai
     outputs:
       deployment-url: ${{ steps.deploy.outputs.deployment-url }}
     steps:
@@ -110,7 +110,7 @@ jobs:
           CLERK_SECRET_KEY: ${{ secrets.STAGING_CLERK_SECRET_KEY }}
           CLERK_WEBHOOK_SECRET: ${{ secrets.STAGING_CLERK_WEBHOOK_SECRET }}
           # App
-          NEXT_PUBLIC_APP_URL: https://staging.cohortix.app
+          NEXT_PUBLIC_APP_URL: https://staging.cohortix.ai
 
       - name: Deploy to Vercel (staging alias)
         id: deploy
@@ -120,9 +120,9 @@ jobs:
           echo "🚀 Staging deployed to: $DEPLOYMENT_URL"
 
           # Alias to stable staging URL (requires domain configured in Vercel)
-          vercel alias set "$DEPLOYMENT_URL" staging.cohortix.app \
+          vercel alias set "$DEPLOYMENT_URL" staging.cohortix.ai \
             --token=${{ secrets.VERCEL_TOKEN }} || \
-            echo "⚠️  Alias set failed — configure staging.cohortix.app in Vercel dashboard"
+            echo "⚠️  Alias set failed — configure staging.cohortix.ai in Vercel dashboard"
 
   # ═══════════════════════════════════════════════════════════════
   # SMOKE TEST
@@ -166,6 +166,6 @@ jobs:
           echo "- **Branch:** \`dev\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **URL:** ${{ needs.deploy-staging.outputs.deployment-url }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Stable URL:** https://staging.cohortix.app" >> $GITHUB_STEP_SUMMARY
+          echo "- **Stable URL:** https://staging.cohortix.ai" >> $GITHUB_STEP_SUMMARY
           echo "- **Deployed by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Time:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
