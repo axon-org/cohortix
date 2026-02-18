@@ -1,0 +1,99 @@
+name: Security Baseline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # GITLEAKS SECRETS SCAN
+  # Scans the full git history for accidental secret commits using
+  # Gitleaks. Blocks merge if any verified leak is detected.
+  # ═══════════════════════════════════════════════════════════════
+
+  gitleaks-secrets-scan:
+    name: Gitleaks Secrets Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  # ═══════════════════════════════════════════════════════════════
+  # DEPENDENCY AUDIT — HIGH SEVERITY
+  # Fails the build if any dependency has a HIGH or CRITICAL
+  # vulnerability. Stricter than the moderate-level audit in CI.
+  # ═══════════════════════════════════════════════════════════════
+
+  dependency-audit-high:
+    name: Dependency Audit (High)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit for high-severity vulnerabilities
+        run: pnpm audit --audit-level=high
+
+      - name: Generate audit report
+        if: failure()
+        run: |
+          echo "## Dependency Audit Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "High or critical severity vulnerabilities were detected." >> "$GITHUB_STEP_SUMMARY"
+          echo "Run \`pnpm audit --audit-level=high\` locally to review and remediate." >> "$GITHUB_STEP_SUMMARY"
+
+  # ═══════════════════════════════════════════════════════════════
+  # STATUS CHECK
+  # Succeeds only when all security baseline checks pass.
+  # ═══════════════════════════════════════════════════════════════
+
+  security-baseline-success:
+    name: Security Baseline Success
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - gitleaks-secrets-scan
+      - dependency-audit-high
+    steps:
+      - name: Check all security jobs
+        run: |
+          if [[ "${{ needs.gitleaks-secrets-scan.result }}" != "success" ]] || \
+             [[ "${{ needs.dependency-audit-high.result }}" != "success" ]]; then
+            echo "One or more security baseline checks failed."
+            exit 1
+          fi
+          echo "✅  All security baseline checks passed."
