@@ -1,26 +1,28 @@
-import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { Header } from '@/components/dashboard/header';
 import { getCurrentUser } from '@/server/db/queries/dashboard';
-import { getAuthContextBasic } from '@/lib/auth-helper';
+import { getAuthContext } from '@/lib/auth-helper';
+import { UnauthorizedError, ForbiddenError } from '@/lib/errors';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { userId: clerkUserId } = await auth();
-
-  if (!clerkUserId) {
+  try {
+    // getAuthContext() handles everything:
+    // - Checks Clerk auth (throws UnauthorizedError if not signed in)
+    // - Auto-provisions user profile if missing from Supabase
+    // - Auto-provisions org from Clerk if missing from Supabase
+    // - Falls back to org membership lookup
+    // - Throws ForbiddenError if no org at all
+    await getAuthContext();
+  } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      redirect('/sign-in');
+    }
+    if (error instanceof ForbiddenError) {
+      redirect('/onboarding');
+    }
+    // Unexpected error — redirect to sign-in as fallback
     redirect('/sign-in');
-  }
-
-  const { supabase, userId } = await getAuthContextBasic();
-  const { data: membership, error: membershipError } = await supabase
-    .from('organization_memberships')
-    .select('organization_id')
-    .eq('user_id', userId)
-    .single();
-
-  if (membershipError || !membership) {
-    redirect('/onboarding');
   }
 
   const currentUser = await getCurrentUser();
