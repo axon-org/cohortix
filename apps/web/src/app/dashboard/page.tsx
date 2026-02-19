@@ -4,7 +4,6 @@ import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { UrgentAlerts } from '@/components/dashboard/urgent-alerts';
 import { GlobalIntelFeed } from '@/components/dashboard/global-intel-feed';
 import { getDashboardData } from '@/server/db/queries/dashboard';
-import { redirect } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { ArrowRight, Users, Bot, Rocket } from 'lucide-react';
@@ -26,7 +25,7 @@ export default async function DashboardPage() {
   const dashboardData = await getDashboardData();
 
   if (!dashboardData) {
-    redirect('/sign-in');
+    return null;
   }
 
   const { activity, alerts, missions, allies } = dashboardData;
@@ -53,19 +52,19 @@ export default async function DashboardPage() {
           icon={<Users className="w-4 h-4" />}
           label="Cohorts"
           count={dashboardData.kpis.activeMissions}
-          href="/cohorts"
+          href="/dashboard/cohorts"
         />
         <QuickStatCard
           icon={<Bot className="w-4 h-4" />}
           label="Allies"
           count={dashboardData.kpis.activeAllies}
-          href="/allies"
+          href="/dashboard/allies"
         />
         <QuickStatCard
           icon={<Rocket className="w-4 h-4" />}
           label="Active Missions"
           count={dashboardData.kpis.activeMissions}
-          href="/missions"
+          href="/dashboard/missions"
         />
       </div>
 
@@ -87,7 +86,7 @@ export default async function DashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-semibold">Active Missions</h2>
                 <Link
-                  href="/missions"
+                  href="/dashboard/missions"
                   className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
                 >
                   View all <ArrowRight className="w-3 h-3" />
@@ -97,7 +96,7 @@ export default async function DashboardPage() {
                 {missions.slice(0, 5).map((mission: any) => (
                   <Link
                     key={mission.id}
-                    href={`/missions/${mission.id}`}
+                    href={`/dashboard/missions/${mission.id}`}
                     className="flex items-center justify-between p-3 rounded-md hover:bg-secondary/50 transition-colors group"
                   >
                     <div className="flex items-center gap-3">

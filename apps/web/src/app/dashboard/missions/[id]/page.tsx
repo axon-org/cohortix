@@ -35,7 +35,10 @@ export default function MissionDetailPage({ params }: { params: Promise<{ id: st
     return (
       <div className="text-center py-20">
         <p className="text-muted-foreground">Mission not found</p>
-        <Link href="/missions" className="text-sm text-foreground underline mt-2 inline-block">
+        <Link
+          href="/dashboard/missions"
+          className="text-sm text-foreground underline mt-2 inline-block"
+        >
           Back to Missions
         </Link>
       </div>
@@ -68,7 +71,7 @@ export default function MissionDetailPage({ params }: { params: Promise<{ id: st
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
         <Link
-          href="/missions"
+          href="/dashboard/missions"
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Missions

@@ -35,7 +35,10 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
     return (
       <div className="text-center py-20">
         <p className="text-muted-foreground">Ally not found</p>
-        <Link href="/allies" className="text-sm text-foreground underline mt-2 inline-block">
+        <Link
+          href="/dashboard/allies"
+          className="text-sm text-foreground underline mt-2 inline-block"
+        >
           Back to Allies
         </Link>
       </div>
@@ -72,7 +75,7 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
         <Link
-          href="/allies"
+          href="/dashboard/allies"
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Allies

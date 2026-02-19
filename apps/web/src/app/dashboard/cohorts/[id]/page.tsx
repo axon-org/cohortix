@@ -47,7 +47,10 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
     return (
       <div className="text-center py-20">
         <p className="text-muted-foreground">Cohort not found</p>
-        <Link href="/cohorts" className="text-sm text-foreground underline mt-2 inline-block">
+        <Link
+          href="/dashboard/cohorts"
+          className="text-sm text-foreground underline mt-2 inline-block"
+        >
           Back to Cohorts
         </Link>
       </div>
@@ -80,7 +83,7 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
       {/* Back + Actions */}
       <div className="flex items-center justify-between">
         <Link
-          href="/cohorts"
+          href="/dashboard/cohorts"
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
