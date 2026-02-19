@@ -107,7 +107,8 @@ feature/* ──PR──▶ dev ──PR──▶ main
 - **Preview:** Every push to a PR branch → Vercel auto-generates preview URL
 - **Staging:** Merge to `dev` → auto-deploys to `staging.cohortix.ai`
 - **Production:** PR `dev` → `main` → auto-deploys to `cohortix.ai`
-- **Hotfixes:** Branch off `main`, fix, PR → `main`, then merge `main` back to `dev`
+- **Hotfixes:** Branch off `main`, fix, PR → `main`, then merge `main` back to
+  `dev`
 - See `CONTRIBUTING.md` for full details
 
 **⚠️ OLD PROJECTS (do NOT use, scheduled for deletion):**

@@ -9,13 +9,13 @@ feature/xyz ──PR──▶ dev ──PR──▶ main
 
 ### Branches
 
-| Branch | Purpose | Deploys to | Supabase | Clerk |
-|--------|---------|------------|----------|-------|
-| `main` | Production | `cohortix.ai` | Production (`qobvewyakovekbuvwjkt`) | Prod instance |
-| `dev` | Staging/integration | `staging.cohortix.ai` | Staging branch (`cclsfxrnlgjfididtzym`) | Dev instance |
-| `feature/*` | New features | Vercel preview URL | Same as staging | Dev instance |
-| `fix/*` | Bug fixes | Vercel preview URL | Same as staging | Dev instance |
-| `hotfix/*` | Urgent prod fixes | Vercel preview URL | Production | Prod instance |
+| Branch      | Purpose             | Deploys to            | Supabase                                | Clerk         |
+| ----------- | ------------------- | --------------------- | --------------------------------------- | ------------- |
+| `main`      | Production          | `cohortix.ai`         | Production (`qobvewyakovekbuvwjkt`)     | Prod instance |
+| `dev`       | Staging/integration | `staging.cohortix.ai` | Staging branch (`cclsfxrnlgjfididtzym`) | Dev instance  |
+| `feature/*` | New features        | Vercel preview URL    | Same as staging                         | Dev instance  |
+| `fix/*`     | Bug fixes           | Vercel preview URL    | Same as staging                         | Dev instance  |
+| `hotfix/*`  | Urgent prod fixes   | Vercel preview URL    | Production                              | Prod instance |
 
 ### Naming Conventions
 
@@ -40,10 +40,11 @@ pnpm install
 pnpm dev
 ```
 
-Local dev uses `.env.local` which points to the staging Supabase branch + Clerk dev instance. What works locally will work on staging.
+Local dev uses `.env.local` which points to the staging Supabase branch + Clerk
+dev instance. What works locally will work on staging.
 
-**Bypass auth for quick testing:**
-Set `BYPASS_AUTH=true` in `.env.local` to skip Clerk login (uses first org in DB).
+**Bypass auth for quick testing:** Set `BYPASS_AUTH=true` in `.env.local` to
+skip Clerk login (uses first org in DB).
 
 ### 2. Push & Preview
 
@@ -60,11 +61,13 @@ Vercel auto-generates a preview deployment with a unique URL for every push.
 
 ### 4. Staging Verification
 
-After merge to `dev`, Vercel auto-deploys to `staging.cohortix.ai`. Test the feature there.
+After merge to `dev`, Vercel auto-deploys to `staging.cohortix.ai`. Test the
+feature there.
 
 ### 5. Production Release
 
 When staging is verified:
+
 - Open PR: `dev` → `main`
 - Review & merge
 - Vercel auto-deploys to production
@@ -107,9 +110,9 @@ git checkout dev && git merge main
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `apps/web/.env.local` | Local env vars (never committed) |
-| `apps/web/src/middleware.ts` | Clerk auth middleware |
+| File                              | Purpose                          |
+| --------------------------------- | -------------------------------- |
+| `apps/web/.env.local`             | Local env vars (never committed) |
+| `apps/web/src/middleware.ts`      | Clerk auth middleware            |
 | `apps/web/src/lib/auth-helper.ts` | Auth context + auto-provisioning |
-| `CLAUDE.md` | AI agent project context |
+| `CLAUDE.md`                       | AI agent project context         |
