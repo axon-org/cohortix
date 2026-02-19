@@ -1,0 +1,10 @@
+<svg width="240" height="40" viewBox="0 0 240 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(0, 4) scale(0.32)">
+    <circle cx="50" cy="30" r="14" fill="#5E6AD2"/>
+    <circle cx="30" cy="70" r="14" fill="#5E6AD2" fill-opacity="0.6"/>
+    <circle cx="70" cy="70" r="14" fill="#5E6AD2" fill-opacity="0.6"/>
+    <path d="M50 44V56M38 65L44 60M62 65L56 60" stroke="#FAFAFA" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="62" r="5" fill="#FAFAFA"/>
+  </g>
+  <text x="44" y="28" fill="#FAFAFA" style="font-family: Inter, sans-serif; font-weight: 600; font-size: 24px; letter-spacing: -0.03em;">Cohortix</text>
+</svg>

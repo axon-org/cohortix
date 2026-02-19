@@ -54,3 +54,6 @@ Thumbs.db
 *.pem
 .npmrc.local
 supabase/.temp/
+
+reset-db.js
+.skills.lock
