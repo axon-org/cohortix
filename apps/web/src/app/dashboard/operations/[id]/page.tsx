@@ -37,7 +37,10 @@ export default function OperationDetailPage({ params }: { params: Promise<{ id: 
     return (
       <div className="text-center py-20">
         <p className="text-muted-foreground">Operation not found</p>
-        <Link href="/operations" className="text-sm text-foreground underline mt-2 inline-block">
+        <Link
+          href="/dashboard/operations"
+          className="text-sm text-foreground underline mt-2 inline-block"
+        >
           Back to Operations
         </Link>
       </div>
@@ -62,7 +65,7 @@ export default function OperationDetailPage({ params }: { params: Promise<{ id: 
 
   const handleDelete = async () => {
     await deleteMutation.mutateAsync(id);
-    router.push('/operations');
+    router.push('/dashboard/operations');
   };
 
   return (
@@ -70,7 +73,7 @@ export default function OperationDetailPage({ params }: { params: Promise<{ id: 
       {/* Back + Actions */}
       <div className="flex items-center justify-between">
         <Link
-          href="/operations"
+          href="/dashboard/operations"
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />

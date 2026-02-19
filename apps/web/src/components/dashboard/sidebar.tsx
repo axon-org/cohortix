@@ -17,12 +17,12 @@ import {
 import { useState } from 'react';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutGrid },
-  { name: 'Cohorts', href: '/cohorts', icon: Users },
-  { name: 'Allies', href: '/allies', icon: Bot },
-  { name: 'Missions', href: '/missions', icon: Rocket },
-  { name: 'Operations', href: '/operations', icon: FolderKanban },
-  { name: 'Tasks', href: '/tasks', icon: CheckSquare },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
+  { name: 'Cohorts', href: '/dashboard/cohorts', icon: Users },
+  { name: 'Allies', href: '/dashboard/allies', icon: Bot },
+  { name: 'Missions', href: '/dashboard/missions', icon: Rocket },
+  { name: 'Operations', href: '/dashboard/operations', icon: FolderKanban },
+  { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
 ];
 
 interface SidebarProps {
@@ -65,7 +65,8 @@ export function Sidebar({ user }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 px-2 py-3 space-y-0.5">
         {navigation.map((item) => {
-          const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+          const isActive =
+            item.href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(item.href);
           const Icon = item.icon;
 
           return (
@@ -93,7 +94,7 @@ export function Sidebar({ user }: SidebarProps) {
       {/* Settings */}
       <div className="px-2 py-2 border-t border-border">
         <Link
-          href="/settings"
+          href="/dashboard/settings"
           title={collapsed ? 'Settings' : undefined}
           className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
         >

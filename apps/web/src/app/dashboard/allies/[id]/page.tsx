@@ -68,7 +68,7 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
 
   const handleDelete = async () => {
     await deleteMutation.mutateAsync(id);
-    router.push('/allies');
+    router.push('/dashboard/allies');
   };
 
   return (

@@ -75,7 +75,7 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
 
   const handleDelete = async () => {
     await deleteMutation.mutateAsync(id);
-    router.push('/cohorts');
+    router.push('/dashboard/cohorts');
   };
 
   return (

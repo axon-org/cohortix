@@ -64,7 +64,7 @@ export default function MissionDetailPage({ params }: { params: Promise<{ id: st
 
   const handleDelete = async () => {
     await deleteMutation.mutateAsync(id);
-    router.push('/missions');
+    router.push('/dashboard/missions');
   };
 
   return (

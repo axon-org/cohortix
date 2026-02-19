@@ -27,7 +27,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Recent Activity</h3>
-        <Link href="/activity" className="text-sm text-primary hover:underline">
+        <Link href="/dashboard/activity" className="text-sm text-primary hover:underline">
           View All
         </Link>
       </div>
