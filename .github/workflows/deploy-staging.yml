@@ -100,17 +100,12 @@ jobs:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
-      - name: Deploy to Vercel (staging alias)
+      - name: Deploy to Vercel staging
         id: deploy
         run: |
           DEPLOYMENT_URL=$(vercel deploy --prebuilt --target=staging --token=${{ secrets.VERCEL_TOKEN }})
           echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
           echo "🚀 Staging deployed to: $DEPLOYMENT_URL"
-
-          # Alias to stable staging URL (requires domain configured in Vercel)
-          vercel alias set "$DEPLOYMENT_URL" staging.cohortix.ai \
-            --token=${{ secrets.VERCEL_TOKEN }} || \
-            echo "⚠️  Alias set failed — configure staging.cohortix.ai in Vercel dashboard"
 
   # ═══════════════════════════════════════════════════════════════
   # SMOKE TEST
@@ -127,7 +122,7 @@ jobs:
 
       - name: Health check
         run: |
-          STAGING_URL="${{ needs.deploy-staging.outputs.deployment-url }}"
+          STAGING_URL="https://staging.cohortix.ai"
           echo "Testing: $STAGING_URL/api/health"
 
           for i in {1..5}; do
@@ -148,12 +143,14 @@ jobs:
 
       - name: Summary
         if: always()
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          ACTOR: ${{ github.actor }}
         run: |
           echo "## Staging Deploy Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch:** \`dev\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **URL:** ${{ needs.deploy-staging.outputs.deployment-url }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Stable URL:** https://staging.cohortix.ai" >> $GITHUB_STEP_SUMMARY
-          echo "- **Deployed by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`$COMMIT_SHA\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** https://staging.cohortix.ai" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployed by:** $ACTOR" >> $GITHUB_STEP_SUMMARY
           echo "- **Time:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
