@@ -25,7 +25,12 @@ export default async function DashboardPage() {
   const dashboardData = await getDashboardData();
 
   if (!dashboardData) {
-    return null;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <h1 className="text-2xl font-bold mb-2">Welcome to Cohortix</h1>
+        <p className="text-muted-foreground mb-4">Your dashboard is being set up. Try refreshing the page.</p>
+      </div>
+    );
   }
 
   const { activity, alerts, missions, allies } = dashboardData;

@@ -338,19 +338,20 @@ export async function getRecentKnowledge(organizationId: string, limit = 5) {
  * Fetches all data needed for the dashboard in one call
  */
 export async function getDashboardData() {
-  const user = await getCurrentUser();
+  const authContext = await getAuthContext();
+  const { supabase, userId, organizationId } = authContext;
 
-  if (!user) {
-    return null;
-  }
+  // Get user profile
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).single();
+  const user = { id: userId, profile };
 
-  const membership = await getUserOrganization(user.id);
-
-  if (!membership) {
-    return null;
-  }
-
-  const organizationId = membership.organization_id;
+  // Get organization details
+  const { data: membership } = await supabase
+    .from('organization_memberships')
+    .select(`*, organization:organizations(*)`)
+    .eq('user_id', userId)
+    .eq('organization_id', organizationId)
+    .single();
 
   const [kpis, activity, alerts, missions, allies, knowledge] = await Promise.all([
     getDashboardKPIs(organizationId),
@@ -363,8 +364,8 @@ export async function getDashboardData() {
 
   return {
     user,
-    organization: membership.organization,
-    role: membership.role,
+    organization: membership?.organization ?? null,
+    role: membership?.role ?? 'member',
     kpis,
     activity,
     alerts,
