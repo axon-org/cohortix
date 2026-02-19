@@ -1,18 +1,11 @@
 /**
  * Mission Control Dashboard API - KPI Aggregations
  * Axon Codex v1.2 compliant - RFC 7807 errors, structured logging
- *
- * Returns key performance indicators for the Mission Control dashboard:
- * - Active cohorts count
- * - Total allies (agents) count
- * - Average engagement across all cohorts
- * - At-risk cohorts count
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { withErrorHandler, UnauthorizedError, ForbiddenError } from '@/lib/errors';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 
 interface KPIData {
@@ -30,6 +23,38 @@ interface KPIData {
   };
 }
 
+type CohortMemberRow = {
+  cohort_id: string;
+  engagement_score: string | number | null;
+  joined_at: string;
+};
+
+function computeEngagementStats(cohortIds: string[], members: CohortMemberRow[]) {
+  const stats = new Map<string, { count: number; total: number }>();
+  cohortIds.forEach((id) => stats.set(id, { count: 0, total: 0 }));
+
+  members.forEach((member) => {
+    const entry = stats.get(member.cohort_id);
+    if (!entry) return;
+    entry.count += 1;
+    entry.total += parseFloat(member.engagement_score as string) || 0;
+  });
+
+  const engagementByCohort = Array.from(stats.values()).map((entry) =>
+    entry.count > 0 ? entry.total / entry.count : 0
+  );
+
+  const avgEngagement =
+    engagementByCohort.length > 0
+      ? Math.round(
+          (engagementByCohort.reduce((sum, value) => sum + value, 0) / engagementByCohort.length) *
+            100
+        ) / 100
+      : 0;
+
+  return { avgEngagement };
+}
+
 export const GET = withMiddleware(standardRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId();
   logger.setContext({ correlationId });
@@ -42,75 +67,57 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     organizationId,
   });
 
-  // Fetch current period KPIs
-  const [cohortsResult, agentsResult] = await Promise.all([
-    // Cohorts data
-    supabase
-      .from('cohorts')
-      .select('status, member_count, engagement_percent')
-      .eq('organization_id', organizationId),
+  const { data: cohorts, error: cohortsError } = await supabase
+    .from('cohorts')
+    .select('id, status, created_at')
+    .eq('organization_id', organizationId);
 
-    // Agents (allies) data
-    supabase.from('agents').select('id, status').eq('organization_id', organizationId),
-  ]);
-
-  if (cohortsResult.error) {
+  if (cohortsError) {
     logger.error('Failed to fetch cohorts for KPIs', {
       correlationId,
-      error: cohortsResult.error,
+      error: cohortsError,
     });
-    throw cohortsResult.error;
+    throw cohortsError;
   }
 
-  if (agentsResult.error) {
-    logger.error('Failed to fetch agents for KPIs', {
+  const { data: members, error: membersError } = await supabase
+    .from('cohort_members')
+    .select('cohort_id, engagement_score, joined_at')
+    .in(
+      'cohort_id',
+      (cohorts || []).map((cohort: any) => cohort.id)
+    );
+
+  if (membersError) {
+    logger.error('Failed to fetch cohort members for KPIs', {
       correlationId,
-      error: agentsResult.error,
+      error: membersError,
     });
-    throw agentsResult.error;
+    throw membersError;
   }
 
-  const cohorts = cohortsResult.data || [];
-  const agents = agentsResult.data || [];
+  const activeCohortsCount = (cohorts || []).filter((c: any) => c.status === 'active').length;
+  const atRiskCount = (cohorts || []).filter((c: any) => c.status === 'at-risk').length;
+  const totalAllies = (members || []).length;
 
-  // Calculate current KPIs
-  const activeCohortsCount = cohorts.filter((c: any) => c.status === 'active').length;
-  const atRiskCount = cohorts.filter((c: any) => c.status === 'at-risk').length;
-  const totalAllies = agents.length;
+  const { avgEngagement } = computeEngagementStats(
+    (cohorts || []).map((cohort: any) => cohort.id),
+    (members || []) as CohortMemberRow[]
+  );
 
-  // Calculate average engagement
-  const totalEngagement = cohorts.reduce((sum: number, cohort: any) => {
-    const engagement = parseFloat(cohort.engagement_percent || '0');
-    return sum + engagement;
-  }, 0);
-  const avgEngagement =
-    cohorts.length > 0 ? Math.round((totalEngagement / cohorts.length) * 100) / 100 : 0;
-
-  // Fetch previous period data (30 days ago) for trend calculation
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const [prevCohortsResult, prevAgentsResult] = await Promise.all([
-    supabase
-      .from('cohorts')
-      .select('status')
-      .eq('organization_id', organizationId)
-      .lte('created_at', thirtyDaysAgo.toISOString()),
+  const prevCohorts = (cohorts || []).filter(
+    (cohort: any) => new Date(cohort.created_at) <= thirtyDaysAgo
+  );
+  const prevMembers = (members || []).filter(
+    (member: any) => new Date(member.joined_at) <= thirtyDaysAgo
+  );
 
-    supabase
-      .from('agents')
-      .select('id')
-      .eq('organization_id', organizationId)
-      .lte('created_at', thirtyDaysAgo.toISOString()),
-  ]);
-
-  const prevCohorts = prevCohortsResult.data || [];
-  const prevAgents = prevAgentsResult.data || [];
-
-  // Calculate trends (percentage change)
   const prevActiveCount = prevCohorts.filter((c: any) => c.status === 'active').length;
   const prevAtRiskCount = prevCohorts.filter((c: any) => c.status === 'at-risk').length;
-  const prevAlliesCount = prevAgents.length;
+  const prevAlliesCount = prevMembers.length;
 
   const calculatePercentageChange = (current: number, previous: number): number => {
     if (previous === 0) return current > 0 ? 100 : 0;
@@ -127,7 +134,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     trends: {
       activeCohortsChange: calculatePercentageChange(activeCohortsCount, prevActiveCount),
       totalAlliesChange: calculatePercentageChange(totalAllies, prevAlliesCount),
-      avgEngagementChange: 0, // Would need historical engagement data
+      avgEngagementChange: 0,
       atRiskChange: calculatePercentageChange(atRiskCount, prevAtRiskCount),
     },
   };

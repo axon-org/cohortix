@@ -2,13 +2,9 @@
  * Cohort Queries Module (COH-B2)
  *
  * Server-side data fetching for cohorts.
- * Uses Supabase client with RLS for automatic tenant isolation.
- *
- * Database: cohorts table with cohort_status enum (active, paused, at-risk, completed)
  */
 
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getAuthContext } from '@/lib/auth-helper';
 
 type CohortStatus = 'active' | 'paused' | 'at-risk' | 'completed';
 
@@ -23,27 +19,52 @@ interface CohortFilters {
   pageSize?: number;
 }
 
-async function createClient() {
-  // Production: Use SSR client with cookies for auth
-  const cookieStore = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
+type CohortMemberStat = {
+  member_count: number;
+  engagement_percent: number;
+};
+
+async function getMemberStats(
+  supabase: any,
+  cohortIds: string[]
+): Promise<Record<string, CohortMemberStat>> {
+  if (cohortIds.length === 0) return {};
+
+  const { data: members, error } = await supabase
+    .from('cohort_members')
+    .select('cohort_id, engagement_score')
+    .in('cohort_id', cohortIds);
+
+  if (error) {
+    console.error('Error fetching cohort member stats:', error);
+    return {};
+  }
+
+  const stats: Record<string, { count: number; totalEngagement: number }> = {};
+  (members || []).forEach((member: any) => {
+    if (!stats[member.cohort_id]) {
+      stats[member.cohort_id] = { count: 0, totalEngagement: 0 };
     }
-  );
+    const entry = stats[member.cohort_id]!;
+    entry.count += 1;
+    entry.totalEngagement += parseFloat(member.engagement_score) || 0;
+  });
+
+  return Object.entries(stats).reduce<Record<string, CohortMemberStat>>((acc, [id, value]) => {
+    acc[id] = {
+      member_count: value.count,
+      engagement_percent:
+        value.count > 0 ? Math.round((value.totalEngagement / value.count) * 100) / 100 : 0,
+    };
+    return acc;
+  }, {});
 }
 
 /**
  * List cohorts with pagination, filtering, and sorting
  */
 export async function getCohorts(organizationId: string, filters: CohortFilters = {}) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthContext();
   const {
     status,
     search,
@@ -54,6 +75,8 @@ export async function getCohorts(organizationId: string, filters: CohortFilters 
     page = 1,
     pageSize = 20,
   } = filters;
+
+  const needsComputedSort = ['member_count', 'engagement_percent'].includes(sortBy);
 
   let query = supabase
     .from('cohorts')
@@ -76,9 +99,11 @@ export async function getCohorts(organizationId: string, filters: CohortFilters 
     query = query.lte('start_date', startDateTo);
   }
 
-  query = query
-    .order(sortBy, { ascending: sortOrder === 'asc' })
-    .range((page - 1) * pageSize, page * pageSize - 1);
+  if (!needsComputedSort) {
+    query = query
+      .order(sortBy, { ascending: sortOrder === 'asc' })
+      .range((page - 1) * pageSize, page * pageSize - 1);
+  }
 
   const { data, count, error } = await query;
 
@@ -87,8 +112,27 @@ export async function getCohorts(organizationId: string, filters: CohortFilters 
     throw new Error(`Failed to fetch cohorts: ${error.message}`);
   }
 
+  const cohorts = data || [];
+  const cohortIds = cohorts.map((cohort: any) => cohort.id);
+  const statsMap = await getMemberStats(supabase, cohortIds);
+
+  const enriched = cohorts.map((cohort: any) => ({
+    ...cohort,
+    member_count: statsMap[cohort.id]?.member_count || 0,
+    engagement_percent: statsMap[cohort.id]?.engagement_percent || 0,
+  }));
+
+  const sorted = needsComputedSort
+    ? enriched.sort((a: any, b: any) => {
+        const direction = sortOrder === 'asc' ? 1 : -1;
+        return (a[sortBy] - b[sortBy]) * direction;
+      })
+    : enriched;
+
+  const paged = needsComputedSort ? sorted.slice((page - 1) * pageSize, page * pageSize) : sorted;
+
   return {
-    cohorts: data || [],
+    cohorts: paged,
     total: count || 0,
     page,
     pageSize,
@@ -100,37 +144,51 @@ export async function getCohorts(organizationId: string, filters: CohortFilters 
  * Get a single cohort by ID with related data
  */
 export async function getCohortById(cohortId: string) {
-  const supabase = await createClient();
+  const { supabase, organizationId } = await getAuthContext();
 
-  const { data, error } = await supabase.from('cohorts').select('*').eq('id', cohortId).single();
+  const { data, error } = await supabase
+    .from('cohorts')
+    .select('*')
+    .eq('id', cohortId)
+    .eq('organization_id', organizationId)
+    .single();
 
   if (error) {
-    if (error.code === 'PGRST116') return null; // Not found
+    if (error.code === 'PGRST116') return null;
     console.error('Error fetching cohort:', error);
     throw new Error(`Failed to fetch cohort: ${error.message}`);
   }
 
-  return data;
+  if (!data) return null;
+
+  const statsMap = await getMemberStats(supabase, [data.id]);
+  return {
+    ...data,
+    member_count: statsMap[data.id]?.member_count || 0,
+    engagement_percent: statsMap[data.id]?.engagement_percent || 0,
+  };
 }
 
 /**
  * Get cohort statistics: engagement metrics, member breakdown, activity
  */
 export async function getCohortStats(cohortId: string) {
-  const supabase = await createClient();
+  const { supabase, organizationId } = await getAuthContext();
 
-  // Get the cohort first
   const { data: cohort, error } = await supabase
     .from('cohorts')
     .select('*')
     .eq('id', cohortId)
+    .eq('organization_id', organizationId)
     .single();
 
   if (error || !cohort) {
     return null;
   }
 
-  // Calculate days active
+  const statsMap = await getMemberStats(supabase, [cohort.id]);
+  const memberStats = statsMap[cohort.id] || { member_count: 0, engagement_percent: 0 };
+
   const startDate = cohort.start_date ? new Date(cohort.start_date) : new Date(cohort.created_at);
   const endDate = cohort.end_date ? new Date(cohort.end_date) : new Date();
   const daysActive = Math.max(
@@ -139,8 +197,8 @@ export async function getCohortStats(cohortId: string) {
   );
 
   return {
-    memberCount: cohort.member_count,
-    engagementPercent: parseFloat(cohort.engagement_percent),
+    memberCount: memberStats.member_count,
+    engagementPercent: memberStats.engagement_percent,
     daysActive,
     status: cohort.status,
     startDate: cohort.start_date,
@@ -149,15 +207,15 @@ export async function getCohortStats(cohortId: string) {
 }
 
 /**
- * Get cohort activity timeline (placeholder — will use audit_logs when available)
+ * Get cohort activity timeline
  */
 export async function getCohortActivity(cohortId: string, limit = 20) {
-  const supabase = await createClient();
+  const { supabase, organizationId } = await getAuthContext();
 
-  // Try fetching from audit_logs if entity_id matches
   const { data, error } = await supabase
-    .from('audit_logs')
+    .from('activity_log')
     .select('*')
+    .eq('organization_id', organizationId)
     .eq('entity_id', cohortId)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -172,42 +230,44 @@ export async function getCohortActivity(cohortId: string, limit = 20) {
 
 /**
  * Get engagement timeline data for a cohort
- * Returns daily interaction counts for the past 30 days (or specified range)
- * Used for the "Engagement Timeline" graph in Cohort Detail screen
  */
 export async function getCohortEngagementTimeline(
   cohortId: string,
   daysBack: number = 30
 ): Promise<Array<{ date: string; interaction_count: number }>> {
-  const supabase = await createClient();
+  const { supabase } = await getAuthContext();
 
-  // Calculate start date
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - daysBack);
 
-  // Query audit_logs for interactions by cohort members
-  // This assumes audit_logs tracks agent activity with entity_type and entity_id
-  const { data, error } = await supabase.rpc('get_cohort_engagement_timeline', {
-    p_cohort_id: cohortId,
-    p_start_date: startDate.toISOString().split('T')[0],
-    p_end_date: endDate.toISOString().split('T')[0],
-  });
+  const { data, error } = await supabase
+    .from('cohort_members')
+    .select('joined_at')
+    .eq('cohort_id', cohortId)
+    .gte('joined_at', startDate.toISOString())
+    .lte('joined_at', endDate.toISOString());
 
   if (error) {
     console.error('Error fetching engagement timeline:', error);
-    // Return empty array with date range filled with zeros
-    const timeline = [];
-    for (let i = 0; i < daysBack; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() - (daysBack - i - 1));
-      timeline.push({
-        date: date.toISOString().split('T')[0]!,
-        interaction_count: 0,
-      });
-    }
-    return timeline;
   }
 
-  return data || [];
+  const timelineMap = new Map<string, number>();
+  (data || []).forEach((row: any) => {
+    const date = new Date(row.joined_at).toISOString().split('T')[0]!;
+    timelineMap.set(date, (timelineMap.get(date) || 0) + 1);
+  });
+
+  const timeline = [] as Array<{ date: string; interaction_count: number }>;
+  for (let i = 0; i < daysBack; i++) {
+    const date = new Date();
+    date.setDate(date.getDate() - (daysBack - i - 1));
+    const dateKey = date.toISOString().split('T')[0]!;
+    timeline.push({
+      date: dateKey,
+      interaction_count: timelineMap.get(dateKey) || 0,
+    });
+  }
+
+  return timeline;
 }
