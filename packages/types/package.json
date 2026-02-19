@@ -11,9 +11,6 @@
   "scripts": {
     "type-check": "tsc --noEmit"
   },
-  "dependencies": {
-    "zod": "^3.22.4"
-  },
   "devDependencies": {
     "@types/node": "^20.11.19",
     "typescript": "^5.5.0"
