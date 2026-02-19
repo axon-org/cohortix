@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; }
+body { background: transparent; }
+
+.logo-dark {
+  width: 800px;
+  height: 240px;
+  background: #0A0A0B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.logo-light {
+  width: 800px;
+  height: 240px;
+  background: #FAFAFA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.wordmark {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 72px;
+  letter-spacing: -0.03em;
+  position: relative;
+}
+
+.wordmark-dark { color: #FAFAFA; }
+.wordmark-light { color: #0A0A0B; }
+
+.wordmark .o-container {
+  position: relative;
+  display: inline-block;
+}
+
+.wordmark .arc {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 12px;
+}
+
+.wordmark .arc path {
+  stroke: #5E6AD2;
+  stroke-width: 3;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* Favicon: just the O with arc */
+.favicon {
+  width: 256px;
+  height: 256px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: 48px;
+}
+
+.favicon-dark { background: #0A0A0B; }
+.favicon-light { background: #FAFAFA; }
+
+.favicon .letter {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 140px;
+  letter-spacing: -0.03em;
+}
+
+.favicon .letter-dark { color: #FAFAFA; }
+.favicon .letter-light { color: #0A0A0B; }
+
+.favicon .arc-fav {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 24px;
+}
+
+.favicon .arc-fav path {
+  stroke: #5E6AD2;
+  stroke-width: 5;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* Icon mark: C with arc */
+.icon-mark {
+  width: 256px;
+  height: 256px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: 48px;
+}
+
+.icon-mark .letter {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 140px;
+  letter-spacing: -0.03em;
+}
+
+.container { padding: 40px; display: flex; flex-direction: column; gap: 40px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Dark wordmark -->
+  <div class="logo-dark" id="wordmark-dark">
+    <span class="wordmark wordmark-dark">C<span class="o-container">o<svg class="arc" viewBox="0 0 36 12"><path d="M 2 2 Q 18 12 34 2"/></svg></span>h<span class="o-container">o<svg class="arc" viewBox="0 0 36 12"><path d="M 2 2 Q 18 12 34 2"/></svg></span>rtix</span>
+  </div>
+
+  <!-- Light wordmark -->
+  <div class="logo-light" id="wordmark-light">
+    <span class="wordmark wordmark-light">C<span class="o-container">o<svg class="arc" viewBox="0 0 36 12"><path d="M 2 2 Q 18 12 34 2"/></svg></span>h<span class="o-container">o<svg class="arc" viewBox="0 0 36 12"><path d="M 2 2 Q 18 12 34 2"/></svg></span>rtix</span>
+  </div>
+
+  <!-- Actually, only ONE "o" should have the arc (the second one) for subtlety -->
+  <!-- Dark wordmark v2 - single arc -->
+  <div class="logo-dark" id="wordmark-dark-v2">
+    <span class="wordmark wordmark-dark">Coh<span class="o-container">o<svg class="arc" viewBox="0 0 36 12"><path d="M 2 2 Q 18 12 34 2"/></svg></span>rtix</span>
+  </div>
+
+  <!-- Light wordmark v2 - single arc -->
+  <div class="logo-light" id="wordmark-light-v2">
+    <span class="wordmark wordmark-light">Coh<span class="o-container">o<svg class="arc" viewBox="0 0 36 12"><path d="M 2 2 Q 18 12 34 2"/></svg></span>rtix</span>
+  </div>
+
+  <!-- Favicon dark -->
+  <div class="favicon favicon-dark" id="favicon-dark">
+    <span class="letter letter-dark">C</span>
+    <svg class="arc-fav" viewBox="0 0 72 24"><path d="M 4 4 Q 36 24 68 4"/></svg>
+  </div>
+
+  <!-- Favicon light -->
+  <div class="favicon favicon-light" id="favicon-light">
+    <span class="letter letter-light">C</span>
+    <svg class="arc-fav" viewBox="0 0 72 24"><path d="M 4 4 Q 36 24 68 4"/></svg>
+  </div>
+</div>
+</body>
+</html>

@@ -2,7 +2,7 @@
 
 **Mission:** Cohortix  
 **Version:** 1.0.0  
-**Last Updated:** 2026-02-11  
+**Last Updated:** 2026-02-19  
 **Axon Codex Compliance:** v1.1 §2.2.1
 
 ---
@@ -40,7 +40,8 @@
 
 ### Key Decisions Made
 
-- **Supabase** for auth AND database (NOT Clerk/Neon)
+- **Clerk** for authentication, **Supabase** for database (migrated from
+  Supabase Auth to Clerk as of 2026-02-14)
 - **Tailwind v3** (codebase uses v3 syntax, was accidentally installed as v4)
 - **Terminology hierarchy:** Domain → Vision → Mission → Operation/Rhythm → Task
   (PPV Pro by August Bradley, rebranded for Cohortix)
@@ -50,13 +51,56 @@
 - **Supabase server client** lives in `apps/web/src/lib/supabase/` (NOT in
   shared packages — Next.js `cookies()` can't run from packages)
 
-### Credentials
+### Credentials & Environment Architecture (Updated 2026-02-19)
 
-- **Supabase:** `rfwscvklcokzuofyzqwx.supabase.co`
-- **Test account:** ahmadashfq@gmail.com / Test1234!
-- **Auth user ID:** b73baf11-1eee-44e8-8925-8e1277daa0ee
-- **Env files:** `apps/web/.env.local` (real keys), root `.env.local` (also has
-  keys)
+**Domains:**
+
+- `cohortix.ai` → Marketing/landing page
+- `app.cohortix.ai` → SaaS app for logged-in users
+- `staging.cohortix.ai` → Staging environment
+
+**Supabase (Branching 2.0 — single project with branches):**
+
+- **Production:** `qobvewyakovekbuvwjkt` (main branch)
+- **Staging:** `cclsfxrnlgjfididtzym` (persistent branch off production)
+- **Local:** `supabase start` (local Docker) or dev project
+- Config: `supabase/config.toml` with `[remotes.staging]`
+- CLI linked to production project
+
+**Clerk (single app: `cohortix-production`):**
+
+- **Production instance** → `pk_live_*` / `sk_live_*` → used by Vercel
+  Production
+- **Development instance** → `pk_test_*` / `sk_test_*` → used by Vercel Staging,
+  Preview, Development, and local
+- Webhook endpoints: `staging.cohortix.ai/api/webhooks/clerk` (Dev),
+  `app.cohortix.ai/api/webhooks/clerk` (Prod)
+- `authorizedParties` in middleware: `localhost:3000`, `staging.cohortix.ai`,
+  `cohortix.ai`, `app.cohortix.ai`
+
+**Vercel (4 environments, all fully configured):**
+
+- **Production** → `main` branch → `cohortix.ai` → Clerk Prod + Supabase Prod
+- **Staging** (custom) → `dev` branch → `staging.cohortix.ai` → Clerk Dev +
+  Supabase staging branch
+- **Preview** → PR branches → Clerk Dev + Supabase staging branch
+- **Development** → `vercel dev` → Clerk Dev + Supabase staging branch
+
+**GitHub Actions:**
+
+- `deploy-production.yml` → push to `main` → Vercel Production
+- `deploy-staging.yml` → push to `dev` → Vercel Staging
+  (`--environment=staging`)
+- `preview.yml` → PRs to `main` → Vercel Preview
+
+**Env files:** Root `.env.local` has local dev keys (Clerk Dev instance +
+Supabase dev project)
+
+**⚠️ OLD PROJECTS (do NOT use, scheduled for deletion):**
+
+- Supabase: `Cohortix` (rfwscvklcokzuofyzqwx), `cohortix-staging`
+  (lrgjattslacqfhmqexoe)
+- Clerk: `cohortix-staging`, `Cohortix`
 
 ### Known Issues
 
@@ -1646,31 +1690,33 @@ export function ProjectList({ organizationId }) {
 Create `.env.local` with these variables (see `.env.example` for template):
 
 ```bash
-# Database & Auth & Realtime (Supabase)
+# Authentication (Clerk — Dev instance for local)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
+CLERK_SECRET_KEY="sk_test_..."
+CLERK_WEBHOOK_SECRET="whsec_..."  # Only needed if testing webhooks locally
+NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
+NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/dashboard"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/onboarding"
+
+# Database (Supabase)
 NEXT_PUBLIC_SUPABASE_URL="https://xxx.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." # Server-only
-DATABASE_URL="postgresql://postgres:[password]@db.[mission].supabase.co:5432/postgres"
-
-# Redis (Upstash)
-UPSTASH_REDIS_REST_URL="https://xxx.upstash.io"
-UPSTASH_REDIS_REST_TOKEN="xxx"
-
-# AI/Embeddings (OpenAI)
-OPENAI_API_KEY="sk-xxx"
-
-# Background Jobs (Inngest)
-INNGEST_EVENT_KEY="xxx"
-INNGEST_SIGNING_KEY="xxx"
-
-# External Integrations
-CLAWDBOT_API_URL="https://api.clawdbot.io"
-CLAWDBOT_API_KEY="xxx"
-CLAWDBOT_WEBHOOK_SECRET="xxx"
+SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+DATABASE_URL="postgresql://postgres.xxx:[password]@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
+DIRECT_URL="postgresql://postgres.xxx:[password]@aws-1-us-east-1.pooler.supabase.com:5432/postgres"
 
 # Application
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 NODE_ENV="development"
+BYPASS_AUTH="false"  # Set to "true" to skip auth during testing
+
+# Redis (Upstash) — optional for local dev
+UPSTASH_REDIS_REST_URL="https://xxx.upstash.io"
+UPSTASH_REDIS_REST_TOKEN="xxx"
+
+# AI/Embeddings (OpenAI) — optional for local dev
+OPENAI_API_KEY="sk-xxx"
 
 # Analytics (optional)
 NEXT_PUBLIC_VERCEL_ANALYTICS_ID="xxx"
@@ -2328,12 +2374,12 @@ Frontend:    Next.js 15 (App Router) + React 19
 Styling:     Tailwind CSS 3 + shadcn/ui
 State:       Zustand + TanStack Query
 Backend:     Next.js API Routes (BFF pattern)
-Database:    PostgreSQL 16 + pgvector (Supabase)
-ORM:         Supabase Client (RLS-based)
-Auth:        Supabase Auth
+Database:    PostgreSQL 16 + pgvector (Supabase Branching 2.0)
+ORM:         Drizzle ORM + Supabase Client (RLS-based)
+Auth:        Clerk (single app: cohortix-production, Dev + Prod instances)
 Cache:       Redis (Upstash)
 Jobs:        Inngest
-Hosting:     Vercel
+Hosting:     Vercel Pro (4 envs: Production, Staging, Preview, Development)
 Testing:     Vitest + Playwright
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
