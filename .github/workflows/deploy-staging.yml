@@ -94,7 +94,7 @@ jobs:
         run: vercel pull --yes --environment=staging --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build staging artifacts
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --target=staging --token=${{ secrets.VERCEL_TOKEN }}
         env:
           NODE_ENV: production
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -103,7 +103,7 @@ jobs:
       - name: Deploy to Vercel (staging alias)
         id: deploy
         run: |
-          DEPLOYMENT_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          DEPLOYMENT_URL=$(vercel deploy --prebuilt --target=staging --token=${{ secrets.VERCEL_TOKEN }})
           echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
           echo "🚀 Staging deployed to: $DEPLOYMENT_URL"
 
