@@ -7,17 +7,16 @@ import postgres from 'postgres';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString) {
-  console.error(
-    '❌ DATABASE_URL not found. Set it in your environment before running this script.'
-  );
-  process.exit(1);
-}
-
 async function main() {
   console.log('🚀 Applying Cohortix Cohorts Migrations\n');
+
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    console.error(
+      '❌ DATABASE_URL not found. Set it in your environment before running this script.'
+    );
+    process.exit(1);
+  }
 
   const sql = postgres(connectionString, {
     max: 1,
@@ -38,7 +37,7 @@ async function main() {
         ) as exists
       `;
 
-      if (result[0].exists) {
+      if (result[0]?.exists) {
         console.log('⚠️  Cohorts table already exists!\n');
         console.log('✅ Applying RLS policies (idempotent)...');
 
@@ -69,7 +68,7 @@ async function main() {
     // Verify
     console.log('\n🔍 Verifying cohorts table...');
     const verify = await sql`SELECT COUNT(*) as count FROM cohorts`;
-    console.log(`✅ Cohorts table verified! (${verify[0].count} records)`);
+    console.log(`✅ Cohorts table verified! (${verify[0]?.count ?? 0} records)`);
 
     await sql.end();
 

@@ -31,13 +31,14 @@ async function runMigration() {
     console.log('🚀 Executing migration via Supabase REST API...\n');
 
     // Execute each statement via the PostgREST RPC endpoint
-    for (let i = 0; i < statements.length; i++) {
-      const stmt = statements[i];
+    let statementIndex = 0;
+    for (const stmt of statements) {
+      statementIndex++;
 
       // Skip comments
       if (stmt.startsWith('--') || stmt.length < 10) continue;
 
-      console.log(`Executing statement ${i + 1}/${statements.length}...`);
+      console.log(`Executing statement ${statementIndex}/${statements.length}...`);
 
       try {
         const response = await fetch(`${supabaseUrl}/rest/v1/rpc/exec`, {

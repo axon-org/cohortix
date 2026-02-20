@@ -32,10 +32,14 @@ async function seedAuditLogs() {
       .eq('slug', 'axon-hq')
       .single();
 
+    if (!org) throw new Error('Organization "axon-hq" not found');
+
     const { data: agents } = await supabase
       .from('agents')
       .select('id, slug')
       .eq('organization_id', org.id);
+
+    if (!agents) throw new Error('No agents found for organization');
 
     const { data: tasks } = await supabase
       .from('tasks')
@@ -56,9 +60,13 @@ async function seedAuditLogs() {
       .limit(1);
 
     const devi = agents.find((a: any) => a.slug === 'devi');
+    if (!devi) throw new Error('Agent "devi" not found in seed data');
     const lubna = agents.find((a: any) => a.slug === 'lubna');
+    if (!lubna) throw new Error('Agent "lubna" not found in seed data');
     const zara = agents.find((a: any) => a.slug === 'zara');
+    if (!zara) throw new Error('Agent "zara" not found in seed data');
     const khalid = agents.find((a: any) => a.slug === 'khalid');
+    if (!khalid) throw new Error('Agent "khalid" not found in seed data');
 
     const auditLogs = [
       {
@@ -67,7 +75,7 @@ async function seedAuditLogs() {
         actor_id: devi.id,
         action: 'update',
         resource_type: 'task',
-        resource_id: tasks[0]?.id,
+        resource_id: tasks?.[0]?.id,
         old_values: { status: 'in_progress' },
         new_values: { status: 'done' },
         ip_address: '127.0.0.1',
@@ -80,7 +88,7 @@ async function seedAuditLogs() {
         actor_id: lubna.id,
         action: 'update',
         resource_type: 'task',
-        resource_id: tasks[1]?.id,
+        resource_id: tasks?.[1]?.id,
         old_values: { status: 'todo' },
         new_values: { status: 'in_progress' },
         ip_address: '127.0.0.1',
@@ -93,8 +101,8 @@ async function seedAuditLogs() {
         actor_id: devi.id,
         action: 'create',
         resource_type: 'project',
-        resource_id: projects[0]?.id,
-        new_values: { name: projects[0]?.name, status: 'active' },
+        resource_id: projects?.[0]?.id,
+        new_values: { name: projects?.[0]?.name, status: 'active' },
         ip_address: '127.0.0.1',
         user_agent: 'Cohortix/1.0',
         created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
@@ -105,8 +113,8 @@ async function seedAuditLogs() {
         actor_id: zara.id,
         action: 'create',
         resource_type: 'knowledge_entry',
-        resource_id: knowledge[0]?.id,
-        new_values: { title: knowledge[0]?.title },
+        resource_id: knowledge?.[0]?.id,
+        new_values: { title: knowledge?.[0]?.title },
         ip_address: '127.0.0.1',
         user_agent: 'Cohortix/1.0',
         created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
@@ -133,7 +141,7 @@ async function seedAuditLogs() {
 
     if (error) throw error;
 
-    console.log(`✅ Created ${createdLogs.length} audit log entries`);
+    console.log(`✅ Created ${createdLogs?.length ?? 0} audit log entries`);
     console.log('✨ Database seed is now complete!\n');
   } catch (error) {
     console.error('❌ Failed to add audit logs:', error);

@@ -58,9 +58,13 @@ async function seedCohortMembersAndActivity() {
 
     // Agent mapping
     const devi = agents.find((a) => a.slug === 'devi');
+    if (!devi) throw new Error('Agent "devi" not found in seed data');
     const lubna = agents.find((a) => a.slug === 'lubna');
+    if (!lubna) throw new Error('Agent "lubna" not found in seed data');
     const zara = agents.find((a) => a.slug === 'zara');
+    if (!zara) throw new Error('Agent "zara" not found in seed data');
     const khalid = agents.find((a) => a.slug === 'khalid');
+    if (!khalid) throw new Error('Agent "khalid" not found in seed data');
 
     // Cohort mapping
     const aiTeam = cohorts.find((c) => c.slug === 'ai-development-team');
@@ -173,7 +177,7 @@ async function seedCohortMembersAndActivity() {
         throw membersError;
       }
     } else {
-      console.log(`✅ Created ${createdMembers.length} cohort memberships\n`);
+      console.log(`✅ Created ${createdMembers?.length ?? 0} cohort memberships\n`);
     }
 
     // ====================================================================
@@ -360,7 +364,7 @@ async function seedCohortMembersAndActivity() {
       throw logsError;
     }
 
-    console.log(`✅ Created ${createdLogs.length} activity log entries\n`);
+    console.log(`✅ Created ${createdLogs?.length ?? 0} activity log entries\n`);
 
     // ====================================================================
     // STEP 3: Verify the data
