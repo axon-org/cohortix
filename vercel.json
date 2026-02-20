@@ -6,13 +6,7 @@
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install --frozen-lockfile",
   "framework": "nextjs",
-  "outputDirectory": "apps/web/.next",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/apps/web/$1"
-    }
-  ],
+  "rootDirectory": "apps/web",
   "headers": [
     {
       "source": "/api/(.*)",
