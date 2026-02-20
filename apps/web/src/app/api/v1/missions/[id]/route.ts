@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { withErrorHandler, UnauthorizedError, ForbiddenError, NotFoundError } from '@/lib/errors';
+import { NotFoundError } from '@/lib/errors';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 import { validateRequest, validateData } from '@/lib/validation';
 import { updateMissionSchema, type UpdateMissionInput } from '@/lib/validations/mission';
@@ -34,12 +34,7 @@ export const GET = withMiddleware(
 
     const { data: mission, error } = await supabase
       .from('missions')
-      .select(
-        `
-        *,
-        operation_count:projects!mission_id(count)
-      `
-      )
+      .select('*')
       .eq('id', missionId)
       .eq('organization_id', organizationId)
       .single();

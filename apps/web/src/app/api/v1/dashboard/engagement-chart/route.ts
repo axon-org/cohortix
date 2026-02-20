@@ -6,7 +6,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { withErrorHandler, UnauthorizedError, ForbiddenError } from '@/lib/errors';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 
 interface EngagementDataPoint {
@@ -23,10 +22,9 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
 
   const { supabase, organizationId } = await getAuthContext();
 
-  // Fetch cohorts engagement data
   const { data: cohorts, error } = await supabase
     .from('cohorts')
-    .select('created_at, engagement_percent, member_count')
+    .select('id, created_at')
     .eq('organization_id', organizationId)
     .order('created_at', { ascending: true });
 
@@ -35,25 +33,42 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     throw error;
   }
 
-  // Generate time-series data points
+  const cohortIds = (cohorts || []).map((cohort: any) => cohort.id);
+  const { data: members, error: membersError } = await supabase
+    .from('cohort_members')
+    .select('cohort_id, engagement_score, joined_at')
+    .in('cohort_id', cohortIds);
+
+  if (membersError) {
+    logger.error('Failed to fetch engagement members data', { correlationId, error: membersError });
+    throw membersError;
+  }
+
   const now = new Date();
   const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
   const dataPoints: EngagementDataPoint[] = [];
-  const interval = days <= 30 ? 1 : days <= 90 ? 3 : 7; // Daily for 30d, every 3 days for 90d, weekly for 1y
+  const interval = days <= 30 ? 1 : days <= 90 ? 3 : 7;
 
   for (let i = 0; i <= days; i += interval) {
     const date = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
 
-    // Calculate average engagement for cohorts created up to this date
-    const relevantCohorts = (cohorts || []).filter((c: any) => new Date(c.created_at) <= date);
+    const cohortsAtDate = (cohorts || []).filter(
+      (cohort: any) => new Date(cohort.created_at) <= date
+    );
+    const cohortIdsAtDate = cohortsAtDate.map((cohort: any) => cohort.id);
+
+    const membersAtDate = (members || []).filter(
+      (member: any) =>
+        cohortIdsAtDate.includes(member.cohort_id) && new Date(member.joined_at) <= date
+    );
 
     let avgEngagement = 0;
-    if (relevantCohorts.length > 0) {
-      const totalEngagement = relevantCohorts.reduce((sum: number, c: any) => {
-        return sum + parseFloat(c.engagement_percent || '0');
+    if (membersAtDate.length > 0) {
+      const totalEngagement = membersAtDate.reduce((sum: number, member: any) => {
+        return sum + (parseFloat(member.engagement_score) || 0);
       }, 0);
-      avgEngagement = totalEngagement / relevantCohorts.length;
+      avgEngagement = totalEngagement / membersAtDate.length;
     }
 
     dataPoints.push({

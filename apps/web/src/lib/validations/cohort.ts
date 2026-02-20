@@ -69,16 +69,6 @@ export const updateCohortSchema = z
     status: cohortStatusEnum.optional(),
     startDate: z.string().date('Invalid date format (use YYYY-MM-DD)').optional().nullable(),
     endDate: z.string().date('Invalid date format (use YYYY-MM-DD)').optional().nullable(),
-    memberCount: z
-      .number()
-      .int('Member count must be an integer')
-      .min(0, 'Member count cannot be negative')
-      .optional(),
-    engagementPercent: z
-      .number()
-      .min(0, 'Engagement must be at least 0%')
-      .max(100, 'Engagement cannot exceed 100%')
-      .optional(),
     settings: z.record(z.any()).optional(),
   })
   .refine(
@@ -105,7 +95,7 @@ export const cohortQuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(100).default(20),
   status: cohortStatusEnum.optional(),
   search: z.string().trim().optional(),
-  sortBy: z.enum(['name', 'createdAt', 'memberCount', 'engagementPercent']).default('createdAt'),
+  sortBy: z.enum(['name', 'createdAt']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 

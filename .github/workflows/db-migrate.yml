@@ -36,7 +36,9 @@ jobs:
       name: production
     steps:
       - name: Approval received
-        run: echo "✅ Production migration approved by ${{ github.actor }}"
+        env:
+          ACTOR: ${{ github.actor }}
+        run: echo "✅ Production migration approved by $ACTOR"
 
   # ═══════════════════════════════════════════════════════════════
   # STAGING MIGRATION
@@ -123,12 +125,15 @@ jobs:
 
       - name: Migration summary
         if: always()
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          ACTOR: ${{ github.actor }}
         run: |
           echo "## Staging Migration Result" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment:** staging" >> $GITHUB_STEP_SUMMARY
-          echo "- **Dry run:** ${{ inputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dry run:** $DRY_RUN" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by:** $ACTOR" >> $GITHUB_STEP_SUMMARY
           echo "- **Time:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
 
   # ═══════════════════════════════════════════════════════════════
@@ -166,13 +171,16 @@ jobs:
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
       - name: ⚠️ Backup reminder
+        env:
+          ACTOR: ${{ github.actor }}
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           echo "═══════════════════════════════════════════════"
           echo "⚠️  PRODUCTION MIGRATION STARTING"
           echo "═══════════════════════════════════════════════"
           echo ""
-          echo "Approved by: ${{ github.actor }}"
-          echo "Commit: ${{ github.sha }}"
+          echo "Approved by: $ACTOR"
+          echo "Commit: $COMMIT_SHA"
           echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
           echo ""
           echo "REMINDER: Ensure a Supabase PITR backup exists"
@@ -218,13 +226,17 @@ jobs:
 
       - name: Production migration summary
         if: always()
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          ACTOR: ${{ github.actor }}
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           echo "## Production Migration Result" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment:** 🔴 PRODUCTION" >> $GITHUB_STEP_SUMMARY
-          echo "- **Dry run:** ${{ inputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Approved & triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dry run:** $DRY_RUN" >> $GITHUB_STEP_SUMMARY
+          echo "- **Approved & triggered by:** $ACTOR" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`$COMMIT_SHA\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Time:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Rollback (if needed)" >> $GITHUB_STEP_SUMMARY

@@ -7,7 +7,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { withErrorHandler, UnauthorizedError, ForbiddenError, ValidationError } from '@/lib/errors';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 import { validateRequest, validateData } from '@/lib/validation';
 import {
@@ -16,7 +15,6 @@ import {
   type CreateMissionInput,
   type MissionQueryParams,
 } from '@/lib/validations/mission';
-import { generateSlug } from '@/lib/utils/cohort';
 
 // ============================================================================
 // GET /api/v1/missions
@@ -35,13 +33,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
 
   let queryBuilder = supabase
     .from('missions')
-    .select(
-      `
-      *,
-      operation_count:projects!mission_id(count)
-    `,
-      { count: 'exact' }
-    )
+    .select('*', { count: 'exact' })
     .eq('organization_id', organizationId);
 
   if (query.status) queryBuilder = queryBuilder.eq('status', query.status);

@@ -236,9 +236,11 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ### ✅ Documentation
 
-- **DATA_WIRING_BUILD.md** — Full technical report
+- **DATA_WIRING_BUILD.md** — Full technical report (archived in
+  `docs/archive/build-logs/`)
 - **QUICK_START_GUIDE.md** — This file
-- **DB_SCHEMA_BUILD.md** — Original schema docs
+- **DB_SCHEMA_BUILD.md** — Original schema docs (archived in
+  `docs/archive/migration-reports/`)
 - **CLAUDE.md** — Project context
 
 ---
@@ -293,14 +295,16 @@ pnpm build
 
 ## Support
 
-**Detailed Documentation:** See `DATA_WIRING_BUILD.md` for:
+**Detailed Documentation:** See `docs/archive/build-logs/DATA_WIRING_BUILD.md`
+for:
 
 - Full query API reference
 - Security notes (RLS policies)
 - Performance optimization tips
 - Database schema details
 
-**Questions?** Check the troubleshooting section in `DATA_WIRING_BUILD.md`
+**Questions?** Check the troubleshooting section in
+`docs/archive/build-logs/DATA_WIRING_BUILD.md`
 
 ---
 

@@ -6,7 +6,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { withErrorHandler, UnauthorizedError, ForbiddenError, NotFoundError } from '@/lib/errors';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 import { validateRequest, validateData } from '@/lib/validation';
 import { updateCohortSchema, type UpdateCohortInput } from '@/lib/validations/cohort';
@@ -26,11 +25,9 @@ export const GET = withMiddleware(
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
 
-    // Validate cohort ID
     const { id } = await context.params;
     const cohortId = validateData(uuidSchema, id);
 
-    // Get authenticated context
     const { supabase, organizationId, userId } = await getAuthContext();
 
     logger.info('Fetching cohort', {
@@ -39,7 +36,6 @@ export const GET = withMiddleware(
       cohortId,
     });
 
-    // Fetch cohort with organization filter
     const { data: cohort, error } = await supabase
       .from('cohorts')
       .select('*')
@@ -53,7 +49,7 @@ export const GET = withMiddleware(
         cohortId,
         error: error?.message,
       });
-      throw new NotFoundError('Cohort', cohortId);
+      return NextResponse.json({ error: 'Cohort not found' }, { status: 404 });
     }
 
     logger.info('Cohort fetched successfully', {
@@ -75,15 +71,12 @@ export const PATCH = withMiddleware(
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
 
-    // Validate cohort ID
     const { id } = await context.params;
     const cohortId = validateData(uuidSchema, id);
 
-    // Validate request body
     const validator = validateRequest(updateCohortSchema, { target: 'body' });
     const data = (await validator(request)) as UpdateCohortInput;
 
-    // Get authenticated context
     const { supabase, organizationId, userId } = await getAuthContext();
 
     logger.info('Updating cohort', {
@@ -93,7 +86,6 @@ export const PATCH = withMiddleware(
       updates: Object.keys(data),
     });
 
-    // Check if cohort exists and belongs to user's organization
     const { data: existingCohort, error: fetchError } = await supabase
       .from('cohorts')
       .select('id')
@@ -101,22 +93,17 @@ export const PATCH = withMiddleware(
       .single();
 
     if (fetchError || !existingCohort) {
-      throw new NotFoundError('Cohort', cohortId);
+      return NextResponse.json({ error: 'Cohort not found' }, { status: 404 });
     }
 
-    // Build update object (map camelCase to snake_case)
     const updateData: Record<string, any> = {};
     if (data.name !== undefined) updateData.name = data.name;
     if (data.description !== undefined) updateData.description = data.description;
     if (data.status !== undefined) updateData.status = data.status;
     if (data.startDate !== undefined) updateData.start_date = data.startDate;
     if (data.endDate !== undefined) updateData.end_date = data.endDate;
-    if (data.memberCount !== undefined) updateData.member_count = data.memberCount;
-    if (data.engagementPercent !== undefined)
-      updateData.engagement_percent = data.engagementPercent.toString();
-    if (data.settings !== undefined) updateData.settings = data.settings;
+    if (data.settings !== undefined) updateData.metadata = data.settings;
 
-    // Update cohort
     const { data: cohort, error } = await supabase
       .from('cohorts')
       .update(updateData)
@@ -155,11 +142,9 @@ export const DELETE = withMiddleware(
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
 
-    // Validate cohort ID
     const { id } = await context.params;
     const cohortId = validateData(uuidSchema, id);
 
-    // Get authenticated context
     const { supabase, organizationId, userId } = await getAuthContext();
 
     logger.info('Deleting cohort', {
@@ -168,7 +153,6 @@ export const DELETE = withMiddleware(
       cohortId,
     });
 
-    // Check if cohort exists and belongs to user's organization
     const { data: existingCohort, error: fetchError } = await supabase
       .from('cohorts')
       .select('id, name')
@@ -176,10 +160,9 @@ export const DELETE = withMiddleware(
       .single();
 
     if (fetchError || !existingCohort) {
-      throw new NotFoundError('Cohort', cohortId);
+      return NextResponse.json({ error: 'Cohort not found' }, { status: 404 });
     }
 
-    // Delete cohort
     const { error } = await supabase.from('cohorts').delete().eq('id', cohortId);
 
     if (error) {

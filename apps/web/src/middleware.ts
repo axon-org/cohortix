@@ -11,24 +11,35 @@ const isPublicRoute = createRouteMatcher([
   '/api/health',
 ]);
 
-export default clerkMiddleware(async (auth, request) => {
-  // Allow bypass for testing if enabled
-  if (process.env.BYPASS_AUTH === 'true') {
-    return NextResponse.next();
-  }
-
-  // Protect all routes except public ones
-  if (!isPublicRoute(request)) {
-    const { userId } = await auth();
-    if (!userId) {
-      const signInUrl = new URL('/sign-in', request.url);
-      signInUrl.searchParams.set('redirect_url', request.url);
-      return NextResponse.redirect(signInUrl);
+export default clerkMiddleware(
+  async (auth, request) => {
+    // Allow bypass for testing if enabled
+    if (process.env.BYPASS_AUTH === 'true') {
+      return NextResponse.next();
     }
-  }
 
-  return NextResponse.next();
-});
+    // Protect all routes except public ones
+    if (!isPublicRoute(request)) {
+      const { userId } = await auth();
+      if (!userId) {
+        const signInUrl = new URL('/sign-in', request.url);
+        signInUrl.searchParams.set('redirect_url', request.url);
+        return NextResponse.redirect(signInUrl);
+      }
+    }
+
+    return NextResponse.next();
+  },
+  {
+    authorizedParties: [
+      'http://localhost:3000',
+      'https://staging.cohortix.ai',
+      'https://cohortix.ai',
+      'https://app.cohortix.ai',
+      ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    ],
+  }
+);
 
 export const config = {
   matcher: [

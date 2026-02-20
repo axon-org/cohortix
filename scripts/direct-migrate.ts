@@ -11,6 +11,12 @@ import * as dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error(
+    'Missing required env vars: NEXT_PUBLIC_SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY'
+  );
+}
+
 async function executeSql(sql: string) {
   const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/exec_sql`;
 
@@ -55,7 +61,7 @@ async function main() {
   } catch (error: any) {
     console.error('❌ Migration failed:', error.message);
     console.log('\n📝 Please run the migration manually via Supabase SQL Editor:');
-    console.log(`   https://supabase.com/dashboard/project/rfwscvklcokzuofyzqwx/sql/new`);
+    console.log(`   https://supabase.com/dashboard/project/qobvewyakovekbuvwjkt/sql/new`);
     console.log('\n   See MIGRATION_INSTRUCTIONS.md for details.');
     process.exit(1);
   }

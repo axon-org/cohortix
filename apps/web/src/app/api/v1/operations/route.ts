@@ -9,7 +9,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { withErrorHandler, UnauthorizedError, ForbiddenError, ValidationError } from '@/lib/errors';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 import { validateRequest, validateData } from '@/lib/validation';
 import {
@@ -18,7 +17,6 @@ import {
   type CreateOperationInput,
   type OperationQueryParams,
 } from '@/lib/validations/operation';
-import { generateSlug } from '@/lib/utils/cohort';
 
 // ============================================================================
 // GET /api/v1/operations
@@ -37,14 +35,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
 
   let queryBuilder = supabase
     .from('projects')
-    .select(
-      `
-      *,
-      missions!mission_id(id, title, status),
-      task_count:tasks!project_id(count)
-    `,
-      { count: 'exact' }
-    )
+    .select('*', { count: 'exact' })
     .eq('organization_id', organizationId);
 
   if (query.status) queryBuilder = queryBuilder.eq('status', query.status);
@@ -100,9 +91,6 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
   const data = (await validator(request)) as CreateOperationInput;
 
   const { supabase, organizationId, userId } = await getAuthContext();
-  const baseSlug = generateSlug(data.name);
-  const timestamp = Date.now().toString().slice(-6);
-  const slug = `${baseSlug}-${timestamp}`;
 
   logger.info('Creating operation', {
     correlationId,
@@ -116,7 +104,6 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
     .insert({
       organization_id: organizationId,
       name: data.name,
-      slug,
       description: data.description || null,
       status: data.status,
       owner_type: 'user',

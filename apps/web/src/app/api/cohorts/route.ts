@@ -8,58 +8,52 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCohorts } from '@/server/db/queries/cohorts';
 import { createCohort, createCohortSchema } from '@/server/db/mutations/cohorts';
-import { getCurrentUser, getUserOrganization } from '@/server/db/queries/dashboard';
-
-async function getAuthContext() {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
-  }
-  const membership = await getUserOrganization(user.id);
-  if (!membership) {
-    return { error: NextResponse.json({ error: 'No organization found' }, { status: 403 }) };
-  }
-  return { user, organizationId: membership.organization_id };
-}
+import { getAuthContext } from '@/lib/auth-helper';
 
 export async function GET(request: NextRequest) {
-  const auth = await getAuthContext();
-  if ('error' in auth && auth.error) return auth.error;
-  const { organizationId } = auth as { organizationId: string };
-
-  const { searchParams } = new URL(request.url);
-
-  const filters = {
-    status: (searchParams.get('status') as any) || undefined,
-    search: searchParams.get('search') || undefined,
-    startDateFrom: searchParams.get('startDateFrom') || undefined,
-    startDateTo: searchParams.get('startDateTo') || undefined,
-    sortBy: (searchParams.get('sortBy') as any) || 'created_at',
-    sortOrder: (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc',
-    page: parseInt(searchParams.get('page') || '1'),
-    pageSize: Math.min(50, parseInt(searchParams.get('pageSize') || '20')),
-  };
-
   try {
+    const { organizationId } = await getAuthContext();
+    const { searchParams } = new URL(request.url);
+
+    const filters = {
+      status: (searchParams.get('status') as any) || undefined,
+      search: searchParams.get('search') || undefined,
+      startDateFrom: searchParams.get('startDateFrom') || undefined,
+      startDateTo: searchParams.get('startDateTo') || undefined,
+      sortBy: (searchParams.get('sortBy') as any) || 'created_at',
+      sortOrder: (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc',
+      page: parseInt(searchParams.get('page') || '1'),
+      pageSize: Math.min(50, parseInt(searchParams.get('pageSize') || '20')),
+    };
+
     const result = await getCohorts(organizationId, filters);
     return NextResponse.json(result);
   } catch (error: any) {
+    if (error.name === 'UnauthorizedError') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (error.name === 'ForbiddenError') {
+      return NextResponse.json({ error: 'No organization found' }, { status: 403 });
+    }
     console.error('GET /api/cohorts error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await getAuthContext();
-  if ('error' in auth && auth.error) return auth.error;
-  const { user, organizationId } = auth as { user: any; organizationId: string };
-
   try {
+    const { organizationId, userId } = await getAuthContext();
     const body = await request.json();
     const validated = createCohortSchema.parse(body);
-    const cohort = await createCohort(organizationId, user.id, validated);
+    const cohort = await createCohort(organizationId, userId, validated);
     return NextResponse.json(cohort, { status: 201 });
   } catch (error: any) {
+    if (error.name === 'UnauthorizedError') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (error.name === 'ForbiddenError') {
+      return NextResponse.json({ error: 'No organization found' }, { status: 403 });
+    }
     if (error.name === 'ZodError') {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },

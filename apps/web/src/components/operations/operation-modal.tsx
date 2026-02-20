@@ -123,7 +123,7 @@ export function OperationModal({ open, onOpenChange, operation }: OperationModal
         await updateMutation.mutateAsync({ id: operation.id, data: payload });
       } else {
         const newOperation = await createMutation.mutateAsync(payload);
-        router.push(`/operations/${newOperation.id}`);
+        router.push(`/dashboard/operations/${newOperation.id}`);
       }
 
       onOpenChange(false);

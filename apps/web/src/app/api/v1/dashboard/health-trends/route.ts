@@ -1,14 +1,11 @@
 /**
  * Health Trends Dashboard API - Engagement Over Time
  * Axon Codex v1.2 compliant - RFC 7807 errors, structured logging, Zod validation
- *
- * Returns engagement trends over time for dashboard charts.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { withErrorHandler, UnauthorizedError, ForbiddenError } from '@/lib/errors';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 import { validateData } from '@/lib/validation';
 import { healthTrendsQuerySchema, type HealthTrendsQueryParams } from '@/lib/validations/cohort';
@@ -24,11 +21,9 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   const correlationId = logger.generateCorrelationId();
   logger.setContext({ correlationId });
 
-  // Validate query parameters
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries());
   const query = validateData(healthTrendsQuerySchema, searchParams) as HealthTrendsQueryParams;
 
-  // Get authenticated context
   const { supabase, organizationId, userId } = await getAuthContext();
 
   logger.info('Fetching health trends', {
@@ -39,7 +34,6 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     interval: query.interval,
   });
 
-  // Calculate date range based on period
   const endDate = new Date();
   const startDate = new Date();
 
@@ -55,10 +49,9 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
       break;
   }
 
-  // Fetch all cohorts in the organization
   const { data: cohorts, error } = await supabase
     .from('cohorts')
-    .select('status, member_count, engagement_percent, created_at')
+    .select('id, status, created_at')
     .eq('organization_id', organizationId)
     .gte('created_at', startDate.toISOString())
     .lte('created_at', endDate.toISOString());
@@ -71,40 +64,54 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     throw error;
   }
 
-  // Generate data points based on interval
+  const cohortIds = (cohorts || []).map((cohort: any) => cohort.id);
+
+  const { data: members, error: membersError } = await supabase
+    .from('cohort_members')
+    .select('cohort_id, engagement_score, joined_at')
+    .in('cohort_id', cohortIds);
+
+  if (membersError) {
+    logger.error('Failed to fetch cohort members for health trends', {
+      correlationId,
+      error: membersError,
+    });
+    throw membersError;
+  }
+
   const dataPoints: DataPoint[] = [];
   const intervalMs =
     query.interval === 'day'
       ? 24 * 60 * 60 * 1000
       : query.interval === 'week'
         ? 7 * 24 * 60 * 60 * 1000
-        : 30 * 24 * 60 * 60 * 1000; // month (approximate)
+        : 30 * 24 * 60 * 60 * 1000;
 
   const currentDate = new Date(startDate);
 
   while (currentDate <= endDate) {
     const dateStr = currentDate.toISOString().split('T')[0]!;
 
-    // Filter cohorts that existed at this date
     const cohortsAtDate = (cohorts || []).filter((cohort: any) => {
       const createdAt = new Date(cohort.created_at);
       return createdAt <= currentDate;
     });
 
+    const cohortIdsAtDate = cohortsAtDate.map((cohort: any) => cohort.id);
+    const membersAtDate = (members || []).filter(
+      (member: any) =>
+        cohortIdsAtDate.includes(member.cohort_id) && new Date(member.joined_at) <= currentDate
+    );
+
     const activeCohorts = cohortsAtDate.filter((c: any) => c.status === 'active').length;
 
-    const totalEngagement = cohortsAtDate.reduce((sum: number, cohort: any) => {
-      return sum + parseFloat(cohort.engagement_percent || '0');
+    const totalMembers = membersAtDate.length;
+    const totalEngagement = membersAtDate.reduce((sum: number, member: any) => {
+      return sum + (parseFloat(member.engagement_score) || 0);
     }, 0);
 
     const avgEngagement =
-      cohortsAtDate.length > 0
-        ? Math.round((totalEngagement / cohortsAtDate.length) * 100) / 100
-        : 0;
-
-    const totalMembers = cohortsAtDate.reduce((sum: number, cohort: any) => {
-      return sum + (cohort.member_count || 0);
-    }, 0);
+      totalMembers > 0 ? Math.round((totalEngagement / totalMembers) * 100) / 100 : 0;
 
     dataPoints.push({
       date: dateStr,
@@ -113,7 +120,6 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
       totalMembers,
     });
 
-    // Increment date by interval
     currentDate.setTime(currentDate.getTime() + intervalMs);
   }
 

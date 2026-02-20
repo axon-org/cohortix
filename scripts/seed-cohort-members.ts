@@ -6,9 +6,14 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://rfwscvklcokzuofyzqwx.supabase.co';
-const serviceRoleKey =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmd3NjdmtsY29renVvZnl6cXd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDcyNDYyNCwiZXhwIjoyMDg2MzAwNjI0fQ.DtEf0p3b_tBCvzO5g3Al6QqCkDg-Y8K6-xRI4rcKqNM';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+if (!supabaseUrl || !serviceRoleKey) {
+  throw new Error(
+    'Missing required env vars: NEXT_PUBLIC_SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY'
+  );
+}
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -53,9 +58,13 @@ async function seedCohortMembersAndActivity() {
 
     // Agent mapping
     const devi = agents.find((a) => a.slug === 'devi');
+    if (!devi) throw new Error('Agent "devi" not found in seed data');
     const lubna = agents.find((a) => a.slug === 'lubna');
+    if (!lubna) throw new Error('Agent "lubna" not found in seed data');
     const zara = agents.find((a) => a.slug === 'zara');
+    if (!zara) throw new Error('Agent "zara" not found in seed data');
     const khalid = agents.find((a) => a.slug === 'khalid');
+    if (!khalid) throw new Error('Agent "khalid" not found in seed data');
 
     // Cohort mapping
     const aiTeam = cohorts.find((c) => c.slug === 'ai-development-team');
@@ -168,7 +177,7 @@ async function seedCohortMembersAndActivity() {
         throw membersError;
       }
     } else {
-      console.log(`✅ Created ${createdMembers.length} cohort memberships\n`);
+      console.log(`✅ Created ${createdMembers?.length ?? 0} cohort memberships\n`);
     }
 
     // ====================================================================
@@ -355,7 +364,7 @@ async function seedCohortMembersAndActivity() {
       throw logsError;
     }
 
-    console.log(`✅ Created ${createdLogs.length} activity log entries\n`);
+    console.log(`✅ Created ${createdLogs?.length ?? 0} activity log entries\n`);
 
     // ====================================================================
     // STEP 3: Verify the data

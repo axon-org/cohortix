@@ -106,14 +106,8 @@ export async function getRecentActivity(organizationId: string, limit = 10) {
 
   // Fetch audit logs with related data
   const { data: activities, error } = await supabase
-    .from('audit_logs')
-    .select(
-      `
-      *,
-      actor_agent:agents!audit_logs_actor_id_fkey(name, avatar_url),
-      actor_user:profiles!audit_logs_actor_id_fkey(display_name, avatar_url)
-    `
-    )
+    .from('activity_log')
+    .select('*')
     .eq('organization_id', organizationId)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -301,16 +295,7 @@ export async function getActiveAllies(organizationId: string) {
 
   const { data: allies, error } = await supabase
     .from('agents')
-    .select(
-      `
-      *,
-      assigned_actions:tasks!tasks_assignee_id_fkey(
-        id, 
-        status,
-        mission:projects(name, color)
-      )
-    `
-    )
+    .select('*')
     .eq('organization_id', organizationId)
     .in('status', ['active', 'busy'])
     .order('created_at', { ascending: true });
@@ -320,24 +305,10 @@ export async function getActiveAllies(organizationId: string) {
     return [];
   }
 
-  // Calculate workload for each ally
-  const alliesWithWorkload = allies?.map((ally: any) => {
-    const actions = ally.assigned_actions || [];
-    const activeActions = actions.filter(
-      (t: any) => t.status === 'in_progress' || t.status === 'todo'
-    );
-
-    return {
-      ...ally,
-      workload: {
-        active: activeActions.length,
-        total: actions.length,
-        currentMission: activeActions[0]?.mission,
-      },
-    };
-  });
-
-  return alliesWithWorkload || [];
+  return (allies || []).map((ally: any) => ({
+    ...ally,
+    workload: { active: 0, total: 0, currentMission: null },
+  }));
 }
 
 /**
@@ -347,13 +318,8 @@ export async function getRecentKnowledge(organizationId: string, limit = 5) {
   const supabase = await createClient();
 
   const { data: knowledge, error } = await supabase
-    .from('knowledge_entries')
-    .select(
-      `
-      *,
-      agent:agents(name, avatar_url)
-    `
-    )
+    .from('insights')
+    .select('*')
     .eq('organization_id', organizationId)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -372,19 +338,20 @@ export async function getRecentKnowledge(organizationId: string, limit = 5) {
  * Fetches all data needed for the dashboard in one call
  */
 export async function getDashboardData() {
-  const user = await getCurrentUser();
+  const authContext = await getAuthContext();
+  const { supabase, userId, organizationId } = authContext;
 
-  if (!user) {
-    return null;
-  }
+  // Get user profile
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).single();
+  const user = { id: userId, profile };
 
-  const membership = await getUserOrganization(user.id);
-
-  if (!membership) {
-    return null;
-  }
-
-  const organizationId = membership.organization_id;
+  // Get organization details
+  const { data: membership } = await supabase
+    .from('organization_memberships')
+    .select(`*, organization:organizations(*)`)
+    .eq('user_id', userId)
+    .eq('organization_id', organizationId)
+    .single();
 
   const [kpis, activity, alerts, missions, allies, knowledge] = await Promise.all([
     getDashboardKPIs(organizationId),
@@ -397,8 +364,8 @@ export async function getDashboardData() {
 
   return {
     user,
-    organization: membership.organization,
-    role: membership.role,
+    organization: membership?.organization ?? null,
+    role: membership?.role ?? 'member',
     kpis,
     activity,
     alerts,

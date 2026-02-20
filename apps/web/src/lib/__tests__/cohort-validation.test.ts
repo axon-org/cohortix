@@ -143,19 +143,6 @@ describe('Cohort Validation Schemas', () => {
       expect(() => updateCohortSchema.parse({})).not.toThrow();
     });
 
-    it('should validate memberCount', () => {
-      expect(() => updateCohortSchema.parse({ memberCount: -1 })).toThrow(/cannot be negative/);
-      expect(() => updateCohortSchema.parse({ memberCount: 1.5 })).toThrow(/must be an integer/);
-    });
-
-    it('should validate engagementPercent range', () => {
-      expect(() => updateCohortSchema.parse({ engagementPercent: -1 })).toThrow(/at least 0%/);
-      expect(() => updateCohortSchema.parse({ engagementPercent: 101 })).toThrow(
-        /cannot exceed 100%/
-      );
-      expect(() => updateCohortSchema.parse({ engagementPercent: 50 })).not.toThrow();
-    });
-
     it('should accept null for nullable fields', () => {
       const result = updateCohortSchema.parse({
         description: null,
@@ -199,8 +186,7 @@ describe('Cohort Validation Schemas', () => {
 
     it('should accept valid sortBy values', () => {
       expect(() => cohortQuerySchema.parse({ sortBy: 'name' })).not.toThrow();
-      expect(() => cohortQuerySchema.parse({ sortBy: 'memberCount' })).not.toThrow();
-      expect(() => cohortQuerySchema.parse({ sortBy: 'engagementPercent' })).not.toThrow();
+      expect(() => cohortQuerySchema.parse({ sortBy: 'createdAt' })).not.toThrow();
     });
 
     it('should reject invalid sortBy', () => {

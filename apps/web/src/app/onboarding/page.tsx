@@ -7,7 +7,7 @@ import { Rocket, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function OnboardingPage() {
   const { user, isLoaded: userLoaded } = useUser();
-  const { createOrganization, isLoaded: orgLoaded } = useOrganizationList();
+  const { createOrganization, setActive, isLoaded: orgLoaded } = useOrganizationList();
   const router = useRouter();
   const [orgName, setOrgName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -34,8 +34,12 @@ export default function OnboardingPage() {
     if (!orgName.trim() || !createOrganization) return;
     setIsCreating(true);
     try {
-      await createOrganization({ name: orgName.trim() });
-      router.push('/');
+      const org = await createOrganization({ name: orgName.trim() });
+      // Set the new org as active so auth() returns the orgId server-side
+      if (setActive && org) {
+        await setActive({ organization: org.id });
+      }
+      router.push('/dashboard');
     } catch (err) {
       console.error('Failed to create organization:', err);
       setIsCreating(false);
@@ -43,7 +47,7 @@ export default function OnboardingPage() {
   };
 
   const handleSkip = () => {
-    router.push('/');
+    router.push('/dashboard');
   };
 
   return (

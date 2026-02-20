@@ -13,6 +13,12 @@ import * as dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error(
+    'Missing required env vars: NEXT_PUBLIC_SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY'
+  );
+}
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -38,26 +44,27 @@ async function applyMigration(migrationPath: string) {
 
   console.log(`Found ${statements.length} SQL statements\n`);
 
-  for (let i = 0; i < statements.length; i++) {
-    const stmt = statements[i];
+  let statementIndex = 0;
+  for (const stmt of statements) {
+    statementIndex++;
 
     // Skip comments
     if (stmt.startsWith('--')) continue;
 
     const preview = stmt.substring(0, 100).replace(/\n/g, ' ');
-    console.log(`[${i + 1}/${statements.length}] ${preview}...`);
+    console.log(`[${statementIndex}/${statements.length}] ${preview}...`);
 
     try {
       // Use the Supabase client to execute raw SQL (requires service_role)
       const { error } = await (supabase as any).rpc('exec', { sql: stmt + ';' });
 
       if (error) {
-        console.error(`❌ Error executing statement ${i + 1}:`, error);
+        console.error(`❌ Error executing statement ${statementIndex}:`, error);
         console.error(`Statement: ${stmt.substring(0, 200)}`);
         // Continue with other statements
       }
     } catch (err) {
-      console.error(`❌ Error executing statement ${i + 1}:`, err);
+      console.error(`❌ Error executing statement ${statementIndex}:`, err);
     }
   }
 

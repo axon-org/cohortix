@@ -6,7 +6,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { withErrorHandler, UnauthorizedError, ForbiddenError, ValidationError } from '@/lib/errors';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 import { validateRequest, validateData } from '@/lib/validation';
 import {
@@ -15,7 +14,6 @@ import {
   type CreateCohortInput,
   type CohortQueryParams,
 } from '@/lib/validations/cohort';
-import { generateSlug } from '@/lib/utils/cohort';
 
 // ============================================================================
 // GET /api/v1/cohorts - List cohorts with pagination and filtering
@@ -39,13 +37,11 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     query,
   });
 
-  // Build query
   let queryBuilder = supabase
     .from('cohorts')
     .select('*', { count: 'exact' })
     .eq('organization_id', organizationId);
 
-  // Apply filters
   if (query.status) {
     queryBuilder = queryBuilder.eq('status', query.status);
   }
@@ -56,26 +52,16 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     );
   }
 
-  // Apply sorting
-  const orderColumn =
-    query.sortBy === 'memberCount'
-      ? 'member_count'
-      : query.sortBy === 'engagementPercent'
-        ? 'engagement_percent'
-        : query.sortBy === 'createdAt'
-          ? 'created_at'
-          : 'name';
+  const orderColumn = query.sortBy === 'createdAt' ? 'created_at' : 'name';
 
   queryBuilder = queryBuilder.order(orderColumn, {
     ascending: query.sortOrder === 'asc',
   });
 
-  // Apply pagination
   const start = (query.page - 1) * query.limit;
   const end = start + query.limit - 1;
   queryBuilder = queryBuilder.range(start, end);
 
-  // Execute query
   const { data: cohorts, error, count } = await queryBuilder;
 
   if (error) {
@@ -90,6 +76,31 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     throw error;
   }
 
+  // Enrich with computed stats from cohort_members
+  const cohortList = cohorts || [];
+  const cohortIds = cohortList.map((c: any) => c.id);
+  const { data: memberRows } = await supabase
+    .from('cohort_members')
+    .select('cohort_id, engagement_score')
+    .in('cohort_id', cohortIds);
+
+  const statsMap = new Map<string, { count: number; total: number }>();
+  (memberRows || []).forEach((row: any) => {
+    const entry = statsMap.get(row.cohort_id) || { count: 0, total: 0 };
+    entry.count += 1;
+    entry.total += parseFloat(row.engagement_score) || 0;
+    statsMap.set(row.cohort_id, entry);
+  });
+
+  const enriched = cohortList.map((cohort: any) => {
+    const stats = statsMap.get(cohort.id) || { count: 0, total: 0 };
+    return {
+      ...cohort,
+      member_count: stats.count,
+      engagement_percent: stats.count > 0 ? Math.round((stats.total / stats.count) * 100) / 100 : 0,
+    };
+  });
+
   const totalPages = count ? Math.ceil(count / query.limit) : 0;
 
   logger.info('Cohorts fetched successfully', {
@@ -99,7 +110,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   });
 
   return NextResponse.json({
-    data: cohorts || [],
+    data: enriched,
     meta: {
       page: query.page,
       limit: query.limit,
@@ -117,31 +128,10 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
   const correlationId = logger.generateCorrelationId();
   logger.setContext({ correlationId });
 
-  // Validate request body
   const validator = validateRequest(createCohortSchema, { target: 'body' });
   const data = (await validator(request)) as CreateCohortInput;
 
-  // Get authenticated context
   const { supabase, organizationId, userId } = await getAuthContext();
-
-  // Generate unique slug
-  const baseSlug = generateSlug(data.name);
-  const timestamp = Date.now().toString().slice(-6);
-  const slug = `${baseSlug}-${timestamp}`;
-
-  // Check for duplicate slug (unlikely but possible)
-  const { data: existingCohort } = await supabase
-    .from('cohorts')
-    .select('id')
-    .eq('organization_id', organizationId)
-    .eq('slug', slug)
-    .single();
-
-  if (existingCohort) {
-    throw new ValidationError('A cohort with this name already exists', {
-      name: ['Name must be unique within your organization'],
-    });
-  }
 
   logger.info('Creating cohort', {
     correlationId,
@@ -150,21 +140,16 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
     cohortName: data.name,
   });
 
-  // Create cohort
   const { data: cohort, error } = await supabase
     .from('cohorts')
     .insert({
       organization_id: organizationId,
       name: data.name,
-      slug,
       description: data.description || null,
       status: data.status,
       start_date: data.startDate || null,
       end_date: data.endDate || null,
-      settings: data.settings || {},
-      created_by: userId,
-      member_count: 0,
-      engagement_percent: '0',
+      metadata: data.settings || {},
     })
     .select()
     .single();

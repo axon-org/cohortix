@@ -2,27 +2,10 @@
  * Cohort Mutations Module (COH-B3)
  *
  * Server-side write operations for cohorts.
- * Uses Supabase client with RLS for automatic tenant isolation.
  */
 
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { z } from 'zod';
-
-async function createClient() {
-  const cookieStore = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-}
+import { getAuthContext } from '@/lib/auth-helper';
 
 // ============================================================================
 // Validation Schemas
@@ -63,40 +46,27 @@ export type UpdateCohortInput = z.infer<typeof updateCohortSchema>;
 // Mutations
 // ============================================================================
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
-}
-
 /**
  * Create a new cohort
  */
 export async function createCohort(
   organizationId: string,
-  createdBy: string,
+  _createdBy: string,
   input: CreateCohortInput
 ) {
   const validated = createCohortSchema.parse(input);
-  const supabase = await createClient();
-
-  const slug = slugify(validated.name) + '-' + Date.now().toString(36);
+  const { supabase } = await getAuthContext();
 
   const { data, error } = await supabase
     .from('cohorts')
     .insert({
       organization_id: organizationId,
-      created_by: createdBy,
-      slug,
       name: validated.name,
       description: validated.description || null,
       status: validated.status,
       start_date: validated.start_date || null,
       end_date: validated.end_date || null,
-      settings: validated.settings || {},
+      metadata: validated.settings || {},
     })
     .select()
     .single();
@@ -114,16 +84,16 @@ export async function createCohort(
  */
 export async function updateCohort(cohortId: string, input: UpdateCohortInput) {
   const validated = updateCohortSchema.parse(input);
-  const supabase = await createClient();
+  const { supabase } = await getAuthContext();
 
   const updateData: Record<string, unknown> = {
     ...validated,
     updated_at: new Date().toISOString(),
   };
 
-  // Update slug if name changed
-  if (validated.name) {
-    updateData.slug = slugify(validated.name) + '-' + Date.now().toString(36);
+  if (validated.settings) {
+    updateData.metadata = validated.settings;
+    delete updateData.settings;
   }
 
   const { data, error } = await supabase
@@ -145,7 +115,7 @@ export async function updateCohort(cohortId: string, input: UpdateCohortInput) {
  * Soft delete (archive) a cohort
  */
 export async function deleteCohort(cohortId: string) {
-  const supabase = await createClient();
+  const { supabase } = await getAuthContext();
 
   const { data, error } = await supabase
     .from('cohorts')
@@ -166,57 +136,41 @@ export async function deleteCohort(cohortId: string) {
 }
 
 /**
- * Update cohort member count (increment/decrement)
+ * Compute cohort member count
  */
-export async function updateCohortMemberCount(cohortId: string, delta: number) {
-  const supabase = await createClient();
+export async function updateCohortMemberCount(cohortId: string, _delta: number) {
+  const { supabase } = await getAuthContext();
 
-  // Get current count
-  const { data: cohort } = await supabase
-    .from('cohorts')
-    .select('member_count')
-    .eq('id', cohortId)
-    .single();
-
-  if (!cohort) throw new Error('Cohort not found');
-
-  const newCount = Math.max(0, cohort.member_count + delta);
-
-  const { data, error } = await supabase
-    .from('cohorts')
-    .update({ member_count: newCount, updated_at: new Date().toISOString() })
-    .eq('id', cohortId)
-    .select()
-    .single();
+  const { count, error } = await supabase
+    .from('cohort_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('cohort_id', cohortId);
 
   if (error) {
     throw new Error(`Failed to update member count: ${error.message}`);
   }
 
-  return data;
+  return count || 0;
 }
 
 /**
- * Update cohort engagement percentage
+ * Compute cohort engagement percentage
  */
-export async function updateCohortEngagement(cohortId: string, engagementPercent: number) {
-  const supabase = await createClient();
-
-  const clamped = Math.min(100, Math.max(0, engagementPercent));
+export async function updateCohortEngagement(cohortId: string, _engagementPercent: number) {
+  const { supabase } = await getAuthContext();
 
   const { data, error } = await supabase
-    .from('cohorts')
-    .update({
-      engagement_percent: clamped,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', cohortId)
-    .select()
-    .single();
+    .from('cohort_members')
+    .select('engagement_score')
+    .eq('cohort_id', cohortId);
 
   if (error) {
     throw new Error(`Failed to update engagement: ${error.message}`);
   }
 
-  return data;
+  const scores = (data || []).map((m: any) => parseFloat(m.engagement_score) || 0);
+  if (scores.length === 0) return 0;
+
+  const avg = scores.reduce((sum: number, score: number) => sum + score, 0) / scores.length;
+  return Math.round(avg * 100) / 100;
 }
