@@ -105,7 +105,9 @@ git checkout dev && git merge main
 
 - **Formatting:** Prettier (run `pnpm format` before committing)
 - **Linting:** ESLint (`pnpm lint`)
-- **Type checking:** TypeScript strict (`pnpm typecheck`)
+- **Type checking:** TypeScript strict (`pnpm type-check`)
+  - **Do not** run `npx tsc --noEmit` from the repo root — it does not include the `scripts/` directory.
+  - The `scripts/` directory has its own `scripts/tsconfig.json`. To type-check it standalone: `./node_modules/.bin/tsc --noEmit -p scripts/tsconfig.json`
 - **Commits:** Conventional commits (`feat:`, `fix:`, `chore:`, `docs:`)
 
 ## Key Files
