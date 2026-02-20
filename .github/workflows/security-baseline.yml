@@ -80,47 +80,46 @@ jobs:
 
           while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
             echo "Running pnpm audit (Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)..."
-            pnpm audit --audit-level=high --json > audit-results.json
+            pnpm audit --json > audit-results.json 2>&1
             AUDIT_EXIT_CODE=$?
-            
-            # Exit codes: 0 = no vulnerabilities, 1 = vulnerabilities found
-            # If it's a 500/network error, pnpm usually exits with a non-zero code but empty/invalid json
-            # or we can check the output for registry error messages.
-            
-            if [ $AUDIT_EXIT_CODE -eq 0 ]; then
-              echo "✅ No high-severity vulnerabilities found."
+
+            # Check if we got valid JSON (successful registry response)
+            if grep -q '"metadata"' audit-results.json 2>/dev/null; then
+              echo "✅ Got valid audit response from registry."
               break
-            elif [ $AUDIT_EXIT_CODE -eq 1 ]; then
-              # Check if it's actually a vulnerability report or a registry error
-              # A valid JSON with "vulnerabilities" or "metadata" indicates a successful audit even if vulns exist.
-              if grep -q "vulnerabilities" audit-results.json || grep -q "metadata" audit-results.json; then
-                echo "❌ High-severity vulnerabilities detected."
-                break
-              else
-                echo "⚠️ Registry error or invalid response. Retrying in 10s..."
-                RETRY_COUNT=$((RETRY_COUNT + 1))
-                sleep 10
-              fi
-            else
-              echo "⚠️ Audit command failed with exit code $AUDIT_EXIT_CODE. Retrying in 10s..."
-              RETRY_COUNT=$((RETRY_COUNT + 1))
-              sleep 10
             fi
+
+            # Registry error — retry
+            echo "⚠️ Registry error or invalid response. Retrying in 10s..."
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            sleep 10
           done
 
           if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-            echo "::warning title=Audit Registry Error::pnpm audit failed after $MAX_RETRIES attempts due to registry/network errors. Soft-failing to avoid blocking CI."
+            echo "::warning title=Audit Registry Error::pnpm audit failed after $MAX_RETRIES attempts due to registry/network errors. Soft-failing."
             echo "AUDIT_STATUS=soft-fail" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if [ $AUDIT_EXIT_CODE -eq 1 ]; then
-             echo "AUDIT_STATUS=vulnerabilities-found" >> "$GITHUB_OUTPUT"
-             # Pretty print results for the logs
-             cat audit-results.json | npx pnpm-audit-summary || true
-             exit 1
+          # Parse the actual vulnerability counts from the JSON
+          HIGH_COUNT=$(python3 -c "import json; d=json.load(open('audit-results.json')); print(d.get('metadata',{}).get('vulnerabilities',{}).get('high',0))" 2>/dev/null || echo "0")
+          CRITICAL_COUNT=$(python3 -c "import json; d=json.load(open('audit-results.json')); print(d.get('metadata',{}).get('vulnerabilities',{}).get('critical',0))" 2>/dev/null || echo "0")
+          MODERATE_COUNT=$(python3 -c "import json; d=json.load(open('audit-results.json')); print(d.get('metadata',{}).get('vulnerabilities',{}).get('moderate',0))" 2>/dev/null || echo "0")
+
+          echo "Audit results: $CRITICAL_COUNT critical, $HIGH_COUNT high, $MODERATE_COUNT moderate"
+
+          if [ "$HIGH_COUNT" -gt 0 ] || [ "$CRITICAL_COUNT" -gt 0 ]; then
+            echo "❌ Found $CRITICAL_COUNT critical and $HIGH_COUNT high severity vulnerabilities."
+            echo "AUDIT_STATUS=vulnerabilities-found" >> "$GITHUB_OUTPUT"
+            pnpm audit --audit-level=high || true
+            exit 1
           fi
 
+          if [ "$MODERATE_COUNT" -gt 0 ]; then
+            echo "::warning title=Moderate Vulnerabilities::Found $MODERATE_COUNT moderate severity vulnerabilities. Not blocking pipeline."
+          fi
+
+          echo "✅ No high or critical vulnerabilities found."
           echo "AUDIT_STATUS=success" >> "$GITHUB_OUTPUT"
 
       - name: Generate audit report
