@@ -74,13 +74,16 @@ jobs:
           echo "Proceeding with deployment..."
 
   # ═══════════════════════════════════════════════════════════════
-  # BUILD PRODUCTION ARTIFACTS
+  # DEPLOY TO PRODUCTION (BUILD + DEPLOY)
+  # Combined into one job to prevent artifact transfer file loss
   # ═══════════════════════════════════════════════════════════════
-  build-production:
-    name: Build Production
+  deploy-production:
+    name: Build & Deploy to Production
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     needs: await-approval
+    outputs:
+      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -132,47 +135,6 @@ jobs:
           CLERK_WEBHOOK_SECRET: ${{ secrets.CLERK_WEBHOOK_SECRET }}
           # App
           NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: production-build-${{ github.sha }}
-          path: .vercel/output
-          retention-days: 7
-
-  # ═══════════════════════════════════════════════════════════════
-  # DEPLOY TO PRODUCTION
-  # ═══════════════════════════════════════════════════════════════
-  deploy-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: build-production
-    outputs:
-      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: production-build-${{ github.sha }}
-          path: .vercel/output
-
-      - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
 
       - name: Deploy to Vercel Production
         id: deploy
@@ -263,7 +225,7 @@ jobs:
           echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Deployed by | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Deployment URL | ${{ needs.deploy-production.outputs.deployment-url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployed Job | ${{ needs.deploy-production.outputs.deployment-url }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Production URL | https://app.cohortix.ai |" >> $GITHUB_STEP_SUMMARY
           echo "| Time | $(date -u '+%Y-%m-%d %H:%M UTC') |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
