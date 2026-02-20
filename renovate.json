@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices", "helpers:pinGitHubActionDigests"],
+  "timezone": "Asia/Karachi",
+  "labels": ["dependencies", "renovate"],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch"],
+      "groupName": "patch dependencies",
+      "automerge": true,
+      "automergeType": "pr",
+      "labels": ["dependencies", "renovate", "automerge"]
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "groupName": "minor dependencies",
+      "labels": ["dependencies", "renovate", "minor"]
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "labels": ["dependencies", "renovate", "major"]
+    },
+    {
+      "matchPackageNames": [
+        "next",
+        "react",
+        "react-dom",
+        "@supabase/supabase-js",
+        "drizzle-orm",
+        "@clerk/nextjs",
+        "@clerk/clerk-sdk-node"
+      ],
+      "minimumReleaseAge": "3 days"
+    }
+  ]
+}
