@@ -70,15 +70,79 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Audit for high-severity vulnerabilities
-        run: pnpm audit --audit-level=high
+        id: audit
+        run: |
+          set +e
+          # Attempt pnpm audit with retries for network/registry issues
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+          AUDIT_EXIT_CODE=0
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            echo "Running pnpm audit (Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)..."
+            pnpm audit --audit-level=high --json > audit-results.json
+            AUDIT_EXIT_CODE=$?
+            
+            # Exit codes: 0 = no vulnerabilities, 1 = vulnerabilities found
+            # If it's a 500/network error, pnpm usually exits with a non-zero code but empty/invalid json
+            # or we can check the output for registry error messages.
+            
+            if [ $AUDIT_EXIT_CODE -eq 0 ]; then
+              echo "✅ No high-severity vulnerabilities found."
+              break
+            elif [ $AUDIT_EXIT_CODE -eq 1 ]; then
+              # Check if it's actually a vulnerability report or a registry error
+              # A valid JSON with "vulnerabilities" or "metadata" indicates a successful audit even if vulns exist.
+              if grep -q "vulnerabilities" audit-results.json || grep -q "metadata" audit-results.json; then
+                echo "❌ High-severity vulnerabilities detected."
+                break
+              else
+                echo "⚠️ Registry error or invalid response. Retrying in 10s..."
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                sleep 10
+              fi
+            else
+              echo "⚠️ Audit command failed with exit code $AUDIT_EXIT_CODE. Retrying in 10s..."
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              sleep 10
+            fi
+          done
+
+          if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+            echo "::warning title=Audit Registry Error::pnpm audit failed after $MAX_RETRIES attempts due to registry/network errors. Soft-failing to avoid blocking CI."
+            echo "AUDIT_STATUS=soft-fail" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ $AUDIT_EXIT_CODE -eq 1 ]; then
+             echo "AUDIT_STATUS=vulnerabilities-found" >> "$GITHUB_OUTPUT"
+             # Pretty print results for the logs
+             cat audit-results.json | npx pnpm-audit-summary || true
+             exit 1
+          fi
+
+          echo "AUDIT_STATUS=success" >> "$GITHUB_OUTPUT"
 
       - name: Generate audit report
-        if: failure()
+        if: always()
         run: |
           echo "## Dependency Audit Report" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "High or critical severity vulnerabilities were detected." >> "$GITHUB_STEP_SUMMARY"
-          echo "Run \`pnpm audit --audit-level=high\` locally to review and remediate." >> "$GITHUB_STEP_SUMMARY"
+          
+          STATUS="${{ steps.audit.outputs.AUDIT_STATUS }}"
+          
+          if [ "$STATUS" = "success" ]; then
+            echo "✅ No high-severity vulnerabilities detected." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$STATUS" = "vulnerabilities-found" ]; then
+            echo "❌ **High or critical severity vulnerabilities were detected.**" >> "$GITHUB_STEP_SUMMARY"
+            echo "Run \`pnpm audit --audit-level=high\` locally to review and remediate." >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "See the job logs for the full report." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$STATUS" = "soft-fail" ]; then
+            echo "⚠️ **Audit service unavailable.**" >> "$GITHUB_STEP_SUMMARY"
+            echo "The npm audit registry returned errors or timed out after multiple retries." >> "$GITHUB_STEP_SUMMARY"
+            echo "This check was soft-failed to avoid blocking the pipeline, but you should run \`pnpm audit\` locally to ensure security." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   # ═══════════════════════════════════════════════════════════════
   # STATUS CHECK
