@@ -51,6 +51,10 @@
     "test:coverage": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"]
+    },
+    "//#knip": {
+      "cache": false,
+      "outputs": []
     }
   }
 }
