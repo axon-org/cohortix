@@ -5,7 +5,6 @@
     "helpers:pinGitHubActionDigests"
   ],
   "timezone": "Asia/Karachi",
-  "packageManager": "pnpm",
   "labels": ["dependencies", "renovate"],
   "lockFileMaintenance": {
     "enabled": true
@@ -38,7 +37,7 @@
         "@clerk/nextjs",
         "@clerk/clerk-sdk-node"
       ],
-      "stabilityDays": 3
+      "minimumReleaseAge": "3 days"
     }
   ]
 }
