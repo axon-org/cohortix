@@ -53,6 +53,7 @@
       "outputs": ["coverage/**"]
     },
     "knip": {
+      "cache": false,
       "outputs": []
     }
   }

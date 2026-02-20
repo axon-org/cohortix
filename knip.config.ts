@@ -39,9 +39,14 @@ export default {
         '@repo/database': ['../../packages/database/src'],
         '@repo/types': ['../../packages/types/src'],
         '@repo/ui': ['../../packages/ui/src'],
-        '@repo/utils': ['../../packages/utils/src'],
       },
-      ignore: ['coverage/**', 'playwright-report/**', 'test-results/**', '.next/**'],
+      ignore: [
+        'coverage/**',
+        'playwright-report/**',
+        'test-results/**',
+        '.next/**',
+        'src/components/ui/**',
+      ],
     },
     'packages/database': {
       entry: [
@@ -61,9 +66,6 @@ export default {
       entry: ['src/index.ts'],
       project: ['src/**/*.{ts,tsx}'],
     },
-  },
-  ignoreIssues: {
-    'apps/web/src/components/ui/**': ['exports', 'types'],
   },
   ignore: ['migrations/**'],
 };
