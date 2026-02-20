@@ -52,7 +52,7 @@
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"]
     },
-    "knip": {
+    "//#knip": {
       "cache": false,
       "outputs": []
     }
