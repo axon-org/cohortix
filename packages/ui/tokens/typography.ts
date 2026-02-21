@@ -4,7 +4,7 @@
  * Font families, sizes, weights, and line heights
  * Based on 1.25 ratio scale (Major Third)
  *
- * See: docs/UI_DESIGN_SYSTEM.md
+ * See: docs/specs/UI_DESIGN_SYSTEM.md
  * Reference: TOOLS.md "Typography Scale (1.25 Ratio)"
  *
  * @packageDocumentation

@@ -19,10 +19,10 @@ over time.
 
 | Document                                        | Description                                  |
 | ----------------------------------------------- | -------------------------------------------- |
-| [TERMINOLOGY.md](docs/TERMINOLOGY.md)           | **Start here** — All Cohortix branding terms |
-| [PRD.md](docs/PRD.md)                           | Product Requirements                         |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md)         | Technical Architecture                       |
-| [BRAND_GUIDELINES.md](docs/BRAND_GUIDELINES.md) | Voice, tone, and visual identity             |
+| [TERMINOLOGY.md](docs/guides/TERMINOLOGY.md)           | **Start here** — All Cohortix branding terms |
+| [PRD.md](docs/specs/PRD.md)                           | Product Requirements                         |
+| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)         | Technical Architecture                       |
+| [BRAND_GUIDELINES.md](docs/design/BRAND_GUIDELINES.md) | Voice, tone, and visual identity             |
 
 ## 🗂️ Mission Structure
 
@@ -49,7 +49,7 @@ cohortix/
 | Memory        | **Core Memory**     |
 | Skills        | **Talents**         |
 
-See [TERMINOLOGY.md](docs/TERMINOLOGY.md) for the complete guide.
+See [TERMINOLOGY.md](docs/guides/TERMINOLOGY.md) for the complete guide.
 
 ## 🚀 Status
 

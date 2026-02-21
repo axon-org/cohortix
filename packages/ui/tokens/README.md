@@ -161,14 +161,14 @@ Tokens use **semantic names** instead of raw values:
 - Primary: `#5E6AD2` (Linear-inspired blue-violet)
 - Dark mode as default (not a theme)
 - All colors meet WCAG 2.2 AA contrast requirements
-- See: `docs/design/DDR-001-color-palette-and-accessibility.md`
+- See: `docs/decisions/DDR-001-color-palette-and-accessibility.md`
 
 ### DDR-003: Responsive Breakpoints
 
 - Mobile-first approach
 - Tailwind default breakpoints (640, 768, 1024, 1280, 1440)
 - Desktop (1024px+) as primary experience
-- See: `docs/design/DDR-003-responsive-breakpoint-strategy.md`
+- See: `docs/decisions/DDR-003-responsive-breakpoint-strategy.md`
 
 ### Typography Scale
 
@@ -248,11 +248,11 @@ TypeScript ensures:
 
 ## Related Documentation
 
-- [DDR-001: Color Palette](../../docs/design/DDR-001-color-palette-and-accessibility.md)
-- [DDR-002: Terminology](../../docs/design/DDR-002-terminology-decisions.md)
-- [DDR-003: Responsive Breakpoints](../../docs/design/DDR-003-responsive-breakpoint-strategy.md)
-- [DDR-004: Component Library](../../docs/design/DDR-004-component-library-selection.md)
-- [UI Design System](../../docs/UI_DESIGN_SYSTEM.md)
+- [DDR-001: Color Palette](../../docs/decisions/DDR-001-color-palette-and-accessibility.md)
+- [DDR-002: Terminology](../../docs/decisions/DDR-002-terminology-decisions.md)
+- [DDR-003: Responsive Breakpoints](../../docs/decisions/DDR-003-responsive-breakpoint-strategy.md)
+- [DDR-004: Component Library](../../docs/decisions/DDR-004-component-library-selection.md)
+- [UI Design System](../../docs/specs/UI_DESIGN_SYSTEM.md)
 - [Tailwind Config](../../apps/web/tailwind.config.ts)
 
 ---

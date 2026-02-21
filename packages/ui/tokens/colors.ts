@@ -5,7 +5,7 @@
  * Based on Linear-inspired dark theme with #5E6AD2 primary
  *
  * All colors meet WCAG 2.2 AA contrast requirements
- * See: docs/design/DDR-001-color-palette-and-accessibility.md
+ * See: docs/decisions/DDR-001-color-palette-and-accessibility.md
  *
  * @packageDocumentation
  */

@@ -104,7 +104,7 @@ instead)
 3. **Multi-tenant RLS Strategy** — Shared DB + row-level security for tenant
    isolation (ADR-003 pending)
 4. **Terminology:** Domain → Vision → Mission → Operation / Rhythm → Task (based
-   on PPV Pro by August Bradley — see `docs/TERMINOLOGY.md`)
+   on PPV Pro by August Bradley — see `docs/guides/TERMINOLOGY.md`)
 5. **Agent Runtime Abstraction** — Clawdbot adapter (v1), future custom runtime
    (v2+)
 
@@ -140,4 +140,4 @@ instead)
 
 ---
 
-**Next Steps:** See `docs/CODEX-COMPLIANCE-PLAN.md` for Week 1-3 roadmap.
+**Next Steps:** See `docs/plans/CODEX-COMPLIANCE-PLAN.md` for Week 1-3 roadmap.

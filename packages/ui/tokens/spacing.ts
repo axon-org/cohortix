@@ -4,7 +4,7 @@
  * Based on 8px grid system (Tailwind defaults)
  * All spacing values are multiples or half-multiples of 8px
  *
- * See: docs/design/DDR-003-responsive-breakpoint-strategy.md
+ * See: docs/decisions/DDR-003-responsive-breakpoint-strategy.md
  * Reference: TOOLS.md "Spacing Scale (8px Base)"
  *
  * @packageDocumentation

@@ -28,7 +28,7 @@
 ### What's Next 🔜
 
 1. ~~Complete terminology alignment~~ ✅ Done (2026-02-13) — see
-   `docs/TERMINOLOGY.md`
+   `docs/guides/TERMINOLOGY.md`
 2. Mobile responsive fixes for dashboard
 3. Fix Next.js warnings (bottom-left corner)
 4. Build Cohort Grid screen
@@ -45,7 +45,7 @@
 - **Tailwind v3** (codebase uses v3 syntax, was accidentally installed as v4)
 - **Terminology hierarchy:** Domain → Vision → Mission → Operation/Rhythm → Task
   (PPV Pro by August Bradley, rebranded for Cohortix)
-- **⚠️ MANDATORY: Read `docs/TERMINOLOGY.md` before any work** — this is the
+- **⚠️ MANDATORY: Read `docs/guides/TERMINOLOGY.md` before any work** — this is the
   authoritative terminology reference. Use ONLY these terms in code, UI, docs,
   and communications.
 - **Supabase server client** lives in `apps/web/src/lib/supabase/` (NOT in
@@ -2415,7 +2415,7 @@ pnpm db:studio       # Open database GUI
 
 HIERARCHY: Domain → Vision → Mission → Operation / Rhythm → Task
 
-⚠️  READ docs/TERMINOLOGY.md FOR FULL REFERENCE
+⚠️  READ docs/guides/TERMINOLOGY.md FOR FULL REFERENCE
 
 ❌ Agent       → ✅ Ally
 ❌ Agents      → ✅ Cohort

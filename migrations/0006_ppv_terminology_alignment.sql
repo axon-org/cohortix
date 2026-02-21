@@ -2,7 +2,7 @@
 -- MIGRATION 0006: PPV Pro Terminology Alignment
 -- Date: 2026-02-12
 -- Purpose: Implement complete PPV Pro hierarchy for Cohortix
--- Reference: /docs/TERMINOLOGY.md (authoritative source)
+-- Reference: /docs/guides/TERMINOLOGY.md (authoritative source)
 -- =============================================================================
 --
 -- PPV Pro Alignment Zone (The Pyramid):
