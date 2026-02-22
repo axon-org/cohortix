@@ -41,9 +41,8 @@ export default clerkMiddleware(
   {
     authorizedParties: [
       'http://localhost:3000',
-      'https://staging.cohortix.ai',
-      'https://cohortix.ai',
       'https://app.cohortix.ai',
+      'https://cohortix.ai',
       ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
     ],
   }
