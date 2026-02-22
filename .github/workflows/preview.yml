@@ -75,19 +75,19 @@ jobs:
           script: |
             const previewUrl = '${{ steps.deploy.outputs.preview-url }}';
             const comment = `## 🚀 Preview Deployment Ready!
-            
+
             Your changes have been deployed to Vercel:
-            
+
             🔗 **Preview URL:** ${previewUrl}
-            
+
             ### Next Steps
             - [ ] Manual testing completed
             - [ ] E2E tests passing (see below)
             - [ ] No visual regressions
-            
+
             ---
             <sub>Deployed from commit \`${context.sha.substring(0, 7)}\`</sub>`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -133,7 +133,7 @@ jobs:
         run: |
           PREVIEW_URL="${{ needs.deploy-preview.outputs.preview-url }}"
           echo "Waiting for $PREVIEW_URL to be ready..."
-          
+
           for i in {1..30}; do
             if curl -f -s -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" "$PREVIEW_URL" > /dev/null; then
               echo "Preview is ready!"
@@ -142,7 +142,7 @@ jobs:
             echo "Attempt $i/30 failed, retrying in 10s..."
             sleep 10
           done
-          
+
           echo "Preview failed to become ready"
           exit 1
 
@@ -179,14 +179,14 @@ jobs:
             const fs = require('fs');
             const testStatus = '${{ job.status }}' === 'success' ? '✅ PASSED' : '❌ FAILED';
             const icon = '${{ job.status }}' === 'success' ? '✅' : '❌';
-            
+
             let comment = `## ${icon} E2E Test Results
-            
+
             **Status:** ${testStatus}
             **Preview URL:** ${{ needs.deploy-preview.outputs.preview-url }}
-            
+
             `;
-            
+
             if ('${{ job.status }}' !== 'success') {
               comment += `### 🔍 Debug Information
               - Test videos and reports are available in the workflow artifacts
@@ -195,9 +195,9 @@ jobs:
               [View Full Playwright Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
               `;
             }
-            
+
             comment += `\n---\n<sub>Tests run at ${new Date().toISOString()}</sub>`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

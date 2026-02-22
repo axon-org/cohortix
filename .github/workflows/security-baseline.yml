@@ -127,9 +127,9 @@ jobs:
         run: |
           echo "## Dependency Audit Report" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          
+
           STATUS="${{ steps.audit.outputs.AUDIT_STATUS }}"
-          
+
           if [ "$STATUS" = "success" ]; then
             echo "✅ No high-severity vulnerabilities detected." >> "$GITHUB_STEP_SUMMARY"
           elif [ "$STATUS" = "vulnerabilities-found" ]; then

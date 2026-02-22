@@ -1,38 +1,22 @@
 module.exports = {
   // TypeScript/TSX files
-  '*.{ts,tsx}': [
-    'eslint --fix --max-warnings=0',
-    'prettier --write',
-  ],
+  '*.{ts,tsx}': ['eslint --fix --max-warnings=0', 'prettier --write'],
 
   // JavaScript/JSX files
-  '*.{js,jsx}': [
-    'eslint --fix --max-warnings=0',
-    'prettier --write',
-  ],
+  '*.{js,jsx}': ['eslint --fix --max-warnings=0', 'prettier --write'],
 
   // CSS/SCSS files
-  '*.{css,scss}': [
-    'prettier --write',
-  ],
+  '*.{css,scss}': ['prettier --write'],
 
   // Markdown files
-  '*.md': [
-    'prettier --write',
-  ],
+  '*.md': ['prettier --write'],
 
   // JSON files
-  '*.json': [
-    'prettier --write',
-  ],
+  '*.json': ['prettier --write'],
 
   // YAML files
-  '*.{yml,yaml}': [
-    'prettier --write',
-  ],
+  '*.{yml,yaml}': ['prettier --write'],
 
   // Package.json specific (sort dependencies)
-  'package.json': [
-    'prettier --write',
-  ],
+  'package.json': ['prettier --write'],
 };

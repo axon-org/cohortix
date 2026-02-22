@@ -90,12 +90,5 @@ module.exports = {
       },
     },
   },
-  ignorePatterns: [
-    'node_modules',
-    'dist',
-    'build',
-    '.next',
-    '*.config.js',
-    '*.config.mjs',
-  ],
+  ignorePatterns: ['node_modules', 'dist', 'build', '.next', '*.config.js', '*.config.mjs'],
 };

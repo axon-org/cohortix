@@ -6,32 +6,32 @@ module.exports = {
       2,
       'always',
       [
-        'feat',     // New feature
-        'fix',      // Bug fix
-        'chore',    // Maintenance task
-        'docs',     // Documentation changes
-        'style',    // Code style changes (formatting, semicolons, etc.)
+        'feat', // New feature
+        'fix', // Bug fix
+        'chore', // Maintenance task
+        'docs', // Documentation changes
+        'style', // Code style changes (formatting, semicolons, etc.)
         'refactor', // Code refactoring (no functional changes)
-        'test',     // Adding or updating tests
-        'ci',       // CI/CD pipeline changes
-        'perf',     // Performance improvements
-        'revert',   // Revert a previous commit
+        'test', // Adding or updating tests
+        'ci', // CI/CD pipeline changes
+        'perf', // Performance improvements
+        'revert', // Revert a previous commit
       ],
     ],
     'scope-enum': [
       2,
       'always',
       [
-        'web',      // Frontend/Next.js app
-        'db',       // Database schema, migrations
-        'ui',       // UI components, design system
-        'types',    // TypeScript types, interfaces
-        'config',   // Configuration files
-        'ci',       // CI/CD configuration
-        'docs',     // Documentation
-        'deps',     // Dependency updates
-        'auth',     // Authentication/authorization
-        'api',      // API routes, backend logic
+        'web', // Frontend/Next.js app
+        'db', // Database schema, migrations
+        'ui', // UI components, design system
+        'types', // TypeScript types, interfaces
+        'config', // Configuration files
+        'ci', // CI/CD configuration
+        'docs', // Documentation
+        'deps', // Dependency updates
+        'auth', // Authentication/authorization
+        'api', // API routes, backend logic
       ],
     ],
     'subject-case': [

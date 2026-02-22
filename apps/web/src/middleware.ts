@@ -18,12 +18,7 @@ export default clerkMiddleware(
     const bypassSecret = process.env.E2E_BYPASS_SECRET;
     const isProduction = process.env.VERCEL_ENV === 'production';
 
-    if (
-      !isProduction &&
-      bypassHeader &&
-      bypassSecret &&
-      bypassHeader === bypassSecret
-    ) {
+    if (!isProduction && bypassHeader && bypassSecret && bypassHeader === bypassSecret) {
       return NextResponse.next();
     }
 

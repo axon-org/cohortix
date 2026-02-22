@@ -6,7 +6,7 @@ on:
 
 concurrency:
   group: production-deploy
-  cancel-in-progress: false  # NEVER cancel production deploys
+  cancel-in-progress: false # NEVER cancel production deploys
 
 env:
   NODE_VERSION: '20'
