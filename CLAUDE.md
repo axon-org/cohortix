@@ -2,7 +2,15 @@
 
 **Mission:** Cohortix  
 **Version:** 1.0.0  
-**Last Updated:** 2026-02-19  
+**Last Updated:** 2026-02-22
+
+## ⚠️ MANDATORY: Format Before Committing
+
+**ALWAYS run `npx prettier --write <files>` on every file you modify before
+committing.** This project uses Prettier for code formatting. CI lint checks
+will fail if files aren't formatted. This applies to ALL file types: `.ts`,
+`.tsx`, `.js`, `.yml`, `.yaml`, `.css`, `.md`, `.json`.
+
 **Axon Codex Compliance:** v1.1 §2.2.1
 
 ---
