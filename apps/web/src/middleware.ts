@@ -11,12 +11,6 @@ const isPublicRoute = createRouteMatcher([
   '/api/health',
 ]);
 
-const authorizedParties = [
-  process.env.NEXT_PUBLIC_APP_URL,
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : undefined,
-].filter(Boolean) as string[];
-
 export default clerkMiddleware(
   async (auth, request) => {
     // Allow bypass for testing if enabled (non-production only)
@@ -35,6 +29,7 @@ export default clerkMiddleware(
     // Protect all routes except public ones
     if (!isPublicRoute(request)) {
       const { userId } = await auth();
+      console.log(`[Clerk Auth] path=${request.nextUrl.pathname} userId=${userId ?? 'null'}`);
       if (!userId) {
         const signInUrl = new URL('/sign-in', request.url);
         signInUrl.searchParams.set('redirect_url', request.url);
@@ -45,7 +40,8 @@ export default clerkMiddleware(
     return NextResponse.next();
   },
   {
-    authorizedParties,
+    // authorizedParties temporarily removed to debug redirect loop
+    // Will re-add once we confirm the correct azp claim value
   }
 );
 
