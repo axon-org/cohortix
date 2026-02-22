@@ -14,6 +14,13 @@ const isPublicRoute = createRouteMatcher([
 export default clerkMiddleware(
   async (auth, request) => {
     // Allow bypass for testing if enabled
+    const bypassHeader = request.headers.get('x-e2e-bypass-auth');
+    const bypassSecret = process.env.E2E_BYPASS_SECRET;
+
+    if (bypassHeader && bypassSecret && bypassHeader === bypassSecret) {
+      return NextResponse.next();
+    }
+
     if (process.env.BYPASS_AUTH === 'true') {
       return NextResponse.next();
     }

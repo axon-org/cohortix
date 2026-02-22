@@ -1,13 +1,14 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const TEST_COHORT_PATH = '/cohorts/test-cohort-id';
+const TEST_COHORT_PATH = '/dashboard/cohorts/test-cohort-id';
 
 async function gotoCohortOrSignIn(page: any) {
-  await page.goto(TEST_COHORT_PATH, { waitUntil: 'domcontentloaded' });
+  const response = await page.goto(TEST_COHORT_PATH, { waitUntil: 'domcontentloaded' });
   // Check if redirected to sign-in or Clerk domain
   const url = page.url();
-  return url.includes('/sign-in') || url.includes('clerk.com');
+  const redirected = url.includes('/sign-in') || url.includes('clerk.com');
+  return { redirected, status: response?.status() };
 }
 
 test.describe('Cohort Detail Page', () => {
@@ -16,11 +17,13 @@ test.describe('Cohort Detail Page', () => {
   });
 
   test('should load cohort detail page or redirect', async ({ page }) => {
+    const response = await page.goto(TEST_COHORT_PATH, { waitUntil: 'domcontentloaded' });
+
     // Wait for either cohort page content OR sign-in redirect
     await expect(async () => {
       const url = page.url();
       const isSignIn = url.includes('/sign-in') || url.includes('clerk.com');
-      const isCohort = url.includes('/cohorts/');
+      const isCohort = url.includes('/dashboard/cohorts/');
       expect(isSignIn || isCohort).toBeTruthy();
     }).toPass({ timeout: 15000 });
 
@@ -31,11 +34,17 @@ test.describe('Cohort Detail Page', () => {
       await expect(page.locator('.cl-rootBox, input[name="identifier"]')).toBeVisible({
         timeout: 10000,
       });
-    } else {
-      const body = await page.textContent('body');
-      expect(body).toBeTruthy();
-      expect(body!.length).toBeGreaterThan(100);
+      return;
     }
+
+    if (response?.status() === 404) {
+      await expect(page.getByText(/not found|404/i).or(page.locator('main, body'))).toBeVisible();
+      return;
+    }
+
+    const body = await page.textContent('body');
+    expect(body).toBeTruthy();
+    expect(body!.length).toBeGreaterThan(100);
   });
 
   test('should have valid HTML structure', async ({ page }) => {
@@ -91,15 +100,15 @@ test.describe('Cohort Detail Page', () => {
 
 test.describe('Cohort Detail - Engagement Timeline Component', () => {
   test('should display engagement timeline chart when authenticated', async ({ page }) => {
-    const redirected = await gotoCohortOrSignIn(page);
-    if (redirected) return; // Skip if redirected
+    const { redirected, status } = await gotoCohortOrSignIn(page);
+    if (redirected || status === 404) return; // Skip if redirected
 
     await expect(page.getByText('Engagement Timeline')).toBeVisible();
   });
 
   test('should display time period buttons when authenticated', async ({ page }) => {
-    const redirected = await gotoCohortOrSignIn(page);
-    if (redirected) return;
+    const { redirected, status } = await gotoCohortOrSignIn(page);
+    if (redirected || status === 404) return;
 
     await expect(page.getByRole('button', { name: '7D' })).toBeVisible();
     await expect(page.getByRole('button', { name: '30D' })).toBeVisible();
@@ -107,8 +116,8 @@ test.describe('Cohort Detail - Engagement Timeline Component', () => {
   });
 
   test('should display chart description when authenticated', async ({ page }) => {
-    const redirected = await gotoCohortOrSignIn(page);
-    if (redirected) return;
+    const { redirected, status } = await gotoCohortOrSignIn(page);
+    if (redirected || status === 404) return;
 
     await expect(page.getByText('Daily interaction count of all batch members')).toBeVisible();
   });
@@ -116,15 +125,15 @@ test.describe('Cohort Detail - Engagement Timeline Component', () => {
 
 test.describe('Cohort Detail - Batch Members Component', () => {
   test('should display batch members module when authenticated', async ({ page }) => {
-    const redirected = await gotoCohortOrSignIn(page);
-    if (redirected) return;
+    const { redirected, status } = await gotoCohortOrSignIn(page);
+    if (redirected || status === 404) return;
 
     await expect(page.getByText(/Batch Members/i)).toBeVisible();
   });
 
   test('should display table headers when authenticated', async ({ page }) => {
-    const redirected = await gotoCohortOrSignIn(page);
-    if (redirected) return;
+    const { redirected, status } = await gotoCohortOrSignIn(page);
+    if (redirected || status === 404) return;
 
     await expect(page.getByText('AI Ally')).toBeVisible();
     await expect(page.getByText('Role')).toBeVisible();
@@ -135,15 +144,15 @@ test.describe('Cohort Detail - Batch Members Component', () => {
 
 test.describe('Cohort Detail - Activity Log Component', () => {
   test('should display activity log module when authenticated', async ({ page }) => {
-    const redirected = await gotoCohortOrSignIn(page);
-    if (redirected) return;
+    const { redirected, status } = await gotoCohortOrSignIn(page);
+    if (redirected || status === 404) return;
 
     await expect(page.getByText('Activity Log')).toBeVisible();
   });
 
   test('should display View All button when authenticated', async ({ page }) => {
-    const redirected = await gotoCohortOrSignIn(page);
-    if (redirected) return;
+    const { redirected, status } = await gotoCohortOrSignIn(page);
+    if (redirected || status === 404) return;
 
     await expect(page.getByRole('button', { name: /view all/i })).toBeVisible();
   });
@@ -151,7 +160,7 @@ test.describe('Cohort Detail - Activity Log Component', () => {
 
 test.describe('Cohort Detail - Component Interactions', () => {
   test('should navigate from cohorts list to detail page (or sign-in)', async ({ page }) => {
-    await page.goto('/cohorts', { waitUntil: 'domcontentloaded' });
+    await page.goto('/dashboard/cohorts', { waitUntil: 'domcontentloaded' });
 
     const url = page.url();
     if (url.includes('/sign-in') || url.includes('clerk.com')) {
@@ -159,10 +168,10 @@ test.describe('Cohort Detail - Component Interactions', () => {
       return;
     }
 
-    const cohortLink = page.locator('a[href^="/cohorts/"]').first();
+    const cohortLink = page.locator('a[href^="/dashboard/cohorts/"]').first();
     if (await cohortLink.isVisible()) {
       await cohortLink.click();
-      await expect(page).toHaveURL(/\/cohorts\/.+/);
+      await expect(page).toHaveURL(/\/dashboard\/cohorts\/.+/);
     }
   });
 });

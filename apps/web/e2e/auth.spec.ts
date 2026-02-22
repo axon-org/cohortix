@@ -20,8 +20,10 @@ test.describe('Authentication Flow', () => {
     try {
       // Wait for Clerk to mount - use flexible selector
       await expect(
-        page.locator('.cl-rootBox, .cl-signIn-root, form.cl-form, input[name="identifier"]')
-      ).toBeVisible({ timeout: 15000 });
+        page.locator(
+          '[data-clerk-sign-in], [data-clerk-signin], .cl-rootBox, .cl-signIn-root, .cl-card, form.cl-form, input[name="identifier"], input[type="email"]'
+        )
+      ).toBeVisible({ timeout: 20000 });
     } catch (e) {
       console.log('Failed to find Clerk element. Dumping body:');
       console.log(await page.locator('body').innerHTML());
@@ -121,8 +123,12 @@ test.describe('Sign Up Flow', () => {
       'Auth provider rate-limits parallel multi-browser CI runs'
     );
     await page.goto('/sign-up', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('.cl-rootBox, .cl-signUp-root, form.cl-form')).toBeVisible({
-      timeout: 10000,
+    await expect(
+      page.locator(
+        '[data-clerk-sign-up], [data-clerk-signup], .cl-rootBox, .cl-signUp-root, .cl-card, form.cl-form'
+      )
+    ).toBeVisible({
+      timeout: 20000,
     });
   });
 

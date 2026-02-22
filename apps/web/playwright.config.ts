@@ -34,7 +34,7 @@ export default defineConfig({
 
     /* Force bypass auth for E2E tests if not explicitly disabled */
     extraHTTPHeaders: {
-      'x-e2e-bypass-auth': 'true',
+      'x-e2e-bypass-auth': process.env.E2E_BYPASS_SECRET || 'true',
     },
 
     /* Collect trace when retrying the failed test */
