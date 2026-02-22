@@ -10,16 +10,18 @@ async function handler(req: NextRequest) {
   const targetUrl = `https://clerk.cohortix.ai${clerkPath}${url.search}`;
 
   const headers = new Headers(req.headers);
-  headers.set(
-    'Clerk-Proxy-Url',
-    process.env.NEXT_PUBLIC_CLERK_PROXY_URL || `${url.origin}/__clerk`
-  );
+  // Only set Clerk-Proxy-Url if proxy is registered (avoid host_invalid during setup)
+  if (process.env.CLERK_PROXY_REGISTERED === 'true') {
+    headers.set(
+      'Clerk-Proxy-Url',
+      process.env.NEXT_PUBLIC_CLERK_PROXY_URL || `${url.origin}/clerkproxy`
+    );
+  }
   headers.set('Clerk-Secret-Key', process.env.CLERK_SECRET_KEY || '');
   headers.set(
     'X-Forwarded-For',
     req.headers.get('x-forwarded-for') || ''
   );
-  headers.set('host', 'clerk.cohortix.ai');
 
   try {
     const response = await fetch(targetUrl, {
