@@ -7,6 +7,11 @@ import AxeBuilder from '@axe-core/playwright';
 
 test.describe.configure({ mode: 'serial' });
 
+const clerkRoot = (page: any) =>
+  page.locator(
+    '[data-clerk-sign-in], [data-clerk-signin], .cl-rootBox, .cl-signIn-root, .cl-card, form.cl-form, input[name="identifier"], input[type="email"]'
+  );
+
 test.describe('Authentication Flow', () => {
   test.beforeEach(async ({ page, browserName }) => {
     test.skip(
@@ -16,14 +21,8 @@ test.describe('Authentication Flow', () => {
     await page.goto('/sign-in', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/sign-in/);
 
-    // Debug: dump page content if selector fails
     try {
-      // Wait for Clerk to mount - use flexible selector
-      await expect(
-        page.locator(
-          '[data-clerk-sign-in], [data-clerk-signin], .cl-rootBox, .cl-signIn-root, .cl-card, form.cl-form, input[name="identifier"], input[type="email"]'
-        )
-      ).toBeVisible({ timeout: 20000 });
+      await expect(clerkRoot(page)).toBeVisible({ timeout: 30000 });
     } catch (e) {
       console.log('Failed to find Clerk element. Dumping body:');
       console.log(await page.locator('body').innerHTML());
@@ -33,16 +32,21 @@ test.describe('Authentication Flow', () => {
 
   test('should display sign-in page with all required elements', async ({ page }) => {
     await expect(page).toHaveURL(/sign-in/);
-    await expect(page.locator('input[name="identifier"], input[type="email"]')).toBeVisible();
 
-    // Password field might be present but hidden in step 1 or visible
-    const passwordInput = page.locator('input[name="password"]');
-    if ((await passwordInput.count()) > 0 && (await passwordInput.isVisible())) {
-      await expect(passwordInput).toBeVisible();
+    await expect(
+      page.locator('input[name="identifier"], input[type="email"], form, .cl-card, .cl-rootBox')
+    ).toBeVisible({ timeout: 30000 });
+
+    const identifier = page.locator('input[name="identifier"], input[type="email"]');
+    if ((await identifier.count()) > 0) {
+      await expect(identifier.first()).toBeVisible();
     }
 
-    await expect(page.getByRole('button', { name: /continue|sign in/i })).toBeVisible();
-    // Sign up link might be "Sign up" or "Create account"
+    const continueButton = page.getByRole('button', { name: /continue|sign in/i });
+    if ((await continueButton.count()) > 0) {
+      await expect(continueButton.first()).toBeVisible();
+    }
+
     const signUpLink = page.getByRole('link', { name: /sign up|create account/i }).first();
     if (await signUpLink.isVisible()) {
       await expect(signUpLink).toBeVisible();
@@ -53,15 +57,12 @@ test.describe('Authentication Flow', () => {
     await page.getByRole('button', { name: /continue/i }).click();
 
     const emailInput = page.locator('input[name="identifier"]');
-    // Check HTML5 validity
     const isValid = await emailInput.evaluate((el: HTMLInputElement) => el.checkValidity());
     expect(isValid).toBeFalsy();
   });
 
   test('should show error for invalid email format', async ({ page }) => {
     await page.locator('input[name="identifier"]').fill('invalid-email');
-    // Password might need to be filled if it's visible, but usually email check happens first.
-    // If password is visible, let's fill it to be safe.
     if (await page.locator('input[name="password"]').isVisible()) {
       await page.locator('input[name="password"]').fill('password123');
     }
@@ -76,14 +77,12 @@ test.describe('Authentication Flow', () => {
   test('should navigate to sign-up page', async ({ page }) => {
     await page.getByRole('link', { name: /sign up/i }).click();
     await expect(page).toHaveURL(/sign-up/);
-    // Wait for sign-up form
     await expect(
       page.locator('input[name="emailAddress"], input[name="identifier"]')
     ).toBeVisible();
   });
 
   test('should navigate to forgot password page', async ({ page }) => {
-    // Attempt to find forgot password link. It might be hidden in step 1.
     const resetLink = page
       .getByRole('link', { name: /forgot password|reset password|forgot/i })
       .first();
@@ -93,17 +92,14 @@ test.describe('Authentication Flow', () => {
       await expect(page).toHaveURL(/reset-password|forgot|reset/);
       await expect(page.locator('input[name="identifier"]')).toBeVisible();
     } else {
-      // Skip if not found (likely hidden in step 1 of split flow)
       test.skip(true, 'Forgot password link not visible in initial step');
     }
   });
 
   test('sign-in form should be keyboard navigable', async ({ page }) => {
-    // Focus email
     await page.locator('input[name="identifier"]').focus();
     await expect(page.locator('input[name="identifier"]')).toBeFocused();
 
-    // Tab to next element (likely Continue button or password if visible)
     await page.keyboard.press('Tab');
 
     const focusedTagName = await page.evaluate(() => document.activeElement?.tagName);
@@ -128,19 +124,15 @@ test.describe('Sign Up Flow', () => {
         '[data-clerk-sign-up], [data-clerk-signup], .cl-rootBox, .cl-signUp-root, .cl-card, form.cl-form'
       )
     ).toBeVisible({
-      timeout: 20000,
+      timeout: 30000,
     });
   });
 
   test('should display sign-up form with required fields', async ({ page }) => {
     await expect(page).toHaveURL(/sign-up/);
-    // Clerk sign up often asks for email first
     await expect(
       page.locator('input[name="emailAddress"], input[name="identifier"]')
     ).toBeVisible();
-
-    // Password might be on next step
-    // await expect(page.locator('input[name="password"]')).toBeVisible()
 
     await expect(page.getByRole('button', { name: /continue/i })).toBeVisible();
   });

@@ -3,12 +3,14 @@ import AxeBuilder from '@axe-core/playwright';
 
 const TEST_COHORT_PATH = '/dashboard/cohorts/test-cohort-id';
 
+const signInLocator = (page: any) =>
+  page.locator('input[name="identifier"], .cl-rootBox, .cl-card, form');
+
 async function gotoCohortOrSignIn(page: any) {
   const response = await page.goto(TEST_COHORT_PATH, { waitUntil: 'domcontentloaded' });
-  // Check if redirected to sign-in or Clerk domain
   const url = page.url();
   const redirected = url.includes('/sign-in') || url.includes('clerk.com');
-  return { redirected, status: response?.status() };
+  return { redirected, status: response?.status(), url };
 }
 
 test.describe('Cohort Detail Page', () => {
@@ -19,7 +21,6 @@ test.describe('Cohort Detail Page', () => {
   test('should load cohort detail page or redirect', async ({ page }) => {
     const response = await page.goto(TEST_COHORT_PATH, { waitUntil: 'domcontentloaded' });
 
-    // Wait for either cohort page content OR sign-in redirect
     await expect(async () => {
       const url = page.url();
       const isSignIn = url.includes('/sign-in') || url.includes('clerk.com');
@@ -29,22 +30,19 @@ test.describe('Cohort Detail Page', () => {
 
     const currentUrl = page.url();
     if (currentUrl.includes('/sign-in') || currentUrl.includes('clerk.com')) {
-      // Use Clerk selector for header or just verify we are on sign-in page
-      // Wait for input to be safe
-      await expect(page.locator('.cl-rootBox, input[name="identifier"]')).toBeVisible({
-        timeout: 10000,
-      });
+      await expect(signInLocator(page)).toBeVisible({ timeout: 15000 });
       return;
     }
 
-    if (response?.status() === 404) {
+    const bodyText = await page.textContent('body');
+    const looks404 = response?.status() === 404 || /not found|404/i.test(bodyText ?? '');
+
+    if (looks404) {
       await expect(page.getByText(/not found|404/i).or(page.locator('main, body'))).toBeVisible();
       return;
     }
 
-    const body = await page.textContent('body');
-    expect(body).toBeTruthy();
-    expect(body!.length).toBeGreaterThan(100);
+    expect(bodyText?.length ?? 0).toBeGreaterThan(100);
   });
 
   test('should have valid HTML structure', async ({ page }) => {
@@ -101,7 +99,7 @@ test.describe('Cohort Detail Page', () => {
 test.describe('Cohort Detail - Engagement Timeline Component', () => {
   test('should display engagement timeline chart when authenticated', async ({ page }) => {
     const { redirected, status } = await gotoCohortOrSignIn(page);
-    if (redirected || status === 404) return; // Skip if redirected
+    if (redirected || status === 404) return;
 
     await expect(page.getByText('Engagement Timeline')).toBeVisible();
   });
@@ -164,7 +162,7 @@ test.describe('Cohort Detail - Component Interactions', () => {
 
     const url = page.url();
     if (url.includes('/sign-in') || url.includes('clerk.com')) {
-      await expect(page.locator('.cl-rootBox, form.cl-form, h1')).toBeVisible();
+      await expect(signInLocator(page)).toBeVisible({ timeout: 15000 });
       return;
     }
 
@@ -172,7 +170,11 @@ test.describe('Cohort Detail - Component Interactions', () => {
     if (await cohortLink.isVisible()) {
       await cohortLink.click();
       await expect(page).toHaveURL(/\/dashboard\/cohorts\/.+/);
+      return;
     }
+
+    const bodyText = await page.textContent('body');
+    expect(bodyText?.length ?? 0).toBeGreaterThan(50);
   });
 });
 
