@@ -13,7 +13,8 @@ export const metadata: Metadata = {
 
 const allowedRedirectOrigins = [
   process.env.NEXT_PUBLIC_APP_URL,
-  'http://localhost:3000',
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : undefined,
 ].filter(Boolean) as string[];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
