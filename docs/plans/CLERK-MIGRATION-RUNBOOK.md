@@ -15,8 +15,8 @@ instances. Delete `cohortix-production` + `cohortix-staging` after cutover.
 - `CLERK_WEBHOOK_SECRET`
 - `NEXT_PUBLIC_CLERK_SIGN_IN_URL` `/sign-in`
 - `NEXT_PUBLIC_CLERK_SIGN_UP_URL` `/sign-up`
-- `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` `/dashboard`
-- `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL` `/onboarding`
+- `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` `/dashboard`
+- `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL` `/onboarding`
 
 **Webhook endpoint:**
 

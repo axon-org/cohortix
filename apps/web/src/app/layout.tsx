@@ -11,9 +11,14 @@ export const metadata: Metadata = {
   description: 'Allies-as-a-Service platform for managing high-performing AI teams',
 };
 
+const allowedRedirectOrigins = [
+  process.env.NEXT_PUBLIC_APP_URL,
+  'http://localhost:3000',
+].filter(Boolean) as string[];
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider allowedRedirectOrigins={allowedRedirectOrigins}>
       <html lang="en" className="dark">
         <body className={inter.className}>
           <QueryProvider>{children}</QueryProvider>
