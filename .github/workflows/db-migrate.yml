@@ -18,7 +18,7 @@ on:
 
 concurrency:
   group: db-migrate-${{ inputs.environment }}
-  cancel-in-progress: false  # Never cancel a running migration
+  cancel-in-progress: false # Never cancel a running migration
 
 env:
   NODE_VERSION: '20'

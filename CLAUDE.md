@@ -2,7 +2,15 @@
 
 **Mission:** Cohortix  
 **Version:** 1.0.0  
-**Last Updated:** 2026-02-19  
+**Last Updated:** 2026-02-22
+
+## ⚠️ MANDATORY: Format Before Committing
+
+**ALWAYS run `npx prettier --write <files>` on every file you modify before
+committing.** This project uses Prettier for code formatting. CI lint checks
+will fail if files aren't formatted. This applies to ALL file types: `.ts`,
+`.tsx`, `.js`, `.yml`, `.yaml`, `.css`, `.md`, `.json`.
+
 **Axon Codex Compliance:** v1.1 §2.2.1
 
 ---
@@ -28,7 +36,7 @@
 ### What's Next 🔜
 
 1. ~~Complete terminology alignment~~ ✅ Done (2026-02-13) — see
-   `docs/TERMINOLOGY.md`
+   `docs/guides/TERMINOLOGY.md`
 2. Mobile responsive fixes for dashboard
 3. Fix Next.js warnings (bottom-left corner)
 4. Build Cohort Grid screen
@@ -45,9 +53,9 @@
 - **Tailwind v3** (codebase uses v3 syntax, was accidentally installed as v4)
 - **Terminology hierarchy:** Domain → Vision → Mission → Operation/Rhythm → Task
   (PPV Pro by August Bradley, rebranded for Cohortix)
-- **⚠️ MANDATORY: Read `docs/TERMINOLOGY.md` before any work** — this is the
-  authoritative terminology reference. Use ONLY these terms in code, UI, docs,
-  and communications.
+- **⚠️ MANDATORY: Read `docs/guides/TERMINOLOGY.md` before any work** — this is
+  the authoritative terminology reference. Use ONLY these terms in code, UI,
+  docs, and communications.
 - **Supabase server client** lives in `apps/web/src/lib/supabase/` (NOT in
   shared packages — Next.js `cookies()` can't run from packages)
 
@@ -2415,7 +2423,7 @@ pnpm db:studio       # Open database GUI
 
 HIERARCHY: Domain → Vision → Mission → Operation / Rhythm → Task
 
-⚠️  READ docs/TERMINOLOGY.md FOR FULL REFERENCE
+⚠️  READ docs/guides/TERMINOLOGY.md FOR FULL REFERENCE
 
 ❌ Agent       → ✅ Ally
 ❌ Agents      → ✅ Cohort

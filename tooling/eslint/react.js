@@ -31,10 +31,7 @@ module.exports = {
     ],
     'react/jsx-pascal-case': 'error',
     'react/jsx-no-useless-fragment': ['error', { allowExpressions: true }],
-    'react/jsx-curly-brace-presence': [
-      'error',
-      { props: 'never', children: 'never' },
-    ],
+    'react/jsx-curly-brace-presence': ['error', { props: 'never', children: 'never' }],
     'react/self-closing-comp': 'error',
     'react/jsx-boolean-value': ['error', 'never'],
     'react/jsx-sort-props': [

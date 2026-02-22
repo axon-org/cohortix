@@ -398,7 +398,7 @@ threshold in `ci.yml` line 144
 
 ## 📚 References
 
-- [Axon Codex v1.1](../docs/GIT_WORKFLOW.md) - CI/CD architecture
+- [Axon Codex v1.1](../docs/guides/GIT_WORKFLOW.md) - CI/CD architecture
 - [GitHub Actions Docs](https://docs.github.com/en/actions)
 - [Vercel CLI Docs](https://vercel.com/docs/cli)
 - [Playwright Docs](https://playwright.dev)

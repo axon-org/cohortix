@@ -13,7 +13,15 @@ const isPublicRoute = createRouteMatcher([
 
 export default clerkMiddleware(
   async (auth, request) => {
-    // Allow bypass for testing if enabled
+    // Allow bypass for testing if enabled (non-production only)
+    const bypassHeader = request.headers.get('x-e2e-bypass-auth');
+    const bypassSecret = process.env.E2E_BYPASS_SECRET;
+    const isProduction = process.env.VERCEL_ENV === 'production';
+
+    if (!isProduction && bypassHeader && bypassSecret && bypassHeader === bypassSecret) {
+      return NextResponse.next();
+    }
+
     if (process.env.BYPASS_AUTH === 'true') {
       return NextResponse.next();
     }

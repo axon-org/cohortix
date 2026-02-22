@@ -121,7 +121,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 # Check for undocumented API endpoints
 if [ -d "apps/web/app/api" ]; then
   API_ROUTES=$(find apps/web/app/api -name "route.ts" -o -name "route.js" 2>/dev/null | wc -l)
-  DOCUMENTED_ROUTES=$(grep -r "^###" docs/API_DESIGN.md 2>/dev/null | wc -l)
+  DOCUMENTED_ROUTES=$(grep -r "^###" docs/specs/API_DESIGN.md 2>/dev/null | wc -l)
   
   if [ "$API_ROUTES" -gt "$DOCUMENTED_ROUTES" ]; then
     echo -e "${YELLOW}⚠️  Possible API documentation drift: $API_ROUTES routes vs $DOCUMENTED_ROUTES documented${NC}"
