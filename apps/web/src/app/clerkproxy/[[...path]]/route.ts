@@ -2,33 +2,29 @@ import { NextRequest } from 'next/server';
 
 /**
  * Clerk FAPI Proxy — API Route handler.
- * Proxies all requests from /clerkproxy/* to Clerk's Frontend API.
+ * Proxies all requests from /clerkproxy/* to Clerk's Frontend API
+ * so that cookies are set on the app's domain.
  */
 async function handler(req: NextRequest) {
   const url = new URL(req.url);
   const clerkPath = url.pathname.replace('/clerkproxy', '') || '/';
-  const targetUrl = `https://clerk.cohortix.ai${clerkPath}${url.search}`;
+  const targetUrl = `https://frontend-api.clerk.dev${clerkPath}${url.search}`;
+
+  const proxyUrl = (process.env.NEXT_PUBLIC_CLERK_PROXY_URL || `${url.origin}/clerkproxy`).trim();
+  const secretKey = (process.env.CLERK_SECRET_KEY || '').trim();
 
   const headers = new Headers(req.headers);
-  // Only set Clerk-Proxy-Url if proxy is registered (avoid host_invalid during setup)
-  if (process.env.CLERK_PROXY_REGISTERED === 'true') {
-    headers.set(
-      'Clerk-Proxy-Url',
-      process.env.NEXT_PUBLIC_CLERK_PROXY_URL || `${url.origin}/clerkproxy`
-    );
-  }
-  headers.set('Clerk-Secret-Key', process.env.CLERK_SECRET_KEY || '');
-  headers.set(
-    'X-Forwarded-For',
-    req.headers.get('x-forwarded-for') || ''
-  );
+  headers.set('Clerk-Proxy-Url', proxyUrl);
+  headers.set('Clerk-Secret-Key', secretKey);
+  headers.set('X-Forwarded-For', req.headers.get('x-forwarded-for') || '');
+  headers.delete('host');
 
   try {
     const response = await fetch(targetUrl, {
       method: req.method,
       headers,
       body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
-      // @ts-ignore
+      // @ts-ignore - duplex needed for streaming request bodies in edge runtime
       duplex: req.method !== 'GET' && req.method !== 'HEAD' ? 'half' : undefined,
     });
 
@@ -38,10 +34,10 @@ async function handler(req: NextRequest) {
       headers: response.headers,
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Proxy error', details: String(error) }), {
-      status: 502,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'Proxy error', details: String(error) }),
+      { status: 502, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 }
 
