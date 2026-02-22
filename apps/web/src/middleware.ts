@@ -9,9 +9,38 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/clerk(.*)',
   '/api/ready',
   '/api/health',
+  '/__clerk(.*)',
 ]);
 
-export default clerkMiddleware(
+/**
+ * Proxy middleware for Clerk Frontend API.
+ * Routes /__clerk/* requests through app.cohortix.ai so cookies
+ * are set on the app domain, avoiding subdomain cookie issues.
+ */
+function proxyClerkFAPI(req: any) {
+  if (req.nextUrl.pathname.startsWith('/__clerk')) {
+    const proxyHeaders = new Headers(req.headers);
+    proxyHeaders.set('Clerk-Proxy-Url', process.env.NEXT_PUBLIC_CLERK_PROXY_URL || '');
+    proxyHeaders.set('Clerk-Secret-Key', process.env.CLERK_SECRET_KEY || '');
+    proxyHeaders.set(
+      'X-Forwarded-For',
+      req.ip || req.headers.get('X-Forwarded-For') || ''
+    );
+
+    const proxyUrl = new URL(req.url);
+    proxyUrl.host = 'frontend-api.clerk.dev';
+    proxyUrl.port = '443';
+    proxyUrl.protocol = 'https';
+    proxyUrl.pathname = proxyUrl.pathname.replace('/__clerk', '');
+
+    return NextResponse.rewrite(proxyUrl, {
+      request: { headers: proxyHeaders },
+    });
+  }
+  return null;
+}
+
+const clerkHandler = clerkMiddleware(
   async (auth, request) => {
     // Allow bypass for testing if enabled (non-production only)
     const bypassHeader = request.headers.get('x-e2e-bypass-auth');
@@ -29,7 +58,6 @@ export default clerkMiddleware(
     // Protect all routes except public ones
     if (!isPublicRoute(request)) {
       const { userId } = await auth();
-      console.log(`[Clerk Auth] path=${request.nextUrl.pathname} userId=${userId ?? 'null'}`);
       if (!userId) {
         const signInUrl = new URL('/sign-in', request.url);
         signInUrl.searchParams.set('redirect_url', request.url);
@@ -38,12 +66,17 @@ export default clerkMiddleware(
     }
 
     return NextResponse.next();
-  },
-  {
-    // authorizedParties temporarily removed to debug redirect loop
-    // Will re-add once we confirm the correct azp claim value
   }
 );
+
+export default function middleware(req: any) {
+  // First check if it's a Clerk proxy request
+  const proxyResponse = proxyClerkFAPI(req);
+  if (proxyResponse) return proxyResponse;
+
+  // Otherwise, use Clerk's auth middleware
+  return clerkHandler(req, {} as any);
+}
 
 export const config = {
   matcher: [
