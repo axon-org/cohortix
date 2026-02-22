@@ -16,9 +16,7 @@ export default clerkMiddleware(
     // Allow bypass for testing if enabled (non-production only)
     const bypassHeader = request.headers.get('x-e2e-bypass-auth');
     const bypassSecret = process.env.E2E_BYPASS_SECRET;
-    const isProduction =
-      process.env.NODE_ENV === 'production' ||
-      process.env.VERCEL_ENV === 'production';
+    const isProduction = process.env.VERCEL_ENV === 'production';
 
     if (
       !isProduction &&
