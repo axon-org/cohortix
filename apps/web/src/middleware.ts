@@ -23,7 +23,7 @@ async function proxyClerkFAPI(req: NextRequest): Promise<Response | null> {
   }
 
   const clerkPath = req.nextUrl.pathname.replace('/__clerk', '') || '/';
-  const targetUrl = `https://clerk.cohortix.ai${clerkPath}${req.nextUrl.search}`;
+  const targetUrl = `https://frontend-api.clerk.dev${clerkPath}${req.nextUrl.search}`;
 
   const headers = new Headers(req.headers);
   headers.set('Clerk-Proxy-Url', process.env.NEXT_PUBLIC_CLERK_PROXY_URL || `${req.nextUrl.origin}/__clerk`);
