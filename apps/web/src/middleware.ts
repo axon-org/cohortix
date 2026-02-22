@@ -10,12 +10,13 @@ const isPublicRoute = createRouteMatcher([
   '/api/ready',
   '/api/health',
   '/__clerk(.*)',
+  '/clerkproxy(.*)',
 ]);
 
 export default clerkMiddleware(
   async (auth, request) => {
     // Skip clerk proxy requests — handled by API route
-    if (request.nextUrl.pathname.startsWith('/__clerk')) {
+    if (request.nextUrl.pathname.startsWith('/__clerk') || request.nextUrl.pathname.startsWith('/clerkproxy')) {
       return NextResponse.next();
     }
 
