@@ -20,7 +20,10 @@ const isPublicRoute = createRouteMatcher([
 function proxyClerkFAPI(req: any) {
   if (req.nextUrl.pathname.startsWith('/__clerk')) {
     const proxyHeaders = new Headers(req.headers);
-    proxyHeaders.set('Clerk-Proxy-Url', process.env.NEXT_PUBLIC_CLERK_PROXY_URL || '');
+    proxyHeaders.set(
+      'Clerk-Proxy-Url',
+      process.env.NEXT_PUBLIC_CLERK_PROXY_URL || `${req.nextUrl.origin}/__clerk`
+    );
     proxyHeaders.set('Clerk-Secret-Key', process.env.CLERK_SECRET_KEY || '');
     proxyHeaders.set(
       'X-Forwarded-For',
@@ -28,7 +31,7 @@ function proxyClerkFAPI(req: any) {
     );
 
     const proxyUrl = new URL(req.url);
-    proxyUrl.host = 'frontend-api.clerk.dev';
+    proxyUrl.host = 'frontend-api.clerk.services';
     proxyUrl.port = '443';
     proxyUrl.protocol = 'https';
     proxyUrl.pathname = proxyUrl.pathname.replace('/__clerk', '');
@@ -82,7 +85,7 @@ export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
+    // Always run for API routes and Clerk proxy
+    '/(api|trpc|__clerk)(.*)',
   ],
 };
