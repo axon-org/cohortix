@@ -12,7 +12,8 @@
 **Location:** `~/Projects/cohortix/` (NEVER ~/clawd/cohortix/)  
 **Context:** Read PROJECT_BRIEF.md (quick overview), CLAUDE.md (detailed
 context)  
-**Compliance:** Follow `docs/plans/CODEX-COMPLIANCE-PLAN.md` for current priorities
+**Compliance:** Follow `docs/plans/CODEX-COMPLIANCE-PLAN.md` for current
+priorities
 
 ---
 

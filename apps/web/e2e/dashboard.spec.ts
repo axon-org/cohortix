@@ -53,9 +53,7 @@ test.describe('Dashboard Page', () => {
   });
 
   test('should display KPI cards', async ({ page }) => {
-    const kpiLabel = page.getByText(
-      /ACTIVE COHORTS|TOTAL ALLIES|AVG ENGAGEMENT|AT-RISK COHORTS/i
-    );
+    const kpiLabel = page.getByText(/ACTIVE COHORTS|TOTAL ALLIES|AVG ENGAGEMENT|AT-RISK COHORTS/i);
     const kpiError = page.getByText(/Failed to load KPIs/i);
 
     await expect(kpiLabel.or(kpiError)).toBeVisible();

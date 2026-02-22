@@ -17,11 +17,11 @@ over time.
 
 ## 📚 Documentation
 
-| Document                                        | Description                                  |
-| ----------------------------------------------- | -------------------------------------------- |
+| Document                                               | Description                                  |
+| ------------------------------------------------------ | -------------------------------------------- |
 | [TERMINOLOGY.md](docs/guides/TERMINOLOGY.md)           | **Start here** — All Cohortix branding terms |
-| [PRD.md](docs/specs/PRD.md)                           | Product Requirements                         |
-| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)         | Technical Architecture                       |
+| [PRD.md](docs/specs/PRD.md)                            | Product Requirements                         |
+| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)   | Technical Architecture                       |
 | [BRAND_GUIDELINES.md](docs/design/BRAND_GUIDELINES.md) | Voice, tone, and visual identity             |
 
 ## 🗂️ Mission Structure

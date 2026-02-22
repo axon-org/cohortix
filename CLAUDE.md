@@ -45,9 +45,9 @@
 - **Tailwind v3** (codebase uses v3 syntax, was accidentally installed as v4)
 - **Terminology hierarchy:** Domain → Vision → Mission → Operation/Rhythm → Task
   (PPV Pro by August Bradley, rebranded for Cohortix)
-- **⚠️ MANDATORY: Read `docs/guides/TERMINOLOGY.md` before any work** — this is the
-  authoritative terminology reference. Use ONLY these terms in code, UI, docs,
-  and communications.
+- **⚠️ MANDATORY: Read `docs/guides/TERMINOLOGY.md` before any work** — this is
+  the authoritative terminology reference. Use ONLY these terms in code, UI,
+  docs, and communications.
 - **Supabase server client** lives in `apps/web/src/lib/supabase/` (NOT in
   shared packages — Next.js `cookies()` can't run from packages)
 
