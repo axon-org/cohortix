@@ -2,13 +2,12 @@ import { NextRequest } from 'next/server';
 
 /**
  * Clerk FAPI Proxy — API Route handler.
- * Proxies all requests from /__clerk/* to Clerk's Frontend API
- * so that cookies are set on the app's domain (cohortix.ai).
+ * Proxies all requests from /clerkproxy/* to Clerk's Frontend API.
  */
 async function handler(req: NextRequest) {
   const url = new URL(req.url);
-  const clerkPath = url.pathname.replace('/__clerk', '') || '/';
-  const targetUrl = `https://frontend-api.clerk.dev${clerkPath}${url.search}`;
+  const clerkPath = url.pathname.replace('/clerkproxy', '') || '/';
+  const targetUrl = `https://clerk.cohortix.ai${clerkPath}${url.search}`;
 
   const headers = new Headers(req.headers);
   headers.set(
@@ -51,5 +50,4 @@ export const PATCH = handler;
 export const DELETE = handler;
 export const OPTIONS = handler;
 
-// Use Edge runtime for lower latency
 export const runtime = 'edge';

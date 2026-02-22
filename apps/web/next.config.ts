@@ -6,6 +6,14 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/__clerk/:path*',
+        destination: '/clerkproxy/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
