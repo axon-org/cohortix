@@ -19,7 +19,7 @@ async function handler(req: NextRequest) {
     'X-Forwarded-For',
     req.headers.get('x-forwarded-for') || ''
   );
-  headers.delete('host');
+  headers.set('host', 'clerk.cohortix.ai');
 
   try {
     const response = await fetch(targetUrl, {
