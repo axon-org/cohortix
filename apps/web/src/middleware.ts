@@ -11,6 +11,12 @@ const isPublicRoute = createRouteMatcher([
   '/api/health',
 ]);
 
+const authorizedParties = [
+  process.env.NEXT_PUBLIC_APP_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : undefined,
+].filter(Boolean) as string[];
+
 export default clerkMiddleware(
   async (auth, request) => {
     // Allow bypass for testing if enabled (non-production only)
@@ -39,12 +45,7 @@ export default clerkMiddleware(
     return NextResponse.next();
   },
   {
-    authorizedParties: [
-      'http://localhost:3000',
-      'https://app.cohortix.ai',
-      'https://cohortix.ai',
-      ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-    ],
+    authorizedParties,
   }
 );
 
