@@ -1,7 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-// Define public routes that don't require authentication
 const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/sign-up(.*)',
@@ -10,12 +9,6 @@ const isPublicRoute = createRouteMatcher([
   '/api/ready',
   '/api/health',
 ]);
-
-const authorizedParties = [
-  process.env.NEXT_PUBLIC_APP_URL,
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : undefined,
-].filter(Boolean) as string[];
 
 export default clerkMiddleware(
   async (auth, request) => {
@@ -32,7 +25,6 @@ export default clerkMiddleware(
       return NextResponse.next();
     }
 
-    // Protect all routes except public ones
     if (!isPublicRoute(request)) {
       const { userId } = await auth();
       if (!userId) {
@@ -43,17 +35,12 @@ export default clerkMiddleware(
     }
 
     return NextResponse.next();
-  },
-  {
-    authorizedParties,
   }
 );
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
     '/(api|trpc)(.*)',
   ],
 };
