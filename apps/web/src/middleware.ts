@@ -31,7 +31,7 @@ function proxyClerkFAPI(req: any) {
     );
 
     const proxyUrl = new URL(req.url);
-    proxyUrl.host = 'frontend-api.clerk.services';
+    proxyUrl.host = 'clerk.cohortix.ai';
     proxyUrl.port = '443';
     proxyUrl.protocol = 'https';
     proxyUrl.pathname = proxyUrl.pathname.replace('/__clerk', '');
