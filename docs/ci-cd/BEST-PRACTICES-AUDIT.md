@@ -106,6 +106,7 @@
 - **WRONG:** `rollback.yml` is non-functional but presented as “Automated Rollback”.
 - **SUBOPTIMAL:** Redundant security scanning across CI + security-baseline + Snyk (high maintenance, long run times).
 - **SUBOPTIMAL:** CI doesn’t run on direct pushes to `dev` (except staging workflow pre-checks).
+- **SUBOPTIMAL (potentially WRONG):** `health-check.yml` uses repo secrets for Supabase (`NEXT_PUBLIC_SUPABASE_URL/ANON_KEY`). If staging uses a separate Supabase project, health checks target prod values.
 
 ### Recommendations (Priority)
 1. **Either implement rollback logic or remove `rollback.yml`.** Right now it is misleading.  
@@ -114,7 +115,9 @@
    **Effort:** Medium  
 3. **Run CI on `dev` pushes** (at least lint + unit + type-check) to reduce staging regressions.  
    **Effort:** Quick fix  
-4. **Review self-hosted vs hosted split**: keep build-heavy jobs on self-hosted, move security-only scans to GitHub-hosted.  
+4. **Make health-check secrets environment-specific** (staging vs prod), or pass Supabase URL/key as inputs.  
+   **Effort:** Quick fix  
+5. **Review self-hosted vs hosted split**: keep build-heavy jobs on self-hosted, move security-only scans to GitHub-hosted.  
    **Effort:** Medium  
 
 ---
