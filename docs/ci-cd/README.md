@@ -2,9 +2,7 @@
 
 ## Overview
 
-Cohortix uses GitHub Actions with a self-hosted macOS ARM64 runner for all CI/CD
-workflows. This eliminates GitHub Actions billing costs while providing
-unlimited build minutes.
+Cohortix uses **GitHub Actions for CI checks** and **Vercel Git Integration for all deployments**. The self-hosted macOS ARM64 runner powers CI workflows while Vercel handles production, staging, and preview deployments automatically.
 
 ## Runner Setup
 
@@ -13,18 +11,35 @@ unlimited build minutes.
 - **Labels:** self-hosted, macOS, ARM64
 - **Service:** Runs as a macOS LaunchAgent (auto-starts on boot)
 
-## Workflows
+## Deployment Flow (Vercel Git Integration)
 
-### Core CI/CD
+| Git Event / Branch | Environment | Hostname               | Deployment Owner |
+| ------------------ | ----------- | ---------------------- | ---------------- |
+| Push to `main`     | Production  | app.cohortix.ai         | Vercel           |
+| Push to `dev`      | Staging     | staging.cohortix.ai     | Vercel           |
+| Pull Request       | Preview     | Vercel preview URL      | Vercel           |
 
-| Workflow             | File                                      | Trigger                                  | Purpose                                                                     |
-| -------------------- | ----------------------------------------- | ---------------------------------------- | --------------------------------------------------------------------------- |
-| CI Pipeline          | `.github/workflows/ci.yml`                | Push/PR to `main`/`dev`, weekly schedule | Lint, type-check, unit tests, build, security scans                         |
-| Preview Deployment   | `.github/workflows/preview.yml`           | PRs to `main`                            | Deploy preview on Vercel + run E2E tests                                    |
-| Deploy to Staging    | `.github/workflows/deploy-staging.yml`    | Push to `dev`                            | Build & deploy to staging, smoke tests, post-deploy health check            |
-| Deploy to Production | `.github/workflows/deploy-production.yml` | Push to `main`                           | CI gate, approval, production deploy, smoke tests, post-deploy health check |
-| Production Release   | `.github/workflows/release.yml`           | Push to `main`                           | Full checks, build, deploy, tag release, notify team                        |
-| Database Migration   | `.github/workflows/db-migrate.yml`        | Manual (`workflow_dispatch`)             | Run DB migrations in staging/production                                     |
+**Branch protection gates merges** to `main`/`dev` via required GitHub Actions checks.
+
+```
+Developer Push/PR
+        │
+        ├── GitHub Actions (CI checks)
+        │
+        └── Vercel Git Integration
+             ├── Production (main)
+             ├── Staging (dev)
+             └── Preview (PRs)
+```
+
+## Workflows (CI Only)
+
+### Core CI
+
+| Workflow    | File                       | Trigger                                  | Purpose                                      |
+| ----------- | -------------------------- | ---------------------------------------- | -------------------------------------------- |
+| CI Pipeline | `.github/workflows/ci.yml` | Push/PR to `main`/`dev`, weekly schedule | Lint, type-check, unit tests, build, scans   |
+| DB Migrate  | `.github/workflows/db-migrate.yml` | Manual (`workflow_dispatch`)       | Run DB migrations in staging/production      |
 
 ### Security & Compliance
 
@@ -36,19 +51,18 @@ unlimited build minutes.
 
 ### Quality Gates
 
-| Workflow             | File                                    | Trigger                                     | Purpose                                      |
-| -------------------- | --------------------------------------- | ------------------------------------------- | -------------------------------------------- |
-| E2E Tests            | `.github/workflows/e2e.yml`             | PRs to `main`/`dev`, post-production deploy | Playwright E2E on preview/staging/production |
-| Bundle Size Analysis | `.github/workflows/bundle-analysis.yml` | PRs to `main`/`dev`                         | Report bundle size + enforce limit           |
-| Lighthouse CI        | `.github/workflows/lighthouse.yml`      | PRs to `main` (apps/packages)               | Performance audits                           |
+| Workflow             | File                                    | Trigger                             | Purpose                                      |
+| -------------------- | --------------------------------------- | ----------------------------------- | -------------------------------------------- |
+| E2E Tests            | `.github/workflows/e2e.yml`             | PRs to `main`/`dev`                 | Playwright E2E on preview/staging/production |
+| Bundle Size Analysis | `.github/workflows/bundle-analysis.yml` | PRs to `main`/`dev`                 | Report bundle size + enforce limit           |
+| Lighthouse CI        | `.github/workflows/lighthouse.yml`      | PRs to `main` (apps/packages)       | Performance audits                           |
 
 ### Automation
 
-| Workflow           | File                             | Trigger                      | Purpose                                          |
-| ------------------ | -------------------------------- | ---------------------------- | ------------------------------------------------ |
-| Automated Rollback | `.github/workflows/rollback.yml` | Manual (`workflow_dispatch`) | Promote previous Vercel deployment (placeholder) |
-| Stale PR Cleanup   | `.github/workflows/stale.yml`    | Weekly schedule              | Mark/close stale PRs                             |
-| Dependabot         | `.github/dependabot.yml`         | Weekly schedule              | Automated dependency update PRs                  |
+| Workflow         | File                             | Trigger         | Purpose              |
+| ---------------- | -------------------------------- | --------------- | -------------------- |
+| Stale PR Cleanup | `.github/workflows/stale.yml`    | Weekly schedule | Mark/close stale PRs |
+| Dependabot       | `.github/dependabot.yml`         | Weekly schedule | Automated dependency update PRs |
 
 ## Adding a New Workflow
 
@@ -60,34 +74,28 @@ unlimited build minutes.
 
 ## Secrets Required
 
-| Secret                              | Used By                                                  | Description                             |
-| ----------------------------------- | -------------------------------------------------------- | --------------------------------------- |
-| `VERCEL_TOKEN`                      | deploy-production, deploy-staging, preview, rollback     | Vercel API token                        |
-| `VERCEL_ORG_ID`                     | deploy-production, deploy-staging, preview, release      | Vercel org ID                           |
-| `VERCEL_PROJECT_ID`                 | deploy-production, deploy-staging, preview, rollback     | Vercel project ID                       |
-| `VERCEL_AUTOMATION_BYPASS_SECRET`   | deploy-production, deploy-staging, preview, health-check | Bypass Vercel protection for automation |
-| `TURBO_TOKEN`                       | ci, deploy-production, release                           | Turborepo remote cache token            |
-| `TURBO_TEAM`                        | ci, deploy-production, release                           | Turborepo remote cache team             |
-| `DATABASE_URL`                      | ci, deploy-production, release, db-migrate               | Production database URL                 |
-| `DIRECT_URL`                        | ci, deploy-production, release, db-migrate               | Direct database URL                     |
-| `STAGING_DATABASE_URL`              | db-migrate                                               | Staging database URL                    |
-| `STAGING_DIRECT_URL`                | db-migrate                                               | Staging direct DB URL                   |
-| `NEXT_PUBLIC_SUPABASE_URL`          | ci, health-check, bundle-analysis                        | Supabase project URL                    |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY`     | ci, health-check, bundle-analysis                        | Supabase anon key                       |
-| `SUPABASE_SERVICE_ROLE_KEY`         | deploy-production, ci                                    | Supabase service role key               |
-| `STAGING_NEXT_PUBLIC_SUPABASE_URL`  | db-migrate                                               | Staging Supabase URL                    |
-| `STAGING_SUPABASE_SERVICE_ROLE_KEY` | db-migrate                                               | Staging Supabase service role key       |
-| `SUPABASE_BRANCH_DB_URL`            | preview                                                  | Supabase branch DB URL (preview)        |
-| `PREVIEW_DATABASE_URL`              | preview                                                  | Fallback preview DB URL                 |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | ci, preview, deploy-production, bundle-analysis, e2e     | Clerk publishable key                   |
-| `CLERK_SECRET_KEY`                  | ci, preview, deploy-production, bundle-analysis, e2e     | Clerk secret key                        |
-| `CLERK_WEBHOOK_SECRET`              | ci, preview, deploy-production, bundle-analysis          | Clerk webhook secret                    |
-| `E2E_BYPASS_SECRET`                 | e2e, preview                                             | E2E bypass header/secret                |
-| `CODECOV_TOKEN`                     | ci                                                       | Codecov upload token                    |
-| `SNYK_TOKEN`                        | ci                                                       | Snyk auth token                         |
-| `GITLEAKS_LICENSE`                  | security-baseline                                        | Gitleaks license key                    |
-| `SLACK_WEBHOOK_URL`                 | release                                                  | Slack notifications                     |
-| `GITHUB_TOKEN`                      | sbom, release, health-check                              | GitHub Actions token (auto-provided)    |
+| Secret                              | Used By                                | Description                             |
+| ----------------------------------- | -------------------------------------- | --------------------------------------- |
+| `VERCEL_AUTOMATION_BYPASS_SECRET`   | db-migrate                             | Bypass Vercel protection for automation |
+| `TURBO_TOKEN`                       | ci                                     | Turborepo remote cache token            |
+| `TURBO_TEAM`                        | ci                                     | Turborepo remote cache team             |
+| `DATABASE_URL`                      | ci, db-migrate                         | Production database URL                 |
+| `DIRECT_URL`                        | ci, db-migrate                         | Direct database URL                     |
+| `STAGING_DATABASE_URL`              | db-migrate                             | Staging database URL                    |
+| `STAGING_DIRECT_URL`                | db-migrate                             | Staging direct DB URL                   |
+| `NEXT_PUBLIC_SUPABASE_URL`          | ci, bundle-analysis                    | Supabase project URL                    |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`     | ci, bundle-analysis                    | Supabase anon key                       |
+| `SUPABASE_SERVICE_ROLE_KEY`         | ci                                     | Supabase service role key               |
+| `STAGING_NEXT_PUBLIC_SUPABASE_URL`  | db-migrate                             | Staging Supabase URL                    |
+| `STAGING_SUPABASE_SERVICE_ROLE_KEY` | db-migrate                             | Staging Supabase service role key       |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | ci, bundle-analysis, e2e               | Clerk publishable key                   |
+| `CLERK_SECRET_KEY`                  | ci, bundle-analysis, e2e               | Clerk secret key                        |
+| `CLERK_WEBHOOK_SECRET`              | ci, bundle-analysis                    | Clerk webhook secret                    |
+| `E2E_BYPASS_SECRET`                 | e2e                                    | E2E bypass header/secret                |
+| `CODECOV_TOKEN`                     | ci                                     | Codecov upload token                    |
+| `SNYK_TOKEN`                        | ci                                     | Snyk auth token                         |
+| `GITLEAKS_LICENSE`                  | security-baseline                      | Gitleaks license key                    |
+| `GITHUB_TOKEN`                      | sbom                                   | GitHub Actions token (auto-provided)    |
 
 ## Troubleshooting
 

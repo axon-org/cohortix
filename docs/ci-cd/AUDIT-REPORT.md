@@ -8,6 +8,9 @@ This audit reviewed all workflows in `.github/workflows/`, Vercel config,
 Dependabot, branch protections, and environment protections. Below are the
 issues found, their severity, and fix status.
 
+**Update:** Duplicate deploys are resolved by removing custom deploy workflows
+and enabling Vercel Git Integration for all deployments.
+
 ---
 
 ## Issues & Fixes
@@ -18,10 +21,9 @@ issues found, their severity, and fix status.
   `main` and both deploy to Vercel.
 - **Impact:** Double production deploys, conflicting migration paths, and
   multiple smoke-test runs.
-- **Fix:** **Manual action required.** Decide whether to keep **one** production
-  workflow (recommend keep `deploy-production.yml` and refactor `release.yml` to
-  only handle tagging/release notifications without deployment).
-- **Status:** Not fixed (needs product/ops decision).
+- **Fix:** Removed custom deploy workflows entirely; Vercel Git Integration now
+  handles all deployments.
+- **Status:** ✅ Fixed.
 
 2. **🔴 Critical — Production migrations without approval gate**
 
@@ -111,20 +113,25 @@ issues found, their severity, and fix status.
 - **Where:** Vercel project settings (not in repo).
 - **Impact:** If Git Integration is enabled alongside GitHub Actions deploys,
   deployments will be duplicated.
-- **Fix:** **Manual action required.** Verify in Vercel dashboard that Git
-  Integration auto-deploy is disabled (repo contains `vercel.json` with
-  `git.deploymentEnabled: false`).
-- **Status:** Not fixed (manual check).
+- **Fix:** Remove repo-level Git deploy block and rely on Vercel Git
+  Integration. Confirm branch→environment mapping in Vercel.
+- **Status:** ✅ Repo fixed; dashboard mapping still requires verification.
 
 ---
 
 ## Files Changed
 
-- `.github/workflows/ci.yml`
-- `.github/dependabot.yml`
+- `.github/workflows/deploy-production.yml` (removed)
+- `.github/workflows/deploy-staging.yml` (removed)
+- `.github/workflows/preview.yml` (removed)
+- `.github/workflows/release.yml` (removed)
+- `.github/workflows/rollback.yml` (removed)
+- `.github/workflows/health-check.yml` (removed)
+- `vercel.json`
+- `docs/ci-cd/README.md`
+- `docs/ci-cd/AUDIT-REPORT.md`
 
 ## Notes
 
 - Vercel project settings file `.vercel/project.json` is valid.
-- `vercel.json` already disables Git auto-deploy
-  (`git.deploymentEnabled: false`).
+- `vercel.json` no longer disables Git auto-deploy.
