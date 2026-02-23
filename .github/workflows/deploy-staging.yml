@@ -8,6 +8,11 @@ concurrency:
   group: staging-${{ github.ref }}
   cancel-in-progress: true # OK to cancel staging deploys for newer pushes
 
+permissions:
+  contents: read
+  issues: write
+  deployments: write
+
 env:
   NODE_VERSION: '20'
   PNPM_VERSION: '9'
