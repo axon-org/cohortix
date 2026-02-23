@@ -154,3 +154,14 @@ jobs:
           echo "- **URL:** https://staging.cohortix.ai" >> $GITHUB_STEP_SUMMARY
           echo "- **Deployed by:** $ACTOR" >> $GITHUB_STEP_SUMMARY
           echo "- **Time:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+
+  # ═══════════════════════════════════════════════════════════════
+  # POST-DEPLOY HEALTH CHECK
+  # ═══════════════════════════════════════════════════════════════
+  post-deploy-health-check:
+    name: Post-Deploy Health Check
+    needs: [deploy-staging, smoke-test-staging]
+    uses: ./.github/workflows/health-check.yml
+    with:
+      target_url: https://staging.cohortix.ai
+    secrets: inherit

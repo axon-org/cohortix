@@ -1,0 +1,97 @@
+name: Bundle Size Analysis
+
+on:
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: bundle-analysis-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+  BUNDLE_SIZE_LIMIT_KB: '500'
+
+jobs:
+  bundle-analysis:
+    name: Analyze Bundle Size
+    runs-on: self-hosted
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_WEBHOOK_SECRET: ${{ secrets.CLERK_WEBHOOK_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Compute bundle size
+        id: bundle
+        run: |
+          set -e
+          TOTAL_JS_KB=$(find apps -path "*/.next/static/chunks/*.js" -type f -print0 2>/dev/null | xargs -0 du -k 2>/dev/null | awk '{sum+=$1} END {print sum+0}')
+          TOTAL_NEXT_SIZE=$(du -sh apps/web/.next 2>/dev/null | awk '{print $1}' || echo "N/A")
+
+          echo "total_js_kb=$TOTAL_JS_KB" >> $GITHUB_OUTPUT
+          echo "total_next_size=$TOTAL_NEXT_SIZE" >> $GITHUB_OUTPUT
+
+          echo "Total JS bundle size: ${TOTAL_JS_KB} KB"
+          echo "Full .next size: ${TOTAL_NEXT_SIZE}"
+
+          if [[ "$TOTAL_JS_KB" -gt "${BUNDLE_SIZE_LIMIT_KB}" ]]; then
+            echo "❌ Bundle size ${TOTAL_JS_KB} KB exceeds limit ${BUNDLE_SIZE_LIMIT_KB} KB"
+            exit 1
+          fi
+
+      - name: Upload bundle analysis artifacts
+        if: ${{ hashFiles('apps/web/.next/analyze/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-bundle-analyze
+          path: apps/web/.next/analyze/
+          retention-days: 7
+
+      - name: Comment on PR with bundle size
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const totalJsKb = '${{ steps.bundle.outputs.total_js_kb }}';
+            const nextSize = '${{ steps.bundle.outputs.total_next_size }}';
+            const limitKb = '${{ env.BUNDLE_SIZE_LIMIT_KB }}';
+
+            const comment = `## 📦 Bundle Size Report\n\n**Total JS bundle:** ${totalJsKb} KB\n**.next size:** ${nextSize}\n**Threshold:** ${limitKb} KB\n\n_If this exceeds the threshold, the workflow will fail._`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment,
+            });

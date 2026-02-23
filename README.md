@@ -24,6 +24,10 @@ over time.
 | [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)   | Technical Architecture                       |
 | [BRAND_GUIDELINES.md](docs/design/BRAND_GUIDELINES.md) | Voice, tone, and visual identity             |
 
+## 🛠️ CI/CD
+
+See [CI/CD Pipeline Documentation](docs/ci-cd/README.md) for workflow details, runner setup, and required secrets.
+
 ## 🗂️ Mission Structure
 
 ```

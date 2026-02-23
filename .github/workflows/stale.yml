@@ -1,0 +1,29 @@
+name: Stale PR Cleanup
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # Weekly on Monday
+  workflow_dispatch:
+
+concurrency:
+  group: stale-prs
+  cancel-in-progress: true
+
+jobs:
+  stale:
+    name: Mark and Close Stale PRs
+    runs-on: self-hosted
+    timeout-minutes: 10
+    steps:
+      - name: Run stale action
+        uses: actions/stale@v9
+        with:
+          days-before-stale: 14
+          days-before-close: 7
+          stale-pr-message: >-
+            This PR has been marked stale due to inactivity. Please update or
+            comment to keep it open.
+          close-pr-message: >-
+            Closing this PR due to prolonged inactivity. Feel free to reopen
+            when ready.
+          exempt-pr-labels: priority,wip,do-not-close

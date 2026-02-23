@@ -198,20 +198,32 @@ jobs:
           echo "✅ All smoke tests passed"
 
   # ═══════════════════════════════════════════════════════════════
+  # POST-DEPLOY HEALTH CHECK
+  # ═══════════════════════════════════════════════════════════════
+  post-deploy-health-check:
+    name: Post-Deploy Health Check
+    needs: [deploy-production, smoke-tests]
+    uses: ./.github/workflows/health-check.yml
+    with:
+      target_url: https://app.cohortix.ai
+    secrets: inherit
+
+  # ═══════════════════════════════════════════════════════════════
   # SUMMARY
   # ═══════════════════════════════════════════════════════════════
   notify-success:
     name: Deployment Summary
     runs-on: self-hosted
-    needs: [deploy-production, smoke-tests]
+    needs: [deploy-production, smoke-tests, post-deploy-health-check]
     if: always()
     steps:
       - name: Write summary
         run: |
           DEPLOY_STATUS="${{ needs.deploy-production.result }}"
           SMOKE_STATUS="${{ needs.smoke-tests.result }}"
+          HEALTH_STATUS="${{ needs.post-deploy-health-check.result }}"
 
-          if [[ "$DEPLOY_STATUS" == "success" ]] && [[ "$SMOKE_STATUS" == "success" ]]; then
+          if [[ "$DEPLOY_STATUS" == "success" ]] && [[ "$SMOKE_STATUS" == "success" ]] && [[ "$HEALTH_STATUS" == "success" ]]; then
             ICON="🚀"
             STATUS="SUCCESS"
           else
