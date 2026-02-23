@@ -1816,16 +1816,16 @@ pnpm db:seed
 
 | ❌ Avoid       | ✅ Use              | Context                             |
 | -------------- | ------------------- | ----------------------------------- |
-| Agent          | **Agent**            | AI team member                      |
+| Agent          | **Agent**           | AI team member                      |
 | Agents (group) | **Cohort**          | Group of agents                     |
 | Mission        | **Mission**         | Focused deliverable                 |
-| Action         | **Action**          | Individual step an Agent executes    |
+| Action         | **Action**          | Individual step an Agent executes   |
 | Dashboard      | **Mission Control** | Main UI                             |
 | Intel Base     | **Knowledge Base**  | Organizational knowledge repository |
-| Create agent   | **Recruit**         | Add new agent                        |
+| Create agent   | **Recruit**         | Add new agent                       |
 | Run/Execute    | **Deploy**          | Start work                          |
 | Workspace      | **Base**            | User workspace                      |
-| Training       | **Growth**          | Agent learning/improvement           |
+| Training       | **Growth**          | Agent learning/improvement          |
 
 **Full Hierarchy:** Domain → Vision → Mission → Operation / Rhythm → Task
 

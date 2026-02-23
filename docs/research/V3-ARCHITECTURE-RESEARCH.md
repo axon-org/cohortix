@@ -552,14 +552,14 @@ created → configured → starting → ready → executing → paused → stopp
 
 | Operation     | Description                                       | API Endpoint                          |
 | ------------- | ------------------------------------------------- | ------------------------------------- |
-| **Create**    | Provision agent from template or marketplace       | `POST /runtime/v1/agents`             |
+| **Create**    | Provision agent from template or marketplace      | `POST /runtime/v1/agents`             |
 | **Configure** | Set tools, prompts, memory scope, resource limits | `PATCH /runtime/v1/agents/:id/config` |
-| **Start**     | Boot agent container, load context                 | `POST /runtime/v1/agents/:id/start`   |
+| **Start**     | Boot agent container, load context                | `POST /runtime/v1/agents/:id/start`   |
 | **Stop**      | Graceful shutdown, save checkpoint                | `POST /runtime/v1/agents/:id/stop`    |
 | **Pause**     | Suspend execution (keep state)                    | `POST /runtime/v1/agents/:id/pause`   |
 | **Resume**    | Continue from checkpoint                          | `POST /runtime/v1/agents/:id/resume`  |
 | **Monitor**   | Health checks, resource usage                     | `GET /runtime/v1/agents/:id/health`   |
-| **Destroy**   | Delete agent + cleanup resources                   | `DELETE /runtime/v1/agents/:id`       |
+| **Destroy**   | Delete agent + cleanup resources                  | `DELETE /runtime/v1/agents/:id`       |
 
 **Health Monitoring:**
 
@@ -630,8 +630,8 @@ created → configured → starting → ready → executing → paused → stopp
 
 | Strategy      | When to Use                  | Implementation                        |
 | ------------- | ---------------------------- | ------------------------------------- |
-| **Reject**    | High-priority ongoing task   | Return 429 "Agent is busy"             |
-| **Queue**     | Multiple tasks can be queued | Add to agent's task queue              |
+| **Reject**    | High-priority ongoing task   | Return 429 "Agent is busy"            |
+| **Queue**     | Multiple tasks can be queued | Add to agent's task queue             |
 | **Interrupt** | User override                | Cancel current task, start new one    |
 | **Rollback**  | User correction              | Revert to last checkpoint, re-execute |
 
@@ -774,8 +774,8 @@ submitted → queued → working → input_required → completed
 | Resource                  | Free Tier | Pro    | Enterprise |
 | ------------------------- | --------- | ------ | ---------- |
 | **Max Concurrent Agents** | 5         | 50     | 500        |
-| **CPU per Agent**          | 0.5 cores | 1 core | 2 cores    |
-| **Memory per Agent**       | 512 MB    | 1 GB   | 2 GB       |
+| **CPU per Agent**         | 0.5 cores | 1 core | 2 cores    |
+| **Memory per Agent**      | 512 MB    | 1 GB   | 2 GB       |
 | **Storage**               | 1 GB      | 50 GB  | Unlimited  |
 | **API Calls/Hour**        | 1,000     | 10,000 | Unlimited  |
 | **Missions/Month**        | 100       | 1,000  | Unlimited  |
@@ -1040,7 +1040,7 @@ Buyer pays $5 per mission execution
 
 | Metric                | Threshold | Action                          |
 | --------------------- | --------- | ------------------------------- |
-| **Task Queue Depth**  | >100      | Scale out +10 agent containers   |
+| **Task Queue Depth**  | >100      | Scale out +10 agent containers  |
 | **CPU Utilization**   | >70%      | Scale out runtime orchestrators |
 | **Response Time P95** | >5s       | Scale out + investigate         |
 | **Error Rate**        | >5%       | Alert + circuit breaker         |
@@ -1050,7 +1050,7 @@ Buyer pays $5 per mission execution
 | Scenario                      | Target  | Notes                         |
 | ----------------------------- | ------- | ----------------------------- |
 | **Concurrent agents per org** | 100-500 | With auto-scaling             |
-| **Action assignment latency** | <500ms  | From Control Plane to agent    |
+| **Action assignment latency** | <500ms  | From Control Plane to agent   |
 | **Agent startup time**        | <10s    | Container boot + context load |
 | **Knowledge retrieval**       | <200ms  | pgvector query P95            |
 | **A2A message latency**       | <100ms  | Redis Pub/Sub                 |
@@ -1185,7 +1185,7 @@ agent execution.
 | Service                  | Purpose                                 | Technology                     | Hosting                |
 | ------------------------ | --------------------------------------- | ------------------------------ | ---------------------- |
 | **Runtime Orchestrator** | Route tasks to agents, manage execution | Node.js/Python                 | ECS Fargate            |
-| **Agent Containers**      | Isolated agent execution environments   | Docker                         | ECS Fargate            |
+| **Agent Containers**     | Isolated agent execution environments   | Docker                         | ECS Fargate            |
 | **Task Queue**           | Async job processing                    | Redis or SQS                   | ElastiCache / AWS SQS  |
 | **State Store**          | Checkpoints, resumable workflows        | Redis or Postgres              | ElastiCache / Supabase |
 | **Secrets Manager**      | Runtime credential injection            | HashiCorp Vault or AWS Secrets | AWS Secrets Manager    |
@@ -1201,13 +1201,13 @@ agent execution.
 
 **Endpoints:**
 
-| Control Plane → Runtime        | Runtime → Control Plane      |
-| ------------------------------ | ---------------------------- |
+| Control Plane → Runtime         | Runtime → Control Plane      |
+| ------------------------------- | ---------------------------- |
 | `createAgent(config)`           | `updateActionStatus(status)` |
-| `startAgent(agentId)`            | `streamProgress(event)`      |
+| `startAgent(agentId)`           | `streamProgress(event)`      |
 | `assignTask(agentId, actionId)` | `reportError(error)`         |
-| `pauseAgent(agentId)`            | `requestKnowledge(query)`    |
-| `stopAgent(agentId)`             | `saveArtifact(blob)`         |
+| `pauseAgent(agentId)`           | `requestKnowledge(query)`    |
+| `stopAgent(agentId)`            | `saveArtifact(blob)`         |
 
 **Example Flow:**
 

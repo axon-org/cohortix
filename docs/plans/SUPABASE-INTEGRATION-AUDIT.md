@@ -30,17 +30,17 @@ order.
 
 ### Cohort Tables
 
-| Table            | Key Columns                                                                                                | FKs             | RLS                                  |
-| ---------------- | ---------------------------------------------------------------------------------------------------------- | --------------- | ------------------------------------ |
-| `cohorts`        | `id`, `organization_id`, `name`, `description`, `status`, `start_date`, `end_date`, `metadata`, timestamps | `organizations` | ✅ Tenant isolation (Clerk Option A) |
+| Table            | Key Columns                                                                                                 | FKs             | RLS                                  |
+| ---------------- | ----------------------------------------------------------------------------------------------------------- | --------------- | ------------------------------------ |
+| `cohorts`        | `id`, `organization_id`, `name`, `description`, `status`, `start_date`, `end_date`, `metadata`, timestamps  | `organizations` | ✅ Tenant isolation (Clerk Option A) |
 | `cohort_members` | `id`, `cohort_id`, `user_id` (nullable), `agent_id` (nullable), `engagement_score`, `joined_at`, timestamps | `cohorts`       | ✅ Tenant isolation via cohort       |
 
 ### Sprint 4 Tables
 
-| Table          | Key Columns                                                                                                                       | FKs                         | RLS                                         |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------- |
-| `comments`     | `id`, `organization_id`, `entity_type`, `entity_id`, `author_id` → `profiles(id)`, `content`, timestamps                          | `organizations`, `profiles` | ✅ Clerk Option A with author-level control |
-| `activity_log` | `id`, `organization_id`, `entity_type`, `entity_id`, `action`, `actor_id` → `profiles(id)`, `metadata`, `created_at`              | `organizations`, `profiles` | ✅ Read-only for users (no UPDATE/DELETE)   |
+| Table          | Key Columns                                                                                                                        | FKs                         | RLS                                         |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------- |
+| `comments`     | `id`, `organization_id`, `entity_type`, `entity_id`, `author_id` → `profiles(id)`, `content`, timestamps                           | `organizations`, `profiles` | ✅ Clerk Option A with author-level control |
+| `activity_log` | `id`, `organization_id`, `entity_type`, `entity_id`, `action`, `actor_id` → `profiles(id)`, `metadata`, `created_at`               | `organizations`, `profiles` | ✅ Read-only for users (no UPDATE/DELETE)   |
 | `insights`     | `id`, `organization_id`, `title`, `content`, `source_type`, `source_id`, `agent_id`, `tags`, `embedding` (VECTOR 1536), timestamps | `organizations`             | ✅ Admin-only delete                        |
 
 ### Infrastructure Tables
@@ -64,11 +64,11 @@ These tables exist in the Drizzle schema (`packages/database/src/schema/`) and
 may exist in the actual Supabase database, but are **not defined in
 `supabase/migrations/`**:
 
-| Table               | Code References                                          | Risk                                         |
-| ------------------- | -------------------------------------------------------- | -------------------------------------------- |
-| `agents`            | `/api/v1/agents/*`, dashboard queries, cohort members    | 🔴 Not in supabase migrations — Drizzle only |
-| `projects`          | `/api/v1/operations/*`, dashboard queries, tasks queries | 🔴 Not in supabase migrations — Drizzle only |
-| `tasks`             | dashboard queries, tasks queries                         | 🔴 Not in supabase migrations — Drizzle only |
+| Table               | Code References                                           | Risk                                         |
+| ------------------- | --------------------------------------------------------- | -------------------------------------------- |
+| `agents`            | `/api/v1/agents/*`, dashboard queries, cohort members     | 🔴 Not in supabase migrations — Drizzle only |
+| `projects`          | `/api/v1/operations/*`, dashboard queries, tasks queries  | 🔴 Not in supabase migrations — Drizzle only |
+| `tasks`             | dashboard queries, tasks queries                          | 🔴 Not in supabase migrations — Drizzle only |
 | `audit_logs`        | Originagent in dashboard queries (fixed → `activity_log`) | 🟡 Replaced with `activity_log`              |
 | `knowledge_entries` | Originagent in dashboard queries (fixed → `insights`)     | 🟡 Replaced with `insights`                  |
 
@@ -412,7 +412,7 @@ for profile-only routes (e.g., user settings). Intentional design.
 
 | File                                                          | Change Type | Summary                                                                                                 |
 | ------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------- |
-| `apps/web/src/server/db/queries/cohort-members.ts`            | Rewrite     | Use `getAuthContext()`, handle `user_id`/`agent_id` schema, fix type errors                              |
+| `apps/web/src/server/db/queries/cohort-members.ts`            | Rewrite     | Use `getAuthContext()`, handle `user_id`/`agent_id` schema, fix type errors                             |
 | `apps/web/src/server/db/queries/cohorts.ts`                   | Rewrite     | Use `getAuthContext()`, compute stats from `cohort_members`, fix column refs                            |
 | `apps/web/src/server/db/mutations/cohorts.ts`                 | Rewrite     | Use `getAuthContext()`, remove invalid columns, use `metadata`                                          |
 | `apps/web/src/server/db/queries/dashboard.ts`                 | Edit        | Fix `audit_logs` → `activity_log`, `knowledge_entries` → `insights`, remove invalid joins               |
@@ -435,12 +435,12 @@ for profile-only routes (e.g., user settings). Intentional design.
 
 ## 8. Remaining Known Gaps (Non-Blocking, Out of Scope)
 
-| Item                                                                                       | Risk | Notes                                                                                                                                                      |
-| ------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `agents`, `projects`, `tasks` tables not in supabase migrations                            | 🟡   | These routes will work if Drizzle migrations were also applied to the same DB. Document clearly that both migration sets must be applied.                  |
+| Item                                                                                       | Risk | Notes                                                                                                                                                       |
+| ------------------------------------------------------------------------------------------ | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agents`, `projects`, `tasks` tables not in supabase migrations                            | 🟡   | These routes will work if Drizzle migrations were also applied to the same DB. Document clearly that both migration sets must be applied.                   |
 | `cohorts` table missing `slug`, `created_by`, `member_count`, `engagement_percent` columns | 🟡   | All API consumers now work without these stored columns. Computed dynamicagent. If the Drizzle-applied schema has them, they'll be returned too — harmless. |
-| Dashboard queries for `tasks`/`agents`/`projects` still reference those tables             | 🟡   | They exist in Drizzle schema. If Drizzle migrations were applied, they work. If not, those dashboard sections will return empty data gracefully.           |
-| `user.deleted` only sets `deleted_at` — app login check missing                            | 🟢   | `getAuthContext()` should check `deleted_at IS NULL` on profile lookup. Not done to avoid scope creep, but documented for next sprint.                     |
+| Dashboard queries for `tasks`/`agents`/`projects` still reference those tables             | 🟡   | They exist in Drizzle schema. If Drizzle migrations were applied, they work. If not, those dashboard sections will return empty data gracefully.            |
+| `user.deleted` only sets `deleted_at` — app login check missing                            | 🟢   | `getAuthContext()` should check `deleted_at IS NULL` on profile lookup. Not done to avoid scope creep, but documented for next sprint.                      |
 
 ---
 

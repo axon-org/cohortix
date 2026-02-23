@@ -245,7 +245,7 @@ CREATE INDEX idx_example_field1 ON example_table(field1);
 
 | Failure Scenario             | Expected Behavior                                                 |
 | ---------------------------- | ----------------------------------------------------------------- |
-| Database is unavailable      | Return 503 Service Unavailable, retry automaticagent               |
+| Database is unavailable      | Return 503 Service Unavailable, retry automaticagent              |
 | External API times out       | Circuit breaker opens, return cached data or graceful degradation |
 | User provides invalid input  | Return 400 Bad Request with validation errors                     |
 | Concurrent requests conflict | Use optimistic locking or queue requests                          |

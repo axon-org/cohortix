@@ -147,28 +147,28 @@ documentation.
 
 ### Core Components (Installed)
 
-| Component         | Usage                           | WCAG Compliance                      |
-| ----------------- | ------------------------------- | ------------------------------------ |
-| **Button**        | Primary actions, links          | ✅ AA (focus ring, contrast)         |
+| Component         | Usage                            | WCAG Compliance                      |
+| ----------------- | -------------------------------- | ------------------------------------ |
+| **Button**        | Primary actions, links           | ✅ AA (focus ring, contrast)         |
 | **Card**          | Missions, goals, agent profiles  | ✅ AA (semantic HTML)                |
-| **Dialog**        | Modals, confirmations           | ✅ AAA (focus trap, Esc key)         |
+| **Dialog**        | Modals, confirmations            | ✅ AAA (focus trap, Esc key)         |
 | **Form**          | Mission briefs, agent creation   | ✅ AA (labels, error messages)       |
-| **Input**         | Text fields, search             | ✅ AA (aria-labelledby, placeholder) |
+| **Input**         | Text fields, search              | ✅ AA (aria-labelledby, placeholder) |
 | **Select**        | Agent assignment, status filters | ✅ AA (keyboard navigation)          |
-| **Dropdown Menu** | Context menus, actions          | ✅ AA (arrow key navigation)         |
+| **Dropdown Menu** | Context menus, actions           | ✅ AA (arrow key navigation)         |
 | **Tabs**          | Mission details, agent settings  | ✅ AA (arrow keys, Home/End)         |
-| **Toast**         | Success, error notifications    | ✅ AA (aria-live regions)            |
+| **Toast**         | Success, error notifications     | ✅ AA (aria-live regions)            |
 | **Avatar**        | Agent profiles, user menu        | ✅ AA (alt text, fallback initials)  |
-| **Badge**         | Status indicators, counts       | ✅ AA (color + text)                 |
-| **Progress**      | Mission completion, workload    | ✅ AA (aria-valuenow, min/max)       |
-| **Tooltip**       | Icon explanations, help text    | ✅ AA (aria-describedby)             |
+| **Badge**         | Status indicators, counts        | ✅ AA (color + text)                 |
+| **Progress**      | Mission completion, workload     | ✅ AA (aria-valuenow, min/max)       |
+| **Tooltip**       | Icon explanations, help text     | ✅ AA (aria-describedby)             |
 
 ### Custom Components (To Be Built)
 
 | Component           | Based On                | Status         |
 | ------------------- | ----------------------- | -------------- |
 | **MissionCard**     | Card + Badge + Progress | 🟡 In progress |
-| **AgentCard**        | Card + Avatar + Badge   | 🟡 In progress |
+| **AgentCard**       | Card + Avatar + Badge   | 🟡 In progress |
 | **WorkloadMeter**   | Progress + Tooltip      | 📝 Planned     |
 | **StatusRing**      | Custom SVG              | 📝 Planned     |
 | **MissionTimeline** | Custom (no base)        | 📝 Planned     |

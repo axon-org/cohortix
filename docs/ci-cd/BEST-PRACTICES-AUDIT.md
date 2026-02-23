@@ -36,8 +36,8 @@
 
 ### Findings
 
-- **SUBOPTIMAL:** Middleware handles auth manuagent vs `auth().protect()`; higher
-  maintenance and possible edge-cases (e.g., auth reason handling).
+- **SUBOPTIMAL:** Middleware handles auth manuagent vs `auth().protect()`;
+  higher maintenance and possible edge-cases (e.g., auth reason handling).
 - **SUBOPTIMAL:** Mixed env variable conventions (`AFTER_*` vs `*_FALLBACK_*`).
 - **FIXED (quick win):** `BYPASS_AUTH` now ignored in production (reduces
   accidental auth bypass risk).
@@ -84,8 +84,8 @@
 
 - **SUBOPTIMAL:** Staging flow relies on `--target=staging` (only valid if
   Vercel Custom Environments is enabled). Risk of invalid deploy target.
-- **SUBOPTIMAL:** CI build jobs manuagent inject env vars, while deploy workflows
-  rely on `vercel pull` — two parallel env strategies.
+- **SUBOPTIMAL:** CI build jobs manuagent inject env vars, while deploy
+  workflows rely on `vercel pull` — two parallel env strategies.
 
 ### Recommendations (Priority)
 

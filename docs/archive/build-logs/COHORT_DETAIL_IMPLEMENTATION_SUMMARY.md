@@ -89,7 +89,7 @@ Based on mockup analysis:
 | UI Section                      | API Endpoint                    | Data Used                                                      |
 | ------------------------------- | ------------------------------- | -------------------------------------------------------------- |
 | **Header** (Name, Status, Date) | `GET /api/cohorts/:id`          | `name`, `status`, `start_date`, `end_date`                     |
-| **"Invite AI Agent" Button**     | Manual action                   | Opens modal (future: `POST /api/cohorts/:id/members`)          |
+| **"Invite AI Agent" Button**    | Manual action                   | Opens modal (future: `POST /api/cohorts/:id/members`)          |
 | **Engagement Timeline**         | `GET /api/cohorts/:id/timeline` | `timeline[]` array                                             |
 | **Activity Log**                | `GET /api/cohorts/:id/activity` | `activities[]` array                                           |
 | **Batch Members (8)**           | `GET /api/cohorts/:id/members`  | `members[]` array                                              |

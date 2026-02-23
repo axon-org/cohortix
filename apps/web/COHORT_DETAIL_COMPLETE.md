@@ -18,14 +18,14 @@ with Devi's API layer.
 
 ### 1. Components (6 files)
 
-| Component              | Path                                          | Purpose                                                             |
-| ---------------------- | --------------------------------------------- | ------------------------------------------------------------------- |
+| Component              | Path                                          | Purpose                                                              |
+| ---------------------- | --------------------------------------------- | -------------------------------------------------------------------- |
 | **CohortHeader**       | `components/cohorts/cohort-header.tsx`        | Header with name, status badge, date range, "Invite AI Agent" button |
-| **EngagementTimeline** | `components/cohorts/engagement-timeline.tsx`  | Recharts line chart showing daily interaction counts                |
-| **BatchMembers**       | `components/cohorts/batch-members.tsx`        | Table of AI agents with engagement scores, statuses, and actions    |
-| **ActivityLog**        | `components/cohorts/activity-log.tsx`         | Live feed of cohort activities with timestamps                      |
-| **CohortDetailClient** | `components/cohorts/cohort-detail-client.tsx` | Client component orchestrating all data fetching                    |
-| **Page**               | `app/(dashboard)/cohorts/[id]/page.tsx`       | Server component page wrapper                                       |
+| **EngagementTimeline** | `components/cohorts/engagement-timeline.tsx`  | Recharts line chart showing daily interaction counts                 |
+| **BatchMembers**       | `components/cohorts/batch-members.tsx`        | Table of AI agents with engagement scores, statuses, and actions     |
+| **ActivityLog**        | `components/cohorts/activity-log.tsx`         | Live feed of cohort activities with timestamps                       |
+| **CohortDetailClient** | `components/cohorts/cohort-detail-client.tsx` | Client component orchestrating all data fetching                     |
+| **Page**               | `app/(dashboard)/cohorts/[id]/page.tsx`       | Server component page wrapper                                        |
 
 ### 2. API Integration
 

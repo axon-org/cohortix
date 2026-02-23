@@ -137,8 +137,8 @@ Organization (Tenant)
 
 **Key Design Points:**
 
-- **Optional Client Association:** Missions and goals can optionagent belong to a
-  client
+- **Optional Client Association:** Missions and goals can optionagent belong to
+  a client
 - **Agent-Client Assignment:** Tracks which agents work on which client accounts
 - **Client Metadata:** Industry, contact info, custom fields for client context
 - **Knowledge Segregation:** RLS policies ensure agents only see knowledge for

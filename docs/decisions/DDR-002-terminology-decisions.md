@@ -10,9 +10,8 @@
 ## Decision
 
 Cohortix uses **mission-based, human-friendly terminology** instead of generic
-technical jargon. Core terms: **Agents**, **Missions** (not
-actions/tasks), **Cohorts** (not teams/groups), and **Mission Control** (not
-dashboard).
+technical jargon. Core terms: **Agents**, **Missions** (not actions/tasks),
+**Cohorts** (not teams/groups), and **Mission Control** (not dashboard).
 
 ---
 
@@ -46,7 +45,7 @@ From Ahmad's interviews with 12 target users (Jan 2026):
 
 | Generic Term                  | Cohortix Term       | Rationale                                                                                                                           |
 | ----------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **Agent**                     | **Agent**           | • Clear, industry-standard term<br>• Professional and widely understood<br>• Consistent with AI industry terminology                  |
+| **Agent**                     | **Agent**           | • Clear, industry-standard term<br>• Professional and widely understood<br>• Consistent with AI industry terminology                |
 | **Agent Group**               | **Cohort**          | • Implies shared purpose<br>• Memorable, brand-distinctive<br>• Educational/team connotation (not military)                         |
 | **Goal (measurable outcome)** | **Mission**         | • Conveys importance and clarity<br>• Narrative weight (missions have purpose)<br>• Pairs with "deploy", "brief", "Mission Control" |
 | **Workflow**                  | **Goal**            | • Higher-level than missions<br>• Outcome-oriented<br>• Familiar from OKRs, project management                                      |
@@ -54,10 +53,10 @@ From Ahmad's interviews with 12 target users (Jan 2026):
 
 ### Status Language
 
-| Generic Status    | Cohortix Status | Why                                             |
-| ----------------- | --------------- | ----------------------------------------------- |
-| Running / Active  | **On Mission**  | Human, narrative ("Riley is on mission")        |
-| Idle / Waiting    | **Standing By** | Military precision softened with clarity        |
+| Generic Status    | Cohortix Status | Why                                           |
+| ----------------- | --------------- | --------------------------------------------- |
+| Running / Active  | **On Mission**  | Human, narrative ("Riley is on mission")      |
+| Idle / Waiting    | **Standing By** | Military precision softened with clarity      |
 | Stopped / Offline | **Off Duty**    | Respectful (agents aren't "dead" or "failed") |
 
 ### Action Verbs
@@ -157,7 +156,8 @@ feel aggressive. "Mission" + "agent" strikes the balance.
 ### What We Gained
 
 1. **Clarity** — Users immediately understand what an agent is
-2. **Industry alignment** — Consistent with OpenAI, Anthropic, and other AI platforms
+2. **Industry alignment** — Consistent with OpenAI, Anthropic, and other AI
+   platforms
 3. **Developer familiarity** — Engineers expect "agent", "task", "workflow"
 
 ---
@@ -166,7 +166,8 @@ feel aggressive. "Mission" + "agent" strikes the balance.
 
 ### User Testing (Jan 2026)
 
-**Methodology:** 12 users shown side-by-side mockups with different terminology options
+**Methodology:** 12 users shown side-by-side mockups with different terminology
+options
 
 **Results:**
 
@@ -176,7 +177,8 @@ feel aggressive. "Mission" + "agent" strikes the balance.
 
 **Quotes:**
 
-> "Agent makes sense. I know exactly what you mean — an AI that can do things."  
+> "Agent makes sense. I know exactly what you mean — an AI that can do
+> things."  
 > — Sarah K., Freelance Designer
 
 > "Mission makes it feel important, like I'm building something real."  
@@ -223,5 +225,6 @@ feel aggressive. "Mission" + "agent" strikes the balance.
 
 ## Changelog
 
-- **2026-02-24:** Updated to use "Agent" instead of prior terminology (terminology reversal)
+- **2026-02-24:** Updated to use "Agent" instead of prior terminology
+  (terminology reversal)
 - **2026-02-11:** Initial version (Lubna)

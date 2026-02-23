@@ -45,7 +45,7 @@ separate vocabulary.
 
 From abstract → concrete:
 
-| PPV Pro Original  | Cohortix Term | Definition                                     | Human Example                        | Agent Example                         |
+| PPV Pro Original  | Cohortix Term | Definition                                     | Human Example                        | Agent Example                        |
 | ----------------- | ------------- | ---------------------------------------------- | ------------------------------------ | ------------------------------------ |
 | Pillars & Purpose | **Domain**    | Core life/expertise area that defines identity | "Family", "Health", "Business"       | "Content Strategy", "Analytics"      |
 | Life Aspirations  | **Vision**    | Big emotional north star — the WHY             | "Achieve financial freedom"          | "Become the best content strategist" |
@@ -71,25 +71,25 @@ From abstract → concrete:
 
 ### Agent Identity & Actions
 
-| Generic Term          | Cohortix Term       | Usage Example                            |
-| --------------------- | ------------------- | ---------------------------------------- |
-| Agent                 | **Agent**            | "Add a new agent to your cohort"          |
-| Agents (group)        | **Cohort**          | "Your cohort is ready for deployment"    |
+| Generic Term          | Cohortix Term       | Usage Example                             |
+| --------------------- | ------------------- | ----------------------------------------- |
+| Agent                 | **Agent**           | "Add a new agent to your cohort"          |
+| Agents (group)        | **Cohort**          | "Your cohort is ready for deployment"     |
 | Atomic work           | **Task**            | "Assign this task to your agent"          |
-| Bounded project       | **Operation**       | "This operation includes 5 tasks"        |
-| Dashboard / UI        | **Mission Control** | "View progress in Mission Control"       |
+| Bounded project       | **Operation**       | "This operation includes 5 tasks"         |
+| Dashboard / UI        | **Mission Control** | "View progress in Mission Control"        |
 | Create agent          | **Recruit**         | "Recruit a new agent"                     |
 | Assign work           | **Brief**           | "Brief your agent on this Mission"        |
-| Run / Start / Execute | **Deploy**          | "Deploy your cohort"                     |
-| User workspace        | **Base** or **HQ**  | "Welcome to your HQ"                     |
-| Agent status: running | **On mission**      | "3 agents currently on mission"          |
+| Run / Start / Execute | **Deploy**          | "Deploy your cohort"                      |
+| User workspace        | **Base** or **HQ**  | "Welcome to your HQ"                      |
+| Agent status: running | **On mission**      | "3 agents currently on mission"           |
 | Agent status: idle    | **Standing by**     | "Agent standing by, ready for deployment" |
 | Agent status: offline | **Off duty**        | "This agent is currently off duty"        |
 | Assign action         | **Brief**           | "Brief your agent on this mission"        |
-| Complete task         | **Complete**        | "Task complete! Insights captured."      |
-| Task queue            | **Task roster**     | "5 tasks in the roster"                  |
-| Organization          | **HQ**              | "Invite teammates to your HQ"            |
-| Knowledge base        | **Intelligence**    | "Search your Intelligence"               |
+| Complete task         | **Complete**        | "Task complete! Insights captured."       |
+| Task queue            | **Task roster**     | "5 tasks in the roster"                   |
+| Organization          | **HQ**              | "Invite teammates to your HQ"             |
+| Knowledge base        | **Intelligence**    | "Search your Intelligence"                |
 
 ---
 
@@ -116,13 +116,13 @@ From abstract → concrete:
 
 ### Tone by Context
 
-| Context            | Tone                 | Example                                                                     |
-| ------------------ | -------------------- | --------------------------------------------------------------------------- |
+| Context            | Tone                 | Example                                                                      |
+| ------------------ | -------------------- | ---------------------------------------------------------------------------- |
 | **Onboarding**     | Warm, welcoming      | "Welcome to your new HQ! Let's recruit your first agent."                    |
 | **Success states** | Celebratory          | "Mission accomplished! 🎉 Your agent captured some great intel."             |
-| **Errors**         | Helpful, not blaming | "Hmm, that mission hit a snag. Here's what we can try..."                   |
+| **Errors**         | Helpful, not blaming | "Hmm, that mission hit a snag. Here's what we can try..."                    |
 | **Empty states**   | Encouraging          | "Your cohort is ready and waiting. Recruit your first agent to get started." |
-| **Loading**        | Light, human         | "Your agents are on it..." / "Briefing your cohort..."                      |
+| **Loading**        | Light, human         | "Your agents are on it..." / "Briefing your cohort..."                       |
 
 ---
 
@@ -187,7 +187,8 @@ From abstract → concrete:
 
 > ⚠️ This Operation hit a roadblock.
 >
-> Don't worry — your agent saved their progress. Here's what happened: [Error > >
+> Don't worry — your agent saved their progress. Here's what happened:
+> [Error > >
 >
 > > details]
 >

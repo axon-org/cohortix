@@ -21,7 +21,7 @@ Domain (life/business area)
 
 ### Hierarchy Definitions
 
-| Level         | PPV Pro Original  | Description                                    | Human Example                        | Agent Example                         |
+| Level         | PPV Pro Original  | Description                                    | Human Example                        | Agent Example                        |
 | ------------- | ----------------- | ---------------------------------------------- | ------------------------------------ | ------------------------------------ |
 | **Domain**    | Pillars & Purpose | Core life/expertise area that defines identity | "Family", "Health", "Business"       | "Content Strategy", "Analytics"      |
 | **Vision**    | Life Aspirations  | Big emotional north star — the WHY             | "Achieve financial freedom"          | "Become the best content strategist" |
@@ -38,7 +38,7 @@ Domain (life/business area)
 
 | Concept              | Cohortix Term | Definition                            | ❌ Don't Use               |
 | -------------------- | ------------- | ------------------------------------- | -------------------------- |
-| Individual AI worker | **Agent**      | A single AI helper that works for you | Agent, Bot, Worker         |
+| Individual AI worker | **Agent**     | A single AI helper that works for you | Agent, Bot, Worker         |
 | Group of Agents      | **Cohort**    | Your team of Agents working together  | Agents, Fleet, Swarm       |
 | The user             | **You**       | Always address directly               | User, Customer             |
 | User's account/space | **Base**      | Your home in Cohortix                 | Workspace, Account, Tenant |
@@ -60,7 +60,7 @@ Domain (life/business area)
 | Concept               | Cohortix Term  | Definition                  | ❌ Don't Use        |
 | --------------------- | -------------- | --------------------------- | ------------------- |
 | Starting an Operation | **Deploy**     | "Deploy an Operation"       | Run, Execute, Start |
-| Creating an Agent      | **Recruit**    | "Recruit a new Agent"        | Create, Spawn, Add  |
+| Creating an Agent     | **Recruit**    | "Recruit a new Agent"       | Create, Spawn, Add  |
 | Stopping/pausing      | **Stand Down** | "Stand down this Operation" | Stop, Kill, Abort   |
 | Creating a Mission    | **Launch**     | "Launch a new Mission"      | Create, Start       |
 | Completing a Task     | **Complete**   | "Mark Task as complete"     | Done, Finish        |
@@ -69,28 +69,28 @@ Domain (life/business area)
 
 | Concept              | Cohortix Term   | Definition                          | ❌ Don't Use                  |
 | -------------------- | --------------- | ----------------------------------- | ----------------------------- |
-| Short-term memory    | **Notes**       | Recent context an Agent remembers    | Short-term memory, Cache      |
+| Short-term memory    | **Notes**       | Recent context an Agent remembers   | Short-term memory, Cache      |
 | Long-term memory     | **Core Memory** | Important things permanently stored | Long-term memory, Database    |
-| Knowledge base       | **Expertise**   | What an Agent is trained to know     | Knowledge base, Training data |
+| Knowledge base       | **Expertise**   | What an Agent is trained to know    | Knowledge base, Training data |
 | Individual learnings | **Insights**    | Discoveries made during Missions    | Learnings, Logs               |
-| Skills/capabilities  | **Talents**     | What an Agent is good at             | Skills, Capabilities, Tools   |
+| Skills/capabilities  | **Talents**     | What an Agent is good at            | Skills, Capabilities, Tools   |
 
 ### Growth & Evolution (The "Getting Better")
 
-| Concept               | Cohortix Term       | Definition                          | ❌ Don't Use                     |
-| --------------------- | ------------------- | ----------------------------------- | -------------------------------- |
-| Evolution/improvement | **Growth**          | How Agents get better over time     | Evolution, Training, Learning    |
+| Concept               | Cohortix Term       | Definition                           | ❌ Don't Use                     |
+| --------------------- | ------------------- | ------------------------------------ | -------------------------------- |
+| Evolution/improvement | **Growth**          | How Agents get better over time      | Evolution, Training, Learning    |
 | Learning session      | **Reflection**      | When an Agent processes new Insights | Training session, Learning cycle |
 | Performance review    | **Progress Report** | Summary of how an Agent is doing     | Analytics, Metrics               |
 
 ### Interface & Navigation
 
-| Concept          | Cohortix Term       | Definition                  | ❌ Don't Use                    |
-| ---------------- | ------------------- | --------------------------- | ------------------------------- |
-| Main dashboard   | **Mission Control** | Where you manage everything | Dashboard, Admin panel, Console |
-| Agent detail page | **Agent Profile**    | Individual Agent's page      | Agent page, Bot settings        |
-| Mission history  | **Mission Log**     | Record of past Missions     | History, Logs, Activity         |
-| Settings         | **Preferences**     | Your personal settings      | Settings, Configuration         |
+| Concept           | Cohortix Term       | Definition                  | ❌ Don't Use                    |
+| ----------------- | ------------------- | --------------------------- | ------------------------------- |
+| Main dashboard    | **Mission Control** | Where you manage everything | Dashboard, Admin panel, Console |
+| Agent detail page | **Agent Profile**   | Individual Agent's page     | Agent page, Bot settings        |
+| Mission history   | **Mission Log**     | Record of past Missions     | History, Logs, Activity         |
+| Settings          | **Preferences**     | Your personal settings      | Settings, Configuration         |
 
 ---
 

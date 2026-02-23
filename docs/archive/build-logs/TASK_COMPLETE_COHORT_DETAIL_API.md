@@ -193,7 +193,7 @@ From mockup analysis:
 | **"Alpha Batch 2025"** (header) | `cohort.name`                   | `GET /api/cohorts/:id`                    |
 | **"ACTIVE"** badge              | `cohort.status`                 | `GET /api/cohorts/:id`                    |
 | **"Jan 2025 - Dec 2025"**       | `cohort.start_date`, `end_date` | `GET /api/cohorts/:id`                    |
-| **"+ Invite AI Agent"** button   | Manual action                   | (Future: `POST /api/cohorts/:id/members`) |
+| **"+ Invite AI Agent"** button  | Manual action                   | (Future: `POST /api/cohorts/:id/members`) |
 | **Engagement Timeline** graph   | `timeline[]`                    | `GET /api/cohorts/:id/timeline`           |
 | **"Batch Members (8)"** count   | `count`                         | `GET /api/cohorts/:id/members`            |
 | **"Nexus-7"** member row        | `members[0]`                    | `GET /api/cohorts/:id/members`            |

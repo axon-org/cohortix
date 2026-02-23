@@ -1,8 +1,8 @@
 # BOTTLENECK CHECKLIST — Ahmad's Action Items
 
 > Generated: 2026-02-18  
-> Every item here blocks the pipeline and requires **Ahmad personagent** (account
-> owner).  
+> Every item here blocks the pipeline and requires **Ahmad personagent**
+> (account owner).  
 > Everything else has been automated or documented for developers.
 
 ---

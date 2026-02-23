@@ -163,9 +163,9 @@ properly wired**. Most likely causes:
 
 ## 🤖 Agents (P1)
 
-| Page/Feature      | Route          | API Endpoint                                    | Expected Data             | Status | Owner | Notes                            |
-| ----------------- | -------------- | ----------------------------------------------- | ------------------------- | ------ | ----- | -------------------------------- |
-| Agents List       | `/agents`      | `/api/v1/agents`                                | List of agents with stats | 🟡     | Devi  | Verify API returns real data     |
+| Page/Feature       | Route          | API Endpoint                                    | Expected Data             | Status | Owner | Notes                            |
+| ------------------ | -------------- | ----------------------------------------------- | ------------------------- | ------ | ----- | -------------------------------- |
+| Agents List        | `/agents`      | `/api/v1/agents`                                | List of agents with stats | 🟡     | Devi  | Verify API returns real data     |
 | Agent Detail       | `/agents/[id]` | `/api/v1/agents/[id]`                           | Single agent details      | 🟡     | Devi  | Check detail page implementation |
 | Agent Status       | List + Detail  | From `agents` table                             | active/idle/busy/offline  | 🟡     | Devi  | Status should be real-time       |
 | Agent Stats        | List + Detail  | `total_tasks_completed`, `total_time_worked_ms` | Real stats                | 🟡     | Devi  | Check if incremented properly    |
@@ -237,7 +237,7 @@ properly wired**. Most likely causes:
 | Operations List    | `/operations`      | `/api/v1/operations`               | Table view of operations     | 🟡     | Devi  | **Ahmad reported dummy data**    |
 | Operation Detail   | `/operations/[id]` | `/api/v1/operations/[id]`          | Single operation with tasks  | 🟡     | Devi  | Check detail page implementation |
 | Linked Mission     | List + Detail      | FK: `goal_id` in `projects` table  | Mission name/color           | 🟡     | Devi  | Verify FK join works             |
-| Owner (Agent)       | List + Detail      | FK: `owner_id` in `projects` table | Agent name                    | 🟡     | Devi  | Verify FK join works             |
+| Owner (Agent)      | List + Detail      | FK: `owner_id` in `projects` table | Agent name                   | 🟡     | Devi  | Verify FK join works             |
 | Task Stats         | List + Detail      | Count from `tasks` table           | Total/completed/in-progress  | 🟡     | Devi  | Check aggregation query          |
 | Create Operation   | Modal              | `POST /api/v1/operations`          | Creates new operation        | 🟡     | Nina  | Test CRUD operations             |
 | Edit Operation     | Modal/Detail       | `PATCH /api/v1/operations/[id]`    | Updates operation            | 🟡     | Nina  | Test CRUD operations             |
@@ -303,7 +303,7 @@ properly wired**. Most likely causes:
 | Task Detail Sheet | Side panel | `/api/v1/operations/[id]`       | Full operation details                     | 🟡     | Lubna | Check detail sheet            |
 | Group By Status   | Toggle     | Client-side grouping            | Columns: Planning/Active/On Hold/Completed | 🟡     | Lubna | Test grouping                 |
 | Group By Mission  | Toggle     | Client-side grouping            | Columns: Mission names + Unassigned        | 🟡     | Lubna | Test grouping                 |
-| Group By Agent     | Toggle     | Client-side grouping            | Columns: Agent names                        | 🟡     | Lubna | Test grouping                 |
+| Group By Agent    | Toggle     | Client-side grouping            | Columns: Agent names                       | 🟡     | Lubna | Test grouping                 |
 
 **INVESTIGATION FINDINGS:**
 

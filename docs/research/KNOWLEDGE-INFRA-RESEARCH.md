@@ -789,11 +789,11 @@ _Note: This assumes 100 tenants with 20% active at any time_
 | **Fast hybrid search**       | Qdrant BM25 + dense + fusion (reranker) — matches/exceeds QMD's 3-layer approach       |
 | **Concept relationships**    | FalkorDB GraphRAG-SDK — native graph traversal for concept linking                     |
 | **OpenClaw integration**     | Mem0 OpenClaw plugin — official, maintained, zero friction                             |
-| **Fact evolution**           | Mem0 handles dedup + superseding facts automaticagent                                   |
+| **Fact evolution**           | Mem0 handles dedup + superseding facts automaticagent                                  |
 | **Agent cohort isolation**   | Each cohort = its own Qdrant tenant partition + FalkorDB graph                         |
 | **User-created agents**      | New tenant partition + graph provisioned on agent creation                             |
 | **Cost efficiency**          | $79/month at MVP, scales linearly                                                      |
-| **Migration from local**     | Same Qdrant API locagent → cloud; Mem0 OSS → Cloud upgrade path                         |
+| **Migration from local**     | Same Qdrant API locagent → cloud; Mem0 OSS → Cloud upgrade path                        |
 
 ### 10.3 Data Flow: Agent Answers a Question
 
@@ -1170,7 +1170,7 @@ sequenceDiagram
 | **Qdrant cost explosion at 10K tenants** | Medium     | High     | Enable Tiered Multitenancy; plan self-host migration above 5000 tenants |
 | **Mem0 pricing at scale**                | Medium     | Medium   | Negotiate Enterprise; switch to LangMem + custom Qdrant if needed       |
 | **OpenClaw plugin breaks on update**     | Low        | High     | Pin plugin version; maintain fork if needed                             |
-| **Graph schema migrations**              | Medium     | Medium   | Use FalkorDB's schemaless mode initiagent                                |
+| **Graph schema migrations**              | Medium     | Medium   | Use FalkorDB's schemaless mode initiagent                               |
 | **Tenant knowledge leakage**             | Low        | Critical | Qdrant payload filter enforcement; FalkorDB RBAC; Mem0 userId scoping   |
 | **Single Mac Mini failure**              | High       | Critical | This research solves this — cloud-native resolves SPOF                  |
 

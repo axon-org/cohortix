@@ -100,7 +100,7 @@ is now atomic.
 | `recent-activity.tsx`       | 🔄 Updated | Activity feed copy    |
 | `sidebar.tsx`               | 🔄 Updated | Nav labels            |
 | Dashboard page components   | ❌ TODO    | Full audit needed     |
-| Agent profile components     | ❌ TODO    | PPV stack display     |
+| Agent profile components    | ❌ TODO    | PPV stack display     |
 
 ### 3d. Tests
 

@@ -257,14 +257,14 @@ export default function CohortDetailPage({ params }: { params: { id: string } })
 
 ### Component Mapping to API Data
 
-| UI Component                | API Endpoint                    | Data Field                                                     |
-| --------------------------- | ------------------------------- | -------------------------------------------------------------- |
-| **Cohort Header**           | `GET /api/cohorts/:id`          | `name`, `status`, `start_date`, `end_date`                     |
+| UI Component                 | API Endpoint                    | Data Field                                                     |
+| ---------------------------- | ------------------------------- | -------------------------------------------------------------- |
+| **Cohort Header**            | `GET /api/cohorts/:id`          | `name`, `status`, `start_date`, `end_date`                     |
 | **"Invite AI Agent" Button** | Manual action (opens modal)     | -                                                              |
-| **Engagement Timeline**     | `GET /api/cohorts/:id/timeline` | `timeline[]`                                                   |
-| **Activity Log**            | `GET /api/cohorts/:id/activity` | `activities[]`                                                 |
-| **Batch Members List**      | `GET /api/cohorts/:id/members`  | `members[]`                                                    |
-| **Member Card**             | -                               | `agent_name`, `agent_role`, `agent_status`, `engagement_score` |
+| **Engagement Timeline**      | `GET /api/cohorts/:id/timeline` | `timeline[]`                                                   |
+| **Activity Log**             | `GET /api/cohorts/:id/activity` | `activities[]`                                                 |
+| **Batch Members List**       | `GET /api/cohorts/:id/members`  | `members[]`                                                    |
+| **Member Card**              | -                               | `agent_name`, `agent_role`, `agent_status`, `engagement_score` |
 
 ---
 

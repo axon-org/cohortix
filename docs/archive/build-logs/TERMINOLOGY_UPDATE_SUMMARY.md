@@ -59,7 +59,8 @@ atomic work units.
 - Comment: "missions (database table: projects)" → "operations (database table:
   projects)"
 - Comment: "actions (database table: tasks)" → "tasks (database table: tasks)"
-- Variable naming comments: Added "Legacy prop name (actuagent Operations/Tasks)"
+- Variable naming comments: Added "Legacy prop name (actuagent
+  Operations/Tasks)"
 - Alert messages: "urgent actions" → "urgent tasks", "overdue actions" →
   "overdue tasks"
 - Alert URLs: `/actions?filter=...` → `/tasks?filter=...`

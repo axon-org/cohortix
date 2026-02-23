@@ -1000,7 +1000,7 @@ sizes: {
 | Concept               | Icon (Lucide)   | Usage                      |
 | --------------------- | --------------- | -------------------------- |
 | **Home / Dashboard**  | `Home`          | Sidebar nav, breadcrumbs   |
-| **Agents**            | `Users`         | Agent directory, team       |
+| **Agents**            | `Users`         | Agent directory, team      |
 | **Goals**             | `Target`        | Goal creation, tracking    |
 | **Goals**             | `Briefcase`     | Goal cards, nav            |
 | **Missions**          | `CheckSquare`   | Mission cards, lists       |
@@ -1014,7 +1014,7 @@ sizes: {
 | **Calendar**          | `Calendar`      | Dates, schedules           |
 | **Attachments**       | `Paperclip`     | Files, documents           |
 | **Comments**          | `MessageSquare` | Discussions, threads       |
-| **AI / Agent**         | `Sparkles`      | AI-specific features       |
+| **AI / Agent**        | `Sparkles`      | AI-specific features       |
 | **Status: Active**    | `CircleDot`     | Active missions/agents     |
 | **Status: Completed** | `CheckCircle2`  | Completed states           |
 | **Status: Blocked**   | `AlertCircle`   | Errors, blockers           |

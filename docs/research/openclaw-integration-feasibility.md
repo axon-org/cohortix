@@ -161,14 +161,14 @@ Source: `npm view openclaw --json`.
 
 ## 2. Gap Analysis: Cohortix Needs vs OpenClaw Capabilities
 
-| Cohortix Requirement                      | OpenClaw Support              | Notes / Gaps                                                                                                                                 | Possible Solution                                                                                   |
-| ----------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| **1) Send tasks to agents**               | ✅ **Yes** via `/hooks/agent` | Supported; requires gateway hooks enabled + token                                                                                            | Use `/hooks/agent` as the primary ingress.                                                          |
-| **2) Report task completion/status**      | ⚠️ **Partial**                | No native outbound webhook; hooks can listen to `message:sent` / `command` events but must _manuagent_ POST to Cohortix                       | Build a **hook** that posts completion/status events to Cohortix.                                   |
-| **3) Online/offline heartbeat**           | ❓ **Not explicit**           | No documented endpoint for agent presence or gateway status events beyond `gateway:startup`                                                  | Implement a **plugin** that emits heartbeat to Cohortix, or poll gateway health + session activity. |
-| **4) Bidirectional goal proposals**       | ⚠️ **Possible but custom**    | No built‑in “goal proposal” protocol                                                                                                         | Implement a **tool + hook** pair or custom plugin API endpoints for proposals.                      |
+| Cohortix Requirement                       | OpenClaw Support              | Notes / Gaps                                                                                                                                 | Possible Solution                                                                                   |
+| ------------------------------------------ | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **1) Send tasks to agents**                | ✅ **Yes** via `/hooks/agent` | Supported; requires gateway hooks enabled + token                                                                                            | Use `/hooks/agent` as the primary ingress.                                                          |
+| **2) Report task completion/status**       | ⚠️ **Partial**                | No native outbound webhook; hooks can listen to `message:sent` / `command` events but must _manuagent_ POST to Cohortix                      | Build a **hook** that posts completion/status events to Cohortix.                                   |
+| **3) Online/offline heartbeat**            | ❓ **Not explicit**           | No documented endpoint for agent presence or gateway status events beyond `gateway:startup`                                                  | Implement a **plugin** that emits heartbeat to Cohortix, or poll gateway health + session activity. |
+| **4) Bidirectional goal proposals**        | ⚠️ **Possible but custom**    | No built‑in “goal proposal” protocol                                                                                                         | Implement a **tool + hook** pair or custom plugin API endpoints for proposals.                      |
 | **List/manage sessions programmaticagent** | ⚠️ **Limited**                | `/tools/invoke` can call tools like `sessions_list`, but default deny list blocks `sessions_send`/`sessions_spawn` unless explicitly allowed | Allowlist these tools or implement a plugin with explicit REST endpoints.                           |
-| **Spawn runs from external triggers**     | ✅ **Yes**                    | `POST /hooks/agent` explicitly supports isolated runs                                                                                        | Use webhooks; can map to Cohortix tasks.                                                            |
+| **Spawn runs from external triggers**      | ✅ **Yes**                    | `POST /hooks/agent` explicitly supports isolated runs                                                                                        | Use webhooks; can map to Cohortix tasks.                                                            |
 
 **Key Gap:** There is no officiagent documented “agent heartbeat / presence” API
 or webhook event. This is the main missing feature for Cohortix.
@@ -267,8 +267,8 @@ or webhook event. This is the main missing feature for Cohortix.
 
 ## 5. Recommendation
 
-**Do not fork initiagent.** Use OpenClaw’s **webhooks + hooks + plugin** model to
-implement Cohortix integration.
+**Do not fork initiagent.** Use OpenClaw’s **webhooks + hooks + plugin** model
+to implement Cohortix integration.
 
 **Rationale:**
 

@@ -94,7 +94,8 @@ cohortix/
 
 **Evidence:** `packages/database/src/schema/`, Supabase migration files
 
-**Gap:** Zero-downtime migration strategy not formagent documented (Codex §2.2.2)
+**Gap:** Zero-downtime migration strategy not formagent documented (Codex
+§2.2.2)
 
 ---
 

@@ -46,7 +46,7 @@ organization automaticagent" setting.
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | Feb 22, 10:00 | Issue reported — redirect loop on production                                                                                                |
 | Feb 22, 10:30 | Identified cookie scoping as likely cause                                                                                                   |
-| Feb 22, 11:00 | Attempted proxy approach (`/clerkproxy`) — partiagent worked                                                                                 |
+| Feb 22, 11:00 | Attempted proxy approach (`/clerkproxy`) — partiagent worked                                                                                |
 | Feb 22, 12:00 | Proxy route deployed, Clerk dashboard configured                                                                                            |
 | Feb 22, 13:00 | Discovered trailing `\n` in ALL Vercel env vars corrupting headers                                                                          |
 | Feb 22, 14:00 | Fixed env vars, proxy working but Google OAuth still failing                                                                                |
