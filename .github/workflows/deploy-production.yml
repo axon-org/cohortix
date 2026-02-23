@@ -59,32 +59,15 @@ jobs:
         run: pnpm audit --audit-level=moderate || true
 
   # ═══════════════════════════════════════════════════════════════
-  # MANUAL APPROVAL GATE
-  # Pauses here until Ahmad approves in the GitHub Actions UI
-  # Configure: Settings → Environments → production → Required reviewers
-  # ═══════════════════════════════════════════════════════════════
-  await-approval:
-    name: Awaiting Production Approval
-    runs-on: ubuntu-latest
-    needs: ci-gate
-    environment:
-      name: production
-      url: https://app.cohortix.ai
-    steps:
-      - name: Approval received
-        run: |
-          echo "✅ Production deploy approved by: ${{ github.actor }}"
-          echo "Proceeding with deployment..."
-
-  # ═══════════════════════════════════════════════════════════════
   # DEPLOY TO PRODUCTION (BUILD + DEPLOY)
-  # Combined into one job to prevent artifact transfer file loss
+  # Protection: branch protection requires PR reviews + CI checks
+  # before anything merges to main. No fake approval gate needed.
   # ═══════════════════════════════════════════════════════════════
   deploy-production:
     name: Build & Deploy to Production
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: await-approval
+    needs: ci-gate
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
