@@ -19,7 +19,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════
   pre-deploy-checks:
     name: Pre-Deploy Checks
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -50,7 +50,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════
   deploy-staging:
     name: Build & Deploy to Staging
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: pre-deploy-checks
     env:
@@ -100,6 +100,9 @@ jobs:
           NODE_ENV: production
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_WEBHOOK_SECRET: ${{ secrets.CLERK_WEBHOOK_SECRET }}
 
       - name: Deploy to Vercel staging
         id: deploy
@@ -114,7 +117,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════
   smoke-test-staging:
     name: Smoke Test Staging
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: deploy-staging
     steps:
