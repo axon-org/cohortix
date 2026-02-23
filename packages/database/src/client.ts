@@ -2,12 +2,15 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
 
-// Database connection for migrations and server-side operations
+// Database connection for server-side operations (pooled URL)
 const connectionString = process.env.DATABASE_URL!;
 
 if (!connectionString) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
+
+// Direct connection for migrations/DDL (avoid pooler)
+const directConnectionString = process.env.DIRECT_URL ?? connectionString;
 
 /**
  * Connection Pool Configuration (Codex §2.2.3)
@@ -27,5 +30,5 @@ const queryClient = postgres(connectionString, poolConfig);
 export const db = drizzle(queryClient, { schema });
 
 // For migrations (single connection to avoid conflicts)
-const migrationClient = postgres(connectionString, { max: 1 });
+const migrationClient = postgres(directConnectionString, { max: 1 });
 export const migrationDb = drizzle(migrationClient, { schema });
