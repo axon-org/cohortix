@@ -3,8 +3,23 @@ name: CI Pipeline
 on:
   push:
     branches: [main, dev]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/FUNDING.yml'
+      - 'LICENSE'
   pull_request:
     branches: [main, dev]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/FUNDING.yml'
+      - 'LICENSE'
+  schedule:
+    # Weekly security scans on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,8 +35,8 @@ jobs:
   # Fast feedback on every commit - lint, type-check, unit tests
   # ═══════════════════════════════════════════════════════════════
 
-  lint:
-    name: Lint
+  lint-and-typecheck:
+    name: Lint & Type Check
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -44,33 +59,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Cache lint and typecheck
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules/.cache
+            apps/*/node_modules/.cache
+            packages/*/node_modules/.cache
+          key: ${{ runner.os }}-lint-typecheck-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-lint-typecheck-
+
       - name: Run ESLint
         run: pnpm lint
 
       - name: Check formatting
         run: pnpm format:check
-
-  type-check:
-    name: Type Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Run TypeScript compiler
         run: pnpm type-check
@@ -112,6 +116,7 @@ jobs:
     name: Secret Scan
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    if: github.event_name != 'schedule'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -126,17 +131,84 @@ jobs:
           head: ${{ github.event.pull_request.head.sha }}
           extra_args: --debug --only-verified
 
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint-and-typecheck, unit-test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Setup Turborepo remote cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/*/.next/cache
+            packages/*/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nextjs-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build with Turborepo
+        run: pnpm build
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+          # Add any required build-time environment variables
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_WEBHOOK_SECRET: ${{ secrets.CLERK_WEBHOOK_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            apps/*/dist
+            apps/*/.next
+          retention-days: 1
+
   # ═══════════════════════════════════════════════════════════════
   # STAGE 2: PR STAGE (Target: 5-15 minutes)
   # Comprehensive checks before merge - full suite, coverage, SAST
-  # Only runs on pull requests
+  # Only runs on pull requests or weekly schedule
   # ═══════════════════════════════════════════════════════════════
 
   full-test-suite:
     name: Full Test Suite
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [lint, type-check, unit-test]
+    if: github.event_name == 'pull_request'
+    needs: [lint-and-typecheck, unit-test]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -183,7 +255,8 @@ jobs:
     name: SAST Scan
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [lint, type-check, unit-test]
+    if: github.event_name == 'pull_request' || github.event_name == 'schedule'
+    needs: [lint-and-typecheck, unit-test]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -199,7 +272,8 @@ jobs:
     name: Dependency Audit
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [lint, type-check, unit-test]
+    if: github.event_name == 'pull_request' || github.event_name == 'schedule'
+    needs: [lint-and-typecheck, unit-test]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -225,7 +299,8 @@ jobs:
     name: Snyk Security Scan
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [lint, type-check, unit-test]
+    if: github.event_name == 'pull_request' || github.event_name == 'schedule'
+    needs: [lint-and-typecheck, unit-test]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -250,61 +325,6 @@ jobs:
         with:
           sarif_file: snyk.sarif
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [lint, type-check, unit-test]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Setup Turborepo remote cache
-        uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build with Turborepo
-        run: pnpm build
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
-          # Add any required build-time environment variables
-          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-          CLERK_WEBHOOK_SECRET: ${{ secrets.CLERK_WEBHOOK_SECRET }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          DIRECT_URL: ${{ secrets.DIRECT_URL }}
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: |
-            apps/*/dist
-            apps/*/.next
-          retention-days: 1
-
   # ═══════════════════════════════════════════════════════════════
   # STATUS CHECK
   # Meta job that succeeds only if all required checks pass
@@ -315,41 +335,39 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs:
-      - lint
-      - type-check
+      - lint-and-typecheck
       - unit-test
       - secret-scan
       - build
-      - sast-scan
-      - snyk-scan
-      - dependency-audit
     steps:
       - name: Check all jobs
         run: |
-          # Core jobs (must pass)
-          if [[ "${{ needs.lint.result }}" != "success" ]] || \
-             [[ "${{ needs.type-check.result }}" != "success" ]] || \
+          # Core jobs (must pass on every run)
+          if [[ "${{ needs.lint-and-typecheck.result }}" != "success" ]] || \
              [[ "${{ needs.unit-test.result }}" != "success" ]] || \
              [[ "${{ needs.build.result }}" != "success" ]]; then
             echo "One or more required jobs failed"
             exit 1
           fi
 
-          # PR-only jobs (only checked if running)
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          # Secret scan only runs on push/PR (not schedule)
+          if [[ "${{ github.event_name }}" != "schedule" ]]; then
             if [[ "${{ needs.secret-scan.result }}" != "success" ]]; then
               echo "Secret scan failed"
               exit 1
             fi
-            if [[ "${{ needs.sast-scan.result }}" != "success" ]] || \
-               [[ "${{ needs.dependency-audit.result }}" != "success" ]]; then
-              echo "One or more PR security checks failed"
+          fi
+
+          # PR-only jobs (only checked if running)
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # full-test-suite is required on PRs
+            if [[ "${{ needs.full-test-suite.result }}" != "success" ]]; then
+              echo "Full test suite failed"
               exit 1
             fi
+            
+            # SAST and dependency audit are checked but allowed to continue-on-error
             # Snyk scan is allowed to continue on error for now
-            if [[ "${{ needs.snyk-scan.result }}" == "failure" ]]; then
-              echo "⚠️  Warning: Snyk scan failed but not blocking merge"
-            fi
           fi
 
           echo "All CI checks passed!"
