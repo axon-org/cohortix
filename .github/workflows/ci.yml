@@ -127,8 +127,8 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event.pull_request.base.sha }}
-          head: ${{ github.event.pull_request.head.sha }}
+          base: ${{ github.event.pull_request.base.sha || github.event.before }}
+          head: ${{ github.event.pull_request.head.sha || github.sha }}
           extra_args: --debug --only-verified
 
   build:
@@ -255,6 +255,9 @@ jobs:
     name: SAST Scan
     runs-on: self-hosted
     timeout-minutes: 10
+    permissions:
+      contents: read
+      security-events: write
     if: github.event_name == 'pull_request' || github.event_name == 'schedule'
     needs: [lint-and-typecheck, unit-test]
     steps:
@@ -299,6 +302,9 @@ jobs:
     name: Snyk Security Scan
     runs-on: self-hosted
     timeout-minutes: 10
+    permissions:
+      contents: read
+      security-events: write
     if: github.event_name == 'pull_request' || github.event_name == 'schedule'
     needs: [lint-and-typecheck, unit-test]
     steps:
@@ -339,6 +345,7 @@ jobs:
       - unit-test
       - secret-scan
       - build
+      - full-test-suite
     steps:
       - name: Check all jobs
         run: |

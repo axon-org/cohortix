@@ -8,6 +8,7 @@ updates:
       time: "09:00"
       timezone: "UTC"
     open-pull-requests-limit: 5
+    target-branch: "dev"
     assignees:
       - "ahmadashfq"
     groups:
