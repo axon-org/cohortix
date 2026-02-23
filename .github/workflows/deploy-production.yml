@@ -113,12 +113,6 @@ jobs:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
-      - name: Run database migrations
-        run: |
-          echo "Running database migrations before deploy..."
-          pnpm db:migrate
-          echo "✓ Database migrations completed"
-
       - name: Deploy to Vercel Production
         id: deploy
         run: |

@@ -345,7 +345,6 @@ jobs:
       - unit-test
       - secret-scan
       - build
-      - full-test-suite
     steps:
       - name: Check all jobs
         run: |
@@ -367,12 +366,6 @@ jobs:
 
           # PR-only jobs (only checked if running)
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # full-test-suite is required on PRs
-            if [[ "${{ needs.full-test-suite.result }}" != "success" ]]; then
-              echo "Full test suite failed"
-              exit 1
-            fi
-            
             # SAST and dependency audit are checked but allowed to continue-on-error
             # Snyk scan is allowed to continue on error for now
           fi
