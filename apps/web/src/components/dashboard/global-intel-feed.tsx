@@ -64,9 +64,9 @@ export function GlobalIntelFeed() {
               >
                 <div className="flex items-start gap-3">
                   <Avatar className="w-8 h-8 flex-shrink-0 border border-border/50">
-                    <AvatarImage src={insight.ally_avatar_url ?? undefined} />
+                    <AvatarImage src={insight.agent_avatar_url ?? undefined} />
                     <AvatarFallback className="text-[10px]">
-                      {(insight.ally_name ?? 'AI').slice(0, 2).toUpperCase()}
+                      {(insight.agent_name ?? 'AI').slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0 space-y-1">
@@ -109,7 +109,7 @@ export function GlobalIntelFeed() {
             </div>
             <p className="text-xs text-muted-foreground font-medium">No intel gathered yet</p>
             <p className="text-[10px] text-muted-foreground/60 mt-1">
-              AI allies will share insights here as they work
+              AI agents will share insights here as they work
             </p>
           </div>
         )}

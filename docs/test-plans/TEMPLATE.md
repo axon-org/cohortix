@@ -315,7 +315,7 @@
 
 ### 9.1 Mutation Testing Strategy
 
-**Purpose:** Validate that tests actually catch bugs (not just code coverage).
+**Purpose:** Validate that tests actuagent catch bugs (not just code coverage).
 
 **Tool:** Stryker (JavaScript/TypeScript), mutmut (Python)
 
@@ -369,7 +369,7 @@
 **CI/CD Pipeline:**
 
 - [ ] GitHub Actions or GitLab CI configured
-- [ ] Test database seeded automatically
+- [ ] Test database seeded automaticagent
 - [ ] Test results published to dashboard
 
 ---

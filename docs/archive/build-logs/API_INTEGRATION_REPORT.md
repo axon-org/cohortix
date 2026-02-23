@@ -41,7 +41,7 @@
 - **Hook:** `useDashboardKPIs()` in `src/hooks/use-dashboard.ts`
 - **Returns:**
   - Active cohorts count
-  - Total allies count
+  - Total agents count
   - Average engagement percentage
   - At-risk cohorts count
   - Trend data for all metrics
@@ -112,13 +112,13 @@ All API responses and requests are fully typed:
 interface DashboardKPIs {
   kpis: {
     activeCohortsCount: number;
-    totalAllies: number;
+    totalAgents: number;
     avgEngagement: number;
     atRiskCount: number;
   };
   trends: {
     activeCohortsChange: number;
-    totalAlliesChange: number;
+    totalAgentsChange: number;
     avgEngagementChange: number;
     atRiskChange: number;
   };

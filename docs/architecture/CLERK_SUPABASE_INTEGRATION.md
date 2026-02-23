@@ -336,7 +336,7 @@ describe('RLS Policies', () => {
    ```sql
    SELECT auth.user_org_id(); -- Should return user's org_id
    ```
-3. Check if user actually belongs to the org in Clerk
+3. Check if user actuagent belongs to the org in Clerk
 
 ### Issue: "JWT expired"
 

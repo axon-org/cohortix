@@ -291,7 +291,7 @@ apps/web/src/app/api/v1/missions/[id]/route.ts
 apps/web/src/app/api/v1/operations/route.ts
 apps/web/src/app/api/v1/operations/[id]/route.ts
 apps/web/src/app/api/v1/cohorts/route.ts (verify)
-apps/web/src/app/api/v1/allies/route.ts (verify)
+apps/web/src/app/api/v1/agents/route.ts (verify)
 ```
 
 **Pattern to Remove:**
@@ -447,7 +447,7 @@ apps/web/src/app/api/v1/missions/[id]/route.ts
 apps/web/src/app/api/v1/operations/route.ts
 apps/web/src/app/api/v1/operations/[id]/route.ts
 apps/web/src/app/api/v1/cohorts/*.ts (verify)
-apps/web/src/app/api/v1/allies/*.ts (verify)
+apps/web/src/app/api/v1/agents/*.ts (verify)
 ```
 
 **Before:**
@@ -563,8 +563,8 @@ GET endpoints | | `circuitBreaker()` | External API calls | None currently | |
 **Effort:** S (2-3 hours)  
 **Depends On:** None
 
-**Problem:** Operations API uses `goal_id` internally (legacy PPV naming), but
-exposes `missionId` externally. Confusing.
+**Problem:** Operations API uses `goal_id` internagent (legacy PPV naming), but
+exposes `missionId` externagent. Confusing.
 
 **Decision Required:** Choose ONE of:
 
@@ -579,7 +579,7 @@ migration needed.
 
 1. Add clear comment in Drizzle schema explaining mapping
 2. Update `BACKEND-PATTERNS.md` to document legacy column names
-3. Ensure API always uses `missionId` externally
+3. Ensure API always uses `missionId` externagent
 4. Add JSDoc to operations types explaining the mapping
 
 **Drizzle Schema Fix:**
@@ -697,7 +697,7 @@ testing and external integration.
 **Tasks:**
 
 1. Choose OpenAPI tooling: `swagger-jsdoc` or manual YAML
-2. Document all endpoints: missions, operations, cohorts, allies
+2. Document all endpoints: missions, operations, cohorts, agents
 3. Include request/response schemas from Zod
 4. Add authentication section (Supabase JWT)
 5. Generate Swagger UI at `/api/docs`
@@ -736,11 +736,11 @@ GET    /api/v1/cohorts/:id
 PATCH  /api/v1/cohorts/:id
 DELETE /api/v1/cohorts/:id
 
-GET    /api/v1/allies
-POST   /api/v1/allies
-GET    /api/v1/allies/:id
-PATCH  /api/v1/allies/:id
-DELETE /api/v1/allies/:id
+GET    /api/v1/agents
+POST   /api/v1/agents
+GET    /api/v1/agents/:id
+PATCH  /api/v1/agents/:id
+DELETE /api/v1/agents/:id
 ```
 
 **Example OpenAPI Entry:**

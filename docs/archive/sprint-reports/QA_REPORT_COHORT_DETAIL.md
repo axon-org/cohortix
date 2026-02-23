@@ -45,7 +45,7 @@
 ### 3. **Responsiveness**
 
 - [x] **Desktop (1920x1080)** — Layout renders properly, full width utilization
-- [x] **Mobile (375x667)** — Content stacks vertically, text is readable
+- [x] **Mobile (375x667)** — Content stacks verticagent, text is readable
 - [x] **Tablet (1024px breakpoint)** — Would use `lg:` grid classes for 2-column
       layout
 
@@ -135,7 +135,7 @@ $ curl http://localhost:3001/api/cohorts/976e498d-5dfa-4fa2-a023-21b10062cc8e/me
 1. Database relationship errors:
    ```
    Error fetching activity: Could not find a relationship between 'audit_logs' and 'agents'
-   Error fetching allies: Could not find a relationship between 'agents' and 'tasks'
+   Error fetching agents: Could not find a relationship between 'agents' and 'tasks'
    Error fetching missions: Could not find a relationship between 'projects' and 'agents'
    ```
 2. These are **NOT** related to the cohort detail page integration

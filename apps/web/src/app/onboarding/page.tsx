@@ -93,7 +93,7 @@ export default function OnboardingPage() {
           <div className="bg-[#101012] border border-[#27282D] rounded-xl p-8 shadow-2xl">
             <h2 className="text-xl font-bold text-white mb-1">Create your organization</h2>
             <p className="text-[#9CA3AF] text-sm mb-6">
-              This is where your AI allies and missions will live.
+              This is where your AI agents and missions will live.
             </p>
 
             <div className="space-y-4">

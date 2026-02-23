@@ -74,7 +74,7 @@ $ pnpm build
 **Example Error:**
 
 ```typescript
-// apps/web/src/app/api/v1/allies/route.ts:74:51
+// apps/web/src/app/api/v1/agents/route.ts:74:51
 Type error: Type 'string | null' is not assignable to type 'string | undefined'.
   Type 'null' is not assignable to type 'string | undefined'.
 ```
@@ -105,7 +105,7 @@ $ npx tsc --noEmit
 
 ### 🔵 Authentication Flow
 
-**Status:** ⚠️ **PARTIALLY TESTABLE**
+**Status:** ⚠️ **PARTIAGENT TESTABLE**
 
 #### Sign-In Page (`/sign-in`)
 
@@ -141,7 +141,7 @@ $ npx tsc --noEmit
 - ✅ Recent Activity widget
 - ✅ Urgent Alerts widget
 - ✅ Global Intel Feed widget (Sprint 4 feature)
-- ✅ Quick Stats (Cohorts, Allies, Missions)
+- ✅ Quick Stats (Cohorts, Agents, Missions)
 - ✅ Active Missions preview
 
 **Code Quality:**
@@ -191,25 +191,25 @@ $ npx tsc --noEmit
 
 ---
 
-### 🟡 Allies (Agents)
+### 🟡 Agents (Agents)
 
 **Status:** ⚠️ **CODE REVIEW ONLY**
 
 #### API Routes:
 
-- ✅ `GET /api/v1/allies` - List allies
-- ✅ `POST /api/v1/allies` - Create ally
-- ✅ `GET /api/v1/allies/[id]` - Get single ally
-- ✅ `PATCH /api/v1/allies/[id]` - Update ally (presumed)
+- ✅ `GET /api/v1/agents` - List agents
+- ✅ `POST /api/v1/agents` - Create agent
+- ✅ `GET /api/v1/agents/[id]` - Get single agent
+- ✅ `PATCH /api/v1/agents/[id]` - Update agent (presumed)
 
 #### Pages:
 
-- ✅ `/allies` - List view exists
-- ✅ `/allies/[id]` - Detail view exists
+- ✅ `/agents` - List view exists
+- ✅ `/agents/[id]` - Detail view exists
 
 **Type Issues:**
 
-- ⚠️ 1 type error in allies API route
+- ⚠️ 1 type error in agents API route
 
 ---
 
@@ -367,7 +367,7 @@ hierarchy compliant)
 - ✅ Vitest configured for unit tests
 - ✅ Playwright configured for E2E tests
 - ⚠️ Test files have type errors preventing execution
-- ❌ No evidence of tests actually passing
+- ❌ No evidence of tests actuagent passing
 
 ### Database
 
@@ -458,7 +458,7 @@ hierarchy compliant)
 4. **Null vs Undefined Type Inconsistencies**
    - **Severity:** High
    - **Impact:** Type safety compromised
-   - **Files:** API routes (allies, cohorts, missions, operations)
+   - **Files:** API routes (agents, cohorts, missions, operations)
    - **Recommendation:** Standardize on `undefined` for optional values
 
 ### 🟡 Medium Priority
@@ -507,7 +507,7 @@ Based on Sprint 4 requirements:
 | Auth Flow       | ⚠️ Partial     | 6      | 0       | 1       | 1          |
 | Dashboard       | ⚠️ Blocked     | 0      | 0       | 1       | 6          |
 | Cohorts CRUD    | ⚠️ Code Review | 5      | 0       | 1       | 3          |
-| Allies          | ⚠️ Code Review | 4      | 0       | 1       | 2          |
+| Agents          | ⚠️ Code Review | 4      | 0       | 1       | 2          |
 | Missions        | ⚠️ Code Review | 3      | 0       | 1       | 2          |
 | Operations      | ⚠️ Fixed       | 3      | 1       | 1       | 3          |
 | Kanban Board    | ⚠️ Fixed       | 2      | 1       | 1       | 3          |
@@ -565,7 +565,7 @@ Based on Sprint 4 requirements:
    - Run type check in PR pipeline
 
 9. **Visual Regression Tests**
-   - Especially for new Kanban board
+   - Especiagent for new Kanban board
    - Use Playwright with screenshots
 
 ---
@@ -576,7 +576,7 @@ Based on Sprint 4 requirements:
 
 The Cohortix application has solid architectural foundations and well-structured
 code, but **critical build failures and type safety issues** prevent deployment.
-The Sprint 4 features (Kanban, Operations, Intel Feed) were partially
+The Sprint 4 features (Kanban, Operations, Intel Feed) were partiagent
 implemented but not fully integrated, leading to a broken build.
 
 **Positive Highlights:**
@@ -610,7 +610,7 @@ features.
 
 - Organization: Axon HQ
 - Test User: test@cohortix.dev
-- Allies: Devi, Lubna, Zara, Khalid
+- Agents: Devi, Lubna, Zara, Khalid
 - Missions: 3 sample missions
 - Tasks: 5 sample tasks
 

@@ -5,14 +5,14 @@ import { Sparkline } from '@/components/ui/sparkline';
 interface KpiCardsProps {
   activeMissions: number;
   actionsInProgress: number;
-  activeAllies: number;
+  activeAgents: number;
   completionRate: number;
 }
 
 export function KpiCards({
   activeMissions,
   actionsInProgress,
-  activeAllies,
+  activeAgents,
   completionRate,
 }: KpiCardsProps) {
   const kpiData = [
@@ -33,12 +33,12 @@ export function KpiCards({
       sparklineData: [2, 3, 4, 5, 4, 5, 4, actionsInProgress],
     },
     {
-      label: 'ACTIVE ALLIES',
-      value: activeAllies,
+      label: 'ACTIVE AGENTS',
+      value: activeAgents,
       change: 0,
       changeLabel: 'AI Agents',
       isPositive: true,
-      sparklineData: [2, 2, 3, 3, 4, 4, 4, activeAllies],
+      sparklineData: [2, 2, 3, 3, 4, 4, 4, activeAgents],
     },
     {
       label: 'COMPLETION RATE',

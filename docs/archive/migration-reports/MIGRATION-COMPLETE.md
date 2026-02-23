@@ -78,7 +78,7 @@ all tests passing, ready for Ahmad's configuration and testing.
 2. **Get API keys** (publishable + secret)
 3. **Configure webhook** with 5 events
 4. **Run database migration** (`supabase db push`)
-5. **Test locally** (sign-up, verify Supabase sync)
+5. **Test locagent** (sign-up, verify Supabase sync)
 
 **Detailed instructions:** `docs/AHMAD-SETUP-CHECKLIST.md`
 
@@ -168,7 +168,7 @@ User → Next.js → Clerk Auth → Clerk Users (JWT)
 ### Immediate
 
 1. **Ahmad:** Complete setup checklist (30 min)
-2. **Ahmad:** Test locally and verify
+2. **Ahmad:** Test locagent and verify
 3. **Ahmad:** Review PR and approve
 4. **Ahmad:** Merge to `dev` branch
 

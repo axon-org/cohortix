@@ -3,7 +3,7 @@
 > **Your AI team, ready to help.**
 
 Cohortix is a platform where everyday people can build and manage their own team
-of AI helpers (Allies) to get things done.
+of AI helpers (Agents) to get things done.
 
 ## 🌐 Domain
 
@@ -12,7 +12,7 @@ of AI helpers (Allies) to get things done.
 ## 🎯 Vision
 
 Make AI orchestration accessible to everyone — not just developers. Your Cohort
-of Allies works together to complete Missions, learns from experience, and grows
+of Agents works together to complete Missions, learns from experience, and grows
 over time.
 
 ## 📚 Documentation
@@ -45,8 +45,8 @@ cohortix/
 
 | Instead of... | We say...           |
 | ------------- | ------------------- |
-| Agent         | **Ally**            |
-| Agents        | **Cohort**          |
+| AI Agent      | **Agent**           |
+| AI Agents     | **Cohort**          |
 | Action        | **Mission**         |
 | Run/Execute   | **Deploy**          |
 | Create        | **Recruit**         |

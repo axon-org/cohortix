@@ -19,7 +19,7 @@ Linear-inspired detail view shown in
 
 ### `cohort_members` Table
 
-Links agents (allies) to cohorts with engagement tracking.
+Links agents (agents) to cohorts with engagement tracking.
 
 **Columns:**
 
@@ -43,7 +43,7 @@ Links agents (allies) to cohorts with engagement tracking.
 
 ### 1. GET `/api/cohorts/:id/members`
 
-**Purpose:** Fetch all members (allies) in a cohort with engagement scores and
+**Purpose:** Fetch all members (agents) in a cohort with engagement scores and
 statuses.
 
 **Response:**
@@ -164,7 +164,7 @@ statuses.
 }
 ```
 
-**Used for:** Cohort header (name, date range, status badge, "Invite AI Ally"
+**Used for:** Cohort header (name, date range, status badge, "Invite AI Agent"
 button)
 
 ---
@@ -227,7 +227,7 @@ export default function CohortDetailPage({ params }: { params: { id: string } })
         setActivities(activityData.activities);
       } catch (error) {
         console.error('Failed to fetch cohort detail:', error);
-      } finally {
+      } finagent {
         setLoading(false);
       }
     }
@@ -260,7 +260,7 @@ export default function CohortDetailPage({ params }: { params: { id: string } })
 | UI Component                | API Endpoint                    | Data Field                                                     |
 | --------------------------- | ------------------------------- | -------------------------------------------------------------- |
 | **Cohort Header**           | `GET /api/cohorts/:id`          | `name`, `status`, `start_date`, `end_date`                     |
-| **"Invite AI Ally" Button** | Manual action (opens modal)     | -                                                              |
+| **"Invite AI Agent" Button** | Manual action (opens modal)     | -                                                              |
 | **Engagement Timeline**     | `GET /api/cohorts/:id/timeline` | `timeline[]`                                                   |
 | **Activity Log**            | `GET /api/cohorts/:id/activity` | `activities[]`                                                 |
 | **Batch Members List**      | `GET /api/cohorts/:id/members`  | `members[]`                                                    |
@@ -366,11 +366,11 @@ curl http://localhost:3000/api/cohorts/{cohort-id}/activity?limit=20
    - `CohortHeader.tsx` - Name, status badge, date range, invite button
    - `EngagementTimeline.tsx` - Line/area chart using timeline data
    - `ActivityLog.tsx` - Scrollable list of recent activities
-   - `MembersList.tsx` - Table/grid of allies with engagement scores
+   - `MembersList.tsx` - Table/grid of agents with engagement scores
 3. ✅ **Wire up data fetching** - Use the example code above
 4. ✅ **Handle loading states** - Skeletons for each section
 5. ✅ **Handle errors** - Show error boundaries if API fails
-6. ✅ **Add "Invite AI Ally" modal** - Opens form to add members to cohort
+6. ✅ **Add "Invite AI Agent" modal** - Opens form to add members to cohort
 
 ---
 

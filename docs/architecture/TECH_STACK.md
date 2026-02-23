@@ -209,7 +209,7 @@ events
 
 **Rationale** (Updated after Supabase decision):
 
-- **Supabase Realtime** handles database-driven updates automatically (agent
+- **Supabase Realtime** handles database-driven updates automaticagent (agent
   activities, missions, knowledge)
 - Built on PostgreSQL logical replication (extremely reliable)
 - No extra cost (included in Supabase Pro)

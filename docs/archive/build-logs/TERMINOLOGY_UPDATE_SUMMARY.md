@@ -59,7 +59,7 @@ atomic work units.
 - Comment: "missions (database table: projects)" → "operations (database table:
   projects)"
 - Comment: "actions (database table: tasks)" → "tasks (database table: tasks)"
-- Variable naming comments: Added "Legacy prop name (actually Operations/Tasks)"
+- Variable naming comments: Added "Legacy prop name (actuagent Operations/Tasks)"
 - Alert messages: "urgent actions" → "urgent tasks", "overdue actions" →
   "overdue tasks"
 - Alert URLs: `/actions?filter=...` → `/tasks?filter=...`
@@ -82,7 +82,7 @@ hierarchy and legacy naming.
 - Example data: "Test Goal" → "Grow Filmzya to $50k MRR" (realistic Mission
   example)
 
-**Impact:** Tests now reflect that "Goal" schema is actually for Missions
+**Impact:** Tests now reflect that "Goal" schema is actuagent for Missions
 (measurable outcomes).
 
 #### `/apps/web/e2e/mission-creation.spec.ts`

@@ -72,8 +72,8 @@ pnpm tsx scripts/seed-supabase.ts
 🌱 Seeding database with Supabase client...
 📦 Creating organization: Axon HQ
 ✅ Created organization: Axon HQ (uuid...)
-🤖 Creating AI allies...
-✅ Created 4 allies
+🤖 Creating AI agents...
+✅ Created 4 agents
 ...
 ✨ Database seeding complete!
 ```
@@ -81,7 +81,7 @@ pnpm tsx scripts/seed-supabase.ts
 **What you'll get:**
 
 - 1 demo organization (Axon HQ)
-- 4 AI allies (Devi, Lubna, Zara, Khalid)
+- 4 AI agents (Devi, Lubna, Zara, Khalid)
 - 1 sample client (TechCorp Inc.)
 - 3 projects/cohorts
 - 5 tasks/missions
@@ -124,7 +124,7 @@ export default async function DashboardPage() {
       />
 
       <KPICards kpis={data.kpis} />
-      {/* kpis = { activeCohorts, missionsInProgress, activeAllies, completionRate } */}
+      {/* kpis = { activeCohorts, missionsInProgress, activeAgents, completionRate } */}
 
       <ActivityFeed activity={data.activity} />
       {/* activity = array of recent audit log entries */}
@@ -135,8 +135,8 @@ export default async function DashboardPage() {
       <CohortsGrid cohorts={data.cohorts} />
       {/* cohorts = active projects with task stats */}
 
-      <AlliesSidebar allies={data.allies} />
-      {/* allies = agents with workload info */}
+      <AgentsSidebar agents={data.agents} />
+      {/* agents = agents with workload info */}
     </div>
   );
 }
@@ -178,7 +178,7 @@ http://localhost:3000/dashboard
 - [ ] Activity feed shows recent actions
 - [ ] Sidebar shows your username (not "Alex Chen")
 - [ ] Cohorts/projects appear
-- [ ] Allies section shows 4 agents
+- [ ] Agents section shows 4 agents
 
 ---
 

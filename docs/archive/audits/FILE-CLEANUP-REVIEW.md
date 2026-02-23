@@ -68,7 +68,7 @@ or design reference.
 | :-------------------------------------------------------- | :---- | :------------ |
 | `./mockups/FINAL_04_knowledge_base_interface.png`         | 4.5M  | Design Mockup |
 | `./mockups/stitch-2026-02-10/00-all-screens-overview.png` | 228K  | Design Mockup |
-| `./mockups/v3/04-ally-profile-linear-dark.png`            | 209K  | Design Mockup |
+| `./mockups/v3/04-agent-profile-linear-dark.png`            | 209K  | Design Mockup |
 | `... (26 other mockup/design assets)`                     | ~4.7M | Design/Docs   |
 
 ### Documentation Scripts

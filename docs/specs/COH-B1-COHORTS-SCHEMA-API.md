@@ -13,7 +13,7 @@
 ### Purpose
 
 Implement the cohorts database schema and API routes to support the Cohortix
-platform's core feature: managing groups of AI allies (cohorts) with engagement
+platform's core feature: managing groups of AI agents (cohorts) with engagement
 tracking, status management, and multi-tenant access control.
 
 ### Scope
@@ -288,13 +288,13 @@ No content
   data: {
     kpis: {
       activeCohortsCount: number;
-      totalAllies: number;
+      totalAgents: number;
       avgEngagement: number; // Percentage (0-100)
       atRiskCount: number; // Cohorts with status='at-risk'
     }
     trends: {
       activeCohortsChange: number; // Percentage change from last period
-      totalAlliesChange: number;
+      totalAgentsChange: number;
       avgEngagementChange: number;
       atRiskChange: number;
     }
@@ -589,7 +589,7 @@ logger.error('Failed to fetch cohorts', {
 1. Create `/api/v1/cohorts/route.ts` (GET, POST)
 2. Create `/api/v1/cohorts/[id]/route.ts` (GET, PATCH, DELETE)
 3. Apply validation, error handling, logging
-4. Test manually with Postman/curl
+4. Test manuagent with Postman/curl
 
 ### Phase 4: Dashboard Routes ✅
 

@@ -128,7 +128,7 @@ Add these as **Environment secrets** (select `production` environment):
 # Trigger via GitHub Actions (recommended — audited)
 # Go to: Actions → db-migrate → Run workflow → select "production"
 
-# OR run manually (requires direct access):
+# OR run manuagent (requires direct access):
 export PRODUCTION_DIRECT_URL="postgresql://postgres.qobvewyakovekbuvwjkt:[password]@db.qobvewyakovekbuvwjkt.supabase.co:5432/postgres"
 bash scripts/migrate-production.sh
 ```

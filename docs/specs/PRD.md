@@ -9,13 +9,13 @@
 
 ## 1. Executive Summary
 
-Cohortix is an **Allies-as-a-Service (AaaS)** platform designed to bridge the
+Cohortix is an **Agents-as-a-Service (AaaS)** platform designed to bridge the
 gap between human strategic direction and autonomous AI execution. While
 existing mission management tools (ClickUp, Linear) focus on human-to-human
 collaboration, Cohortix is built from the ground up to allow humans to manage a
-high-performing organization of AI allies. The platform provides a unified
+high-performing organization of AI agents. The platform provides a unified
 interface called **Mission Control** for goal tracking, mission orchestration,
-and organizational knowledge retention, eventually evolving into a multi-tenant
+and organizational knowledge retention, eventuagent evolving into a multi-tenant
 SaaS for external organizations.
 
 ---
@@ -25,20 +25,20 @@ SaaS for external organizations.
 ### Vision
 
 To create the world's first true "Agentic Operating System" where humans and AI
-allies collaborate as equals within a proven productivity framework (PPV Pro).
+agents collaborate as equals within a proven productivity framework (PPV Pro).
 
 ### Strategic Goals
 
-- **Unified Visibility:** Provide a single source of truth for all ally
+- **Unified Visibility:** Provide a single source of truth for all agent
   activities via Mission Control.
-- **Autonomous Execution:** Enable allies to break down goals into goals and
+- **Autonomous Execution:** Enable agents to break down goals into goals and
   missions without human hand-holding.
-- **Knowledge Persistence:** Automatically capture and categorize every insight
-  gained by allies during mission execution.
+- **Knowledge Persistence:** Automaticagent capture and categorize every insight
+  gained by agents during mission execution.
 - **Multi-Tenant Scalability:** Build a foundation that supports multiple
-  organizations, each with their own isolated ally workforce (cohort).
+  organizations, each with their own isolated agent workforce (cohort).
 - **Platform Independence:** Transition from a Clawdbot-dependent UI to a
-  standalone ally runtime environment.
+  standalone agent runtime environment.
 
 ---
 
@@ -48,22 +48,22 @@ allies collaborate as equals within a proven productivity framework (PPV Pro).
 
 - **Ahmad (The Visionary/CEO):** Sets high-level goals, monitors organizational
   health, and provides strategic feedback.
-- **Organizational Admin:** Manages user access, multi-tenant settings, and ally
+- **Organizational Admin:** Manages user access, multi-tenant settings, and agent
   provisioning (recruiting).
 - **External Clients (Future):** View-only or restricted access to track
   progress on their specific goals.
 
-### 3.2 AI Allies (Digital Teammates)
+### 3.2 AI Agents (Digital Teammates)
 
-- **Mission Manager Allies:** Receive goals from humans, create goals/missions,
+- **Mission Manager Agents:** Receive goals from humans, create goals/missions,
   and assign work to specialists.
-- **Specialist Allies (Dev, Design, Research):** Execute specific missions,
+- **Specialist Agents (Dev, Design, Research):** Execute specific missions,
   report progress, and contribute to the intel base.
 
 ### 3.3 System Entities
 
 - **The Orchestrator:** The backend logic that handles state transitions,
-  dependency checking, and ally-to-ally communication.
+  dependency checking, and agent-to-agent communication.
 
 ---
 
@@ -75,15 +75,15 @@ allies collaborate as equals within a proven productivity framework (PPV Pro).
   (HQ).
 - **Role-Based Access Control (RBAC):**
   - `Owner`: Full access to billing, users, and all data.
-  - `Manager`: Can create goals, goals, and manage allies.
-  - `Contributor (Ally)`: Can update missions, add intel, and view assigned
+  - `Manager`: Can create goals, goals, and manage agents.
+  - `Contributor (Agent)`: Can update missions, add intel, and view assigned
     goals.
   - `Viewer`: Read-only access to specific goals.
 - **Invite System:** Admin-driven manual invite links for early-stage control.
 
-### 4.2 Ally Directory & Management
+### 4.2 Agent Directory & Management
 
-- **Ally Profiles:** Visual cards containing:
+- **Agent Profiles:** Visual cards containing:
   - Name, role, avatar
   - Status (Standing By / On Mission / Off Duty)
   - **Domains** (expertise areas, e.g., "Frontend Development", "Content
@@ -91,11 +91,11 @@ allies collaborate as equals within a proven productivity framework (PPV Pro).
   - **Active Visions** (long-term aspirations)
   - **Active Missions** (current measurable outcomes)
   - Expertise Badges (specific skills: "React", "Python", "Figma")
-- **Workload Meter:** Real-time visualization of an ally's current Task load and
+- **Workload Meter:** Real-time visualization of an agent's current Task load and
   efficiency.
-- **Ally Identity System:** Unique IDs for allies across the platform to track
+- **Agent Identity System:** Unique IDs for agents across the platform to track
   history and performance even if renamed.
-- **Ally PPV Stack:** Each ally has their own full productivity system:
+- **Agent PPV Stack:** Each agent has their own full productivity system:
   - Domains (what they specialize in)
   - Visions (what they aspire to become)
   - Missions (what they're achieving)
@@ -107,7 +107,7 @@ allies collaborate as equals within a proven productivity framework (PPV Pro).
 
 - **Goals:** High-level objectives set by Humans (e.g., "Launch Marketing
   Goal").
-- **Goals:** Automatically generated by PM Allies from Goals. Includes timelines
+- **Goals:** Automaticagent generated by PM Agents from Goals. Includes timelines
   and milestones.
 - **Missions & Sub-missions:** The atomic units of work. Supports rich text,
   attachments, and status (Todo, In Progress, Review, Done).
@@ -124,25 +124,25 @@ allies collaborate as equals within a proven productivity framework (PPV Pro).
 
 ### 4.5 Automated Intel Base
 
-- **Insight Capture:** Every time an ally completes a mission, it must summarize
+- **Insight Capture:** Every time an agent completes a mission, it must summarize
   "Key Learnings."
 - **Semantic Search:** Users can search the intel using natural language (e.g.,
   "What did we learn about Vercel deployment issues?").
 - **Intel Linking:** Every intel entry links back to the original
-  Mission/Goal/Ally that generated it.
+  Mission/Goal/Agent that generated it.
 
 - **Dashboard View:** High-level overview
   - Active Missions across all Domains
   - Operations in progress
   - Today's Rhythms (consistency check)
   - Recent Insights added to Intelligence
-  - Ally status overview (On Mission / Standing By / Off Duty)
+  - Agent status overview (On Mission / Standing By / Off Duty)
 - **Kanban Board:** Primary view for Operation and Task management
   - Columns: Todo, In Progress, Review, Done
-  - Swimlanes by Domain or Ally
+  - Swimlanes by Domain or Agent
   - Drag-and-drop for status changes
 - **List View:** High-density table for bulk management
-  - Filtering by Domain, Vision, Mission, Ally, Status
+  - Filtering by Domain, Vision, Mission, Agent, Status
   - Sorting by priority, due date, creation date
   - Bulk actions (assign, change status, archive)
 - **Timeline (Gantt):** Visualizing Mission and Operation schedules
@@ -169,14 +169,14 @@ allies collaborate as equals within a proven productivity framework (PPV Pro).
 
 - **Insight Definition:** Individual learning capture (article, note, video,
   discovery)
-- **Automatic Capture:** Every time an ally completes a Task, Operation, or
+- **Automatic Capture:** Every time an agent completes a Task, Operation, or
   Rhythm occurrence, it can add an Insight
-- **Manual Capture:** Humans and allies can manually add Insights anytime
+- **Manual Capture:** Humans and agents can manuagent add Insights anytime
 - **Insight Fields:**
   - Title, description (Markdown)
   - Source (Task/Operation/Mission that generated it)
   - Related Intelligence topics (tags)
-  - Ally/human attribution
+  - Agent/human attribution
   - Timestamp
   - Helpful/unhelpful feedback
 
@@ -184,7 +184,7 @@ allies collaborate as equals within a proven productivity framework (PPV Pro).
 
 - **Intelligence Definition:** Knowledge organized by topic — accumulated
   organizational wisdom
-- **Automatic Rollup:** Insights automatically tagged and organized into
+- **Automatic Rollup:** Insights automaticagent tagged and organized into
   Intelligence topics
 - **Intelligence Topics:** Semantic categories (e.g., "React Patterns",
   "Marketing Strategies", "Client X Brand Guidelines")
@@ -200,7 +200,7 @@ allies collaborate as equals within a proven productivity framework (PPV Pro).
   issues?"
 - **Context-Aware Results:** Prioritize recent, relevant, highly-rated Insights
 - **Source Linking:** Every Insight links back to the original
-  Task/Operation/Mission/Ally
+  Task/Operation/Mission/Agent
 - **Cross-HQ Isolation:** Intelligence is strictly scoped to HQ (multi-tenant
   safe)
 
@@ -209,7 +209,7 @@ allies collaborate as equals within a proven productivity framework (PPV Pro).
 - **Bidirectional Links:** Insights link to Intelligence topics, topics link
   back to Insights
 - **Mission Context:** Missions can reference relevant Intelligence
-- **Ally Learning:** Allies can "study" Intelligence topics to improve expertise
+- **Agent Learning:** Agents can "study" Intelligence topics to improve expertise
 
 ### 4.6 The Rhythm Zone (Debriefs & Reviews)
 
@@ -261,13 +261,13 @@ Structured reflection and review cadences aligned with PPV Pro.
   - Vision alignment check
   - Mission portfolio review
   - Domain health analysis
-  - Ally performance review
+  - Agent performance review
 
 ### 4.7 Communications & Notifications
 
 - **Threaded Comments:** Discussions on Tasks, Operations, Missions with support
   for Markdown and code blocks.
-- **@Mentions:** Ability to tag allies or humans to trigger notifications.
+- **@Mentions:** Ability to tag agents or humans to trigger notifications.
 - **Activity Feed:** Real-time stream of updates (Task completed, Insight added,
   Mission status changed).
 - **Clawdbot Integration:** Syncing notifications to external channels
@@ -277,29 +277,29 @@ Structured reflection and review cadences aligned with PPV Pro.
 
 ### 4.8 Bidirectional Mission Setting
 
-Allies can propose Missions, not just execute them.
+Agents can propose Missions, not just execute them.
 
-- **Ally-Proposed Missions:** Allies can propose Missions based on observations:
+- **Agent-Proposed Missions:** Agents can propose Missions based on observations:
   - Example: "Test coverage dropped below 70% — proposing Mission to improve
     testing"
   - Example: "Performance regression detected — proposing optimization Mission"
   - Example: "Documentation gaps identified — proposing documentation Mission"
-- **Approval Workflow:** Human approval/rejection/modification of ally-proposed
+- **Approval Workflow:** Human approval/rejection/modification of agent-proposed
   Missions
   - Pending state until human review
   - Comment thread for discussion
   - Ability to modify scope/priority before approval
 - **Mission Source Tracking:** Every Mission tagged as `human-initiated` or
-  `ally-initiated`
-- **Ally Justification:** Allies must provide rationale and evidence for
+  `agent-initiated`
+- **Agent Justification:** Agents must provide rationale and evidence for
   proposals
-- **Proactivity Metrics:** Track % of Missions proposed by allies vs. humans
+- **Proactivity Metrics:** Track % of Missions proposed by agents vs. humans
 
 ### 4.9 Living Knowledge Base
 
 Intelligence grows continuously, not just on Task completion.
 
-- **Continuous Knowledge Building:** Allies actively build knowledge during work
+- **Continuous Knowledge Building:** Agents actively build knowledge during work
   - Real-time Insight capture during Operations
   - Ability to update/refine existing Insights
   - Knowledge deprecation when outdated (mark as obsolete)
@@ -311,20 +311,20 @@ Intelligence grows continuously, not just on Task completion.
   - Track changes over time
   - See who updated what and when
   - Rollback to previous versions
-- **Cross-Ally Learning:** One ally's Intelligence benefits others
+- **Cross-Agent Learning:** One agent's Intelligence benefits others
   - Shared Intelligence pool per HQ
-  - Ally attribution for contributions
+  - Agent attribution for contributions
   - Knowledge relevance scoring based on usage
 - **Smart Knowledge Suggestions:** System suggests relevant Intelligence during
   Operations
   - Context-aware recommendations
-  - "Other allies found this useful" patterns
+  - "Other agents found this useful" patterns
 
-### 4.10 Ally Evolution System
+### 4.10 Agent Evolution System
 
-Allies grow expertise over time through structured learning.
+Agents grow expertise over time through structured learning.
 
-- **Learning Materials:** Allies consume structured training content
+- **Learning Materials:** Agents consume structured training content
   - Course ingestion (markdown, video, documentation)
   - Book/article processing
   - Internal best practices documentation
@@ -333,19 +333,19 @@ Allies grow expertise over time through structured learning.
   - Evening reflection (15 min) — Daily Debrief
   - Weekly deep-dive sessions — Weekly Debrief
 - **Expertise Growth Tracking:** Measurable skill improvement
-  - Skill matrix per ally (0-100 proficiency)
+  - Skill matrix per agent (0-100 proficiency)
   - Expertise domains (frontend, backend, DevOps, etc.)
   - Historical growth charts
   - Competency milestones
-- **Learning Paths:** Structured progression for allies
+- **Learning Paths:** Structured progression for agents
   - Beginner → Intermediate → Expert tracks
   - Prerequisites and dependencies
   - Recommended next courses
-- **Self-Improvement Protocols:** Allies identify gaps
+- **Self-Improvement Protocols:** Agents identify gaps
   - Performance analysis triggers learning
   - "I struggled with X, seeking training" behavior
   - Human can assign specific learning objectives
-- **Learning as Rhythms:** Allies can have "Daily Learning" Rhythms
+- **Learning as Rhythms:** Agents can have "Daily Learning" Rhythms
   - Consistent 30-min learning blocks
   - Streak tracking
   - Integration with Daily Debrief
@@ -355,19 +355,19 @@ Allies grow expertise over time through structured learning.
 - **Client Entity:** Organizations can manage multiple clients
   - Client profiles with industry, contact info, metadata
   - Client-specific Missions, Operations, and Tasks
-  - Client assignment to allies (allies work on specific client accounts)
+  - Client assignment to agents (agents work on specific client accounts)
   - Segregated Intelligence per client
 - **Scoped Knowledge Base Architecture:** Three-tier knowledge scoping
-  - **Company-level Intelligence:** Available to all allies (e.g., "How we
+  - **Company-level Intelligence:** Available to all agents (e.g., "How we
     deploy apps")
-  - **Client-level Intelligence:** Only for allies assigned to that client
+  - **Client-level Intelligence:** Only for agents assigned to that client
     (e.g., "Client X's brand guidelines")
   - **Mission-level Intelligence:** Specific to a Mission within a client (e.g.,
     "Mission Y's API structure")
-  - RLS policies ensure allies only access Intelligence for clients they're
+  - RLS policies ensure agents only access Intelligence for clients they're
     assigned to
 - **Knowledge Retrieval with Scope Resolution:** Smart scope hierarchy
-  - Ally searches Intelligence → System checks Mission → Client → Company layers
+  - Agent searches Intelligence → System checks Mission → Client → Company layers
   - Most specific Intelligence surfaced first
   - Prevents knowledge leakage between clients
 - **Memory Decay System (Schema Support in Phase 1, Active in Phase 2):**
@@ -375,7 +375,7 @@ Allies grow expertise over time through structured learning.
     default 1.0)
   - **Access Tracking:** Track `access_count`, `last_accessed_at` for usage
     patterns
-  - **Helpfulness Signals:** `helpful_count`, `unhelpful_count` from ally
+  - **Helpfulness Signals:** `helpful_count`, `unhelpful_count` from agent
     feedback
   - **Decay Prevention:** `decay_disabled` boolean for evergreen Intelligence
   - **Phase 1:** Schema fields present, not actively decaying
@@ -419,21 +419,21 @@ Allies grow expertise over time through structured learning.
 
 | Role              | Requirement                                                               | Benefit                                                                                                   |
 | :---------------- | :------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------- |
-| **Human CEO**     | As Ahmad, I want to set a "Goal" in natural language.                     | So that I don't have to manually create 50 missions for my allies.                                        |
+| **Human CEO**     | As Ahmad, I want to set a "Goal" in natural language.                     | So that I don't have to manuagent create 50 missions for my agents.                                        |
 | **Human CEO**     | As Ahmad, I want to see a "Health Meter" for each goal.                   | So that I can instantly identify which goals are blocked or at risk.                                      |
-| **AI Ally**       | As a PM Ally, I want to create a goal structure from a goal.              | So that I can coordinate specialist allies effectively.                                                   |
-| **AI Ally**       | As an Ally, I want to propose goals based on my observations.             | So that I can proactively suggest improvements (e.g., "test coverage dropped, proposing goal to fix it"). |
-| **Human CEO**     | As Ahmad, I want to approve/reject/modify ally-proposed goals.            | So that I maintain strategic control while benefiting from ally insights.                                 |
+| **AI Agent**       | As a PM Agent, I want to create a goal structure from a goal.              | So that I can coordinate specialist agents effectively.                                                   |
+| **AI Agent**       | As an Agent, I want to propose goals based on my observations.             | So that I can proactively suggest improvements (e.g., "test coverage dropped, proposing goal to fix it"). |
+| **Human CEO**     | As Ahmad, I want to approve/reject/modify agent-proposed goals.            | So that I maintain strategic control while benefiting from agent insights.                                 |
 | **Admin**         | As an Admin, I want to invite a new HQ (organization).                    | So that we can begin scaling the platform as a SaaS.                                                      |
-| **Human User**    | As a user, I want to search the Intelligence with semantic understanding. | So that I can leverage past ally findings with context and relationships.                                 |
-| **AI Ally**       | As an Ally, I want to build and refine Intelligence continuously.         | So that my expertise grows over time, not just on Task completion.                                        |
-| **AI Ally**       | As an Ally, I want to maintain a "Daily Learning" Rhythm.                 | So that I systematically improve my capabilities.                                                         |
-| **Human CEO**     | As Ahmad, I want to track ally expertise growth over time.                | So that I can see measurable ROI on ally evolution.                                                       |
+| **Human User**    | As a user, I want to search the Intelligence with semantic understanding. | So that I can leverage past agent findings with context and relationships.                                 |
+| **AI Agent**       | As an Agent, I want to build and refine Intelligence continuously.         | So that my expertise grows over time, not just on Task completion.                                        |
+| **AI Agent**       | As an Agent, I want to maintain a "Daily Learning" Rhythm.                 | So that I systematicagent improve my capabilities.                                                         |
+| **Human CEO**     | As Ahmad, I want to track agent expertise growth over time.                | So that I can see measurable ROI on agent evolution.                                                       |
 | **Human Admin**   | As an Admin, I want to create and manage client profiles.                 | So that I can organize work by client and maintain client-specific context.                               |
 | **Human Manager** | As a Manager, I want to assign agents to specific clients.                | So that agents only access knowledge and missions for clients they work on.                               |
-| **AI Ally**       | As an Ally, I want to search knowledge scoped to my assigned clients.     | So that I only see relevant knowledge for the clients I'm working with.                                   |
+| **AI Agent**       | As an Agent, I want to search knowledge scoped to my assigned clients.     | So that I only see relevant knowledge for the clients I'm working with.                                   |
 | **Human CEO**     | As Ahmad, I want to ensure client data remains segregated.                | So that sensitive client information never leaks between accounts.                                        |
-| **AI Ally**       | As an Ally, I want knowledge to decay over time if unused.                | So that outdated information doesn't pollute my search results (Phase 2).                                 |
+| **AI Agent**       | As an Agent, I want knowledge to decay over time if unused.                | So that outdated information doesn't pollute my search results (Phase 2).                                 |
 
 ---
 
@@ -441,7 +441,7 @@ Allies grow expertise over time through structured learning.
 
 ### Feature: Goal-to-Goal Conversion
 
-- Given a Goal input, the system must prompt an Ally to generate at least 3
+- Given a Goal input, the system must prompt an Agent to generate at least 3
   Missions.
 - The resulting Goal must be linked to the Goal ID.
 
@@ -456,10 +456,10 @@ Allies grow expertise over time through structured learning.
   (prompt for Insight, allow skip).
 - Insights must link back to source Task/Operation/Mission.
 
-### Feature: Ally PPV Stack
+### Feature: Agent PPV Stack
 
-- Ally profiles must display their Domains, Visions, and active Missions.
-- Allies must be able to propose new Missions within their Domains.
+- Agent profiles must display their Domains, Visions, and active Missions.
+- Agents must be able to propose new Missions within their Domains.
 
 ### Feature: Debrief Flows
 
@@ -474,7 +474,7 @@ Allies grow expertise over time through structured learning.
 - **Performance:** Mission Control page load time < 1.5s; Semantic search
   results in < 2s.
 - **Security:** Data encryption at rest and in transit (AES-256, TLS 1.3).
-- **Scalability:** Architecture must support up to 1,000 concurrent allies per
+- **Scalability:** Architecture must support up to 1,000 concurrent agents per
   HQ.
 - **Reliability:** 99.9% uptime for the UI and API layer.
 - **Auditability:** Every change to a mission or goal must be logged with a
@@ -503,15 +503,15 @@ Allies grow expertise over time through structured learning.
 | In Scope                                                  | Out of Scope                                 |
 | :-------------------------------------------------------- | :------------------------------------------- |
 | Auth & Invite System (Manual)                             | Public Self-Signup                           |
-| Ally Directory (Profiles/Status)                          | Ally Training/Fine-tuning UI                 |
+| Agent Directory (Profiles/Status)                          | Agent Training/Fine-tuning UI                 |
 | Goals & Kanban Board                                      | Native Mobile Apps (Web only)                |
 | Missions/Sub-missions & Dependencies                      | Complex Automated Goals (e.g., Zapier-style) |
 | Threaded Comments & @Mentions                             | Real-time Video/Voice Chat                   |
-| **Bidirectional Goal Setting (Human + Ally proposals)**   | Advanced Goal Templates                      |
-| **Ally Goal Approval Workflow**                           | Automated Goal Approval                      |
+| **Bidirectional Goal Setting (Human + Agent proposals)**   | Advanced Goal Templates                      |
+| **Agent Goal Approval Workflow**                           | Automated Goal Approval                      |
 | **Living Knowledge Base (Graph relationships)**           | Visual Knowledge Graph UI (v2.0)             |
 | **Knowledge Versioning & Evolution**                      | Advanced Analytics/BI Dashboards             |
-| **Cross-Ally Knowledge Sharing**                          | Knowledge Marketplace                        |
+| **Cross-Agent Knowledge Sharing**                          | Knowledge Marketplace                        |
 | **Basic Agent Evolution (Learning materials ingestion)**  | Third-party Integrations (GitHub/Figma)      |
 | **Expertise Tracking (Skill matrix)**                     | Advanced Learning Path Recommendations       |
 | **Daily Evolution Sessions**                              | AI-Powered Learning Recommendations          |
@@ -524,19 +524,19 @@ Allies grow expertise over time through structured learning.
 
 ## 10. Success Metrics
 
-- **Ally Autonomy Rate:** % of missions created by allies vs. humans (Target: >
+- **Agent Autonomy Rate:** % of missions created by agents vs. humans (Target: >
   80%).
-- **Ally Proactivity Rate:** % of goals proposed by allies vs. humans (Target: >
+- **Agent Proactivity Rate:** % of goals proposed by agents vs. humans (Target: >
   30%).
-- **Goal Approval Rate:** % of ally-proposed goals approved by humans (Target: >
+- **Goal Approval Rate:** % of agent-proposed goals approved by humans (Target: >
   60%).
 - **Time to Information:** Average time a human takes to find a historical goal
   insight (Target: < 10 seconds).
-- **Knowledge Reuse Rate:** % of missions where allies reference existing
+- **Knowledge Reuse Rate:** % of missions where agents reference existing
   knowledge (Target: > 50%).
 - **Knowledge Graph Growth:** Number of knowledge entries + relationships added
   per week.
-- **Ally Expertise Growth:** Average skill proficiency increase per ally per
+- **Agent Expertise Growth:** Average skill proficiency increase per agent per
   month (Target: +5 points).
 - **Evolution Session Completion:** % of scheduled evolution sessions completed
   (Target: > 90%).
@@ -549,7 +549,7 @@ Allies grow expertise over time through structured learning.
   knowledge (Target: > 0.7).
 - **Memory Decay Efficiency (Phase 2):** % reduction in search time due to
   irrelevant knowledge removal (Target: > 20%).
-- **Engagement:** Daily Active Users (DAU) and Daily Active Allies (DAA).
+- **Engagement:** Daily Active Users (DAU) and Daily Active Agents (DAA).
 - **Goal Velocity:** Average time from Goal creation to Goal completion.
 
 ---
@@ -558,9 +558,9 @@ Allies grow expertise over time through structured learning.
 
 | Risk                        | Impact   | Mitigation                                                                                            |
 | :-------------------------- | :------- | :---------------------------------------------------------------------------------------------------- |
-| **Ally Hallucinations**     | High     | Implementation of a "Human-in-the-loop" review step for critical goal structures.                     |
+| **Agent Hallucinations**     | High     | Implementation of a "Human-in-the-loop" review step for critical goal structures.                     |
 | **Multi-tenant Data Leak**  | Critical | Strict Row-Level Security (RLS) in the database and automated security testing.                       |
-| **API Rate Limits (LLMs)**  | Medium   | Implement robust queuing and caching layers for ally communications.                                  |
+| **API Rate Limits (LLMs)**  | Medium   | Implement robust queuing and caching layers for agent communications.                                  |
 | **High Latency**            | Low      | Optimized database indexing and edge-cached frontend.                                                 |
 | **PPV Hierarchy Confusion** | Medium   | First-time user onboarding with clear Domain → Vision → Mission → Operation/Rhythm → Task tutorial.   |
 | **Terminology Migration**   | Medium   | Migration guide and global find/replace scripts for "Goal" → "Mission", "Mission" → "Task/Operation". |
@@ -569,7 +569,7 @@ Allies grow expertise over time through structured learning.
 
 ## 12. Dependencies
 
-- **Clawdbot API:** For current ally execution and messaging.
+- **Clawdbot API:** For current agent execution and messaging.
 - **OpenAI/Anthropic API:** For core intelligence and Insight summarization.
 - **Vector DB Provider:** For semantic search functionality (pgvector).
 - **Design System:** Needs a finalized UI kit (ClickUp-inspired) before frontend
@@ -607,11 +607,11 @@ early_
 - [ ] HQ context is properly scoped
 - [ ] CI/CD pipeline deploys successfully
 
-**Phase 2 (Ally Directory) Verification:**
+**Phase 2 (Agent Directory) Verification:**
 
-- [ ] Ally profiles display correctly with Domains and Visions
-- [ ] Ally status updates in real-time
-- [ ] Multi-tenant isolation verified (User A cannot see User B's allies)
+- [ ] Agent profiles display correctly with Domains and Visions
+- [ ] Agent status updates in real-time
+- [ ] Multi-tenant isolation verified (User A cannot see User B's agents)
 - [ ] Service layer handles all business logic (not route handlers)
 
 **Phase 3 (Goal & Goal Hierarchy) Verification:**
@@ -624,14 +624,14 @@ early_
 
 - [ ] Kanban board drag-and-drop works for Operations and Tasks
 - [ ] Timeline view renders Mission and Operation dependencies
-- [ ] List view supports filtering by Domain, Vision, Mission, Ally, Status
+- [ ] List view supports filtering by Domain, Vision, Mission, Agent, Status
 - [ ] Performance: Mission Control loads in <1.5s
 
 **Phase 5 (Intelligence) Verification:**
 
 - [ ] Insights are created on Task completion (with skip option)
 - [ ] Semantic search returns relevant Insights
-- [ ] Insights link back to source Task/Operation/Mission/Ally
+- [ ] Insights link back to source Task/Operation/Mission/Agent
 - [ ] Embedding strategy validated (relevant results)
 
 **Phase 6 (Debriefs) Verification:**
@@ -662,13 +662,13 @@ _Key architectural choices — see ARCHITECTURAL_DECISIONS.md for full rationale
 | Pattern                  | Application in Cohortix                         | Priority  |
 | ------------------------ | ----------------------------------------------- | --------- |
 | **JWKS JWT Validation**  | API key validation, service auth, webhooks      | Phase 1   |
-| **Cursor Pagination**    | All list endpoints (missions, allies, activity) | Phase 2   |
-| **Cost Tracking Schema** | Per-ally/mission/goal LLM cost attribution      | Phase 2   |
+| **Cursor Pagination**    | All list endpoints (missions, agents, activity) | Phase 2   |
+| **Cost Tracking Schema** | Per-agent/mission/goal LLM cost attribution      | Phase 2   |
 | **Error Taxonomy**       | Consistent API error responses                  | Phase 1   |
 | **Service Layer**        | Clean separation: Route → Service → Repository  | Phase 1   |
 | **Planning Methodology** | ROADMAP/STATE/MISSION files                     | Immediate |
 | **CI/CD from Day 1**     | GitHub Actions for test/lint/deploy             | Phase 1   |
-| **SSE Streaming**        | Real-time ally activity feeds                   | Phase 4   |
+| **SSE Streaming**        | Real-time agent activity feeds                   | Phase 4   |
 
 ### Adapted for Cohortix Context
 
@@ -686,52 +686,52 @@ _Key architectural choices — see ARCHITECTURAL_DECISIONS.md for full rationale
 
 ---
 
-_Created by August (Mission Manager Ally)_
+_Created by August (Mission Manager Agent)_
 
 ---
 
-## 16. Future Vision: Ally Marketplace (v3.0 / v4.0)
+## 16. Future Vision: Agent Marketplace (v3.0 / v4.0)
 
 _Added: 2026-02-05 — Per Ahmad's strategic direction_
 
 ### Overview
 
-The platform will evolve to include an **Ally Marketplace** where AI allies can
+The platform will evolve to include an **Agent Marketplace** where AI agents can
 be:
 
-- **Sold** — One-time purchase of ally templates/configurations
-- **Rented** — Hourly/daily/monthly ally-as-a-service
-- **Mission-based hiring** — Pay-per-Mission ally execution
+- **Sold** — One-time purchase of agent templates/configurations
+- **Rented** — Hourly/daily/monthly agent-as-a-service
+- **Mission-based hiring** — Pay-per-Mission agent execution
 
 ### Why This Matters
 
-This transforms Cohortix from a "PM tool for your allies" into a **full Ally
+This transforms Cohortix from a "PM tool for your agents" into a **full Agent
 Economy platform**:
 
-- Organizations can monetize their specialized allies
-- Users can hire expert allies without building them
+- Organizations can monetize their specialized agents
+- Users can hire expert agents without building them
 - Creates network effects and platform stickiness
 
 ### Marketplace Features (Future)
 
-1. **Ally Listings**
-   - Ally profiles with capabilities, ratings, reviews
+1. **Agent Listings**
+   - Agent profiles with capabilities, ratings, reviews
    - Specialization tags (Development, Design, Research, etc.)
    - Performance metrics (Missions completed, success rate)
-   - **Ally Domains and Visions displayed**
+   - **Agent Domains and Visions displayed**
 
 2. **Pricing Models**
-   - Subscription (monthly access to ally)
+   - Subscription (monthly access to agent)
    - Pay-per-Mission (usage-based)
-   - One-time purchase (ally template/configuration)
+   - One-time purchase (agent template/configuration)
 
-3. **Ally Transactions**
-   - Secure handoff of ally access
+3. **Agent Transactions**
+   - Secure handoff of agent access
    - Escrow for Mission-based work
-   - Revenue sharing with ally creators
+   - Revenue sharing with agent creators
 
 4. **Quality Assurance**
-   - Ally certification/verification
+   - Agent certification/verification
    - Performance guarantees
    - Dispute resolution
 
@@ -739,9 +739,9 @@ Economy platform**:
 
 This future vision requires:
 
-- Ally portability (allies can work across HQs)
+- Agent portability (agents can work across HQs)
 - Billing/payment infrastructure
-- Ally identity that persists across HQs
+- Agent identity that persists across HQs
 - Marketplace search and discovery
 - Rating/review system
 
@@ -750,14 +750,14 @@ This future vision requires:
 | Version | Milestone                                           |
 | ------- | --------------------------------------------------- |
 | v1.0    | Core PPV productivity platform                      |
-| v2.0    | Ally recruitment and evolution within platform      |
-| v3.0    | Ally Marketplace (listings, discovery)              |
-| v4.0    | Full Ally Economy (payments, rentals, transactions) |
+| v2.0    | Agent recruitment and evolution within platform      |
+| v3.0    | Agent Marketplace (listings, discovery)              |
+| v4.0    | Full Agent Economy (payments, rentals, transactions) |
 
 ---
 
 _This is the north star. Every architectural decision should consider: "Does
-this support the Ally Marketplace future?"_
+this support the Agent Marketplace future?"_
 
 ---
 
@@ -774,5 +774,5 @@ this support the Ally Marketplace future?"_
 
 ---
 
-_Created by August (Mission Manager Ally)_ _PPV Pro Alignment by Lubna (UI
+_Created by August (Mission Manager Agent)_ _PPV Pro Alignment by Lubna (UI
 Designer)_

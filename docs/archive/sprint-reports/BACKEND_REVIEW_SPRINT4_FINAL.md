@@ -207,7 +207,7 @@ CREATE TABLE IF NOT EXISTS cohort_members (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   cohort_id uuid NOT NULL REFERENCES cohorts(id) ON DELETE CASCADE,
   user_id uuid,
-  ally_id uuid,
+  agent_id uuid,
   -- ⚠️ MISSING: organization_id (required by Drizzle schema!)
   joined_at timestamptz DEFAULT now(),
   engagement_score numeric(5,2) DEFAULT 0,

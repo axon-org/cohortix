@@ -2,7 +2,7 @@
 
 import { use } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAlly, useUpdateAlly, useDeleteAlly } from '@/hooks/use-allies';
+import { useAgent, useUpdateAgent, useDeleteAgent } from '@/hooks/use-agents';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DeleteDialog } from '@/components/ui/delete-dialog';
@@ -21,25 +21,25 @@ const STATUS_COLORS: Record<string, string> = {
   error: 'bg-destructive',
 };
 
-export default function AllyDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { data: ally, isLoading, error } = useAlly(id);
-  const updateMutation = useUpdateAlly();
-  const deleteMutation = useDeleteAlly();
+  const { data: agent, isLoading, error } = useAgent(id);
+  const updateMutation = useUpdateAgent();
+  const deleteMutation = useDeleteAgent();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<Record<string, any>>({});
 
   if (isLoading) return <DetailSkeleton />;
-  if (error || !ally) {
+  if (error || !agent) {
     return (
       <div className="text-center py-20">
-        <p className="text-muted-foreground">Ally not found</p>
+        <p className="text-muted-foreground">Agent not found</p>
         <Link
-          href="/dashboard/allies"
+          href="/dashboard/agents"
           className="text-sm text-foreground underline mt-2 inline-block"
         >
-          Back to Allies
+          Back to Agents
         </Link>
       </div>
     );
@@ -47,11 +47,11 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
 
   const startEditing = () => {
     setForm({
-      name: ally.name,
-      description: ally.description || '',
-      role: ally.role || '',
-      status: ally.status,
-      capabilities: (ally.capabilities || []).join(', '),
+      name: agent.name,
+      description: agent.description || '',
+      role: agent.role || '',
+      status: agent.status,
+      capabilities: (agent.capabilities || []).join(', '),
     });
     setEditing(true);
   };
@@ -68,17 +68,17 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
 
   const handleDelete = async () => {
     await deleteMutation.mutateAsync(id);
-    router.push('/dashboard/allies');
+    router.push('/dashboard/agents');
   };
 
   return (
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
         <Link
-          href="/dashboard/allies"
+          href="/dashboard/agents"
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Allies
+          <ArrowLeft className="w-4 h-4" /> Agents
         </Link>
         <div className="flex items-center gap-2">
           {editing ? (
@@ -96,8 +96,8 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
                 <Pencil className="w-4 h-4 mr-1" /> Edit
               </Button>
               <DeleteDialog
-                title="Delete ally"
-                description={`Are you sure you want to delete "${ally.name}"? This action cannot be undone.`}
+                title="Delete agent"
+                description={`Are you sure you want to delete "${agent.name}"? This action cannot be undone.`}
                 onConfirm={handleDelete}
                 isDeleting={deleteMutation.isPending}
               />
@@ -109,10 +109,10 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
       {/* Header */}
       <div className="flex items-start gap-4">
         <div className="w-12 h-12 bg-secondary rounded-lg flex items-center justify-center flex-shrink-0">
-          {ally.avatar_url ? (
+          {agent.avatar_url ? (
             <img
-              src={ally.avatar_url}
-              alt={ally.name}
+              src={agent.avatar_url}
+              alt={agent.name}
               className="w-12 h-12 rounded-lg object-cover"
             />
           ) : (
@@ -127,7 +127,7 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
               className="text-2xl font-bold h-auto py-1 px-2 bg-transparent border-border"
             />
           ) : (
-            <h1 className="text-2xl font-bold">{ally.name}</h1>
+            <h1 className="text-2xl font-bold">{agent.name}</h1>
           )}
           <div className="flex items-center gap-3 mt-1">
             {editing ? (
@@ -144,22 +144,22 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
               </select>
             ) : (
               <span className="flex items-center gap-1.5 text-xs font-medium">
-                <span className={cn('w-2 h-2 rounded-full', STATUS_COLORS[ally.status])} />
-                {ally.status}
+                <span className={cn('w-2 h-2 rounded-full', STATUS_COLORS[agent.status])} />
+                {agent.status}
               </span>
             )}
-            {ally.role && <span className="text-xs text-muted-foreground">{ally.role}</span>}
+            {agent.role && <span className="text-xs text-muted-foreground">{agent.role}</span>}
           </div>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <StatCard label="Tasks Completed" value={ally.total_tasks_completed || 0} />
-        <StatCard label="Runtime" value={ally.runtime_type} />
+        <StatCard label="Tasks Completed" value={agent.total_tasks_completed || 0} />
+        <StatCard label="Runtime" value={agent.runtime_type} />
         <StatCard
           label="Last Active"
-          value={ally.last_active_at ? new Date(ally.last_active_at).toLocaleDateString() : '—'}
+          value={agent.last_active_at ? new Date(agent.last_active_at).toLocaleDateString() : '—'}
         />
       </div>
 
@@ -174,7 +174,7 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
               className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-foreground"
             />
           ) : (
-            <p className="text-sm text-muted-foreground">{ally.description || 'No description'}</p>
+            <p className="text-sm text-muted-foreground">{agent.description || 'No description'}</p>
           )}
         </Field>
         <Field label="Role">
@@ -185,7 +185,7 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
               className="w-64"
             />
           ) : (
-            <p className="text-sm">{ally.role || '—'}</p>
+            <p className="text-sm">{agent.role || '—'}</p>
           )}
         </Field>
         <Field label="Capabilities">
@@ -197,8 +197,8 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
             />
           ) : (
             <div className="flex flex-wrap gap-1.5">
-              {(ally.capabilities || []).length > 0 ? (
-                ally.capabilities.map((cap: string) => (
+              {(agent.capabilities || []).length > 0 ? (
+                agent.capabilities.map((cap: string) => (
                   <span key={cap} className="px-2 py-0.5 bg-secondary rounded text-xs font-medium">
                     {cap}
                   </span>
@@ -211,7 +211,7 @@ export default function AllyDetailPage({ params }: { params: Promise<{ id: strin
         </Field>
         <Field label="Created">
           <p className="text-sm text-muted-foreground">
-            {new Date(ally.created_at).toLocaleDateString()}
+            {new Date(agent.created_at).toLocaleDateString()}
           </p>
         </Field>
       </div>

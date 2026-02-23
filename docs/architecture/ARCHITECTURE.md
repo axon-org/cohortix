@@ -137,7 +137,7 @@ Organization (Tenant)
 
 **Key Design Points:**
 
-- **Optional Client Association:** Missions and goals can optionally belong to a
+- **Optional Client Association:** Missions and goals can optionagent belong to a
   client
 - **Agent-Client Assignment:** Tracks which agents work on which client accounts
 - **Client Metadata:** Industry, contact info, custom fields for client context
@@ -242,7 +242,7 @@ class CustomRuntime implements AgentRuntime {
 
 #### Agent Evolution Pipeline
 
-**Purpose:** Systematic ally learning and expertise growth
+**Purpose:** Systematic agent learning and expertise growth
 
 ```typescript
 interface EvolutionPipeline {
@@ -359,7 +359,7 @@ Daily 9 AM Evolution Session
 CREATE POLICY tenant_isolation ON missions
   USING (organization_id = current_setting('app.current_org_id')::uuid);
 
--- All queries automatically filtered by tenant
+-- All queries automaticagent filtered by tenant
 SET app.current_org_id = 'org_xyz123';
 SELECT * FROM missions; -- Only returns org's missions
 ```
@@ -533,7 +533,7 @@ Webhook-based integrations with event-driven architecture:
 │                         │                                      │
 │                         ▼                                      │
 │  ┌──────────────────────────────────────────────────────┐     │
-│  │         CROSS-ALLY KNOWLEDGE SHARING                  │     │
+│  │         CROSS-AGENT KNOWLEDGE SHARING                  │     │
 │  │                                                       │     │
 │  │  Agent A learns → Knowledge entry created            │     │
 │  │         ↓                                             │     │
@@ -586,8 +586,8 @@ Webhook-based integrations with event-driven architecture:
    - Link to superseding entry
    - Keep for historical reference
 
-4. **Cross-Ally Sharing:**
-   - All knowledge visible to all allies in same HQ (tenant isolation)
+4. **Cross-Agent Sharing:**
+   - All knowledge visible to all agents in same HQ (tenant isolation)
    - Attribution tracking for reputation
    - Usage metrics for quality signals
 
@@ -781,7 +781,7 @@ SELECT * FROM search_knowledge_semantic(
 │  │  SEARCH FILTERING (relevance_score > 0.3 threshold)      │       │
 │  │  • Entries below threshold excluded from search          │       │
 │  │  • Not deleted (audit trail preserved)                   │       │
-│  │  • Can be manually re-enabled if needed                  │       │
+│  │  • Can be manuagent re-enabled if needed                  │       │
 │  └──────────────────────────────────────────────────────────┘       │
 │                                                                      │
 │  ┌──────────────────────────────────────────────────────────┐       │
@@ -857,7 +857,7 @@ SELECT * FROM search_knowledge_semantic(
 1. **Row-Level Security (RLS)**: Every table with tenant data has
    `organization_id`
 2. **Context Injection**: Middleware sets `app.current_org_id` per request
-3. **Query Enforcement**: All queries automatically filtered
+3. **Query Enforcement**: All queries automaticagent filtered
 4. **Cross-Tenant Prevention**: Foreign keys enforce referential integrity
 
 ---

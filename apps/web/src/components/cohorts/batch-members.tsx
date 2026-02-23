@@ -24,7 +24,7 @@ export function BatchMembers({ members }: BatchMembersProps) {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Batch Members ({members.length})</h2>
           <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Filter allies...
+            Filter agents...
           </button>
         </div>
       </div>
@@ -35,7 +35,7 @@ export function BatchMembers({ members }: BatchMembersProps) {
           <thead className="bg-background/50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                AI Ally
+                AI Agent
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Role
@@ -54,7 +54,7 @@ export function BatchMembers({ members }: BatchMembersProps) {
           <tbody className="divide-y divide-border">
             {members.map((member) => (
               <tr key={member.id} className="hover:bg-background/50 transition-colors">
-                {/* AI Ally */}
+                {/* AI Agent */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">

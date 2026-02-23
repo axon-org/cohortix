@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { AgentStatusChip, type AgentStatus } from '@/components/ui/agent-status-chip';
 import { formatDate } from '@/lib/utils';
 
-export interface AllyRow {
+export interface AgentRow {
   id: string;
   name: string;
   role: string | null;
@@ -17,12 +17,12 @@ export interface AllyRow {
   lastActiveAt: string | null;
 }
 
-interface AlliesTableProps {
-  data: AllyRow[];
+interface AgentsTableProps {
+  data: AgentRow[];
 }
 
-export function AlliesTable({ data }: AlliesTableProps) {
-  const columns = useMemo<ColumnDef<AllyRow>[]>(
+export function AgentsTable({ data }: AgentsTableProps) {
+  const columns = useMemo<ColumnDef<AgentRow>[]>(
     () => [
       {
         accessorKey: 'name',
@@ -90,11 +90,11 @@ export function AlliesTable({ data }: AlliesTableProps) {
       columns={columns}
       data={data}
       searchKey="name"
-      searchPlaceholder="Search allies..."
-      onRowClick={(ally) => {
-        window.location.href = `/allies/${ally.id}`;
+      searchPlaceholder="Search agents..."
+      onRowClick={(agent) => {
+        window.location.href = `/agents/${agent.id}`;
       }}
-      emptyMessage="No allies found."
+      emptyMessage="No agents found."
       toolbar={(table) => (
         <div className="flex items-center gap-2">
           {(['active', 'idle', 'busy', 'offline'] as const).map((s) => (

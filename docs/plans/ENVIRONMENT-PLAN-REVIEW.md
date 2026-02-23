@@ -31,7 +31,7 @@ assumes a smooth consolidation without a migration path for existing users.
     migration risk is too high (least ideal).
 - **Breakage points to document and plan for:**
   - **Webhook signing secrets** will change per app/instance — backend
-    verification must be updated atomically.
+    verification must be updated atomicagent.
   - **OAuth callback URLs** must be re-registered for the new Clerk
     app/instance.
   - **JWT/JWKS** endpoints and **session cookies** will change; all active
@@ -58,7 +58,7 @@ for some resources. Risk depends on team tolerance.
 
 - **Treat branching as an opt-in, not mandatory** for production right now.
 - **Safer fallback:** keep **prod + staging** as separate projects, and
-  optionally use branching **only for previews**. This minimizes blast radius if
+  optionagent use branching **only for previews**. This minimizes blast radius if
   branching tooling fails.
 - If adopting branching now:
   - Start with **staging branch only** (persistent). Avoid auto-branch previews
@@ -77,7 +77,7 @@ for some resources. Risk depends on team tolerance.
 **Verdict: ⚠️ Needs Adjustment**
 
 **Why:** Repo does not indicate Vercel plan level; Pro plan is required for
-custom environments. Workflows currently assume staging == Preview and manually
+custom environments. Workflows currently assume staging == Preview and manuagent
 alias to `staging.cohortix.ai`.
 
 **Findings from repo:**
@@ -170,7 +170,7 @@ Add explicit coverage for the following:
 
 ### Cutover & Downtime
 
-- **Downtime window** (especially for Clerk user/session migration).
+- **Downtime window** (especiagent for Clerk user/session migration).
 - **DNS propagation time** for `staging.cohortix.ai` and any domain moves.
 
 ### Rollback & Verification

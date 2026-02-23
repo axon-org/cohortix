@@ -164,7 +164,7 @@
 2. [ ] Supabase migration complete and tested
 3. [ ] Environment variables configured (local + Vercel)
 4. [ ] Clerk auth working with Supabase RLS
-5. [ ] Dev environment running locally
+5. [ ] Dev environment running locagent
 6. [ ] Staging environment deployed and accessible
 
 ---

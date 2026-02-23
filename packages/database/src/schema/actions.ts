@@ -41,7 +41,7 @@ export const actions = pgTable('tasks', {
   }),
   milestoneId: uuid('milestone_id').references(() => milestones.id, { onDelete: 'set null' }),
 
-  // Polymorphic assignee (user or ally)
+  // Polymorphic assignee (user or agent)
   assigneeType: assigneeTypeEnum('assignee_type').default('unassigned').notNull(),
   assigneeId: uuid('assignee_id'), // NULL if unassigned
 

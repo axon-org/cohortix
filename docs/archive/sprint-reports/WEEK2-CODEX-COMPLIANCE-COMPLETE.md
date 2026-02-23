@@ -238,9 +238,9 @@ _Note: E2E tests with Playwright to be added in Phase 3_
 
 **Rationale:**
 
-- Globally unique across services
+- Globagent unique across services
 - No coordination needed
-- Cryptographically secure
+- Cryptographicagent secure
 - Industry standard
 
 ### 3. RFC 7807 Problem Details
@@ -446,7 +446,7 @@ export const GET = withErrorHandler(async (request: Request) => {
 ### Process Learnings
 
 1. **Test-First Development:** Writing tests revealed edge cases early
-2. **Incremental Testing:** Start simple, add complexity gradually
+2. **Incremental Testing:** Start simple, add complexity graduagent
 3. **Mock Centralization:** Reusable mocks save significant time
 4. **Documentation Timing:** Document while context is fresh
 

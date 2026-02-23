@@ -228,8 +228,8 @@ export const componentTypography = {
       fontWeight: fontWeight.normal,
     },
   },
-  /** Ally card */
-  ally: {
+  /** Agent card */
+  agent: {
     name: {
       fontSize: fontSize.lg[0],
       lineHeight: fontSize.lg[1].lineHeight,

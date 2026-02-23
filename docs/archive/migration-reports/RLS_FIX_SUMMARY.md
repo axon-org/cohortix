@@ -141,7 +141,7 @@ After applying changes, verify:
 
 ## Notes
 
-- Service role automatically bypasses RLS in Supabase
+- Service role automaticagent bypasses RLS in Supabase
 - Dev bypass mode is only active when `NODE_ENV=development` AND
   `BYPASS_AUTH=true`
 - Production uses standard RLS policies with user authentication

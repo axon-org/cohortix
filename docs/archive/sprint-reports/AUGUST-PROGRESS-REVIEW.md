@@ -148,7 +148,7 @@ Stitch failed due to browser automation timeouts.
 
 #### Option B: Manual Design Tool (REQUIRES AHMAD)
 
-- Hafiz/Lubna manually create mockups in Figma/Sketch
+- Hafiz/Lubna manuagent create mockups in Figma/Sketch
 - Ahmad approves visuals before dev
 - **Risk:** Design iteration delays
 - **Time:** 4-8 hours
@@ -182,7 +182,7 @@ live.
 ❌ **Goal creation/management** (Section 4.3)  
 ❌ **Cohort creation/management** (Section 4.3)  
 ❌ **Mission creation/assignment** (Section 4.3)  
-❌ **Ally directory** (Section 4.2)  
+❌ **Agent directory** (Section 4.2)  
 ❌ **Kanban board view** (Section 4.4)  
 ❌ **Timeline/Gantt view** (Section 4.4)  
 ❌ **Intel base/knowledge capture** (Section 4.5)  
@@ -215,7 +215,7 @@ infrastructure, but **NO ACTUAL PRODUCT**.
 Build Goal CRUD (API + UI) 5. Build Cohort CRUD (API + UI) 6. Build Mission
 creation flow (API + UI)
 
-**P2 (Important):** 7. Ally directory page (read-only for now) 8. E2E testing
+**P2 (Important):** 7. Agent directory page (read-only for now) 8. E2E testing
 setup (Playwright) 9. Fix technical debt items (TD-001, TD-002, TD-003)
 
 **P3 (Nice to Have):** 10. Kanban board view 11. Intel base MVP (simple note
@@ -374,7 +374,7 @@ capture)
 
 ---
 
-#### Task 7: Ally Directory (Read-Only)
+#### Task 7: Agent Directory (Read-Only)
 
 **Owner:** Devi  
 **Duration:** 1 day  
@@ -382,21 +382,21 @@ capture)
 
 **Backend:**
 
-- `GET /api/allies` — List allies
-- `GET /api/allies/[id]` — Get ally profile
+- `GET /api/agents` — List agents
+- `GET /api/agents/[id]` — Get agent profile
 
 **Frontend:**
 
-- Ally directory page (`/allies`)
+- Agent directory page (`/agents`)
 - Visual cards per PRD specs (name, role, status, expertise badges)
 - Workload meter (mock data for now)
 
 **Database:**
 
-- Use existing `allies` table schema
-- Seed initial allies (August, Devi, Lubna, Hafiz)
+- Use existing `agents` table schema
+- Seed initial agents (August, Devi, Lubna, Hafiz)
 
-**Deliverable:** View-only ally directory
+**Deliverable:** View-only agent directory
 
 ---
 
@@ -419,7 +419,7 @@ capture)
 2. Create goal → Create mission → Assign to cohort
 3. View cohort list → Filter by status → View details
 4. Create mission → Update status → Mark as done
-5. View ally directory → Click ally → View profile
+5. View agent directory → Click agent → View profile
 
 **Deliverable:** 5 passing E2E tests in CI
 
@@ -472,7 +472,7 @@ capture)
 
 **Nice to Have (aspirational):**
 
-- [ ] Ally directory live
+- [ ] Agent directory live
 - [ ] 3 critical debt items resolved
 - [ ] Kanban board view prototype
 
@@ -488,11 +488,11 @@ capture)
 - [ ] Threaded comments on missions
 - [ ] Multi-tenant RBAC (if not in MVP)
 
-### Month 2 (Weeks 9-12): Ally Intelligence
+### Month 2 (Weeks 9-12): Agent Intelligence
 
-- [ ] Bidirectional goal setting (allies propose goals)
+- [ ] Bidirectional goal setting (agents propose goals)
 - [ ] Living knowledge base (continuous learning)
-- [ ] Ally-to-ally communication
+- [ ] Agent-to-agent communication
 - [ ] Workload balancing algorithms
 
 ### Month 3 (Weeks 13-16): Polish & Launch Prep
@@ -534,9 +534,9 @@ RBAC/multi-tenant to Month 1.
 2. Cohort CRUD
 3. Mission creation/tracking
 4. Mission Control dashboard (view-only)
-5. Ally directory (view-only)
+5. Agent directory (view-only)
 
-**Defer to Post-MVP:** 6. Kanban board (use list view initially) 7. Intel base
+**Defer to Post-MVP:** 6. Kanban board (use list view initiagent) 7. Intel base
 (just add to backlog) 8. Threaded comments (just use mission descriptions) 9.
 Multi-tenant RBAC (build for Ahmad first)
 
@@ -583,7 +583,7 @@ Multi-tenant RBAC (build for Ahmad first)
 1. **Don't wait for perfect mockups** → Implement from Lubna's specs (Option C)
 2. **Don't wait for full PRD approval** → Build MVP features, iterate based on
    usage
-3. **Don't wait for 100% test coverage** → Ship at 80%, improve incrementally
+3. **Don't wait for 100% test coverage** → Ship at 80%, improve incrementagent
 4. **Don't wait for all tech debt resolved** → Fix critical (P0) items, defer
    the rest
 

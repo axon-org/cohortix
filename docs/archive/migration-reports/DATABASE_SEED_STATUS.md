@@ -14,7 +14,7 @@
   - Plan: Pro
   - Features: AI Agents, Knowledge Base, Analytics enabled
 
-### AI Allies / Agents (4)
+### AI Agents / Agents (4)
 
 1. **Devi** - AI Developer Specialist
    - Capabilities: coding, architecture, ai-integration, testing
@@ -113,7 +113,7 @@ The database is ready. Frontend can now:
 ## 📝 Notes
 
 - Initial seed script failed due to existing data (expected behavior)
-- Audit logs were missing initially but have been added
+- Audit logs were missing initiagent but have been added
 - All data is properly linked with foreign keys
 - RLS policies should be configured if needed
 

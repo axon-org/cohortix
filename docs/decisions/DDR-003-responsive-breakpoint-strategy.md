@@ -22,7 +22,7 @@ Tailwind's default breakpoints (`sm`, `md`, `lg`, `xl`, `2xl`). Desktop
 
 AI agent coordination requires:
 
-1. **Desktop-optimized workflows** — Assigning missions, monitoring 5+ allies
+1. **Desktop-optimized workflows** — Assigning missions, monitoring 5+ agents
    simultaneously
 2. **Mobile accessibility** — Check mission status, approve actions, view
    notifications
@@ -31,7 +31,7 @@ AI agent coordination requires:
 ### Design Constraint
 
 Unlike Notion or Trello (which are fully mobile-capable), Cohortix involves
-**complex multi-pane workflows** (Mission Control dashboard, ally briefs, goal
+**complex multi-pane workflows** (Mission Control dashboard, agent briefs, goal
 hierarchies). Full feature parity on mobile is **impractical and unnecessary**.
 
 ---
@@ -75,15 +75,15 @@ hierarchies). Full feature parity on mobile is **impractical and unnecessary**.
 
 **What's optimized:**
 
-- ✅ **Mission status overview** — See active missions, ally statuses
+- ✅ **Mission status overview** — See active missions, agent statuses
 - ✅ **Notifications** — Approve mission steps, acknowledge learnings
-- ✅ **Quick edits** — Update mission titles, change ally assignments
+- ✅ **Quick edits** — Update mission titles, change agent assignments
 
 **What's deprioritized:**
 
 - ⚠️ **Mission Control dashboard** — Simplified to list view (no 3-column grid)
 - ⚠️ **Goal hierarchy** — Collapsible tree, not full visual hierarchy
-- ⚠️ **Ally briefs** — Reduced to essential fields (full form requires desktop)
+- ⚠️ **Agent briefs** — Reduced to essential fields (full form requires desktop)
 
 **Layout changes:**
 
@@ -112,7 +112,7 @@ orientation**.
 
 **What's optimized:**
 
-- ✅ **2-column layouts** — Mission grid, ally directory
+- ✅ **2-column layouts** — Mission grid, agent directory
 - ✅ **Collapsible sidebar** — Persistent but toggleable
 - ✅ **Touch targets** — Minimum 44x44px (WCAG 2.5.5)
 
@@ -300,7 +300,7 @@ Use responsive images with `<picture>` or Next.js `<Image>`:
 
 ```tsx
 <Image
-  src="/ally-avatar.jpg"
+  src="/agent-avatar.jpg"
   alt="Riley"
   width={80} // Desktop
   height={80}
@@ -310,7 +310,7 @@ Use responsive images with `<picture>` or Next.js `<Image>`:
 
 ### Code Splitting
 
-Load desktop-only components conditionally:
+Load desktop-only components conditionagent:
 
 ```tsx
 const MissionControlDashboard = dynamic(
@@ -407,8 +407,8 @@ export default function Page() {
 
 **Trend:** Samsung Fold, Google Pixel Fold (unfolded: ~884px)
 
-**Strategy:** Falls into `md:` (tablet) breakpoint naturally. No custom handling
-needed initially.
+**Strategy:** Falls into `md:` (tablet) breakpoint naturagent. No custom handling
+needed initiagent.
 
 ### Ultra-Wide Monitors (3440px+)
 

@@ -359,30 +359,30 @@ Discovery answers populate the Feature Spec:
 
 **Agent asks:**
 
-> "For the 'Active Allies' widget:
+> "For the 'Active Agents' widget:
 >
 > 1. What defines 'active'? (Last seen <24h? Currently working on action?)
 > 2. Should this update in real-time or on page refresh?
-> 3. What should happen if zero allies are active?
+> 3. What should happen if zero agents are active?
 > 4. Any specific design or can I follow existing widget pattern?"
 
 **Human answers:**
 
 > "Active = currently assigned to in-progress action. Real-time updates
-> (Supabase Realtime). Show '0 active allies' message if none. Follow existing
+> (Supabase Realtime). Show '0 active agents' message if none. Follow existing
 > 'Active Missions' widget pattern (same card style, sparkline chart)."
 
 **Agent summarizes:**
 
-> "Understood. Active Allies widget shows:
+> "Understood. Active Agents widget shows:
 >
-> - Count of allies assigned to in-progress actions
+> - Count of agents assigned to in-progress actions
 > - Real-time updates via Supabase Realtime
 > - Sparkline showing last 7 days trend
-> - '0 active allies' message if none
+> - '0 active agents' message if none
 > - Matches existing widget design
 >
-> I'll create spec at `docs/specs/012-active-allies-widget.md`. Correct?"
+> I'll create spec at `docs/specs/012-active-agents-widget.md`. Correct?"
 
 **Human:** "Yes, proceed with spec."
 

@@ -36,7 +36,7 @@
 
 ### Findings
 
-- **SUBOPTIMAL:** Middleware handles auth manually vs `auth().protect()`; higher
+- **SUBOPTIMAL:** Middleware handles auth manuagent vs `auth().protect()`; higher
   maintenance and possible edge-cases (e.g., auth reason handling).
 - **SUBOPTIMAL:** Mixed env variable conventions (`AFTER_*` vs `*_FALLBACK_*`).
 - **FIXED (quick win):** `BYPASS_AUTH` now ignored in production (reduces
@@ -78,13 +78,13 @@
   environment, confirm it’s enabled in Vercel; otherwise, use Preview + alias or
   a dedicated staging project.
 - Keep environment variables managed in Vercel (preferred) and **pulled** during
-  build, rather than manually injected in CI.
+  build, rather than manuagent injected in CI.
 
 ### Findings
 
 - **SUBOPTIMAL:** Staging flow relies on `--target=staging` (only valid if
   Vercel Custom Environments is enabled). Risk of invalid deploy target.
-- **SUBOPTIMAL:** CI build jobs manually inject env vars, while deploy workflows
+- **SUBOPTIMAL:** CI build jobs manuagent inject env vars, while deploy workflows
   rely on `vercel pull` — two parallel env strategies.
 
 ### Recommendations (Priority)
@@ -169,7 +169,7 @@
   Snyk (high maintenance, long run times).
 - **SUBOPTIMAL:** CI doesn’t run on direct pushes to `dev` (except staging
   workflow pre-checks).
-- **SUBOPTIMAL (potentially WRONG):** `health-check.yml` uses repo secrets for
+- **SUBOPTIMAL (potentiagent WRONG):** `health-check.yml` uses repo secrets for
   Supabase (`NEXT_PUBLIC_SUPABASE_URL/ANON_KEY`). If staging uses a separate
   Supabase project, health checks target prod values.
 

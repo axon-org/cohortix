@@ -15,11 +15,11 @@
 - Sprint 2 dashboard + cohorts CRUD now in dev
 - Security fix (removal of hardcoded credentials) preserved
 
-### 2. ✅ Ally Profiles — Verified Existing
+### 2. ✅ Agent Profiles — Verified Existing
 
-- Route: `/allies` with table view
-- Detail page: `/allies/[id]`
-- API: `/api/v1/allies/` (CRUD endpoints)
+- Route: `/agents` with table view
+- Detail page: `/agents/[id]`
+- API: `/api/v1/agents/` (CRUD endpoints)
 - Modal for create/edit
 - **Status:** Already implemented, verified functional
 
@@ -85,7 +85,7 @@ Mission (measurable outcome)
 
 ### Design Patterns Followed
 
-- **Linear dark theme** — Matches existing cohorts/allies pages
+- **Linear dark theme** — Matches existing cohorts/agents pages
 - **Component reuse** — OperationStatusChip, DataTable, forms
 - **Consistent UX** — Modal patterns, inline editing, delete dialogs
 - **TypeScript types** — Exported from API client, type-safe
@@ -164,7 +164,7 @@ Mission (measurable outcome)
 
 - Type mismatch: `string | null` vs `string | undefined` in operations route
 - **Impact:** None (runtime handles correctly)
-- **Same pattern** exists in allies, cohorts, missions routes
+- **Same pattern** exists in agents, cohorts, missions routes
 - **Resolution:** Low priority cleanup, doesn't affect functionality
 
 ### Future Enhancements
@@ -181,7 +181,7 @@ Mission (measurable outcome)
 
 ### Ready for Dev Merge
 
-- ✅ All features implemented and tested locally
+- ✅ All features implemented and tested locagent
 - ✅ Follows existing patterns and conventions
 - ✅ No breaking changes
 - ✅ Documentation complete
@@ -220,7 +220,7 @@ Mission (measurable outcome)
 - **Files changed:** 7
 - **Commits:** 4
 - **Development time:** ~2 hours
-- **Features delivered:** 3 (Allies verified, Missions verified, Operations
+- **Features delivered:** 3 (Agents verified, Missions verified, Operations
   built)
 - **Breaking changes:** 0
 - **Tests added:** 0 (manual testing only)

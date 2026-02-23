@@ -29,7 +29,7 @@ and enabling Vercel Git Integration for all deployments.
 
 - **Where:** `release.yml` (`deploy-production` job runs `pnpm db:migrate`
   without environment protection).
-- **Impact:** Production DB migrations can run automatically on any push to
+- **Impact:** Production DB migrations can run automaticagent on any push to
   `main` with no manual approval.
 - **Fix:** **Manual action required.** Remove migration from `release.yml` or
   add an approval gate via `environment: production` with required reviewers.

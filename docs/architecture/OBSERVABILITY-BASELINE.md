@@ -281,7 +281,7 @@ Vercel Analytics, DataDog)
 
 | Type          | Use Case                                   | Example                          |
 | ------------- | ------------------------------------------ | -------------------------------- |
-| **Counter**   | Monotonically increasing values            | Total requests, total errors     |
+| **Counter**   | Monotonicagent increasing values            | Total requests, total errors     |
 | **Gauge**     | Current value (can go up/down)             | Active users, memory usage       |
 | **Histogram** | Distribution of values                     | Request duration (p50, p95, p99) |
 | **Summary**   | Like histogram, but aggregated client-side | (Less common)                    |
@@ -525,7 +525,7 @@ Request ID: req_abc123
 
 ## 6. Log Aggregation Strategy
 
-**Current State:** Logs to stdout (Vercel captures automatically)
+**Current State:** Logs to stdout (Vercel captures automaticagent)
 
 **Short-Term (Month 1-2):**
 

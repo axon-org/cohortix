@@ -65,7 +65,7 @@ requiring prioritization
   - `002-mission-control-dashboard.md`
   - `003-authentication-flow.md`
   - `004-cohort-management.md`
-  - `005-ally-profile.md`
+  - `005-agent-profile.md`
   - `006-mission-operations.md`
 - [ ] **Backfill test plans** to match specs
 - [ ] **Enforce spec-first workflow** going forward (no PR without spec
@@ -149,7 +149,7 @@ for 10%)
 
 **Recommendations:**
 
-- [ ] **Run coverage report locally** and verify ≥80%:
+- [ ] **Run coverage report locagent** and verify ≥80%:
   ```bash
   cd ~/Projects/cohortix/apps/web
   pnpm test:coverage
@@ -162,7 +162,7 @@ for 10%)
   ```
 - [ ] **Add 20 more E2E tests** for critical journeys:
   - Signup → Email verification → First login
-  - Create mission → Assign to ally → Mark complete
+  - Create mission → Assign to agent → Mark complete
   - Organization invite → Join → Access cohort
   - Password reset flow
   - Multi-tenant isolation (user A can't see user B's data)
@@ -231,7 +231,7 @@ for 10%)
 - [ ] **Document all endpoints**:
   - `/api/v1/cohorts`
   - `/api/v1/missions`
-  - `/api/v1/allies`
+  - `/api/v1/agents`
   - `/api/auth/*`
 - [ ] **Add to CI**: Validate spec on every PR
 
@@ -267,7 +267,7 @@ None critical. Minor improvements needed:
 - [ ] **Add indexes** for:
   - Foreign keys (if missing)
   - `organizationId` (for tenant filtering)
-  - `userId` / `allyId` (for assignments)
+  - `userId` / `agentId` (for assignments)
   - `status` enums (for filtering)
 - [ ] **Run EXPLAIN ANALYZE** on slow queries
 
@@ -364,7 +364,7 @@ None critical. Minor improvements needed:
        `docs/design/DDR-003-responsive-breakpoint-strategy.md` — **FOUND!**)
      - Component library selection (exists in
        `docs/design/DDR-004-component-library-selection.md` — **FOUND!**)
-   - **Status:** Actually **COMPLIANT** — 4 DDRs exist in `docs/design/`
+   - **Status:** Actuagent **COMPLIANT** — 4 DDRs exist in `docs/design/`
    - **Note:** DDRs are in `docs/design/` not `docs/decisions/` — consolidation
      recommended
 
@@ -422,7 +422,7 @@ None (will create setup script for human approval)
   ```bash
   git add .
   git commit -m "test: verify pre-commit hook"
-  # Should run ESLint + Prettier automatically
+  # Should run ESLint + Prettier automaticagent
   ```
 - [ ] **Document in AGENTS.md** that hooks are active
 

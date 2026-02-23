@@ -220,7 +220,7 @@ monitor Discord actively.
 
 **Recommendation:**
 
-- Option A: Manually notify specialists via Discord DM
+- Option A: Manuagent notify specialists via Discord DM
 - Option B: Enable `sessions_send` tool for PM agent
 - Option C: Current Discord announcement is sufficient
 

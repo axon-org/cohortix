@@ -13,7 +13,7 @@ Cohortix
 After reviewing Devi's comprehensive analysis of the NeuroEngine archives, this
 document records formal ADOPT / ADAPT / SKIP decisions for each recommendation.
 The goal is to leverage proven patterns while avoiding cargo-culting solutions
-that don't fit Cohortix's ally-orchestration domain.
+that don't fit Cohortix's agent-orchestration domain.
 
 **Decision Summary:**
 
@@ -56,7 +56,7 @@ that don't fit Cohortix's ally-orchestration domain.
 
 - Clerk handles primary auth, but implement JWKS pattern for:
   - API key validation layer
-  - Service-to-service communication (ally runtime ↔ Cohortix API)
+  - Service-to-service communication (agent runtime ↔ Cohortix API)
   - Webhook signature verification
 - Store in `packages/auth/` for shared usage across apps
 
@@ -64,7 +64,7 @@ that don't fit Cohortix's ally-orchestration domain.
 
 ```typescript
 // packages/auth/src/jwks.ts
-// Validate ally runtime webhooks, API keys, service tokens
+// Validate agent runtime webhooks, API keys, service tokens
 ```
 
 ---
@@ -80,8 +80,8 @@ that don't fit Cohortix's ally-orchestration domain.
 - Cohortix will have millions of missions across thousands of HQs
 - Offset pagination breaks at scale (duplicate results, slow queries)
 - Cursor pagination is essential for:
-  - Mission lists (filtered by campaign/ally)
-  - Ally activity feeds
+  - Mission lists (filtered by campaign/agent)
+  - Agent activity feeds
   - Intel search results
   - Audit logs
 
@@ -106,7 +106,7 @@ interface PaginatedResponse<T> {
 **Cohortix Application:**
 
 - `/api/v1/missions` — Mission listings
-- `/api/v1/allies/{id}/activity` — Ally activity feeds
+- `/api/v1/agents/{id}/activity` — Agent activity feeds
 - `/api/v1/intel/search` — Semantic search results
 
 ---
@@ -119,20 +119,20 @@ interface PaginatedResponse<T> {
 
 **Rationale:**
 
-- Cohortix orchestrates allies that make LLM calls
+- Cohortix orchestrates agents that make LLM calls
 - Cost attribution is critical for:
-  - Per-ally budgets and quotas
+  - Per-agent budgets and quotas
   - Per-campaign cost caps
   - Per-HQ billing (future marketplace)
   - Cost optimization insights
 
-**Implementation Notes:** Adapt schema for ally context:
+**Implementation Notes:** Adapt schema for agent context:
 
 ```sql
-CREATE TABLE ally_cost_tracking (
+CREATE TABLE agent_cost_tracking (
   id BIGSERIAL PRIMARY KEY,
   hq_id UUID NOT NULL REFERENCES headquarters(id),
-  ally_id UUID REFERENCES allies(id),
+  agent_id UUID REFERENCES agents(id),
   mission_id UUID REFERENCES missions(id),
   campaign_id UUID REFERENCES campaigns(id),
 
@@ -149,15 +149,15 @@ CREATE TABLE ally_cost_tracking (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_cost_hq_date ON ally_cost_tracking(hq_id, created_at);
-CREATE INDEX idx_cost_ally ON ally_cost_tracking(ally_id);
-CREATE INDEX idx_cost_mission ON ally_cost_tracking(mission_id);
+CREATE INDEX idx_cost_hq_date ON agent_cost_tracking(hq_id, created_at);
+CREATE INDEX idx_cost_agent ON agent_cost_tracking(agent_id);
+CREATE INDEX idx_cost_mission ON agent_cost_tracking(mission_id);
 ```
 
 **Cohortix Application:**
 
-- Mission Control widget: "This month's ally costs"
-- Ally profiles: Cost efficiency metrics
+- Mission Control widget: "This month's agent costs"
+- Agent profiles: Cost efficiency metrics
 - Campaign views: Budget vs. actual spend
 
 ---
@@ -174,7 +174,7 @@ codes)
 - Consistent error handling is essential for:
   - Frontend error boundaries
   - API client libraries
-  - Ally error recovery
+  - Agent error recovery
   - Debugging and observability
 
 **Implementation Notes:** Use NeuroEngine's taxonomy with Cohortix extensions:
@@ -198,7 +198,7 @@ const ERROR_PATTERNS = {
   '*_NOT_FOUND': 404, // Resource not found
   'CONFLICT_*': 409, // State conflicts
   'RATE_LIMIT_*': 429, // Rate limiting
-  'ALLY_*': 422, // Cohortix-specific: Ally errors
+  'AGENT_*': 422, // Cohortix-specific: Agent errors
   'CAMPAIGN_*': 422, // Cohortix-specific: Campaign errors
   'INTERNAL_*': 500, // Server errors
 };
@@ -206,10 +206,10 @@ const ERROR_PATTERNS = {
 
 **Cohortix Extensions:**
 
-- `ALLY_UNAVAILABLE` — Ally is off duty or on another mission
-- `ALLY_TIMEOUT` — Ally didn't respond within SLA
+- `AGENT_UNAVAILABLE` — Agent is off duty or on another mission
+- `AGENT_TIMEOUT` — Agent didn't respond within SLA
 - `CAMPAIGN_BLOCKED` — Dependency not met
-- `QUOTA_EXCEEDED` — HQ/ally budget limit reached
+- `QUOTA_EXCEEDED` — HQ/agent budget limit reached
 
 ---
 
@@ -233,7 +233,7 @@ const ERROR_PATTERNS = {
 - Critical tables get RLS-like policies:
   - `campaigns` — `WHERE hq_id = current_hq_id`
   - `missions` — Via campaign relationship
-  - `allies` — Per-HQ isolation
+  - `agents` — Per-HQ isolation
 
 **Implementation Notes:**
 
@@ -271,7 +271,7 @@ export async function withHQContext<T>(
 packages/
 ├── services/
 │   ├── mission.service.ts      # Mission business logic
-│   ├── ally.service.ts         # Ally orchestration
+│   ├── agent.service.ts         # Agent orchestration
 │   ├── campaign.service.ts     # Campaign execution
 │   └── intel.service.ts        # Intel operations
 ```
@@ -283,7 +283,7 @@ packages/
 export class MissionService {
   constructor(
     private db: Database,
-    private allyRuntime: AllyRuntime,
+    private agentRuntime: AgentRuntime,
     private costTracker: CostTracker
   ) {}
 
@@ -313,7 +313,7 @@ export class MissionService {
 **Implementation Notes:** Create `.planning/` directory with Cohortix-adapted
 structure:
 
-- ROADMAP.md — Ally-focused phases
+- ROADMAP.md — Agent-focused phases
 - STATE.md — Current execution state
 - PROJECT.md — Living requirements
 
@@ -330,12 +330,12 @@ structure:
 - Phase 4/5 checkpoint concept is valuable
 - But Cohortix has different UI complexity curve:
   - NeuroEngine: RAG chat UI → Studio → Marketplace
-  - Cohortix: Mission Control → Ally views → Campaign builder
+  - Cohortix: Mission Control → Agent views → Campaign builder
 
 **Adaptation:**
 
 - Checkpoints at different phases:
-  - **Phase 2 (Ally Directory):** Formalize card patterns, status badges
+  - **Phase 2 (Agent Directory):** Formalize card patterns, status badges
   - **Phase 4 (Mission Control):** Formalize Kanban, List, Timeline components
   - **Phase 6 (Intel Base):** Formalize search, feed components
 
@@ -405,7 +405,7 @@ jobs:
 
 **Rationale:**
 
-- Cohortix will stream ally activity in real-time
+- Cohortix will stream agent activity in real-time
 - SSE works with Vercel Edge Functions
 - Pattern proven in NeuroEngine's chat interface
 
@@ -414,11 +414,11 @@ jobs:
 ```typescript
 // SSE event types for Cohortix
 type SSEEvent =
-  | { type: 'ally.deployed'; allyId: string; missionId: string }
-  | { type: 'ally.progress'; message: string; progress: number }
-  | { type: 'ally.log'; level: 'info' | 'warn' | 'error'; content: string }
-  | { type: 'ally.accomplished'; result: MissionResult }
-  | { type: 'ally.failed'; error: string }
+  | { type: 'agent.deployed'; agentId: string; missionId: string }
+  | { type: 'agent.progress'; message: string; progress: number }
+  | { type: 'agent.log'; level: 'info' | 'warn' | 'error'; content: string }
+  | { type: 'agent.accomplished'; result: MissionResult }
+  | { type: 'agent.failed'; error: string }
   | { type: 'cost.update'; cost: CostUpdate };
 ```
 
@@ -437,7 +437,7 @@ checklists)
 
 - NeuroEngine identified Phase 3 as critical failure point (42% of RAG failures)
 - Cohortix has similar inflection points:
-  - Phase 2 (Ally Integration): Ally runtime abstraction must be correct
+  - Phase 2 (Agent Integration): Agent runtime abstraction must be correct
   - Phase 4 (Mission Control): UI complexity spike
   - Phase 6 (Intel Base): Embedding strategy must be correct
 
@@ -486,16 +486,16 @@ checklists)
 **Rationale:**
 
 - Cohortix's marketplace is v3.0+ (far future)
-- NeuroEngine's Neuron marketplace ≠ Cohortix's Ally marketplace
+- NeuroEngine's Neuron marketplace ≠ Cohortix's Agent marketplace
 - Different economics:
   - NeuroEngine: Sell knowledge bases (content)
-  - Cohortix: Rent allies (services)
+  - Cohortix: Rent agents (services)
 - Premature to architect payment flows now
 
 **Future Reference:**
 
 - Save Stripe Connect patterns for when marketplace is in scope
-- Ally rental model requires different billing (usage-based, not purchase)
+- Agent rental model requires different billing (usage-based, not purchase)
 
 ---
 
@@ -516,7 +516,7 @@ checklists)
 **Future Reference:**
 
 - Revisit if Cohortix needs:
-  - Ally relationship graphs
+  - Agent relationship graphs
   - Campaign dependency visualization
   - Complex intel reasoning
 
@@ -532,7 +532,7 @@ checklists)
 
 - Cohortix doesn't ingest documents like NeuroEngine
 - Intel entries come from:
-  - Ally mission completion summaries
+  - Agent mission completion summaries
   - Manual human entries
   - Structured learnings (not PDFs/YouTube)
 - Simpler pipeline: Mission complete → Extract learnings → Embed → Store
@@ -553,8 +553,8 @@ checklists)
 
 **Rationale:**
 
-- Not relevant to Cohortix's ally orchestration focus
-- Intel comes from ally outputs, not external content
+- Not relevant to Cohortix's agent orchestration focus
+- Intel comes from agent outputs, not external content
 - If needed later, use third-party services (not custom pipeline)
 
 ---
@@ -569,7 +569,7 @@ checklists)
 
 - Cohortix needs ops/console aesthetic, not content/notes aesthetic
 - Focus on:
-  - Status indicators (ally states, mission progress)
+  - Status indicators (agent states, mission progress)
   - Data density (mission tables, activity feeds)
   - Alerting/monitoring (health dashboards)
 - ClickUp/Linear are better reference points than Notion
@@ -588,7 +588,7 @@ checklists)
 ### Phase 2 (With MVP Development)
 
 5. 🔄 Cursor pagination (implement with first list endpoints)
-6. 🔄 Cost tracking schema (implement with ally integration)
+6. 🔄 Cost tracking schema (implement with agent integration)
 7. 🔄 RLS-equivalent security (with multi-tenant features)
 
 ### Phase 3 (Post-MVP Enhancement)

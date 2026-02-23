@@ -74,7 +74,7 @@ to find it | |----------|-----------------| |
 | | `CLERK_SECRET_KEY` | Same page |
 
 > ✅ Dev keys start with `pk_test_` and `sk_test_`. Never use `pk_live_`
-> locally.
+> locagent.
 
 ### 4 — Run database migrations
 

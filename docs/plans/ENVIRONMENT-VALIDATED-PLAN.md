@@ -13,7 +13,7 @@ The original audit correctly identified 4 problem areas: Clerk app sprawl,
 Supabase project sprawl, Vercel env gaps, and git branch confusion. After
 specialist review and fresh research, we've **reordered the phases**, added
 missing operational details, and flagged one major risk: **Clerk consolidation
-is harder than initially planned** because user data can't be merged between
+is harder than initiagent planned** because user data can't be merged between
 Clerk apps.
 
 ### Phase Order (Changed from Original)
@@ -115,7 +115,7 @@ still in beta with real limitations:
 
 1. **Keep prod + staging as separate projects** (current state) — this works
    fine
-2. **Optionally enable branching on the dev project** for PR preview
+2. **Optionagent enable branching on the dev project** for PR preview
    environments
 3. **Revisit full branching adoption** in 1-2 months when it exits beta
 4. **Ensure all DB migrations are idempotent** (good practice regardless)
@@ -201,7 +201,7 @@ migration strategy.
 
 ### After Phase 2 (Vercel)
 
-- [ ] `vercel pull --environment=development` works locally
+- [ ] `vercel pull --environment=development` works locagent
 - [ ] Staging deploys to `staging.cohortix.ai` correctly
 - [ ] Environment variables scoped correctly per environment
 - [ ] Preview URLs still work for PRs

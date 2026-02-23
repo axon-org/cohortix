@@ -1,5 +1,5 @@
 /**
- * Individual Ally API Route - GET, PATCH, DELETE
+ * Individual Agent API Route - GET, PATCH, DELETE
  * Axon Codex v1.2 compliant
  */
 
@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
 import { NotFoundError } from '@/lib/errors';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 import { validateRequest, validateData } from '@/lib/validation';
-import { updateAllySchema, type UpdateAllyInput } from '@/lib/validations/ally';
+import { updateAgentSchema, type UpdateAgentInput } from '@/lib/validations/agent';
 import { uuidSchema } from '@/lib/validation';
 
 interface RouteContext {
@@ -17,7 +17,7 @@ interface RouteContext {
 }
 
 // ============================================================================
-// GET /api/v1/allies/:id
+// GET /api/v1/agents/:id
 // ============================================================================
 
 export const GET = withMiddleware(
@@ -27,25 +27,25 @@ export const GET = withMiddleware(
     logger.setContext({ correlationId });
 
     const { id } = await context.params;
-    const allyId = validateData(uuidSchema, id);
+    const agentId = validateData(uuidSchema, id);
 
     const { supabase, organizationId } = await getAuthContext();
 
-    const { data: ally, error } = await supabase
+    const { data: agent, error } = await supabase
       .from('agents')
       .select('*')
-      .eq('id', allyId)
+      .eq('id', agentId)
       .eq('organization_id', organizationId)
       .single();
 
-    if (error || !ally) throw new NotFoundError('Ally', allyId);
+    if (error || !agent) throw new NotFoundError('Agent', agentId);
 
-    return NextResponse.json({ data: ally });
+    return NextResponse.json({ data: agent });
   }
 );
 
 // ============================================================================
-// PATCH /api/v1/allies/:id
+// PATCH /api/v1/agents/:id
 // ============================================================================
 
 export const PATCH = withMiddleware(
@@ -55,20 +55,20 @@ export const PATCH = withMiddleware(
     logger.setContext({ correlationId });
 
     const { id } = await context.params;
-    const allyId = validateData(uuidSchema, id);
+    const agentId = validateData(uuidSchema, id);
 
-    const validator = validateRequest(updateAllySchema, { target: 'body' });
-    const data = (await validator(request)) as UpdateAllyInput;
+    const validator = validateRequest(updateAgentSchema, { target: 'body' });
+    const data = (await validator(request)) as UpdateAgentInput;
 
     const { supabase, organizationId } = await getAuthContext();
 
     const { data: existing } = await supabase
       .from('agents')
       .select('id')
-      .eq('id', allyId)
+      .eq('id', agentId)
       .eq('organization_id', organizationId)
       .single();
-    if (!existing) throw new NotFoundError('Ally', allyId);
+    if (!existing) throw new NotFoundError('Agent', agentId);
 
     const updateData: Record<string, any> = {};
     if (data.name !== undefined) updateData.name = data.name;
@@ -80,28 +80,28 @@ export const PATCH = withMiddleware(
     if (data.runtimeConfig !== undefined) updateData.runtime_config = data.runtimeConfig;
     if (data.settings !== undefined) updateData.settings = data.settings;
 
-    const { data: ally, error } = await supabase
+    const { data: agent, error } = await supabase
       .from('agents')
       .update(updateData)
-      .eq('id', allyId)
+      .eq('id', agentId)
       .select()
       .single();
 
     if (error) {
-      logger.error('Failed to update ally', {
+      logger.error('Failed to update agent', {
         correlationId,
         error: { message: error.message, code: error.code },
       });
       throw error;
     }
 
-    logger.info('Ally updated', { correlationId, allyId });
-    return NextResponse.json({ data: ally });
+    logger.info('Agent updated', { correlationId, agentId });
+    return NextResponse.json({ data: agent });
   }
 );
 
 // ============================================================================
-// DELETE /api/v1/allies/:id
+// DELETE /api/v1/agents/:id
 // ============================================================================
 
 export const DELETE = withMiddleware(
@@ -111,28 +111,28 @@ export const DELETE = withMiddleware(
     logger.setContext({ correlationId });
 
     const { id } = await context.params;
-    const allyId = validateData(uuidSchema, id);
+    const agentId = validateData(uuidSchema, id);
 
     const { supabase, organizationId } = await getAuthContext();
 
     const { data: existing } = await supabase
       .from('agents')
       .select('id, name')
-      .eq('id', allyId)
+      .eq('id', agentId)
       .eq('organization_id', organizationId)
       .single();
-    if (!existing) throw new NotFoundError('Ally', allyId);
+    if (!existing) throw new NotFoundError('Agent', agentId);
 
-    const { error } = await supabase.from('agents').delete().eq('id', allyId);
+    const { error } = await supabase.from('agents').delete().eq('id', agentId);
     if (error) {
-      logger.error('Failed to delete ally', {
+      logger.error('Failed to delete agent', {
         correlationId,
         error: { message: error.message, code: error.code },
       });
       throw error;
     }
 
-    logger.info('Ally deleted', { correlationId, allyId, allyName: existing.name });
+    logger.info('Agent deleted', { correlationId, agentId, agentName: existing.name });
     return new NextResponse(null, { status: 204 });
   }
 );

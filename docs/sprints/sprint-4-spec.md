@@ -24,7 +24,7 @@ Feb 16, 2026 – Feb 27, 2026 (2 Weeks)
 - **[UI]** Drag-and-drop support for status transitions using `dnd-kit`. (Lubna)
 - **[BE]** API endpoints for bulk status updates and position persistence.
   (Devi)
-- **[UI]** Swimlanes by Domain or Ally. (Lubna)
+- **[UI]** Swimlanes by Domain or Agent. (Lubna)
 
 ### 2. Task Card Detail View
 
@@ -36,7 +36,7 @@ Feb 16, 2026 – Feb 27, 2026 (2 Weeks)
 ### 3. List View & Filtering
 
 - **[UI]** High-density table view for bulk management. (Lubna)
-- **[BE]** Advanced filtering API (by Domain, Vision, Mission, Ally, Status).
+- **[BE]** Advanced filtering API (by Domain, Vision, Mission, Agent, Status).
   (Devi)
 
 ### 4. Knowledge Base / Intel Foundation (Phase 4)
@@ -52,4 +52,4 @@ Feb 16, 2026 – Feb 27, 2026 (2 Weeks)
 - Tasks can be dragged between status columns with immediate persistence.
 - Task detail view shows a functional comment thread and history.
 - Users can filter the List View by at least 3 different criteria.
-- Insights can be manually added via a Task and are viewable in a global feed.
+- Insights can be manuagent added via a Task and are viewable in a global feed.

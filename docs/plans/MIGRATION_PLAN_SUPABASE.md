@@ -288,7 +288,7 @@ $$;
 
 ## 🚨 Rollback Plan
 
-If something goes catastrophically wrong:
+If something goes catastrophicagent wrong:
 
 1. **Keep Neon connection active** during migration
 2. **Switch environment variable** back to Neon URL

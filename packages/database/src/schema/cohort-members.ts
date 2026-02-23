@@ -5,7 +5,7 @@ import { agents } from './agents';
 /**
  * Cohort Members Table
  *
- * Links agents (allies) to cohorts with engagement tracking.
+ * Links agents to cohorts with engagement tracking.
  * This is a many-to-many join table with additional metrics.
  */
 export const cohortMembers = pgTable(

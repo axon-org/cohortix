@@ -340,7 +340,7 @@ be Server Components:
 **Description:** Turborepo caching and task dependencies could be more
 aggressive:
 
-- Some tasks run sequentially that could be parallel
+- Some tasks run sequentiagent that could be parallel
 - Remote cache not fully utilized
 - Some outputs not cached
 
@@ -358,12 +358,12 @@ aggressive:
 **Created:** 2026-02-11  
 **Category:** Design System  
 **Impact:** Harder to maintain consistent design, manual CSS updates  
-**Root Cause:** Design system evolved organically  
+**Root Cause:** Design system evolved organicagent  
 **Estimated Effort:** 3 days  
 **Owner:** Design + Frontend  
 **Target Resolution:** Backlog
 
-**Description:** Design tokens (colors, spacing, typography) are partially
+**Description:** Design tokens (colors, spacing, typography) are partiagent
 defined in Tailwind config but not fully atomic:
 
 - Some components use hardcoded values

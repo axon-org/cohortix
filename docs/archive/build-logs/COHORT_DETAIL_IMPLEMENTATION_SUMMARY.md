@@ -38,7 +38,7 @@ Linear-inspired UI design in `/mockups/v3/03-cohort-detail-linear-dark.png`.
 
 **File:** `/apps/web/src/server/db/queries/cohort-members.ts` (NEW)
 
-- `getCohortMembers(cohortId)` - Fetch all allies in a cohort with engagement
+- `getCohortMembers(cohortId)` - Fetch all agents in a cohort with engagement
   scores
 - `getCohortMemberCount(cohortId)` - Count members
 - `getCohortAvgEngagement(cohortId)` - Calculate average engagement
@@ -57,7 +57,7 @@ All routes have authentication, RLS enforcement, and error handling.
 #### **GET `/api/cohorts/:id/members`** (NEW)
 
 - **File:** `/apps/web/src/app/api/cohorts/[id]/members/route.ts`
-- **Purpose:** List all allies in a cohort with engagement scores and statuses
+- **Purpose:** List all agents in a cohort with engagement scores and statuses
 - **Response:** Array of `CohortMember` objects
 
 #### **GET `/api/cohorts/:id/timeline`** (NEW)
@@ -89,7 +89,7 @@ Based on mockup analysis:
 | UI Section                      | API Endpoint                    | Data Used                                                      |
 | ------------------------------- | ------------------------------- | -------------------------------------------------------------- |
 | **Header** (Name, Status, Date) | `GET /api/cohorts/:id`          | `name`, `status`, `start_date`, `end_date`                     |
-| **"Invite AI Ally" Button**     | Manual action                   | Opens modal (future: `POST /api/cohorts/:id/members`)          |
+| **"Invite AI Agent" Button**     | Manual action                   | Opens modal (future: `POST /api/cohorts/:id/members`)          |
 | **Engagement Timeline**         | `GET /api/cohorts/:id/timeline` | `timeline[]` array                                             |
 | **Activity Log**                | `GET /api/cohorts/:id/activity` | `activities[]` array                                           |
 | **Batch Members (8)**           | `GET /api/cohorts/:id/members`  | `members[]` array                                              |
@@ -291,7 +291,7 @@ All endpoints enforce:
    - `CohortHeader` (header with name, status, dates)
    - `EngagementTimeline` (chart component)
    - `ActivityLog` (scrollable list)
-   - `MembersList` (table/grid of allies)
+   - `MembersList` (table/grid of agents)
 4. Wire up data fetching using provided example code
 5. Handle loading/error states
 6. Style according to Linear-inspired design

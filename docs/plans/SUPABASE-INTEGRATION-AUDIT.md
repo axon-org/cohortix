@@ -33,7 +33,7 @@ order.
 | Table            | Key Columns                                                                                                | FKs             | RLS                                  |
 | ---------------- | ---------------------------------------------------------------------------------------------------------- | --------------- | ------------------------------------ |
 | `cohorts`        | `id`, `organization_id`, `name`, `description`, `status`, `start_date`, `end_date`, `metadata`, timestamps | `organizations` | ✅ Tenant isolation (Clerk Option A) |
-| `cohort_members` | `id`, `cohort_id`, `user_id` (nullable), `ally_id` (nullable), `engagement_score`, `joined_at`, timestamps | `cohorts`       | ✅ Tenant isolation via cohort       |
+| `cohort_members` | `id`, `cohort_id`, `user_id` (nullable), `agent_id` (nullable), `engagement_score`, `joined_at`, timestamps | `cohorts`       | ✅ Tenant isolation via cohort       |
 
 ### Sprint 4 Tables
 
@@ -41,7 +41,7 @@ order.
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------- |
 | `comments`     | `id`, `organization_id`, `entity_type`, `entity_id`, `author_id` → `profiles(id)`, `content`, timestamps                          | `organizations`, `profiles` | ✅ Clerk Option A with author-level control |
 | `activity_log` | `id`, `organization_id`, `entity_type`, `entity_id`, `action`, `actor_id` → `profiles(id)`, `metadata`, `created_at`              | `organizations`, `profiles` | ✅ Read-only for users (no UPDATE/DELETE)   |
-| `insights`     | `id`, `organization_id`, `title`, `content`, `source_type`, `source_id`, `ally_id`, `tags`, `embedding` (VECTOR 1536), timestamps | `organizations`             | ✅ Admin-only delete                        |
+| `insights`     | `id`, `organization_id`, `title`, `content`, `source_type`, `source_id`, `agent_id`, `tags`, `embedding` (VECTOR 1536), timestamps | `organizations`             | ✅ Admin-only delete                        |
 
 ### Infrastructure Tables
 
@@ -66,11 +66,11 @@ may exist in the actual Supabase database, but are **not defined in
 
 | Table               | Code References                                          | Risk                                         |
 | ------------------- | -------------------------------------------------------- | -------------------------------------------- |
-| `agents`            | `/api/v1/allies/*`, dashboard queries, cohort members    | 🔴 Not in supabase migrations — Drizzle only |
+| `agents`            | `/api/v1/agents/*`, dashboard queries, cohort members    | 🔴 Not in supabase migrations — Drizzle only |
 | `projects`          | `/api/v1/operations/*`, dashboard queries, tasks queries | 🔴 Not in supabase migrations — Drizzle only |
 | `tasks`             | dashboard queries, tasks queries                         | 🔴 Not in supabase migrations — Drizzle only |
-| `audit_logs`        | Originally in dashboard queries (fixed → `activity_log`) | 🟡 Replaced with `activity_log`              |
-| `knowledge_entries` | Originally in dashboard queries (fixed → `insights`)     | 🟡 Replaced with `insights`                  |
+| `audit_logs`        | Originagent in dashboard queries (fixed → `activity_log`) | 🟡 Replaced with `activity_log`              |
+| `knowledge_entries` | Originagent in dashboard queries (fixed → `insights`)     | 🟡 Replaced with `insights`                  |
 
 > **Note:** Since migrations cannot be modified, code was adjusted to: (a) use
 > only supabase-migration-defined tables where possible, and (b) leave
@@ -241,7 +241,7 @@ for profile-only routes (e.g., user settings). Intentional design.
 - **Fix:** Changed to `select('*')` and removed invalid `position` order.
 - **Status:** ✅ Fixed
 
-#### ISSUE-009: Dashboard `getActiveAllies` Join on Missing Tables
+#### ISSUE-009: Dashboard `getActiveAgents` Join on Missing Tables
 
 - **File:** `apps/web/src/server/db/queries/dashboard.ts`
 - **Problem:** `agents` select included join
@@ -306,10 +306,10 @@ for profile-only routes (e.g., user settings). Intentional design.
 
 - **File:** `apps/web/src/server/db/queries/cohort-members.ts`
 - **Problem:** Referenced `agent_id` join to `agents` table. Supabase migration
-  defines `user_id` (nullable) and `ally_id` (nullable) — not `agent_id`.
-- **Fix:** Rewrote to fetch `user_id` and `ally_id` separately, resolving
+  defines `user_id` (nullable) and `agent_id` (nullable) — not `agent_id`.
+- **Fix:** Rewrote to fetch `user_id` and `agent_id` separately, resolving
   profiles from `profiles` table for `user_id` and attempting `agents` for
-  `ally_id` (with try/catch if table absent).
+  `agent_id` (with try/catch if table absent).
 - **Status:** ✅ Fixed
 
 #### ISSUE-016: Dashboard Mission-Control API Referenced `engagement_percent`/`member_count` Columns
@@ -412,7 +412,7 @@ for profile-only routes (e.g., user settings). Intentional design.
 
 | File                                                          | Change Type | Summary                                                                                                 |
 | ------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------- |
-| `apps/web/src/server/db/queries/cohort-members.ts`            | Rewrite     | Use `getAuthContext()`, handle `user_id`/`ally_id` schema, fix type errors                              |
+| `apps/web/src/server/db/queries/cohort-members.ts`            | Rewrite     | Use `getAuthContext()`, handle `user_id`/`agent_id` schema, fix type errors                              |
 | `apps/web/src/server/db/queries/cohorts.ts`                   | Rewrite     | Use `getAuthContext()`, compute stats from `cohort_members`, fix column refs                            |
 | `apps/web/src/server/db/mutations/cohorts.ts`                 | Rewrite     | Use `getAuthContext()`, remove invalid columns, use `metadata`                                          |
 | `apps/web/src/server/db/queries/dashboard.ts`                 | Edit        | Fix `audit_logs` → `activity_log`, `knowledge_entries` → `insights`, remove invalid joins               |
@@ -424,8 +424,8 @@ for profile-only routes (e.g., user settings). Intentional design.
 | `apps/web/src/app/api/v1/missions/[id]/route.ts`              | Edit        | Remove invalid `projects` join, remove unused imports                                                   |
 | `apps/web/src/app/api/v1/operations/route.ts`                 | Edit        | Remove invalid joins and slug generation, remove unused imports                                         |
 | `apps/web/src/app/api/v1/operations/[id]/route.ts`            | Edit        | Remove invalid joins, remove unused imports                                                             |
-| `apps/web/src/app/api/v1/allies/route.ts`                     | Edit        | Remove unused imports                                                                                   |
-| `apps/web/src/app/api/v1/allies/[id]/route.ts`                | Edit        | Remove unused imports                                                                                   |
+| `apps/web/src/app/api/v1/agents/route.ts`                     | Edit        | Remove unused imports                                                                                   |
+| `apps/web/src/app/api/v1/agents/[id]/route.ts`                | Edit        | Remove unused imports                                                                                   |
 | `apps/web/src/app/api/v1/dashboard/mission-control/route.ts`  | Rewrite     | Compute KPIs from `cohort_members` instead of stored columns                                            |
 | `apps/web/src/app/api/v1/dashboard/health-trends/route.ts`    | Rewrite     | Compute trends from `cohort_members` instead of stored columns                                          |
 | `apps/web/src/app/api/v1/dashboard/engagement-chart/route.ts` | Rewrite     | Compute engagement from `cohort_members` instead of stored columns                                      |
@@ -438,7 +438,7 @@ for profile-only routes (e.g., user settings). Intentional design.
 | Item                                                                                       | Risk | Notes                                                                                                                                                      |
 | ------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `agents`, `projects`, `tasks` tables not in supabase migrations                            | 🟡   | These routes will work if Drizzle migrations were also applied to the same DB. Document clearly that both migration sets must be applied.                  |
-| `cohorts` table missing `slug`, `created_by`, `member_count`, `engagement_percent` columns | 🟡   | All API consumers now work without these stored columns. Computed dynamically. If the Drizzle-applied schema has them, they'll be returned too — harmless. |
+| `cohorts` table missing `slug`, `created_by`, `member_count`, `engagement_percent` columns | 🟡   | All API consumers now work without these stored columns. Computed dynamicagent. If the Drizzle-applied schema has them, they'll be returned too — harmless. |
 | Dashboard queries for `tasks`/`agents`/`projects` still reference those tables             | 🟡   | They exist in Drizzle schema. If Drizzle migrations were applied, they work. If not, those dashboard sections will return empty data gracefully.           |
 | `user.deleted` only sets `deleted_at` — app login check missing                            | 🟢   | `getAuthContext()` should check `deleted_at IS NULL` on profile lookup. Not done to avoid scope creep, but documented for next sprint.                     |
 
@@ -455,5 +455,5 @@ for profile-only routes (e.g., user settings). Intentional design.
 - [x] `pnpm lint` — ✅ passes (warnings only: `<img>` tags in UI components,
       pre-existing)
 - [x] `npx prettier --write` — ✅ run on all changed files
-- [x] Auth → Dashboard flow logically verified
+- [x] Auth → Dashboard flow logicagent verified
 - [x] No migrations modified — application code only

@@ -11,7 +11,7 @@
 ## Executive Summary
 
 Cohortix v3 requires a **complete agent runtime infrastructure** to run AI
-allies natively without OpenClaw. This document provides comprehensive research
+agents natively without OpenClaw. This document provides comprehensive research
 on the latest (2025-2026) technologies for building production-ready, scalable,
 multi-agent systems.
 
@@ -223,7 +223,7 @@ traces/month, then $39/month.
 
 E2B provides **production-ready sandboxed code execution environments** using
 Firecracker microVMs (the same technology AWS Lambda uses). It's designed
-specifically for AI agents executing untrusted code.
+specificagent for AI agents executing untrusted code.
 
 **Strengths:**
 
@@ -362,7 +362,7 @@ const response = await fetch('http://litellm:4000/chat/completions', {
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    model: 'gpt-4-turbo', // LiteLLM routes automatically
+    model: 'gpt-4-turbo', // LiteLLM routes automaticagent
     messages: [{ role: 'user', content: 'Analyze this mission' }],
   }),
 });

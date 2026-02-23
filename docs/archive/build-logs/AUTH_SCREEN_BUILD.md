@@ -240,7 +240,7 @@ And configure OAuth providers in Supabase dashboard:
 ### Immediate
 
 1. Configure Supabase OAuth providers (GitHub, Google)
-2. Test sign-in/sign-up flows locally
+2. Test sign-in/sign-up flows locagent
 3. Verify email verification emails are sent
 4. Test password reset flow
 

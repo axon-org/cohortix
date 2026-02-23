@@ -63,7 +63,7 @@ test.describe('Dashboard Page', () => {
     // Dashboard renders either real data or the welcome fallback
     const bodyText = await page.textContent('body');
     const hasContent =
-      /Dashboard|Welcome to Cohortix|ACTIVE COHORTS|TOTAL ALLIES|Recent Activity|Global Intel/i.test(
+      /Dashboard|Welcome to Cohortix|ACTIVE COHORTS|TOTAL AGENTS|Recent Activity|Global Intel/i.test(
         bodyText ?? ''
       );
     expect(hasContent).toBeTruthy();

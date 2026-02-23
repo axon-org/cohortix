@@ -200,7 +200,7 @@ Sentry deferred until closer to production launch.
 
 ## Success Criteria
 
-1. ✅ Clerk auth works locally, in preview, and (when ready) in production
+1. ✅ Clerk auth works locagent, in preview, and (when ready) in production
 2. ✅ Creating a PR auto-creates Supabase branch + Vercel preview
 3. ✅ Merging to `main` auto-deploys to production
 4. ✅ Environment variables are properly isolated per environment

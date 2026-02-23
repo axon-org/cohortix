@@ -38,7 +38,7 @@
 
 **Why Manual?**
 
-- `psql` not installed locally
+- `psql` not installed locagent
 - Direct postgres connection: "Tenant or user not found" error
 - Pooler connection: Same error
 - Drizzle Kit: Outdated version (v0.20)
@@ -55,14 +55,14 @@
 
 - ✅ **Created new seed script:** `scripts/seed-supabase.ts`
 - ✅ Uses Supabase client (works via HTTPS, no postgres needed)
-- ✅ Seeds 4 AI allies, 3 projects, 5 tasks, 2 knowledge entries
+- ✅ Seeds 4 AI agents, 3 projects, 5 tasks, 2 knowledge entries
 - ✅ Tested and verified script syntax
 
 **What It Creates:**
 
 ```
 • 1 organization: Axon HQ (Pro plan)
-• 4 AI allies: Devi, Lubna, Zara, Khalid
+• 4 AI agents: Devi, Lubna, Zara, Khalid
 • 1 sample client: TechCorp Inc.
 • 3 cohorts/projects (Active, Active, Planning)
 • 5 missions/tasks (various statuses)
@@ -93,12 +93,12 @@ pnpm tsx scripts/seed-supabase.ts
 
 1. `getCurrentUser()` — Get authenticated user + profile
 2. `getUserOrganization(userId)` — Get user's org membership
-3. `getDashboardKPIs(orgId)` — KPI metrics (cohorts, tasks, allies, completion
+3. `getDashboardKPIs(orgId)` — KPI metrics (cohorts, tasks, agents, completion
    rate)
 4. `getRecentActivity(orgId, limit)` — Recent audit log
 5. `getActiveAlerts(orgId)` — Urgent/overdue/blocked task alerts
 6. `getActiveCohorts(orgId, limit)` — Projects with task stats
-7. `getActiveAllies(orgId)` — Agents with workload info
+7. `getActiveAgents(orgId)` — Agents with workload info
 8. `getRecentKnowledge(orgId, limit)` — Recent knowledge entries
 9. `getDashboardData()` — **Main entry point** (fetches everything)
 
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
       activity={data.activity}
       alerts={data.alerts}
       cohorts={data.cohorts}
-      allies={data.allies}
+      agents={data.agents}
       knowledge={data.knowledge}
     />
   );
@@ -281,13 +281,13 @@ pnpm tsx scripts/seed-supabase.ts
 ### When Completed, You'll Have:
 
 - ✅ 16 database tables with RLS
-- ✅ Sample data (4 allies, 3 projects, 5 tasks)
+- ✅ Sample data (4 agents, 3 projects, 5 tasks)
 - ✅ Dashboard showing real data:
   - KPI cards with actual numbers
   - Activity feed with recent actions
   - Alerts for urgent/overdue tasks
   - Cohorts grid with progress bars
-  - Allies sidebar with workload
+  - Agents sidebar with workload
   - User name from database (not hardcoded)
 - ✅ Multi-tenant isolation working
 - ✅ Type-safe queries

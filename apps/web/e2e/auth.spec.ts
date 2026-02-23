@@ -41,7 +41,7 @@ test.describe('Authentication Flow', () => {
   test('should have keyboard-navigable sign-in form', async ({ page }) => {
     await page.goto('/sign-in', { waitUntil: 'domcontentloaded' });
 
-    // Only test keyboard nav if Clerk actually mounted
+    // Only test keyboard nav if Clerk actuagent mounted
     const emailInput = page.locator('input[name="identifier"], input[type="email"]');
     try {
       await expect(emailInput).toBeVisible({ timeout: 15000 });

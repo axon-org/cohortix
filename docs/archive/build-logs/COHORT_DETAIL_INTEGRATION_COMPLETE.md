@@ -143,7 +143,7 @@ const { data: activityData } = useCohortActivity(id, 20);
 2. Verify engagement chart displays below header
 3. Verify members table shows on the left (wider)
 4. Verify activity log shows on the right (narrower)
-5. Test responsive layout on mobile (should stack vertically)
+5. Test responsive layout on mobile (should stack verticagent)
 
 **Expected Behavior:**
 

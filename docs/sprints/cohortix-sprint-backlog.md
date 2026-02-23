@@ -12,7 +12,7 @@ with status colors) **Mockups:** `/Users/alimai/clawd/cohortix-mockups/v3/`
 
 1. **Mission Control Dashboard** (refine existing implementation)
 2. **Cohorts CRUD** (new feature - grid, detail, create/edit)
-3. **Ally Profiles** (new feature)
+3. **Agent Profiles** (new feature)
 4. **Goals/Missions Enhancement** (based on existing projects table)
 
 ---
@@ -105,7 +105,7 @@ implementation exists, needs design alignment
   - File: `supabase/migrations/YYYYMMDDHHMMSS_create_cohorts.sql`
   - Table: `cohorts` (id, organization_id, name, description, status,
     start_date, end_date, metadata, created_at, updated_at)
-  - Table: `cohort_members` (id, cohort_id, user_id/ally_id, joined_at,
+  - Table: `cohort_members` (id, cohort_id, user_id/agent_id, joined_at,
     engagement_score, metadata)
   - Add RLS policies for tenant isolation
   - Add indexes on frequently queried columns
@@ -182,7 +182,7 @@ implementation exists, needs design alignment
   - Engagement timeline chart (like mockup - blue gradient line)
   - Member list with engagement scores
   - Activity log (right sidebar)
-  - "Invite All Ally" button, "Edit Profile" button
+  - "Invite All Agent" button, "Edit Profile" button
   - Tabs: Overview, Members, Activity, Settings (MVP: just Overview)
   - Test: E2E test for detail page
 
@@ -197,7 +197,7 @@ implementation exists, needs design alignment
 
 - [ ] **COH-F5: Cohort Members List Component**
   - File: `apps/web/src/components/cohorts/members-list.tsx`
-  - Table with: Avatar, AI Ally name, Role, Status, Engagement Score, Action
+  - Table with: Avatar, AI Agent name, Role, Status, Engagement Score, Action
     menu
   - Status indicators: Optimal (green), Active (blue), Syncing (amber), Idle
     (gray)
@@ -217,32 +217,32 @@ implementation exists, needs design alignment
 
 ---
 
-### EPIC 3: Ally Profiles (NEW FEATURE)
+### EPIC 3: Agent Profiles (NEW FEATURE)
 
-**Mockup:** `04-ally-profile-linear-dark.png`
+**Mockup:** `04-agent-profile-linear-dark.png`
 
 #### Backend Tasks (Devi)
 
-- [ ] **ALLY-B1: Enhance Ally Queries**
-  - File: `apps/web/src/server/db/queries/allies.ts` (create if doesn't exist)
-  - `getAllyById(id)` - full ally profile
-  - `getAllyStats(id)` - tasks completed, success rate, avg response time
-  - `getAllyActivityHistory(id, limit)` - activity timeline
-  - `getAllyActiveMissions(id)` - current active missions
-  - Spec: Document in `docs/specs/allies-data-contract.md`
+- [ ] **AGENT-B1: Enhance Agent Queries**
+  - File: `apps/web/src/server/db/queries/agents.ts` (create if doesn't exist)
+  - `getAgentById(id)` - full agent profile
+  - `getAgentStats(id)` - tasks completed, success rate, avg response time
+  - `getAgentActivityHistory(id, limit)` - activity timeline
+  - `getAgentActiveMissions(id)` - current active missions
+  - Spec: Document in `docs/specs/agents-data-contract.md`
   - Test: Unit tests
 
-- [ ] **ALLY-B2: Ally API Routes**
-  - File: `apps/web/src/app/api/allies/[id]/route.ts`
-  - GET `/api/allies/:id` - get ally profile
-  - PATCH `/api/allies/:id` - update ally (name, avatar, settings)
+- [ ] **AGENT-B2: Agent API Routes**
+  - File: `apps/web/src/app/api/agents/[id]/route.ts`
+  - GET `/api/agents/:id` - get agent profile
+  - PATCH `/api/agents/:id` - update agent (name, avatar, settings)
   - Add authorization check (only org members can view)
   - Test: API tests
 
 #### Frontend Tasks (Sami)
 
-- [ ] **ALLY-F1: Ally Profile Page**
-  - File: `apps/web/src/app/(dashboard)/allies/[id]/page.tsx`
+- [ ] **AGENT-F1: Agent Profile Page**
+  - File: `apps/web/src/app/(dashboard)/agents/[id]/page.tsx`
   - Match mockup: dark background, avatar with glow, status indicator
   - Profile header: Name, specialty badge, skills/tags
   - Stats grid: Tasks Completed, Success Rate, Avg Response Time
@@ -251,15 +251,15 @@ implementation exists, needs design alignment
   - "Assign Mission" button, "Edit Profile" button
   - Test: E2E test
 
-- [ ] **ALLY-F2: Activity History Component**
-  - File: `apps/web/src/components/allies/activity-history.tsx`
+- [ ] **AGENT-F2: Activity History Component**
+  - File: `apps/web/src/components/agents/activity-history.tsx`
   - Timeline layout with dates
   - Activity items: icon, timestamp, description, related entity link
   - Filter by activity type
   - Test: Component tests
 
-- [ ] **ALLY-F3: Active Missions Widget**
-  - File: `apps/web/src/components/allies/active-missions.tsx`
+- [ ] **AGENT-F3: Active Missions Widget**
+  - File: `apps/web/src/components/agents/active-missions.tsx`
   - List of current missions with progress bars
   - Click → navigate to mission detail
   - Empty state if no active missions
@@ -396,11 +396,11 @@ For each task:
 ## 📝 Notes
 
 - **Terminology:** Database uses `projects` (Missions), `tasks` (Actions),
-  `agents` (Allies)
+  `agents` (Agents)
 - **Goals vs Cohorts:** Ahmad mentioned "Goals CRUD" in priority, but mockups
   show Cohorts. Need clarification - assuming Cohorts for now.
 - **Campaign Builder:** Complex feature - deferred to Sprint 2 to ensure quality
-- **Existing Code:** Dashboard partially implemented, auth working,
+- **Existing Code:** Dashboard partiagent implemented, auth working,
   infrastructure solid
 
 ---

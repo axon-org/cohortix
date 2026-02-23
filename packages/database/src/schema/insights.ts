@@ -19,6 +19,7 @@ export const insights = pgTable(
     content: text('content').notNull(),
     sourceType: varchar('source_type', { length: 50 }),
     sourceId: uuid('source_id'),
+    /** Reference to an agent (AI agent in user-facing terminology) */
     allyId: uuid('ally_id'),
     tags: text('tags').array().notNull().default([]),
     embedding: vector('embedding'),
@@ -27,7 +28,8 @@ export const insights = pgTable(
   },
   (table) => ({
     orgIdx: index('idx_insights_org').on(table.organizationId),
-    allyIdx: index('idx_insights_ally').on(table.allyId),
+    /** Index for filtering insights by agent */
+    agentIdx: index('idx_insights_ally').on(table.allyId),
   })
 );
 

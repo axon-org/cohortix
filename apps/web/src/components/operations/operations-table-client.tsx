@@ -3,14 +3,14 @@
 import { useMemo } from 'react';
 import { useOperations } from '@/hooks/use-operations';
 import { useMissions } from '@/hooks/use-missions';
-import { useAllies } from '@/hooks/use-allies';
+import { useAgents } from '@/hooks/use-agents';
 import { OperationsTable, type Operation } from './operations-table';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function OperationsTableClient() {
   const { data, isLoading, error } = useOperations();
   const { data: missionsData } = useMissions({ limit: 1000 });
-  const { data: alliesData } = useAllies({ limit: 1000 });
+  const { data: agentsData } = useAgents({ limit: 1000 });
 
   // Lookup maps
   const missionLookup = useMemo(() => {
@@ -18,10 +18,10 @@ export function OperationsTableClient() {
     return new Map(missionsData.data.map((m) => [m.id, m.name]));
   }, [missionsData]);
 
-  const allyLookup = useMemo(() => {
-    if (!alliesData?.data) return new Map();
-    return new Map(alliesData.data.map((a) => [a.id, a.name]));
-  }, [alliesData]);
+  const agentLookup = useMemo(() => {
+    if (!agentsData?.data) return new Map();
+    return new Map(agentsData.data.map((a) => [a.id, a.name]));
+  }, [agentsData]);
 
   if (isLoading) {
     return <OperationsTableSkeleton />;
@@ -55,7 +55,7 @@ export function OperationsTableClient() {
     missionName:
       (operation as any).missions?.title ||
       (operation.missionId ? missionLookup.get(operation.missionId) : undefined),
-    ownerName: operation.ownerId ? allyLookup.get(operation.ownerId) : 'Unassigned',
+    ownerName: operation.ownerId ? agentLookup.get(operation.ownerId) : 'Unassigned',
     startDate: operation.startDate,
     targetDate: operation.targetDate,
     createdAt: operation.created_at,
@@ -65,7 +65,7 @@ export function OperationsTableClient() {
     <OperationsTable
       data={tableData}
       missions={missionsData?.data || []}
-      allies={alliesData?.data || []}
+      agents={agentsData?.data || []}
     />
   );
 }

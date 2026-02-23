@@ -59,10 +59,10 @@ async function seed() {
 
     console.log(`✅ Created organization: ${org.name} (${org.id})\n`);
 
-    // 2. Create Sample Allies
-    console.log('🤖 Creating AI allies...');
+    // 2. Create Sample Agents
+    console.log('🤖 Creating AI agents...');
 
-    const allies = [
+    const agents = [
       {
         name: 'Devi',
         slug: 'devi',
@@ -97,19 +97,19 @@ async function seed() {
       },
     ];
 
-    const { data: createdAllies, error: alliesError } = await supabase
+    const { data: createdAgents, error: agentsError } = await supabase
       .from('agents')
       .insert(
-        allies.map((ally) => ({
+        agents.map((agent) => ({
           organization_id: org.id,
-          external_id: `clawdbot-${ally.slug}`,
-          name: ally.name,
-          slug: ally.slug,
-          role: ally.role,
-          description: ally.description,
-          avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${ally.slug}`,
-          status: ally.status,
-          capabilities: ally.capabilities,
+          external_id: `clawdbot-${agent.slug}`,
+          name: agent.name,
+          slug: agent.slug,
+          role: agent.role,
+          description: agent.description,
+          avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${agent.slug}`,
+          status: agent.status,
+          capabilities: agent.capabilities,
           runtime_type: 'clawdbot',
           runtime_config: {
             modelPreference: 'claude-3-5-sonnet',
@@ -119,13 +119,13 @@ async function seed() {
       )
       .select();
 
-    if (alliesError) {
-      console.error('❌ Failed to create allies:', alliesError);
-      throw alliesError;
+    if (agentsError) {
+      console.error('❌ Failed to create agents:', agentsError);
+      throw agentsError;
     }
 
-    console.log(`✅ Created ${createdAllies.length} allies:\n`);
-    createdAllies.forEach((ally: any) => console.log(`   - ${ally.name} (${ally.role})`));
+    console.log(`✅ Created ${createdAgents.length} agents:\n`);
+    createdAgents.forEach((agent: any) => console.log(`   - ${agent.name} (${agent.role})`));
     console.log();
 
     // 3. Create Sample Client
@@ -169,17 +169,17 @@ async function seed() {
         color: '#3B82F6',
         icon: '🎨',
         owner_type: 'agent',
-        owner_id: createdAllies.find((a: any) => a.slug === 'lubna')!.id,
+        owner_id: createdAgents.find((a: any) => a.slug === 'lubna')!.id,
       },
       {
         name: 'Agent Evolution System',
         slug: 'agent-evolution-system',
-        description: 'Build autonomous learning system for AI allies',
+        description: 'Build autonomous learning system for AI agents',
         status: 'active',
         color: '#8B5CF6',
         icon: '🧠',
         owner_type: 'agent',
-        owner_id: createdAllies.find((a: any) => a.slug === 'devi')!.id,
+        owner_id: createdAgents.find((a: any) => a.slug === 'devi')!.id,
       },
       {
         name: 'Content Strategy Overhaul',
@@ -189,7 +189,7 @@ async function seed() {
         color: '#10B981',
         icon: '✍️',
         owner_type: 'agent',
-        owner_id: createdAllies.find((a: any) => a.slug === 'zara')!.id,
+        owner_id: createdAgents.find((a: any) => a.slug === 'zara')!.id,
       },
     ];
 
@@ -235,7 +235,7 @@ async function seed() {
         status: 'done',
         priority: 'high',
         assignee_type: 'agent',
-        assignee_id: createdAllies.find((a: any) => a.slug === 'lubna')!.id,
+        assignee_id: createdAgents.find((a: any) => a.slug === 'lubna')!.id,
       },
       {
         project_id: dashboardMission.id,
@@ -244,7 +244,7 @@ async function seed() {
         status: 'in_progress',
         priority: 'high',
         assignee_type: 'agent',
-        assignee_id: createdAllies.find((a: any) => a.slug === 'devi')!.id,
+        assignee_id: createdAgents.find((a: any) => a.slug === 'devi')!.id,
       },
       {
         project_id: dashboardMission.id,
@@ -253,7 +253,7 @@ async function seed() {
         status: 'todo',
         priority: 'medium',
         assignee_type: 'agent',
-        assignee_id: createdAllies.find((a: any) => a.slug === 'devi')!.id,
+        assignee_id: createdAgents.find((a: any) => a.slug === 'devi')!.id,
       },
       {
         project_id: evolutionMission.id,
@@ -262,7 +262,7 @@ async function seed() {
         status: 'done',
         priority: 'high',
         assignee_type: 'agent',
-        assignee_id: createdAllies.find((a: any) => a.slug === 'devi')!.id,
+        assignee_id: createdAgents.find((a: any) => a.slug === 'devi')!.id,
       },
       {
         project_id: evolutionMission.id,
@@ -271,7 +271,7 @@ async function seed() {
         status: 'in_progress',
         priority: 'urgent',
         assignee_type: 'agent',
-        assignee_id: createdAllies.find((a: any) => a.slug === 'devi')!.id,
+        assignee_id: createdAgents.find((a: any) => a.slug === 'devi')!.id,
       },
     ];
 
@@ -307,7 +307,7 @@ async function seed() {
 
     const knowledgeData = [
       {
-        agent_id: createdAllies.find((a: any) => a.slug === 'devi')!.id,
+        agent_id: createdAgents.find((a: any) => a.slug === 'devi')!.id,
         title: 'RAG System Best Practices',
         content:
           'When building RAG systems: chunk strategically, use hybrid search, implement re-ranking...',
@@ -317,7 +317,7 @@ async function seed() {
         scope_level: 'company',
       },
       {
-        agent_id: createdAllies.find((a: any) => a.slug === 'lubna')!.id,
+        agent_id: createdAgents.find((a: any) => a.slug === 'lubna')!.id,
         title: 'Design System Component Naming',
         content: 'Use PascalCase for component names, consistent variant patterns...',
         category: 'operational',
@@ -357,7 +357,7 @@ async function seed() {
       {
         organization_id: org.id,
         actor_type: 'agent',
-        actor_id: createdAllies.find((a: any) => a.slug === 'devi')!.id,
+        actor_id: createdAgents.find((a: any) => a.slug === 'devi')!.id,
         event_type: 'task.completed',
         event_data: {
           task_id: createdActions[0].id,
@@ -369,7 +369,7 @@ async function seed() {
       {
         organization_id: org.id,
         actor_type: 'agent',
-        actor_id: createdAllies.find((a: any) => a.slug === 'lubna')!.id,
+        actor_id: createdAgents.find((a: any) => a.slug === 'lubna')!.id,
         event_type: 'task.updated',
         event_data: {
           task_id: createdActions[1].id,
@@ -382,7 +382,7 @@ async function seed() {
       {
         organization_id: org.id,
         actor_type: 'agent',
-        actor_id: createdAllies.find((a: any) => a.slug === 'devi')!.id,
+        actor_id: createdAgents.find((a: any) => a.slug === 'devi')!.id,
         event_type: 'project.created',
         event_data: {
           project_id: evolutionMission.id,
@@ -394,7 +394,7 @@ async function seed() {
       {
         organization_id: org.id,
         actor_type: 'agent',
-        actor_id: createdAllies.find((a: any) => a.slug === 'zara')!.id,
+        actor_id: createdAgents.find((a: any) => a.slug === 'zara')!.id,
         event_type: 'knowledge.created',
         event_data: {
           knowledge_id: createdKnowledge[0].id,
@@ -406,10 +406,10 @@ async function seed() {
       {
         organization_id: org.id,
         actor_type: 'agent',
-        actor_id: createdAllies.find((a: any) => a.slug === 'khalid')!.id,
+        actor_id: createdAgents.find((a: any) => a.slug === 'khalid')!.id,
         event_type: 'agent.status_changed',
         event_data: {
-          agent_id: createdAllies.find((a: any) => a.slug === 'khalid')!.id,
+          agent_id: createdAgents.find((a: any) => a.slug === 'khalid')!.id,
           status: 'idle',
         },
         ip_address: '127.0.0.1',
@@ -434,7 +434,7 @@ async function seed() {
     console.log('✨ Database seeding complete!\n');
     console.log('Summary:');
     console.log(`  • 1 organization: ${org.name}`);
-    console.log(`  • ${createdAllies.length} AI allies`);
+    console.log(`  • ${createdAgents.length} AI agents`);
     console.log(`  • ${createdMissions.length} missions`);
     console.log(`  • ${createdActions.length} actions`);
     console.log(`  • ${createdKnowledge.length} knowledge entries`);

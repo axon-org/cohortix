@@ -76,13 +76,13 @@ describe('BatchMembers', () => {
   it('renders filter button', () => {
     render(<BatchMembers members={mockMembers} />);
 
-    expect(screen.getByText('Filter allies...')).toBeInTheDocument();
+    expect(screen.getByText('Filter agents...')).toBeInTheDocument();
   });
 
   it('renders table headers', () => {
     render(<BatchMembers members={mockMembers} />);
 
-    expect(screen.getByText('AI Ally')).toBeInTheDocument();
+    expect(screen.getByText('AI Agent')).toBeInTheDocument();
     expect(screen.getByText('Role')).toBeInTheDocument();
     expect(screen.getByText('Status')).toBeInTheDocument();
     expect(screen.getByText('Engagement Score')).toBeInTheDocument();
@@ -165,7 +165,7 @@ describe('BatchMembers', () => {
 
     expect(screen.getByText('Batch Members (0)')).toBeInTheDocument();
     // Table headers should still be visible
-    expect(screen.getByText('AI Ally')).toBeInTheDocument();
+    expect(screen.getByText('AI Agent')).toBeInTheDocument();
   });
 
   it('shows footer when more than 8 members', () => {

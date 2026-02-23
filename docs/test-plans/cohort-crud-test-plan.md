@@ -201,7 +201,7 @@ cohort properties; and soft-delete cohorts with 30-day recovery window.
 
 | Test Case                                       | Setup               | Action                                    | Expected Result                                            | Status     |
 | ----------------------------------------------- | ------------------- | ----------------------------------------- | ---------------------------------------------------------- | ---------- |
-| Should soft delete cohort                       | Cohort exists in DB | DELETE /api/cohorts/:id                   | 200 OK, `deleted_at` timestamp set, not physically deleted | ⏳ Pending |
+| Should soft delete cohort                       | Cohort exists in DB | DELETE /api/cohorts/:id                   | 200 OK, `deleted_at` timestamp set, not physicagent deleted | ⏳ Pending |
 | Should prevent deleting cohort from another org | Cohort from Org B   | DELETE /api/cohorts/:id (user from Org A) | 403 Forbidden (RLS blocks delete)                          | ⏳ Pending |
 
 ---
@@ -312,7 +312,7 @@ cohort properties; and soft-delete cohorts with 30-day recovery window.
 **RLS Policy Validation:**
 
 ```sql
--- Test RLS policy manually in Supabase SQL editor
+-- Test RLS policy manuagent in Supabase SQL editor
 -- Ensure users can only access their org's cohorts
 
 -- As User A (Org A)
@@ -495,7 +495,7 @@ export default function () {
 
 | Risk                                        | Impact   | Likelihood | Mitigation                          |
 | ------------------------------------------- | -------- | ---------- | ----------------------------------- |
-| RLS policy misconfiguration                 | Critical | Low        | Test RLS manually before deployment |
+| RLS policy misconfiguration                 | Critical | Low        | Test RLS manuagent before deployment |
 | Concurrent edits cause conflicts            | Medium   | Low        | Add optimistic locking (future)     |
 | Large cohort lists cause performance issues | Medium   | Medium     | Implement pagination (future)       |
 

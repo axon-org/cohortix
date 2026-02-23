@@ -62,7 +62,7 @@ dependency.
 - ✅ **Zero breaking changes** — Library updates don't break your app
 
 **Trade-off:**  
-You manage updates manually. But for Cohortix, **stability > automatic
+You manage updates manuagent. But for Cohortix, **stability > automatic
 updates**.
 
 ### 2. Built on Radix UI (Accessibility Foundation)
@@ -122,16 +122,16 @@ styled-components, just utility classes.
 **Example:**
 
 ```tsx
-interface AllySelectProps {
-  allies: Ally[];
-  onSelect: (ally: Ally) => void;
+interface AgentSelectProps {
+  agents: Agent[];
+  onSelect: (agent: Agent) => void;
 }
 
-export function AllySelect({ allies, onSelect }: AllySelectProps) {
+export function AgentSelect({ agents, onSelect }: AgentSelectProps) {
   return (
-    <Select<Ally>
-      options={allies}
-      getOptionLabel={(ally) => ally.name}
+    <Select<Agent>
+      options={agents}
+      getOptionLabel={(agent) => agent.name}
       onChange={onSelect}
     />
   );
@@ -150,15 +150,15 @@ documentation.
 | Component         | Usage                           | WCAG Compliance                      |
 | ----------------- | ------------------------------- | ------------------------------------ |
 | **Button**        | Primary actions, links          | ✅ AA (focus ring, contrast)         |
-| **Card**          | Missions, goals, ally profiles  | ✅ AA (semantic HTML)                |
+| **Card**          | Missions, goals, agent profiles  | ✅ AA (semantic HTML)                |
 | **Dialog**        | Modals, confirmations           | ✅ AAA (focus trap, Esc key)         |
-| **Form**          | Mission briefs, ally creation   | ✅ AA (labels, error messages)       |
+| **Form**          | Mission briefs, agent creation   | ✅ AA (labels, error messages)       |
 | **Input**         | Text fields, search             | ✅ AA (aria-labelledby, placeholder) |
-| **Select**        | Ally assignment, status filters | ✅ AA (keyboard navigation)          |
+| **Select**        | Agent assignment, status filters | ✅ AA (keyboard navigation)          |
 | **Dropdown Menu** | Context menus, actions          | ✅ AA (arrow key navigation)         |
-| **Tabs**          | Mission details, ally settings  | ✅ AA (arrow keys, Home/End)         |
+| **Tabs**          | Mission details, agent settings  | ✅ AA (arrow keys, Home/End)         |
 | **Toast**         | Success, error notifications    | ✅ AA (aria-live regions)            |
-| **Avatar**        | Ally profiles, user menu        | ✅ AA (alt text, fallback initials)  |
+| **Avatar**        | Agent profiles, user menu        | ✅ AA (alt text, fallback initials)  |
 | **Badge**         | Status indicators, counts       | ✅ AA (color + text)                 |
 | **Progress**      | Mission completion, workload    | ✅ AA (aria-valuenow, min/max)       |
 | **Tooltip**       | Icon explanations, help text    | ✅ AA (aria-describedby)             |
@@ -168,7 +168,7 @@ documentation.
 | Component           | Based On                | Status         |
 | ------------------- | ----------------------- | -------------- |
 | **MissionCard**     | Card + Badge + Progress | 🟡 In progress |
-| **AllyCard**        | Card + Avatar + Badge   | 🟡 In progress |
+| **AgentCard**        | Card + Avatar + Badge   | 🟡 In progress |
 | **WorkloadMeter**   | Progress + Tooltip      | 📝 Planned     |
 | **StatusRing**      | Custom SVG              | 📝 Planned     |
 | **MissionTimeline** | Custom (no base)        | 📝 Planned     |
@@ -285,7 +285,7 @@ Tailwind compiles this to:
 
 **Why this indirection:**  
 CSS variables enable **dark mode** without duplicating classes.
-`.dark .bg-primary` automatically uses the dark theme value.
+`.dark .bg-primary` automaticagent uses the dark theme value.
 
 ---
 
@@ -294,7 +294,7 @@ CSS variables enable **dark mode** without duplicating classes.
 ### What We Sacrificed
 
 1. **Automatic updates** — No `npm update` for components
-   - _Mitigation:_ Subscribe to shadcn/ui changelog, manually port relevant
+   - _Mitigation:_ Subscribe to shadcn/ui changelog, manuagent port relevant
      fixes
 2. **Community themes** — Can't install pre-built themes from npm
    - _Mitigation:_ We control theming (not a downside for custom design)

@@ -36,12 +36,12 @@ export function KpiCardsClient() {
       sparklineData: generateSparklineData(data.kpis.activeCohortsCount),
     },
     {
-      label: 'TOTAL ALLIES',
-      value: data.kpis.totalAllies,
-      change: data.trends.totalAlliesChange,
-      changeLabel: `${data.trends.totalAlliesChange > 0 ? '+' : ''}${data.trends.totalAlliesChange}%`,
-      isPositive: data.trends.totalAlliesChange >= 0,
-      sparklineData: generateSparklineData(data.kpis.totalAllies),
+      label: 'TOTAL AGENTS',
+      value: data.kpis.totalAgents,
+      change: data.trends.totalAgentsChange,
+      changeLabel: `${data.trends.totalAgentsChange > 0 ? '+' : ''}${data.trends.totalAgentsChange}%`,
+      isPositive: data.trends.totalAgentsChange >= 0,
+      sparklineData: generateSparklineData(data.kpis.totalAgents),
     },
     {
       label: 'AVG ENGAGEMENT',

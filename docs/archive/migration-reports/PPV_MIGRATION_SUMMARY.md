@@ -81,7 +81,7 @@ Intelligence (topic)
 ```
 Debrief (standalone)
   ├─ Type: daily | weekly | cycle
-  └─ Owner: human or ally
+  └─ Owner: human or agent
 ```
 
 ---
@@ -214,7 +214,7 @@ export type Aspiration = Vision;
 
 ### Verification Queries
 
-Run these manually to verify migration success:
+Run these manuagent to verify migration success:
 
 ```sql
 -- Verify all new tables exist

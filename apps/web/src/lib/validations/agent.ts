@@ -1,14 +1,14 @@
 /**
- * Ally (Agent) Validation Schemas
+ * Agent (Agent) Validation Schemas
  * Follows same pattern as cohort validations.
  */
 
 import { z } from 'zod';
 
-export const allyStatusEnum = z.enum(['active', 'idle', 'busy', 'offline', 'error']);
-export type AllyStatus = z.infer<typeof allyStatusEnum>;
+export const agentStatusEnum = z.enum(['active', 'idle', 'busy', 'offline', 'error']);
+export type AgentStatus = z.infer<typeof agentStatusEnum>;
 
-export const createAllySchema = z.object({
+export const createAgentSchema = z.object({
   name: z
     .string()
     .min(2, 'Name must be at least 2 characters')
@@ -16,7 +16,7 @@ export const createAllySchema = z.object({
     .trim(),
   description: z.string().max(10000).optional(),
   role: z.string().max(255).optional(),
-  status: allyStatusEnum.default('idle'),
+  status: agentStatusEnum.default('idle'),
   capabilities: z.array(z.string()).default([]),
   cohortIds: z.array(z.string().uuid()).optional(),
   runtimeType: z.string().max(50).default('clawdbot'),
@@ -24,13 +24,13 @@ export const createAllySchema = z.object({
   settings: z.record(z.any()).optional(),
 });
 
-export type CreateAllyInput = z.infer<typeof createAllySchema>;
+export type CreateAgentInput = z.infer<typeof createAgentSchema>;
 
-export const updateAllySchema = z.object({
+export const updateAgentSchema = z.object({
   name: z.string().min(2).max(255).trim().optional(),
   description: z.string().max(10000).optional().nullable(),
   role: z.string().max(255).optional().nullable(),
-  status: allyStatusEnum.optional(),
+  status: agentStatusEnum.optional(),
   capabilities: z.array(z.string()).optional(),
   cohortIds: z.array(z.string().uuid()).optional(),
   runtimeType: z.string().max(50).optional(),
@@ -38,16 +38,16 @@ export const updateAllySchema = z.object({
   settings: z.record(z.any()).optional(),
 });
 
-export type UpdateAllyInput = z.infer<typeof updateAllySchema>;
+export type UpdateAgentInput = z.infer<typeof updateAgentSchema>;
 
-export const allyQuerySchema = z.object({
+export const agentQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
-  status: allyStatusEnum.optional(),
+  status: agentStatusEnum.optional(),
   search: z.string().trim().optional(),
   cohortId: z.string().uuid().optional(),
   sortBy: z.enum(['name', 'createdAt', 'status', 'totalTasksCompleted']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 
-export type AllyQueryParams = z.infer<typeof allyQuerySchema>;
+export type AgentQueryParams = z.infer<typeof agentQuerySchema>;

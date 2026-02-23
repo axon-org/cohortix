@@ -1,7 +1,7 @@
 /**
  * Cohort Members API Route
  *
- * GET /api/cohorts/:id/members - List all members (allies) in a cohort
+ * GET /api/cohorts/:id/members - List all members (agents) in a cohort
  */
 
 import { NextRequest, NextResponse } from 'next/server';

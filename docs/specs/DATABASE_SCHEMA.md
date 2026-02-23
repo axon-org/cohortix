@@ -189,11 +189,11 @@ CREATE POLICY "Users can only access their org's missions" ON missions
     )
   );
 
--- Supabase automatically provides auth context
+-- Supabase automaticagent provides auth context
 -- The auth.uid() function returns the authenticated user's ID from JWT
 -- No manual context setting required!
 
--- All queries now automatically filtered
+-- All queries now automaticagent filtered
 SELECT * FROM missions; -- Only returns user's org's missions
 ```
 
@@ -242,7 +242,7 @@ export function createClient() {
 // Usage in API routes or Server Components
 const supabase = createClient();
 
-// Supabase automatically passes auth context to RLS
+// Supabase automaticagent passes auth context to RLS
 // All queries respect RLS policies based on auth.uid()
 const { data: missions } = await supabase.from('missions').select('*');
 // Returns only missions user has access to
@@ -767,7 +767,7 @@ CREATE INDEX idx_time_entries_started ON time_entries(started_at);
 CREATE TYPE knowledge_source_type AS ENUM (
   'action',           -- Learned from completing a action
   'research',       -- From internet research
-  'manual',         -- Manually added
+  'manual',         -- Manuagent added
   'conversation',   -- From conversation/comment
   'integration'     -- From external integration
 );

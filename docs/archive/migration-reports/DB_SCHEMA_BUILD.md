@@ -18,7 +18,7 @@ All schema files have been created in `packages/database/src/schema/`:
 - ✅ **org-memberships.ts** — User ↔ Organization relationships with roles
 - ✅ **clients.ts** — Client entities for multi-client support
 - ✅ **workspaces.ts** — Optional team-level grouping
-- ✅ **agents.ts** — AI allies (name, role, status, capabilities,
+- ✅ **agents.ts** — AI agents (name, role, status, capabilities,
   runtime_config)
 - ✅ **agent-assignments.ts** — Agent ↔ Project and Agent ↔ Client assignments
 - ✅ **goals.ts** — Goals/objectives with OKR-style key results
@@ -49,7 +49,7 @@ All schema files have been created in `packages/database/src/schema/`:
 
 - ✅ **scripts/seed-db.ts** — Complete seed script with:
   - Demo organization "Axon HQ"
-  - 4 sample AI allies (Devi, Lubna, Zara, Khalid)
+  - 4 sample AI agents (Devi, Lubna, Zara, Khalid)
   - Sample client "TechCorp Inc."
   - 3 sample cohorts/projects with missions
   - Multiple tasks with different statuses
@@ -239,8 +239,8 @@ Expected output:
 📦 Creating organization: Axon HQ
 ✅ Created organization: Axon HQ (...)
 
-🤖 Creating AI allies...
-✅ Created 4 allies:
+🤖 Creating AI agents...
+✅ Created 4 agents:
    - Devi (AI Developer Specialist)
    - Lubna (UI/UX Designer)
    - Zara (Content Strategist)
@@ -252,7 +252,7 @@ Expected output:
 
 Summary:
   • 1 organization: Axon HQ
-  • 4 AI allies
+  • 4 AI agents
   • 3 cohorts/projects
   • 5 missions/tasks
   • 3 knowledge entries
@@ -267,7 +267,7 @@ Create a test user via Supabase Auth and verify:
 
 1. User can only see their organization's data
 2. Non-admin users cannot modify organization settings
-3. Queries are automatically filtered by tenant context
+3. Queries are automaticagent filtered by tenant context
 
 ### 7. Configure Supabase Auth Providers
 
@@ -285,7 +285,7 @@ In Supabase Dashboard → Authentication → Providers:
 ### Multi-Tenant Isolation
 
 All tenant tables include `organization_id` and are protected by RLS policies
-that automatically filter data based on the authenticated user's organization
+that automaticagent filter data based on the authenticated user's organization
 membership.
 
 **How it works:**
@@ -301,7 +301,7 @@ CREATE POLICY "Tenant isolation" ON projects
   );
 ```
 
-Every query is automatically scoped to the user's organization(s).
+Every query is automaticagent scoped to the user's organization(s).
 
 ### Knowledge Scoping Hierarchy
 

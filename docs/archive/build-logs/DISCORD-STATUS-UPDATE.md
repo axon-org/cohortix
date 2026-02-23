@@ -59,7 +59,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 - Created: `scripts/drift-detection.sh` (executable)
 - Created: `docs/DRIFT-PREVENTION-CHECKLIST.md`
 
-**Next Step:** Run manually to verify: `./scripts/drift-detection.sh`
+**Next Step:** Run manuagent to verify: `./scripts/drift-detection.sh`
 
 ---
 
@@ -139,7 +139,7 @@ All 5 Week 3 Codex compliance tasks have been successfully completed:
 
 - [ ] Set up Snyk account + add `SNYK_TOKEN` secret
 - [ ] Test Lighthouse CI on a sample PR
-- [ ] Run drift detection script manually
+- [ ] Run drift detection script manuagent
 - [ ] Review technical debt log in sprint planning
 - [ ] Begin addressing Critical debt items (TD-001, TD-002, TD-003)
 

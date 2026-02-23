@@ -68,8 +68,8 @@ export async function getDashboardKPIs(organizationId: string) {
     .eq('organization_id', organizationId)
     .in('status', ['in_progress', 'todo']);
 
-  // Total active allies (agents)
-  const { count: activeAllies } = await supabase
+  // Total active agents (agents)
+  const { count: activeAgents } = await supabase
     .from('agents')
     .select('*', { count: 'exact', head: true })
     .eq('organization_id', organizationId)
@@ -93,7 +93,7 @@ export async function getDashboardKPIs(organizationId: string) {
   return {
     activeMissions: activeMissions || 0,
     actionsInProgress: actionsInProgress || 0,
-    activeAllies: activeAllies || 0,
+    activeAgents: activeAgents || 0,
     completionRate,
   };
 }
@@ -171,7 +171,7 @@ export async function getActiveAlerts(organizationId: string) {
     alerts.push({
       type: 'warning' as const,
       title: 'Unassigned urgent actions',
-      message: `${unassignedUrgent.length} urgent actions need allies assigned`,
+      message: `${unassignedUrgent.length} urgent actions need agents assigned`,
       action: {
         label: 'Assign now',
         href: '/actions?filter=urgent-unassigned',
@@ -287,13 +287,13 @@ export async function getActiveMissions(organizationId: string, limit = 6) {
 }
 
 /**
- * Active Allies Overview
+ * Active Agents Overview
  * Note: User-facing: "Actions", Database table: "tasks"
  */
-export async function getActiveAllies(organizationId: string) {
+export async function getActiveAgents(organizationId: string) {
   const supabase = await createClient();
 
-  const { data: allies, error } = await supabase
+  const { data: agents, error } = await supabase
     .from('agents')
     .select('*')
     .eq('organization_id', organizationId)
@@ -301,12 +301,12 @@ export async function getActiveAllies(organizationId: string) {
     .order('created_at', { ascending: true });
 
   if (error) {
-    console.error('Error fetching allies:', error);
+    console.error('Error fetching agents:', error);
     return [];
   }
 
-  return (allies || []).map((ally: any) => ({
-    ...ally,
+  return (agents || []).map((agent: any) => ({
+    ...agent,
     workload: { active: 0, total: 0, currentMission: null },
   }));
 }
@@ -353,12 +353,12 @@ export async function getDashboardData() {
     .eq('organization_id', organizationId)
     .single();
 
-  const [kpis, activity, alerts, missions, allies, knowledge] = await Promise.all([
+  const [kpis, activity, alerts, missions, agents, knowledge] = await Promise.all([
     getDashboardKPIs(organizationId),
     getRecentActivity(organizationId),
     getActiveAlerts(organizationId),
     getActiveMissions(organizationId),
-    getActiveAllies(organizationId),
+    getActiveAgents(organizationId),
     getRecentKnowledge(organizationId),
   ]);
 
@@ -370,7 +370,7 @@ export async function getDashboardData() {
     activity,
     alerts,
     missions,
-    allies,
+    agents,
     knowledge,
   };
 }

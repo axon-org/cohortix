@@ -1,5 +1,5 @@
 /**
- * Allies API Route - GET (list) and POST (create)
+ * Agents API Route - GET (list) and POST (create)
  * Axon Codex v1.2 compliant
  */
 
@@ -10,15 +10,15 @@ import { ValidationError } from '@/lib/errors';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 import { validateRequest, validateData } from '@/lib/validation';
 import {
-  createAllySchema,
-  allyQuerySchema,
-  type CreateAllyInput,
-  type AllyQueryParams,
-} from '@/lib/validations/ally';
+  createAgentSchema,
+  agentQuerySchema,
+  type CreateAgentInput,
+  type AgentQueryParams,
+} from '@/lib/validations/agent';
 import { generateSlug } from '@/lib/utils/cohort';
 
 // ============================================================================
-// GET /api/v1/allies - List allies with pagination and filtering
+// GET /api/v1/agents - List agents with pagination and filtering
 // ============================================================================
 
 export const GET = withMiddleware(standardRateLimit, async (request: NextRequest) => {
@@ -26,11 +26,11 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   logger.setContext({ correlationId });
 
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries());
-  const query = validateData(allyQuerySchema, searchParams) as AllyQueryParams;
+  const query = validateData(agentQuerySchema, searchParams) as AgentQueryParams;
 
   const { supabase, organizationId, userId } = await getAuthContext();
 
-  logger.info('Fetching allies', { correlationId, userId, organizationId, query });
+  logger.info('Fetching agents', { correlationId, userId, organizationId, query });
 
   let queryBuilder = supabase
     .from('agents')
@@ -55,10 +55,10 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   const start = (query.page - 1) * query.limit;
   queryBuilder = queryBuilder.range(start, start + query.limit - 1);
 
-  const { data: allies, error, count } = await queryBuilder;
+  const { data: agents, error, count } = await queryBuilder;
 
   if (error) {
-    logger.error('Failed to fetch allies', {
+    logger.error('Failed to fetch agents', {
       correlationId,
       error: { message: error.message, code: error.code },
     });
@@ -66,7 +66,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   }
 
   return NextResponse.json({
-    data: allies || [],
+    data: agents || [],
     meta: {
       page: query.page,
       limit: query.limit,
@@ -77,15 +77,15 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
 });
 
 // ============================================================================
-// POST /api/v1/allies - Create a new ally
+// POST /api/v1/agents - Create a new agent
 // ============================================================================
 
 export const POST = withMiddleware(standardRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId();
   logger.setContext({ correlationId });
 
-  const validator = validateRequest(createAllySchema, { target: 'body' });
-  const data = (await validator(request)) as CreateAllyInput;
+  const validator = validateRequest(createAgentSchema, { target: 'body' });
+  const data = (await validator(request)) as CreateAgentInput;
 
   const { supabase, organizationId, userId } = await getAuthContext();
   const baseSlug = generateSlug(data.name);
@@ -100,14 +100,14 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
     .single();
 
   if (existing) {
-    throw new ValidationError('An ally with this name already exists', {
+    throw new ValidationError('An agent with this name already exists', {
       name: ['Name must be unique within your organization'],
     });
   }
 
-  logger.info('Creating ally', { correlationId, userId, organizationId, allyName: data.name });
+  logger.info('Creating agent', { correlationId, userId, organizationId, agentName: data.name });
 
-  const { data: ally, error } = await supabase
+  const { data: agent, error } = await supabase
     .from('agents')
     .insert({
       organization_id: organizationId,
@@ -125,14 +125,14 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
     .single();
 
   if (error) {
-    logger.error('Failed to create ally', {
+    logger.error('Failed to create agent', {
       correlationId,
       error: { message: error.message, code: error.code },
     });
     throw error;
   }
 
-  logger.info('Ally created successfully', { correlationId, allyId: ally.id });
+  logger.info('Agent created successfully', { correlationId, agentId: agent.id });
 
-  return NextResponse.json({ data: ally }, { status: 201 });
+  return NextResponse.json({ data: agent }, { status: 201 });
 });

@@ -9,8 +9,8 @@
 
 ## What is Cohortix?
 
-Cohortix is an **Allies-as-a-Service (AaaS)** platform that enables humans to
-manage high-performing organizations of AI allies. It's a multi-tenant SaaS
+Cohortix is an **Agents-as-a-Service (AaaS)** platform that enables humans to
+manage high-performing organizations of AI agents. It's a multi-tenant SaaS
 application built for human-to-AI team orchestration through a unified interface
 called **Mission Control**.
 
@@ -32,9 +32,9 @@ because:
 
 **Solution:** Cohortix bridges this gap with:
 
-1. **Bidirectional Goal Setting** — Both humans AND allies propose goals
+1. **Bidirectional Goal Setting** — Both humans AND agents propose goals
 2. **Living Knowledge Base** — Graph-structured, versioned organizational
-   knowledge with cross-ally sharing
+   knowledge with cross-agent sharing
 3. **Agent Evolution System** — Systematic learning, expertise tracking, and
    self-improvement protocols
 
@@ -44,7 +44,7 @@ because:
 
 **Primary Users:**
 
-- **Solopreneurs & Small Teams** running AI-powered operations (3-10 AI allies)
+- **Solopreneurs & Small Teams** running AI-powered operations (3-10 AI agents)
 - **AI-First Startups** building with AI agents as core team members
 - **Automation Enthusiasts** orchestrating complex multi-agent workflows
 
@@ -79,7 +79,7 @@ instead)
 - ✅ Database schema (16 tables, 14 enums, RLS policies)
 - ✅ Authentication flows (email/password, GitHub/Google OAuth)
 - ✅ Mission Control dashboard (real Supabase data wired)
-- ✅ Data seeding (Axon HQ org, 4 AI allies, sample missions)
+- ✅ Data seeding (Axon HQ org, 4 AI agents, sample missions)
 
 **In Progress:**
 
@@ -89,7 +89,7 @@ instead)
 
 **Next Milestone:**
 
-- Build Cohort Grid, Cohort Detail, Ally Profile, Goal Builder screens
+- Build Cohort Grid, Cohort Detail, Agent Profile, Goal Builder screens
 - Establish testing baseline (70/20/10 pyramid)
 - Complete Codex compliance (Week 1-3)
 

@@ -10,9 +10,9 @@
 
 ### Components (6 files)
 
-1. `CohortHeader` - Name, status, dates, "Invite AI Ally" button
+1. `CohortHeader` - Name, status, dates, "Invite AI Agent" button
 2. `EngagementTimeline` - Recharts line chart (white monochrome)
-3. `BatchMembers` - Table with ally name, role, status, engagement score
+3. `BatchMembers` - Table with agent name, role, status, engagement score
 4. `ActivityLog` - Live feed with timestamps
 5. `CohortDetailClient` - Data fetching orchestrator
 6. `app/(dashboard)/cohorts/[id]/page.tsx` - Page route
@@ -72,7 +72,7 @@ Once migration applied:
 ## Known Limitations
 
 - Timeline period selector (7D/30D/90D) not functional yet
-- "Invite AI Ally" button has no modal yet
+- "Invite AI Agent" button has no modal yet
 - Member actions menu ("⋯") is placeholder
 
 ---

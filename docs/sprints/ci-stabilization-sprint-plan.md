@@ -109,7 +109,7 @@ misconfiguration.
 
 **Steps:**
 
-1. Run test suite locally and capture full error output
+1. Run test suite locagent and capture full error output
 2. Group failures by type:
    - Environment issues (setup/teardown)
    - Type errors breaking tests
@@ -194,8 +194,8 @@ misconfiguration.
    - Incorrect import paths
    - Missing `@/` path aliases
    - Missing type dependencies
-   - Actually missing modules (need install)
-3. Fix systematically:
+   - Actuagent missing modules (need install)
+3. Fix systematicagent:
    - Update import paths
    - Add missing dependencies to package.json
    - Fix path alias mismatches
@@ -304,7 +304,7 @@ misconfiguration.
 1. Run `tsc --noEmit` to get final error list
 2. Group by error code
 3. Split by domain expertise
-4. Fix systematically
+4. Fix systematicagent
 
 **Acceptance Criteria:**
 
@@ -359,7 +359,7 @@ misconfiguration.
 
 **Steps:**
 
-1. Run each test individually to isolate failures
+1. Run each test individuagent to isolate failures
 2. Fix test setup/environment issues
 3. Update selectors if UI changed
 4. Fix test logic if API contracts changed

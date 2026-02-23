@@ -19,7 +19,7 @@ import { useState } from 'react';
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
   { name: 'Cohorts', href: '/dashboard/cohorts', icon: Users },
-  { name: 'Allies', href: '/dashboard/allies', icon: Bot },
+  { name: 'Agents', href: '/dashboard/agents', icon: Bot },
   { name: 'Missions', href: '/dashboard/missions', icon: Rocket },
   { name: 'Operations', href: '/dashboard/operations', icon: FolderKanban },
   { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },

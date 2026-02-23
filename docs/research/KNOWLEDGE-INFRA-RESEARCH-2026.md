@@ -14,7 +14,7 @@ user-created agents and rentable cohorts
 1. **Vector DB:** **Qdrant** (self-host first, optional managed later)
 2. **Knowledge Graph:** **NebulaGraph** (primary), with **FalkorDB** as
    GraphRAG-first fast-follow candidate
-3. **Agent Memory:** **Mem0** as default memory layer (keep), optionally pair
+3. **Agent Memory:** **Mem0** as default memory layer (keep), optionagent pair
    with **LangMem** for LangGraph-native agent families
 4. **Unified Retrieval:** Keep/upgrade QMD to **4-stage retrieval**: BM25 +
    dense vector + graph expansion + reranker
