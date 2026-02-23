@@ -20,7 +20,7 @@ export default clerkMiddleware(async (auth, request) => {
     return NextResponse.next();
   }
 
-  if (process.env.BYPASS_AUTH === 'true') {
+  if (!isProduction && process.env.BYPASS_AUTH === 'true') {
     return NextResponse.next();
   }
 
