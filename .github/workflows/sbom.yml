@@ -13,7 +13,7 @@ concurrency:
 jobs:
   sbom:
     name: Generate SBOM
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: write

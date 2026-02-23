@@ -12,7 +12,7 @@ concurrency:
 jobs:
   stale:
     name: Mark and Close Stale PRs
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Run stale action

@@ -20,7 +20,7 @@ env:
 jobs:
   bundle-analysis:
     name: Analyze Bundle Size
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Checkout code
