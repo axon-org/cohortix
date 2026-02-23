@@ -26,7 +26,8 @@ over time.
 
 ## 🛠️ CI/CD
 
-See [CI/CD Pipeline Documentation](docs/ci-cd/README.md) for workflow details, runner setup, and required secrets.
+See [CI/CD Pipeline Documentation](docs/ci-cd/README.md) for workflow details,
+runner setup, and required secrets.
 
 ## 🗂️ Mission Structure
 
