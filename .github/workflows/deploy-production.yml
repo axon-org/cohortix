@@ -21,7 +21,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════
   ci-gate:
     name: CI Gate
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -62,7 +62,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════
   await-approval:
     name: Awaiting Production Approval
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: ci-gate
     environment:
       name: production
@@ -79,7 +79,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════
   deploy-production:
     name: Build & Deploy to Production
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 30
     needs: await-approval
     outputs:
@@ -149,7 +149,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════
   smoke-tests:
     name: Production Smoke Tests
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 10
     needs: deploy-production
     steps:
@@ -202,7 +202,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════
   notify-success:
     name: Deployment Summary
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [deploy-production, smoke-tests]
     if: always()
     steps:

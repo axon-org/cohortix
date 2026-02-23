@@ -22,7 +22,7 @@ jobs:
 
   pre-deployment-checks:
     name: Pre-Deployment Checks
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 20
     steps:
       - name: Checkout code
@@ -73,7 +73,7 @@ jobs:
 
   database-migration-check:
     name: Database Migration Check
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 10
     needs: pre-deployment-checks
     steps:
@@ -128,7 +128,7 @@ jobs:
 
   build-production:
     name: Build Production
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 15
     needs: [pre-deployment-checks, database-migration-check]
     steps:
@@ -190,7 +190,7 @@ jobs:
 
   deploy-production:
     name: Deploy to Production
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 15
     needs: build-production
     environment:
@@ -246,7 +246,7 @@ jobs:
 
   smoke-tests:
     name: Smoke Tests
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 10
     needs: deploy-production
     continue-on-error: true
@@ -293,7 +293,7 @@ jobs:
 
   create-release:
     name: Create Release
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [deploy-production, smoke-tests]
     permissions:
       contents: write
@@ -340,7 +340,7 @@ jobs:
 
   notify:
     name: Notify Team
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [deploy-production, smoke-tests, create-release]
     if: always()
     steps:
