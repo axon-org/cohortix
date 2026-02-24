@@ -28,7 +28,7 @@ plan to achieve full compliance.
   Spec-Driven Development not enforced
 - ⚠️ **Testing gaps:** Testing pyramid not established, mutation testing absent,
   E2E coverage unknown
-- ⚠️ **Governance gaps:** ADRs, DDRs, and Test Plans not systematicagent created
+- ⚠️ **Governance gaps:** ADRs, DDRs, and Test Plans not systematically created
 
 **Timeline:** 3 weeks to 80% compliance, 6 weeks to full compliance
 

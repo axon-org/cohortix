@@ -18,7 +18,7 @@ bypasses and documentation gaps must be addressed before production._
 
 - **Command:** `cd apps/web && pnpm build`
 - **Result:** Successfully completed with 0 errors.
-- **Notes:** All routes were successfully staticagent/dynamicagent generated.
+- **Notes:** All routes were successfully statically/dynamically generated.
 
 ### 2. API Route Validation: 🟡 **PARTIAL**
 

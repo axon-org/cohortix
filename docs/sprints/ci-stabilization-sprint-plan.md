@@ -195,7 +195,7 @@ misconfiguration.
    - Missing `@/` path aliases
    - Missing type dependencies
    - actually missing modules (need install)
-3. Fix systematicagent:
+3. Fix systematically:
    - Update import paths
    - Add missing dependencies to package.json
    - Fix path alias mismatches
@@ -304,7 +304,7 @@ misconfiguration.
 1. Run `tsc --noEmit` to get final error list
 2. Group by error code
 3. Split by domain expertise
-4. Fix systematicagent
+4. Fix systematically
 
 **Acceptance Criteria:**
 
