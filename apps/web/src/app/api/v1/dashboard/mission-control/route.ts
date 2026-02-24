@@ -11,13 +11,13 @@ import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 interface KPIData {
   kpis: {
     activeCohortsCount: number;
-    totalAllies: number;
+    totalAgents: number;
     avgEngagement: number;
     atRiskCount: number;
   };
   trends: {
     activeCohortsChange: number;
-    totalAlliesChange: number;
+    totalAgentsChange: number;
     avgEngagementChange: number;
     atRiskChange: number;
   };
@@ -98,7 +98,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
 
   const activeCohortsCount = (cohorts || []).filter((c: any) => c.status === 'active').length;
   const atRiskCount = (cohorts || []).filter((c: any) => c.status === 'at-risk').length;
-  const totalAllies = (members || []).length;
+  const totalAgents = (members || []).length;
 
   const { avgEngagement } = computeEngagementStats(
     (cohorts || []).map((cohort: any) => cohort.id),
@@ -117,7 +117,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
 
   const prevActiveCount = prevCohorts.filter((c: any) => c.status === 'active').length;
   const prevAtRiskCount = prevCohorts.filter((c: any) => c.status === 'at-risk').length;
-  const prevAlliesCount = prevMembers.length;
+  const prevAgentsCount = prevMembers.length;
 
   const calculatePercentageChange = (current: number, previous: number): number => {
     if (previous === 0) return current > 0 ? 100 : 0;
@@ -127,13 +127,13 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   const kpiData: KPIData = {
     kpis: {
       activeCohortsCount,
-      totalAllies,
+      totalAgents,
       avgEngagement,
       atRiskCount,
     },
     trends: {
       activeCohortsChange: calculatePercentageChange(activeCohortsCount, prevActiveCount),
-      totalAlliesChange: calculatePercentageChange(totalAllies, prevAlliesCount),
+      totalAgentsChange: calculatePercentageChange(totalAgents, prevAgentsCount),
       avgEngagementChange: 0,
       atRiskChange: calculatePercentageChange(atRiskCount, prevAtRiskCount),
     },

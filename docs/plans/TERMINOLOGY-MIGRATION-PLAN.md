@@ -55,7 +55,7 @@ is now atomic.
 | File                            | Status     | Notes                          |
 | ------------------------------- | ---------- | ------------------------------ |
 | `design/mockups/dashboard.html` | ✅ Updated | Nav + content                  |
-| `design/mockups/allies.html`    | ✅ Updated | Labels + statuses              |
+| `design/mockups/agents.html`    | ✅ Updated | Labels + statuses              |
 | `design/mockups/campaign.html`  | ✅ Updated | Task cards (was mission cards) |
 | `design/mockups/knowledge.html` | ✅ Updated | Intelligence terminology       |
 | `design/mockups/auth.html`      | ✅ Updated | Onboarding copy                |
@@ -79,7 +79,7 @@ is now atomic.
 | ------------------------------------ | ------------ | ---------------------------------------- |
 | `/api/v1/missions/`                  | 🔄 Updated   | Now means strategic missions (was tasks) |
 | `/api/v1/operations/`                | ✅ Created   | New route for bounded initiatives        |
-| `/api/v1/allies/`                    | ✅ No change | Already correct                          |
+| `/api/v1/agents/`                    | ✅ No change | Already correct                          |
 | `/api/v1/cohorts/`                   | ✅ No change | Already correct                          |
 | `/api/v1/domains/`                   | ❌ TODO      | New PPV layer                            |
 | `/api/v1/visions/`                   | ❌ TODO      | New PPV layer                            |
@@ -100,7 +100,7 @@ is now atomic.
 | `recent-activity.tsx`       | 🔄 Updated | Activity feed copy    |
 | `sidebar.tsx`               | 🔄 Updated | Nav labels            |
 | Dashboard page components   | ❌ TODO    | Full audit needed     |
-| Ally profile components     | ❌ TODO    | PPV stack display     |
+| Agent profile components    | ❌ TODO    | PPV stack display     |
 
 ### 3d. Tests
 

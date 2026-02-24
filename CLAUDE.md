@@ -28,7 +28,7 @@ will fail if files aren't formatted. This applies to ALL file types: `.ts`,
 3. **Auth Screens** — Sign-in, sign-up, forgot-password with Supabase Auth
    (email/password + GitHub/Google OAuth)
 4. **Database Schema** — 16 tables, 14 enums, RLS policies pushed to Supabase
-5. **Data Seeding** — Axon HQ org, 4 AI allies (Devi, Lubna, Zara, Khalid),
+5. **Data Seeding** — Axon HQ org, 4 AI agents (Devi, Lubna, Zara, Khalid),
    missions, actions
 6. **Dashboard Wiring** — Real Supabase data flowing to all dashboard components
 7. **Terminology Alignment** — IN PROGRESS (subagent running)
@@ -41,7 +41,7 @@ will fail if files aren't formatted. This applies to ALL file types: `.ts`,
 3. Fix Next.js warnings (bottom-left corner)
 4. Build Cohort Grid screen
 5. Build Cohort Detail screen
-6. Build Ally Profile screen
+6. Build Agent Profile screen
 7. Build Goal Builder screen (may rename/rethink given terminology changes)
 8. Replace hand-rolled SVG chart with Recharts/Tremor
 9. Add cohort performance table (missing from dashboard mockup)
@@ -138,8 +138,8 @@ feature/* ──PR──▶ dev ──PR──▶ main
 
 ## What is Cohortix?
 
-Cohortix is an **Allies-as-a-Service (AaaS)** platform that enables humans to
-manage a high-performing organization of AI allies. It's a multi-tenant SaaS
+Cohortix is an **Agents-as-a-Service (AaaS)** platform that enables humans to
+manage a high-performing organization of AI agents. It's a multi-tenant SaaS
 built with Next.js 15, React 19, and PostgreSQL, designed to bridge the gap
 between human strategic direction and autonomous AI execution.
 
@@ -153,8 +153,8 @@ Control**.
 
 ### Key Differentiators
 
-1. **Bidirectional Goal Setting**: Both humans AND allies can propose goals.
-   Allies proactively suggest improvements based on observations (e.g., "test
+1. **Bidirectional Goal Setting**: Both humans AND agents can propose goals.
+   Agents proactively suggest improvements based on observations (e.g., "test
    coverage dropped, proposing goal to fix it"), subject to human approval.
 
 2. **Living Knowledge Base**: Not just logs — a continuously evolving knowledge
@@ -162,14 +162,14 @@ Control**.
    - Graph relationships between concepts (depends-on, related-to, supersedes,
      contradicts)
    - Knowledge versioning and evolution over time
-   - Cross-ally knowledge sharing (one ally's learning benefits others)
+   - Cross-agent knowledge sharing (one agent's learning benefits others)
    - Context-aware knowledge suggestions during missions
 
-3. **Agent Evolution System**: Allies systematically improve through:
+3. **Agent Evolution System**: Agents systematically improve through:
    - Daily learning sessions (course/material ingestion)
    - Expertise growth tracking (measurable skill improvements)
    - Structured learning paths (beginner → intermediate → expert)
-   - Self-improvement protocols (allies identify gaps and seek knowledge)
+   - Self-improvement protocols (agents identify gaps and seek knowledge)
 
 ---
 
@@ -1816,16 +1816,16 @@ pnpm db:seed
 
 | ❌ Avoid       | ✅ Use              | Context                             |
 | -------------- | ------------------- | ----------------------------------- |
-| Agent          | **Ally**            | AI team member                      |
-| Agents (group) | **Cohort**          | Group of allies                     |
+| Agent          | **Agent**           | AI team member                      |
+| Agents (group) | **Cohort**          | Group of agents                     |
 | Mission        | **Mission**         | Focused deliverable                 |
-| Action         | **Action**          | Individual step an Ally executes    |
+| Action         | **Action**          | Individual step an Agent executes   |
 | Dashboard      | **Mission Control** | Main UI                             |
 | Intel Base     | **Knowledge Base**  | Organizational knowledge repository |
-| Create agent   | **Recruit**         | Add new ally                        |
+| Create agent   | **Recruit**         | Add new agent                       |
 | Run/Execute    | **Deploy**          | Start work                          |
 | Workspace      | **Base**            | User workspace                      |
-| Training       | **Growth**          | Ally learning/improvement           |
+| Training       | **Growth**          | Agent learning/improvement          |
 
 **Full Hierarchy:** Domain → Vision → Mission → Operation / Rhythm → Task
 
@@ -1955,8 +1955,8 @@ export function ProjectCard({ mission }: { mission: Mission }) {
 
 ```typescript
 // ✅ GOOD: Friendly, clear
-"Welcome to your new HQ! Let's recruit your first ally.";
-'Mission accomplished! 🎉 Your ally captured some great intel.';
+"Welcome to your new HQ! Let's recruit your first agent.";
+'Mission accomplished! 🎉 Your agent captured some great intel.';
 
 // ❌ BAD: Corporate, jargon-heavy
 'Initialize your agent orchestration environment.';
@@ -1983,9 +1983,9 @@ export function EmptyState({ title, description, action }: EmptyStateProps) {
 
 // Usage
 <EmptyState
-  title="No allies yet!"
-  description="Recruit your first ally to start tackling missions together."
-  action={<Button>Recruit an Ally</Button>}
+  title="No agents yet!"
+  description="Recruit your first agent to start tackling missions together."
+  action={<Button>Recruit an Agent</Button>}
 />
 ```
 
@@ -2002,7 +2002,7 @@ export function LoadingSpinner({ text = "Loading..." }) {
 }
 
 // Mission-themed alternatives
-<LoadingSpinner text="Your allies are on it..." />
+<LoadingSpinner text="Your agents are on it..." />
 <LoadingSpinner text="Briefing your cohort..." />
 ```
 
@@ -2425,7 +2425,7 @@ HIERARCHY: Domain → Vision → Mission → Operation / Rhythm → Task
 
 ⚠️  READ docs/guides/TERMINOLOGY.md FOR FULL REFERENCE
 
-❌ Agent       → ✅ Ally
+❌ Agent       → ✅ Agent
 ❌ Agents      → ✅ Cohort
 ❌ Project     → ✅ Operation
 ❌ Routine     → ✅ Rhythm

@@ -26,7 +26,7 @@ testing without manual authentication headers.
 
 ### 🔧 Fixed — Added Bypass (5 routes)
 
-1. `/api/v1/allies/[id]` (GET, PATCH, DELETE)
+1. `/api/v1/agents/[id]` (GET, PATCH, DELETE)
 2. `/api/v1/dashboard/health-trends` (GET)
 3. `/api/v1/missions/[id]` (GET, PATCH, DELETE)
 4. `/api/cohorts` (GET, POST)
@@ -34,7 +34,7 @@ testing without manual authentication headers.
 
 ### 🐛 Fixed — Service Role Client Issue (2 routes)
 
-- `/api/v1/allies` (GET, POST) — was using RLS client in bypass mode
+- `/api/v1/agents` (GET, POST) — was using RLS client in bypass mode
 - `/api/v1/missions` (GET, POST) — was using RLS client in bypass mode
 
 ---
@@ -90,14 +90,14 @@ All 13 routes tested with `curl` (no auth headers):
 
 ```
 📦 API v1 List Routes:
-✅ GET /api/v1/allies → 200
+✅ GET /api/v1/agents → 200
 ✅ GET /api/v1/cohorts → 200
 ✅ GET /api/v1/missions → 200
 ✅ GET /api/v1/dashboard/mission-control → 200
 ✅ GET /api/v1/dashboard/health-trends → 200
 
 📦 API v1 Detail Routes:
-✅ GET /api/v1/allies/[id] → 200
+✅ GET /api/v1/agents/[id] → 200
 ✅ GET /api/v1/cohorts/[id] → 200
 ✅ GET /api/v1/missions/[id] → 200
 

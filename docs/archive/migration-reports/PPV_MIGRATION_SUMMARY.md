@@ -81,7 +81,7 @@ Intelligence (topic)
 ```
 Debrief (standalone)
   ├─ Type: daily | weekly | cycle
-  └─ Owner: human or ally
+  └─ Owner: human or agent
 ```
 
 ---

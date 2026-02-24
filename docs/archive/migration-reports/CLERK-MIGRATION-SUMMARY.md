@@ -261,7 +261,7 @@ Or apply the migration manually in Supabase Studio:
 - Open `supabase/migrations/20260214000000_add_clerk_integration.sql`
 - Run in SQL Editor
 
-### Step 6: Test Locally
+### Step 6: Test locally
 
 ```bash
 # 1. Start dev server

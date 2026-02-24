@@ -22,7 +22,7 @@ bypasses and documentation gaps must be addressed before production._
 
 ### 2. API Route Validation: 🟡 **PARTIAL**
 
-- **Checked:** `/api/v1/missions`, `/api/v1/allies`, `/api/v1/operations`,
+- **Checked:** `/api/v1/missions`, `/api/v1/agents`, `/api/v1/operations`,
   `/api/v1/cohorts`
 - **Error Handling:** ✅ `withErrorHandler` wrapper used consistently.
 - **Validation:** ✅ Zod schemas (e.g., `createMissionSchema`) used with

@@ -170,7 +170,7 @@ Source: `npm view openclaw --json`.
 | **List/manage sessions programmatically** | ⚠️ **Limited**                | `/tools/invoke` can call tools like `sessions_list`, but default deny list blocks `sessions_send`/`sessions_spawn` unless explicitly allowed | Allowlist these tools or implement a plugin with explicit REST endpoints.                           |
 | **Spawn runs from external triggers**     | ✅ **Yes**                    | `POST /hooks/agent` explicitly supports isolated runs                                                                                        | Use webhooks; can map to Cohortix tasks.                                                            |
 
-**Key Gap:** There is no officially documented “agent heartbeat / presence” API
+**Key Gap:** There is no officiagent documented “agent heartbeat / presence” API
 or webhook event. This is the main missing feature for Cohortix.
 
 ---
@@ -182,7 +182,7 @@ or webhook event. This is the main missing feature for Cohortix.
 - Cohortix sends task payloads to **`POST /hooks/agent`**
 - Use `sessionKey` to map Cohortix task IDs to sessions (set
   `hooks.allowRequestSessionKey=true` and restrict prefixes like `task:`)
-- Optionally use `name` for task labeling
+- optionally use `name` for task labeling
 
 ### 3.2 Egress (OpenClaw → Cohortix)
 

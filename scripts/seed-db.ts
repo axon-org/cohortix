@@ -5,7 +5,7 @@
  *
  * Seeds the database with comprehensive test data:
  * ✅ Organizations
- * ✅ Agents (Allies)
+ * ✅ Agents
  * ✅ Clients
  * ✅ Cohorts (Groups of agents)
  * ✅ Cohort Members (Join table - agent-to-cohort assignments)
@@ -69,11 +69,11 @@ async function seed() {
     console.log(`✅ Created organization: ${org.name} (${org.id})\n`);
 
     // =======================================================================
-    // 2. CREATE SAMPLE AI ALLIES (AGENTS)
+    // 2. CREATE SAMPLE AI AGENTS
     // =======================================================================
-    console.log('🤖 Creating AI allies...');
+    console.log('🤖 Creating AI agents...');
 
-    const allies = [
+    const agents = [
       {
         organization_id: org.id,
         external_id: 'clawdbot-devi',
@@ -144,21 +144,21 @@ async function seed() {
       },
     ];
 
-    const { data: createdAllies, error: alliesError } = await supabase
+    const { data: createdAgents, error: agentsError } = await supabase
       .from('agents')
-      .insert(allies)
+      .insert(agents)
       .select();
 
-    if (alliesError) throw new Error(`Failed to create agents: ${alliesError.message}`);
-    console.log(`✅ Created ${createdAllies.length} allies:\n`);
-    createdAllies.forEach((ally: any) => console.log(`   - ${ally.name} (${ally.role})`));
+    if (agentsError) throw new Error(`Failed to create agents: ${agentsError.message}`);
+    console.log(`✅ Created ${createdAgents.length} agents:\n`);
+    createdAgents.forEach((agent: any) => console.log(`   - ${agent.name} (${agent.role})`));
     console.log();
 
     // Agent quick reference
-    const devi = createdAllies.find((a: any) => a.slug === 'devi')!;
-    const lubna = createdAllies.find((a: any) => a.slug === 'lubna')!;
-    const zara = createdAllies.find((a: any) => a.slug === 'zara')!;
-    const khalid = createdAllies.find((a: any) => a.slug === 'khalid')!;
+    const devi = createdAgents.find((a: any) => a.slug === 'devi')!;
+    const lubna = createdAgents.find((a: any) => a.slug === 'lubna')!;
+    const zara = createdAgents.find((a: any) => a.slug === 'zara')!;
+    const khalid = createdAgents.find((a: any) => a.slug === 'khalid')!;
 
     // =======================================================================
     // 3. CREATE SAMPLE CLIENT
@@ -358,7 +358,7 @@ async function seed() {
         name: 'Agent Evolution System',
         slug: 'agent-evolution-system',
         description:
-          'Build autonomous learning system for AI allies with knowledge graphs and skill tracking',
+          'Build autonomous learning system for AI agents with knowledge graphs and skill tracking',
         status: 'active',
         color: '#8B5CF6',
         icon: '🧠',
@@ -843,7 +843,7 @@ async function seed() {
     console.log('✨ DATABASE SEEDING COMPLETE!\n');
     console.log('Summary:');
     console.log(`  ✅ 1 organization: ${org.name}`);
-    console.log(`  ✅ ${createdAllies.length} AI allies`);
+    console.log(`  ✅ ${createdAgents.length} AI agents`);
     console.log(`  ✅ 1 client: ${client.name}`);
     console.log(`  ✅ ${createdCohorts.length} cohorts`);
     console.log(`  ✅ ${createdMembers.length} cohort memberships`);

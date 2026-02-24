@@ -90,7 +90,7 @@ export const colors = {
 } as const;
 
 /**
- * Semantic color mappings for mission/ally statuses
+ * Semantic color mappings for mission/agent statuses
  */
 export const statusColors = {
   /**
@@ -104,9 +104,9 @@ export const statusColors = {
   },
 
   /**
-   * Ally statuses
+   * Agent statuses
    */
-  ally: {
+  agent: {
     onMission: colors.dark.success, // Green ring
     standingBy: colors.dark.muted.foreground, // Gray ring
     offDuty: colors.dark.destructive, // Red ring

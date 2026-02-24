@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+set -e
+
+echo "🧹 Running lint..."
+pnpm lint
+
+echo "🧠 Running type-check..."
+pnpm type-check
+
+echo "🎨 Running format check..."
+pnpm format:check
+
+echo "✅ Pre-push checks passed."

@@ -11,7 +11,7 @@
 ## Executive Summary
 
 Cohortix v3 requires a **complete agent runtime infrastructure** to run AI
-allies natively without OpenClaw. This document provides comprehensive research
+agents natively without OpenClaw. This document provides comprehensive research
 on the latest (2025-2026) technologies for building production-ready, scalable,
 multi-agent systems.
 

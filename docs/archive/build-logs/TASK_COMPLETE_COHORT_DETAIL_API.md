@@ -21,7 +21,7 @@ and are ready for frontend integration.
 2. ✅ **Engagement Timeline Graph** - Daily interaction counts →
    `GET /api/cohorts/:id/timeline`
 3. ✅ **Activity Log** - Recent events → `GET /api/cohorts/:id/activity`
-4. ✅ **Batch Members List** - Allies with engagement scores →
+4. ✅ **Batch Members List** - Agents with engagement scores →
    `GET /api/cohorts/:id/members`
 
 ---
@@ -34,7 +34,7 @@ and are ready for frontend integration.
 
 **Features:**
 
-- Links agents (allies) to cohorts
+- Links agents (agents) to cohorts
 - Tracks engagement scores (0-100) per agent per cohort
 - Auto-updates parent cohort stats via triggers
 - Full RLS for multi-tenant isolation
@@ -49,7 +49,7 @@ and are ready for frontend integration.
 
 #### 1. `GET /api/cohorts/:id/members`
 
-**Purpose:** Fetch all allies in a cohort with their engagement scores and
+**Purpose:** Fetch all agents in a cohort with their engagement scores and
 statuses
 
 **Response:**
@@ -157,7 +157,7 @@ statuses
    - `CohortHeader.tsx` - Header with name, status, date range
    - `EngagementTimeline.tsx` - Chart component for timeline graph
    - `ActivityLog.tsx` - Scrollable activity feed
-   - `MembersList.tsx` - Table/grid of allies with engagement scores
+   - `MembersList.tsx` - Table/grid of agents with engagement scores
 
 4. **Wire Up Data Fetching**
    - Example code provided in `COHORT_DETAIL_API_READY.md`
@@ -193,7 +193,7 @@ From mockup analysis:
 | **"Alpha Batch 2025"** (header) | `cohort.name`                   | `GET /api/cohorts/:id`                    |
 | **"ACTIVE"** badge              | `cohort.status`                 | `GET /api/cohorts/:id`                    |
 | **"Jan 2025 - Dec 2025"**       | `cohort.start_date`, `end_date` | `GET /api/cohorts/:id`                    |
-| **"+ Invite AI Ally"** button   | Manual action                   | (Future: `POST /api/cohorts/:id/members`) |
+| **"+ Invite AI Agent"** button  | Manual action                   | (Future: `POST /api/cohorts/:id/members`) |
 | **Engagement Timeline** graph   | `timeline[]`                    | `GET /api/cohorts/:id/timeline`           |
 | **"Batch Members (8)"** count   | `count`                         | `GET /api/cohorts/:id/members`            |
 | **"Nexus-7"** member row        | `members[0]`                    | `GET /api/cohorts/:id/members`            |

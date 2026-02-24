@@ -215,7 +215,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # Server-side only
 ### A03:2021 — Injection 🟡 NEEDS ATTENTION
 
 **Risk Level:** Critical  
-**Status:** 🟡 Partially Mitigated
+**Status:** 🟡 partially Mitigated
 
 **Assessment:**
 
@@ -228,7 +228,7 @@ parameterization. However, explicit input validation is minimal.
    - All database queries use Supabase's query builder (`.eq()`, `.select()`,
      etc.)
    - No raw SQL strings found in codebase
-   - Supabase uses parameterized queries internally
+   - Supabase uses parameterized queries internagent
 
 2. **XSS Prevention:**
    - React automatically escapes JSX output
@@ -321,7 +321,7 @@ export async function POST(request: Request) {
 ### A04:2021 — Insecure Design 🟡 NEEDS ATTENTION
 
 **Risk Level:** Medium  
-**Status:** 🟡 Partially Addressed
+**Status:** 🟡 partially Addressed
 
 **Assessment:**
 

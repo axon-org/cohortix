@@ -18,7 +18,7 @@ teammates**. Every design decision reinforces this unique positioning:
 
 - Information hierarchy is sacred: Users should instantly understand what's
   happening
-- No mystery states — every ally status, mission progress, and goal health must
+- No mystery states — every agent status, mission progress, and goal health must
   be transparent
 - Avoid UI patterns that require explanation; the interface should feel
   intuitive
@@ -31,13 +31,13 @@ teammates**. Every design decision reinforces this unique positioning:
   when decision-making
 - Every pixel earns its place; avoid decoration for decoration's sake
 
-#### **1.3 Allies Are Teammates, Not Tools**
+#### **1.3 Agents Are Teammates, Not Tools**
 
-- Ally profiles have warmth and personality (avatars, status rings, skill
+- Agent profiles have warmth and personality (avatars, status rings, skill
   badges)
 - Status language is human: "On Mission" / "Standing By" / "Off Duty" (not
   "Running" / "Idle" / "Offline")
-- Celebrate ally wins: Mission accomplished states are joyful, not clinical
+- Celebrate agent wins: Mission accomplished states are joyful, not clinical
 
 #### **1.4 Progressive Disclosure**
 
@@ -98,7 +98,7 @@ breakpoints: {
 │        │                             │
 │        │  Main Content Area          │
 │ Side   │  (Mission Control,          │
-│ bar    │   Ally Directory, etc.)     │
+│ bar    │   Agent Directory, etc.)     │
 │        │                             │
 │ 240px  │  Full width - 240px         │
 │        │                             │
@@ -249,7 +249,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 - Background: Semantic color-50 (dark mode: color-900/20)
 - Text: Semantic color-700 (dark mode: color-300)
 
-#### **Ally Card**
+#### **Agent Card**
 
 **Anatomy:**
 
@@ -289,7 +289,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 │                                 │
 │ 🔴 High    📎 2    💬 5         │ ← Metadata (priority, attachments, comments)
 │                                 │
-│ 👤 Assigned Ally                │ ← Footer (avatar + name)
+│ 👤 Assigned Agent                │ ← Footer (avatar + name)
 └─────────────────────────────────┘
 ```
 
@@ -312,11 +312,11 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 │ 💡 Insight Title                │
 │                                 │
 │ Short summary of the learning   │
-│ captured by the ally during...  │
+│ captured by the agent during...  │
 │                                 │
 │ Source: [Research] Mission #42  │ ← Source badge (purple = Research, pink = Manual)
 │                                 │
-│ Riley • 2 days ago              │ ← Footer (ally avatar, timestamp)
+│ Riley • 2 days ago              │ ← Footer (agent avatar, timestamp)
 └─────────────────────────────────┘
 ```
 
@@ -339,7 +339,7 @@ Home / Goals / Q1 Marketing Goal / Mission #42
 │ Technology • Enterprise         │ ← Industry, size metadata
 │                                 │
 │ 3 Active Goals              │
-│ 12 Allies Assigned              │
+│ 12 Agents Assigned              │
 │                                 │
 │ Last activity: 2 hours ago      │
 └─────────────────────────────────┘
@@ -374,7 +374,7 @@ statusBadges: {
 **Use Cases:**
 
 - Goal completion percentage
-- Ally workload meter
+- Agent workload meter
 - Mission progress
 
 **Visual Specs:**
@@ -387,7 +387,7 @@ statusBadges: {
 
 #### **Health Meters**
 
-**Use Cases:** Goal health, system health, ally performance
+**Use Cases:** Goal health, system health, agent performance
 
 **Visual Specs:**
 
@@ -413,7 +413,7 @@ statusBadges: {
 
 #### **Tables**
 
-**Use Cases:** Mission lists, ally directory (list view), audit logs
+**Use Cases:** Mission lists, agent directory (list view), audit logs
 
 **Visual Specs:**
 
@@ -519,7 +519,7 @@ statusBadges: {
 
 #### **Modal (Overlay)**
 
-**Use Cases:** Confirm actions, create new ally, mission detail (mobile)
+**Use Cases:** Confirm actions, create new agent, mission detail (mobile)
 
 **Visual Specs:**
 
@@ -555,7 +555,7 @@ cubic-bezier)
 
 ### 3.7 Agent-Specific Components
 
-#### **Ally Profile (Full)**
+#### **Agent Profile (Full)**
 
 **Sections:**
 
@@ -588,7 +588,7 @@ cubic-bezier)
 - Sections: py-6, border-bottom 1px neutral-200
 - Timeline dots: 12px circle, primary-500, connected by 2px vertical line
 
-#### **Ally Avatar with Status Ring**
+#### **Agent Avatar with Status Ring**
 
 **Visual Specs:**
 
@@ -700,7 +700,7 @@ accent: {
 
 #### **Success (Green)**
 
-Mission completed, positive status, ally available.
+Mission completed, positive status, agent available.
 
 ```javascript
 success: {
@@ -1000,7 +1000,7 @@ sizes: {
 | Concept               | Icon (Lucide)   | Usage                      |
 | --------------------- | --------------- | -------------------------- |
 | **Home / Dashboard**  | `Home`          | Sidebar nav, breadcrumbs   |
-| **Allies**            | `Users`         | Ally directory, team       |
+| **Agents**            | `Users`         | Agent directory, team      |
 | **Goals**             | `Target`        | Goal creation, tracking    |
 | **Goals**             | `Briefcase`     | Goal cards, nav            |
 | **Missions**          | `CheckSquare`   | Mission cards, lists       |
@@ -1014,8 +1014,8 @@ sizes: {
 | **Calendar**          | `Calendar`      | Dates, schedules           |
 | **Attachments**       | `Paperclip`     | Files, documents           |
 | **Comments**          | `MessageSquare` | Discussions, threads       |
-| **AI / Ally**         | `Sparkles`      | AI-specific features       |
-| **Status: Active**    | `CircleDot`     | Active missions/allies     |
+| **AI / Agent**        | `Sparkles`      | AI-specific features       |
+| **Status: Active**    | `CircleDot`     | Active missions/agents     |
 | **Status: Completed** | `CheckCircle2`  | Completed states           |
 | **Status: Blocked**   | `AlertCircle`   | Errors, blockers           |
 | **Priority: High**    | `ArrowUp`       | High priority indicator    |
@@ -1311,7 +1311,7 @@ hover: bg-primary-600
 }
 ```
 
-#### **Ally Status Ring (On Mission)**
+#### **Agent Status Ring (On Mission)**
 
 ```css
 @keyframes pulse-ring {
@@ -1349,7 +1349,7 @@ hover: bg-primary-600
 
 ### 10.1 Dashboard (Mission Control)
 
-**Purpose:** High-level overview of goals, allies, and recent activity
+**Purpose:** High-level overview of goals, agents, and recent activity
 
 **Layout Structure:**
 
@@ -1362,7 +1362,7 @@ hover: bg-primary-600
 │ Sidebar  │  │ Active │ On Mis │ Complt │  ← Stats Cards    │
 │          │  │ 12     │ 5      │ 8      │     (3 cols)      │
 │ - Home   │  └────────┴────────┴────────┘                   │
-│ - Allies │                                                  │
+│ - Agents │                                                  │
 │ - Goals  │  Active Goals                               │
 │ - Intel  │  ┌─────────────┬─────────────┬─────────────┐   │
 │ - Clients│  │ Q1 Marketing│ Website     │ Product     │   │
@@ -1379,7 +1379,7 @@ hover: bg-primary-600
 
 **Key Elements:**
 
-- **Stats Cards** (row 1): Active Goals, Allies On Mission, Missions Completed
+- **Stats Cards** (row 1): Active Goals, Agents On Mission, Missions Completed
   Today
 - **Goal Grid** (row 2): 3-column grid of active goal cards (see Component
   Inventory)
@@ -1395,19 +1395,19 @@ hover: bg-primary-600
 
 ---
 
-### 10.2 Ally Directory
+### 10.2 Agent Directory
 
-**Purpose:** Browse, search, and manage all allies in the cohort
+**Purpose:** Browse, search, and manage all agents in the cohort
 
 **Layout Structure:**
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│ Ally Directory                                             │
+│ Agent Directory                                             │
 │ [Search] [Filter: All | On Mission | Standing By] [+ Recru│
 ├────────────────────────────────────────────────────────────┤
 │ ┌──────────┬──────────┬──────────┬──────────┐            │
-│ │  Riley   │  Jordan  │  Casey   │  Alex    │  ← Ally    │
+│ │  Riley   │  Jordan  │  Casey   │  Alex    │  ← Agent    │
 │ │  👤      │  👤      │  👤      │  👤      │    Cards   │
 │ │  On Misn │  Standby │  On Misn │  Off Duty│            │
 │ │  65% Load│  20% Load│  80% Load│  0% Load │            │
@@ -1424,10 +1424,10 @@ hover: bg-primary-600
 - **Filters:** Status (All, On Mission, Standing By, Off Duty), Role (Developer,
   Designer, etc.)
 - **View Toggle:** Card view (default) / List view (table)
-- **Ally Cards:** 4-column grid (see Component Inventory > Ally Card)
-- **+ Recruit Button:** Primary CTA, opens ally creation modal
+- **Agent Cards:** 4-column grid (see Component Inventory > Agent Card)
+- **+ Recruit Button:** Primary CTA, opens agent creation modal
 
-**Click Behavior:** Clicking ally card opens full Ally Profile (modal or
+**Click Behavior:** Clicking agent card opens full Agent Profile (modal or
 dedicated page)
 
 **Responsive:**
@@ -1479,7 +1479,7 @@ dedicated page)
 **Overview Tab (Alternative View):**
 
 - Goal description (rich text)
-- Key metrics (progress %, missions completed, allies assigned)
+- Key metrics (progress %, missions completed, agents assigned)
 - Timeline visualization (Gantt chart)
 - Recent activity feed
 
@@ -1490,8 +1490,8 @@ dedicated page)
 
 **Team Tab:**
 
-- List of assigned allies with workload meters
-- - Assign Ally button
+- List of assigned agents with workload meters
+- - Assign Agent button
 
 **Responsive:**
 
@@ -1503,7 +1503,7 @@ dedicated page)
 
 ### 10.4 Knowledge Base Browser
 
-**Purpose:** Search and explore all intel captured by allies
+**Purpose:** Search and explore all intel captured by agents
 
 **Layout Structure:**
 
@@ -1512,7 +1512,7 @@ dedicated page)
 │ Intel • Your Organization's Knowledge Base                 │
 │                                                            │
 │ [Search: "What did we learn about..."]                     │
-│ [Filter: Source] [Filter: Ally] [Filter: Date] [Sort]     │
+│ [Filter: Source] [Filter: Agent] [Filter: Date] [Sort]     │
 ├────────────────────────────────────────────────────────────┤
 │ ┌──────────────────┬──────────────────┬──────────────────┐│
 │ │ 💡 API Rate      │ 💡 User Testing  │ 💡 Deployment   ││
@@ -1532,7 +1532,7 @@ dedicated page)
 **Key Elements:**
 
 - **Semantic Search Bar:** Main interaction, natural language queries
-- **Filters:** Source type (Research, Manual, Observation), Ally, Date range,
+- **Filters:** Source type (Research, Manual, Observation), Agent, Date range,
   Goal
 - **Sort:** Relevance (default), Recent, Most Referenced
 - **Knowledge Cards:** 3-column grid (see Component Inventory > Knowledge Card)
@@ -1543,7 +1543,7 @@ dedicated page) with:
 
 - Full insight text
 - Source mission/goal link
-- Ally attribution
+- Agent attribution
 - Related intel (graph connections)
 - Comments/discussion thread
 
@@ -1581,7 +1581,7 @@ dedicated page) with:
 │ │ ◐ 45%         │ ◐ 70%         │ ◐ 20%         │         │
 │ └───────────────┴───────────────┴───────────────┘         │
 │                                                            │
-│ Assigned Allies (5)                                        │
+│ Assigned Agents (5)                                        │
 │ 👤 Riley  👤 Jordan  👤 Casey  ...                         │
 │                                                            │
 │ Recent Activity                                            │
@@ -1595,9 +1595,9 @@ dedicated page) with:
 - **Client Header:** Logo/icon, name, metadata (industry, size, established
   date)
 - **Tabs:** Overview, Goals, Team, Intel, Settings
-- **Overview Tab:** Description, active goals, assigned allies, recent activity
+- **Overview Tab:** Description, active goals, assigned agents, recent activity
 - **Goals Tab:** Full list/grid of all goals for this client
-- **Team Tab:** Allies assigned to this client with workload meters
+- **Team Tab:** Agents assigned to this client with workload meters
 - **Intel Tab:** Client-scoped knowledge base (only intel from this client's
   goals)
 
@@ -1653,10 +1653,10 @@ dedicated page) with:
 
 ---
 
-### 10.7 Goal Creation Flow (Human + Ally Proposals)
+### 10.7 Goal Creation Flow (Human + Agent Proposals)
 
 **Purpose:** Create new goals, with support for both human-initiated and
-ally-proposed goals
+agent-proposed goals
 
 **Layout Structure (Modal/Sheet):**
 
@@ -1686,13 +1686,13 @@ ally-proposed goals
 └────────────────────────────────────────────────────────────┘
 ```
 
-#### **Step 2 (Ally-Proposed Goals Only): Human Approval**
+#### **Step 2 (Agent-Proposed Goals Only): Human Approval**
 
-If an ally proposes a goal, it enters a "Pending Approval" state:
+If an agent proposes a goal, it enters a "Pending Approval" state:
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│ 🤖 Ally-Proposed Goal                              [X]    │
+│ 🤖 Agent-Proposed Goal                              [X]    │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │ Proposed by: Riley (AI Developer)                         │
@@ -1708,7 +1708,7 @@ If an ally proposes a goal, it enters a "Pending Approval" state:
 │ above 80% within 2 weeks.                                 │
 │                                                            │
 │ Suggested Priority: High                                   │
-│ Estimated Effort: 2 weeks, 3 allies                       │
+│ Estimated Effort: 2 weeks, 3 agents                       │
 │                                                            │
 │ Your Decision:                                             │
 │ [Approve] [Modify Scope] [Reject] [Comment]               │
@@ -1719,7 +1719,7 @@ If an ally proposes a goal, it enters a "Pending Approval" state:
 
 - **Approve:** Goal is created and enters normal workflow
 - **Modify Scope:** Opens edit mode to adjust title, priority, deadline
-- **Reject:** Ally is notified, goal is discarded (with optional feedback
+- **Reject:** Agent is notified, goal is discarded (with optional feedback
   comment)
 - **Comment:** Opens discussion thread for clarification before deciding
 
@@ -1727,7 +1727,7 @@ If an ally proposes a goal, it enters a "Pending Approval" state:
 
 - Form fields: Title (required), Description (optional), Priority, Deadline,
   Client
-- Ally proposals include: Proposing ally, Reason/Justification, Suggested
+- Agent proposals include: Proposing agent, Reason/Justification, Suggested
   priority/effort
 - Approval workflow: Approve / Modify / Reject / Comment buttons
 - Validation: Title required, priority defaults to Medium
@@ -1745,7 +1745,7 @@ If an ally proposes a goal, it enters a "Pending Approval" state:
 This UI/UX Design System establishes a comprehensive foundation for Cohortix's
 visual language. Key decisions:
 
-1. **Agent-first philosophy:** Allies are treated as teammates, not tools, with
+1. **Agent-first philosophy:** Agents are treated as teammates, not tools, with
    warm, human-centric design patterns.
 
 2. **Clean, card-based layouts:** Inspired by Linear/Notion/ClickUp,
@@ -1782,7 +1782,7 @@ visual language. Key decisions:
 - Review with Ahmad for strategic alignment
 - Share with Devi (AI Developer) for shadcn/ui implementation planning
 - Create Figma/Storybook component library (if needed)
-- Begin Phase 2 implementation (Ally Directory UI)
+- Begin Phase 2 implementation (Agent Directory UI)
 
 **Ready for Ahmad's review.** 🎨
 

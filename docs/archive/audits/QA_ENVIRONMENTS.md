@@ -40,7 +40,7 @@ The unified `pnpm seed` command populates **ALL** tables:
 | Table                   | Count | Description                                            |
 | ----------------------- | ----- | ------------------------------------------------------ |
 | **Organizations**       | 1     | Demo org: "Axon HQ"                                    |
-| **Agents (Allies)**     | 4     | Devi, Lubna, Zara, Khalid                              |
+| **Agents**              | 4     | Devi, Lubna, Zara, Khalid                              |
 | **Clients**             | 1     | TechCorp Inc.                                          |
 | **Cohorts**             | 4     | AI Team, Design Squad, Content Team, DevOps (at-risk)  |
 | **Cohort Members**      | 10    | Agent-to-cohort assignments with engagement scores     |
@@ -152,7 +152,7 @@ With the unified seed data, you can test:
 
 ### Agent Endpoints
 
-- `GET /api/agents` — List all allies
+- `GET /api/agents` — List all agents
 - `GET /api/agents/:id/cohorts` — Get agent's cohort memberships
 
 ### Project & Task Endpoints

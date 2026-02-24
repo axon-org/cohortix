@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { OperationStatusChip, type OperationStatus } from '@/components/ui/operation-status-chip';
 import { formatDate } from '@/lib/utils';
-import { type Mission, type Ally } from '@/lib/api/client';
+import { type Mission, type Agent } from '@/lib/api/client';
 import { ChevronDown, Filter, MoreVertical } from 'lucide-react';
 import { useUpdateOperation } from '@/hooks/use-operations';
 
@@ -33,10 +33,10 @@ export interface Operation {
 interface OperationsTableProps {
   data: Operation[];
   missions: Mission[];
-  allies: Ally[];
+  agents: Agent[];
 }
 
-export function OperationsTable({ data, missions, allies }: OperationsTableProps) {
+export function OperationsTable({ data, missions, agents }: OperationsTableProps) {
   const updateOperation = useUpdateOperation();
   const [rowSelection, setRowSelection] = useState({});
 
@@ -86,7 +86,7 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
       },
       {
         accessorKey: 'ownerName',
-        header: 'Ally',
+        header: 'Agent',
         cell: ({ row }) => (
           <span className="text-muted-foreground">{row.getValue('ownerName')}</span>
         ),
@@ -244,11 +244,11 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="gap-2">
                       <Filter className="w-4 h-4" />
-                      Ally
+                      Agent
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="max-h-60 overflow-y-auto">
-                    {allies.map((a) => (
+                    {agents.map((a) => (
                       <DropdownMenuItem
                         key={a.id}
                         onClick={() => table.getColumn('ownerName')?.setFilterValue(a.name)}
@@ -260,7 +260,7 @@ export function OperationsTable({ data, missions, allies }: OperationsTableProps
                     <DropdownMenuItem
                       onClick={() => table.getColumn('ownerName')?.setFilterValue(undefined)}
                     >
-                      All Allies
+                      All Agents
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

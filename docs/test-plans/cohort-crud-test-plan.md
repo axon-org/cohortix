@@ -199,10 +199,10 @@ cohort properties; and soft-delete cohorts with 30-day recovery window.
 
 **File:** `tests/integration/cohorts/delete.test.ts`
 
-| Test Case                                       | Setup               | Action                                    | Expected Result                                            | Status     |
-| ----------------------------------------------- | ------------------- | ----------------------------------------- | ---------------------------------------------------------- | ---------- |
-| Should soft delete cohort                       | Cohort exists in DB | DELETE /api/cohorts/:id                   | 200 OK, `deleted_at` timestamp set, not physically deleted | ⏳ Pending |
-| Should prevent deleting cohort from another org | Cohort from Org B   | DELETE /api/cohorts/:id (user from Org A) | 403 Forbidden (RLS blocks delete)                          | ⏳ Pending |
+| Test Case                                       | Setup               | Action                                    | Expected Result                                             | Status     |
+| ----------------------------------------------- | ------------------- | ----------------------------------------- | ----------------------------------------------------------- | ---------- |
+| Should soft delete cohort                       | Cohort exists in DB | DELETE /api/cohorts/:id                   | 200 OK, `deleted_at` timestamp set, not physicagent deleted | ⏳ Pending |
+| Should prevent deleting cohort from another org | Cohort from Org B   | DELETE /api/cohorts/:id (user from Org A) | 403 Forbidden (RLS blocks delete)                           | ⏳ Pending |
 
 ---
 

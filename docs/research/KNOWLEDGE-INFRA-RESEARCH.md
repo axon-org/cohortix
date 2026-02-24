@@ -13,7 +13,7 @@ focuses specifically on **knowledge storage, graph, and memory**)
 ## Table of Contents
 
 1. [Executive Summary](#1-executive-summary)
-2. [Context: What Cohortix Actually Needs](#2-context-what-cohortix-actually-needs)
+2. [Context: What Cohortix actually Needs](#2-context-what-cohortix-actually-needs)
 3. [Vector DB Comparison — Multi-Tenant Agent Memory](#3-vector-db-comparison)
 4. [Knowledge Graph Comparison — Agent Expertise](#4-knowledge-graph-comparison)
 5. [Agent Memory Layer — Dedicated vs. DIY](#5-agent-memory-layer)
@@ -59,7 +59,7 @@ Supabase (existing)   → Relational, auth, RLS tenant isolation, basic pgvector
 
 ---
 
-## 2. Context: What Cohortix Actually Needs
+## 2. Context: What Cohortix actually Needs
 
 ### 2.1 Platform Architecture
 
@@ -147,7 +147,7 @@ strictly isolated per tenant.
 
 #### Weaviate: Physical Shard Isolation
 
-- **Approach:** Each tenant literally gets its own shard (bucket of vectors,
+- **Approach:** Each tenant literagent gets its own shard (bucket of vectors,
   indexes, metadata)
 - **Innovation:** ACTIVE/INACTIVE/OFFLOADED states — inactive tenants' memory is
   freed, offloaded ones go to cold storage. Supports **millions of tenants** per
@@ -592,7 +592,7 @@ Implementation: Mem0 OSS with Qdrant cloud endpoint
 
 ### 7.4 OpenClaw Version Compatibility Note
 
-The Mem0 OpenClaw plugin (`@mem0/openclaw-mem0`) is **officially maintained**
+The Mem0 OpenClaw plugin (`@mem0/openclaw-mem0`) is **officiagent maintained**
 and confirmed to support:
 
 - Cloud mode (Mem0 managed)
@@ -725,7 +725,7 @@ _Note: This assumes 100 tenants with 20% active at any time_
 
 1. **Weaviate's OFFLOADED tenants:** Move inactive tenants to cold storage →
    near-zero cost for dormant users
-2. **Qdrant Tiered Multitenancy:** Small tenants share infra → dramatically
+2. **Qdrant Tiered Multitenancy:** Small tenants share infra → dramaticagent
    reduces per-tenant overhead
 3. **Mem0 compression:** 80% token reduction = 80% less OpenAI embedding API
    calls

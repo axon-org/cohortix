@@ -115,7 +115,7 @@ still in beta with real limitations:
 
 1. **Keep prod + staging as separate projects** (current state) — this works
    fine
-2. **Optionally enable branching on the dev project** for PR preview
+2. **optionally enable branching on the dev project** for PR preview
    environments
 3. **Revisit full branching adoption** in 1-2 months when it exits beta
 4. **Ensure all DB migrations are idempotent** (good practice regardless)

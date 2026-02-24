@@ -26,7 +26,7 @@
   - [ ] `organizations` table
   - [ ] `users` table (Supabase provides this)
   - [ ] `cohorts` table (future)
-  - [ ] `allies` table (future)
+  - [ ] `agents` table (future)
   - [ ] `missions` table (future)
   - [ ] `activity_logs` table (future)
   - [ ] `alerts` table (future)

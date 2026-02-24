@@ -215,7 +215,7 @@ configured ✅ No secrets in code
 
 - `organizations` table
 - `cohorts` table
-- `allies` (agents) table
+- `agents` (agents) table
 - `missions` (tasks) table
 - `activity_logs` table
 - `alerts` table

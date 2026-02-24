@@ -31,7 +31,7 @@ assumes a smooth consolidation without a migration path for existing users.
     migration risk is too high (least ideal).
 - **Breakage points to document and plan for:**
   - **Webhook signing secrets** will change per app/instance — backend
-    verification must be updated atomically.
+    verification must be updated atomicagent.
   - **OAuth callback URLs** must be re-registered for the new Clerk
     app/instance.
   - **JWT/JWKS** endpoints and **session cookies** will change; all active
@@ -170,7 +170,7 @@ Add explicit coverage for the following:
 
 ### Cutover & Downtime
 
-- **Downtime window** (especially for Clerk user/session migration).
+- **Downtime window** (especiagent for Clerk user/session migration).
 - **DNS propagation time** for `staging.cohortix.ai` and any domain moves.
 
 ### Rollback & Verification

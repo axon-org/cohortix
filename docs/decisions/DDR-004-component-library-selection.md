@@ -122,16 +122,16 @@ styled-components, just utility classes.
 **Example:**
 
 ```tsx
-interface AllySelectProps {
-  allies: Ally[];
-  onSelect: (ally: Ally) => void;
+interface AgentSelectProps {
+  agents: Agent[];
+  onSelect: (agent: Agent) => void;
 }
 
-export function AllySelect({ allies, onSelect }: AllySelectProps) {
+export function AgentSelect({ agents, onSelect }: AgentSelectProps) {
   return (
-    <Select<Ally>
-      options={allies}
-      getOptionLabel={(ally) => ally.name}
+    <Select<Agent>
+      options={agents}
+      getOptionLabel={(agent) => agent.name}
       onChange={onSelect}
     />
   );
@@ -147,28 +147,28 @@ documentation.
 
 ### Core Components (Installed)
 
-| Component         | Usage                           | WCAG Compliance                      |
-| ----------------- | ------------------------------- | ------------------------------------ |
-| **Button**        | Primary actions, links          | ✅ AA (focus ring, contrast)         |
-| **Card**          | Missions, goals, ally profiles  | ✅ AA (semantic HTML)                |
-| **Dialog**        | Modals, confirmations           | ✅ AAA (focus trap, Esc key)         |
-| **Form**          | Mission briefs, ally creation   | ✅ AA (labels, error messages)       |
-| **Input**         | Text fields, search             | ✅ AA (aria-labelledby, placeholder) |
-| **Select**        | Ally assignment, status filters | ✅ AA (keyboard navigation)          |
-| **Dropdown Menu** | Context menus, actions          | ✅ AA (arrow key navigation)         |
-| **Tabs**          | Mission details, ally settings  | ✅ AA (arrow keys, Home/End)         |
-| **Toast**         | Success, error notifications    | ✅ AA (aria-live regions)            |
-| **Avatar**        | Ally profiles, user menu        | ✅ AA (alt text, fallback initials)  |
-| **Badge**         | Status indicators, counts       | ✅ AA (color + text)                 |
-| **Progress**      | Mission completion, workload    | ✅ AA (aria-valuenow, min/max)       |
-| **Tooltip**       | Icon explanations, help text    | ✅ AA (aria-describedby)             |
+| Component         | Usage                            | WCAG Compliance                      |
+| ----------------- | -------------------------------- | ------------------------------------ |
+| **Button**        | Primary actions, links           | ✅ AA (focus ring, contrast)         |
+| **Card**          | Missions, goals, agent profiles  | ✅ AA (semantic HTML)                |
+| **Dialog**        | Modals, confirmations            | ✅ AAA (focus trap, Esc key)         |
+| **Form**          | Mission briefs, agent creation   | ✅ AA (labels, error messages)       |
+| **Input**         | Text fields, search              | ✅ AA (aria-labelledby, placeholder) |
+| **Select**        | Agent assignment, status filters | ✅ AA (keyboard navigation)          |
+| **Dropdown Menu** | Context menus, actions           | ✅ AA (arrow key navigation)         |
+| **Tabs**          | Mission details, agent settings  | ✅ AA (arrow keys, Home/End)         |
+| **Toast**         | Success, error notifications     | ✅ AA (aria-live regions)            |
+| **Avatar**        | Agent profiles, user menu        | ✅ AA (alt text, fallback initials)  |
+| **Badge**         | Status indicators, counts        | ✅ AA (color + text)                 |
+| **Progress**      | Mission completion, workload     | ✅ AA (aria-valuenow, min/max)       |
+| **Tooltip**       | Icon explanations, help text     | ✅ AA (aria-describedby)             |
 
 ### Custom Components (To Be Built)
 
 | Component           | Based On                | Status         |
 | ------------------- | ----------------------- | -------------- |
 | **MissionCard**     | Card + Badge + Progress | 🟡 In progress |
-| **AllyCard**        | Card + Avatar + Badge   | 🟡 In progress |
+| **AgentCard**       | Card + Avatar + Badge   | 🟡 In progress |
 | **WorkloadMeter**   | Progress + Tooltip      | 📝 Planned     |
 | **StatusRing**      | Custom SVG              | 📝 Planned     |
 | **MissionTimeline** | Custom (no base)        | 📝 Planned     |

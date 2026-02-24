@@ -194,7 +194,7 @@ misconfiguration.
    - Incorrect import paths
    - Missing `@/` path aliases
    - Missing type dependencies
-   - Actually missing modules (need install)
+   - actually missing modules (need install)
 3. Fix systematically:
    - Update import paths
    - Add missing dependencies to package.json
@@ -359,7 +359,7 @@ misconfiguration.
 
 **Steps:**
 
-1. Run each test individually to isolate failures
+1. Run each test individuagent to isolate failures
 2. Fix test setup/environment issues
 3. Update selectors if UI changed
 4. Fix test logic if API contracts changed

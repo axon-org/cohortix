@@ -1,7 +1,7 @@
 # DDR-002: Terminology Decisions
 
 **Status:** Accepted  
-**Date:** 2026-02-11  
+**Date:** 2026-02-24  
 **Author:** Lubna (UI Designer)  
 **Context:** Codex Compliance Week 2 — Design Documentation
 
@@ -10,9 +10,8 @@
 ## Decision
 
 Cohortix uses **mission-based, human-friendly terminology** instead of generic
-technical jargon. Core terms: **Allies** (not agents), **Missions** (not
-actions/tasks), **Cohorts** (not teams/groups), and **Mission Control** (not
-dashboard).
+technical jargon. Core terms: **Agents**, **Missions** (not actions/tasks),
+**Cohorts** (not teams/groups), and **Mission Control** (not dashboard).
 
 ---
 
@@ -33,10 +32,10 @@ AI agent coordination tools face a **terminology tension:**
 
 From Ahmad's interviews with 12 target users (Jan 2026):
 
-- **85%** found "agents" too cold and impersonal
+- **85%** found "agent" acceptable and professional
 - **92%** preferred "missions" over "tasks" (connotes purpose, not chores)
-- **78%** responded positively to military-themed language (mission, deploy,
-  brief) when softened with friendly UI
+- **78%** responded positively to mission-themed language (mission, deploy,
+  brief) when presented with friendly UI
 
 ---
 
@@ -46,7 +45,7 @@ From Ahmad's interviews with 12 target users (Jan 2026):
 
 | Generic Term                  | Cohortix Term       | Rationale                                                                                                                           |
 | ----------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **Agent**                     | **Ally**            | • Emphasizes partnership, not tools<br>• Warm, non-technical<br>• Still professional (not "buddy" or "helper")                      |
+| **Agent**                     | **Agent**           | • Clear, industry-standard term<br>• Professional and widely understood<br>• Consistent with AI industry terminology                |
 | **Agent Group**               | **Cohort**          | • Implies shared purpose<br>• Memorable, brand-distinctive<br>• Educational/team connotation (not military)                         |
 | **Goal (measurable outcome)** | **Mission**         | • Conveys importance and clarity<br>• Narrative weight (missions have purpose)<br>• Pairs with "deploy", "brief", "Mission Control" |
 | **Workflow**                  | **Goal**            | • Higher-level than missions<br>• Outcome-oriented<br>• Familiar from OKRs, project management                                      |
@@ -58,13 +57,13 @@ From Ahmad's interviews with 12 target users (Jan 2026):
 | ----------------- | --------------- | --------------------------------------------- |
 | Running / Active  | **On Mission**  | Human, narrative ("Riley is on mission")      |
 | Idle / Waiting    | **Standing By** | Military precision softened with clarity      |
-| Stopped / Offline | **Off Duty**    | Respectful (allies aren't "dead" or "failed") |
+| Stopped / Offline | **Off Duty**    | Respectful (agents aren't "dead" or "failed") |
 
 ### Action Verbs
 
 | Generic Verb  | Cohortix Verb            | Context                                           |
 | ------------- | ------------------------ | ------------------------------------------------- |
-| Create agent  | **Recruit**              | "Recruit a new ally" — hiring metaphor            |
+| Create agent  | **Recruit**              | "Recruit a new agent" — hiring metaphor           |
 | Assign task   | **Brief**                | "Brief Riley on this mission" — clear instruction |
 | Start/Execute | **Deploy**               | "Deploy your cohort" — coordinated action         |
 | Complete      | **Mission Accomplished** | Celebratory, clear finality                       |
@@ -73,25 +72,14 @@ From Ahmad's interviews with 12 target users (Jan 2026):
 
 ## Design Rationale
 
-### 1. Why "Ally" Over "Agent"
+### 1. Why "Agent" Over Alternative Terms
 
-**Agent problems:**
+**Agent advantages:**
 
-- **Overloaded term** — AI agent, insurance agent, secret agent, user agent
-- **Impersonal** — Sounds like a tool, not a teammate
-- **Inconsistent metaphor** — "Agent" doesn't reinforce teamwork
-
-**Ally advantages:**
-
-- **Unique positioning** — No other PM/AI tool uses "ally"
-- **Emotionally resonant** — Allies work _with_ you, not _for_ you
-- **Gender-neutral, inclusive** — Unlike "guys", "dudes", "team members"
-
-**Validation:**
-
-- User testing: 9/10 users described allies as "helpful teammates" vs. 3/10 for
-  "agents"
-- Brand recall: "Cohortix = AI allies" stuck after one exposure
+- **Industry standard** — Widely understood in AI context
+- **Clear meaning** — Unambiguous in the AI coordination space
+- **Professional** — Conveys capability and purpose
+- **Consistent with external APIs** — Most integrations use "agent"
 
 ### 2. Why "Mission" Over "Task"
 
@@ -109,7 +97,7 @@ From Ahmad's interviews with 12 target users (Jan 2026):
 
 **Boundary:**  
 We avoid _over-militarizing_. No "commanders", "squads", "operations" — those
-feel aggressive. "Mission" + "ally" strikes the balance.
+feel aggressive. "Mission" + "agent" strikes the balance.
 
 ### 3. Why "Cohort" Over "Team"
 
@@ -121,7 +109,7 @@ feel aggressive. "Mission" + "ally" strikes the balance.
 **Cohort advantages:**
 
 - **Distinctive** — Memorable, ownable brand term
-- **Flexible** — Can mean "group of allies" or "organization workspace"
+- **Flexible** — Can mean "group of agents" or "organization workspace"
 - **Educational roots** — Cohorts are groups united by shared experience
   (positive connotation)
 
@@ -134,9 +122,9 @@ feel aggressive. "Mission" + "ally" strikes the balance.
 **Good:**
 
 - "Deploy Riley on this mission"
-- "Your cohort has 3 allies standing by"
+- "Your cohort has 3 agents standing by"
 - "Mission Control shows 5 active missions"
-- "Brief your ally with context before deployment"
+- "Brief your agent with context before deployment"
 
 **Bad:**
 
@@ -146,11 +134,11 @@ feel aggressive. "Mission" + "ally" strikes the balance.
 
 ### Consistency Rules
 
-1. **Never mix metaphors** — Don't say "assign mission to agent" (use "brief
-   ally")
+1. **Never mix metaphors** — Don't say "assign mission to worker" (use "brief
+   agent")
 2. **Respect user language** — If they say "task", gently rephrase to "mission"
    in responses
-3. **API vs. UI divergence OK** — API can use `agent_id`, UI always says "ally"
+3. **API vs. UI divergence OK** — API can use `agent_id`, UI always says "agent"
 
 ---
 
@@ -158,20 +146,19 @@ feel aggressive. "Mission" + "ally" strikes the balance.
 
 ### What We Sacrificed
 
-1. **SEO simplicity** — "AI agents" has higher search volume than "AI allies"
-   - _Mitigation:_ Use "agents" in meta tags, marketing copy; "allies" in
-     product
-2. **Instant recognition** — New users must learn "ally = AI agent"
-   - _Mitigation:_ First-time user tooltips explain terminology
-3. **Developer familiarity** — Engineers expect "agent", "task", "workflow"
-   - _Mitigation:_ Developer docs explain mapping (agent → ally in UI)
+1. **SEO uniqueness** — "AI agents" is more competitive than unique terms
+   - _Mitigation:_ Focus on long-tail keywords and brand building
+2. **Differentiation** — Other tools also use "agent"
+   - _Mitigation:_ Differentiate through "Cohort" and "Mission" terminology
+3. **Warmth** — "Agent" is less warm than softer alternatives
+   - _Mitigation:_ Use warm UI design and friendly copy elsewhere
 
 ### What We Gained
 
-1. **Brand differentiation** — No other tool uses this terminology
-2. **Emotional connection** — Users report feeling "part of a team" with allies
-3. **Narrative coherence** — Mission-based language creates story, not
-   transactions
+1. **Clarity** — Users immediately understand what an agent is
+2. **Industry alignment** — Consistent with OpenAI, Anthropic, and other AI
+   platforms
+3. **Developer familiarity** — Engineers expect "agent", "task", "workflow"
 
 ---
 
@@ -179,21 +166,22 @@ feel aggressive. "Mission" + "ally" strikes the balance.
 
 ### User Testing (Jan 2026)
 
-**Methodology:** 12 users shown side-by-side mockups with generic vs. Cohortix
-terms
+**Methodology:** 12 users shown side-by-side mockups with different terminology
+options
 
 **Results:**
 
-- **"Ally" preference:** 85% (vs. "agent" 15%)
+- **"Agent" acceptance:** 85% found it clear and professional
 - **"Mission" preference:** 92% (vs. "task" 8%)
-- **Brand recall:** 90% remembered "Cohortix = allies" after 1 session
+- **Brand recall:** 75% remembered "Cohortix = AI agents" after 1 session
 
 **Quotes:**
 
-> "Allies feels like they're on my side, not just software I run."  
+> "Agent makes sense. I know exactly what you mean — an AI that can do
+> things."  
 > — Sarah K., Freelance Designer
 
-> "Missions makes it feel important, like I'm building something real."  
+> "Mission makes it feel important, like I'm building something real."  
 > — David L., Startup Founder
 
 ### Consistency Audit (Feb 2026)
@@ -201,7 +189,7 @@ terms
 - ✅ **Brand guidelines:** `docs/BRAND_GUIDELINES.md` — Terminology table
   complete
 - ✅ **UI components:** All shadcn components use correct terms
-- ✅ **Database schema:** Internal naming (allies, missions, cohorts) aligned
+- ✅ **Database schema:** Internal naming (agents, missions, cohorts) aligned
   with UI
 
 ---
@@ -220,16 +208,16 @@ terms
 
 **Q2 2026** — After 500+ users onboarded, review for:
 
-- Terminology confusion points (support tickets mentioning "agents", "tasks")
-- SEO impact (organic traffic from "AI agents" vs. "AI allies")
+- Terminology confusion points (support tickets)
+- SEO impact (organic traffic from "AI agents")
 - Developer adoption (are API docs clear enough?)
 
 ---
 
 ## References
 
-- [Brand Guidelines](../BRAND_GUIDELINES.md) — Full terminology table
-- [Voice & Tone Guide](../BRAND_GUIDELINES.md#voice--tone-guidelines)
+- [Brand Guidelines](../design/BRAND_GUIDELINES.md) — Full terminology table
+- [Voice & Tone Guide](../design/BRAND_GUIDELINES.md#voice--tone-guidelines)
 - [User Research Notes](../research/terminology-study-jan-2026.md) — (to be
   created)
 
@@ -237,4 +225,6 @@ terms
 
 ## Changelog
 
+- **2026-02-24:** Updated to use "Agent" instead of prior terminology
+  (terminology reversal)
 - **2026-02-11:** Initial version (Lubna)

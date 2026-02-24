@@ -20,7 +20,7 @@ cd /Users/alimai/Projects/cohortix && pnpm tsx scripts/seed-supabase.ts
 Successfully seeded the Supabase database with:
 
 - ✅ **1 Organization**: Axon HQ (ID: `9e455be7-b783-41bd-b688-852336d2b913`)
-- ✅ **4 AI Allies** (Agents):
+- ✅ **4 AI Agents**:
   - **Devi** — AI Developer Specialist
   - **Lubna** — UI/UX Designer
   - **Zara** — Content Strategist
@@ -31,7 +31,7 @@ Successfully seeded the Supabase database with:
   - Agent Evolution System
   - Content Strategy Overhaul
 - ✅ **5 Missions** (Tasks) across cohorts
-- ✅ **2 Knowledge Entries** for AI allies
+- ✅ **2 Knowledge Entries** for AI agents
 
 ### Seed Script
 
@@ -63,7 +63,7 @@ const dashboardData = await getDashboardData()
 <KpiCards
   activeCohorts={kpis.activeCohorts}
   missionsInProgress={kpis.missionsInProgress}
-  activeAllies={kpis.activeAllies}
+  activeAgents={kpis.activeAgents}
   completionRate={kpis.completionRate}
 />
 <RecentActivity activities={activity} />
@@ -87,7 +87,7 @@ const dashboardData = await getDashboardData()
 interface KpiCardsProps {
   activeCohorts: number;
   missionsInProgress: number;
-  activeAllies: number;
+  activeAgents: number;
   completionRate: number;
 }
 ```
@@ -97,7 +97,7 @@ interface KpiCardsProps {
 - **Active Cohorts** — Count of projects with `status = 'active'`
 - **Missions in Progress** — Count of tasks with
   `status IN ('todo', 'in_progress')`
-- **Active Allies** — Count of agents with `status = 'active'`
+- **Active Agents** — Count of agents with `status = 'active'`
 - **Completion Rate** — Percentage of completed tasks (done / total)
 
 ---
@@ -220,11 +220,11 @@ const avatarUrl = user?.profile?.avatar_url;
 | --------------------------------- | ------------------------------------------------- | --------------------------------------------------------------------- |
 | `getCurrentUser()`                | Get authenticated user + profile                  | `User & { profile }` or `null`                                        |
 | `getUserOrganization(userId)`     | Get user's org membership                         | `Membership & { organization }`                                       |
-| `getDashboardKPIs(orgId)`         | Calculate KPI metrics                             | `{ activeCohorts, missionsInProgress, activeAllies, completionRate }` |
+| `getDashboardKPIs(orgId)`         | Calculate KPI metrics                             | `{ activeCohorts, missionsInProgress, activeAgents, completionRate }` |
 | `getRecentActivity(orgId, limit)` | Fetch audit logs                                  | `Activity[]`                                                          |
 | `getActiveAlerts(orgId)`          | Generate alert conditions                         | `Alert[]`                                                             |
 | `getActiveCohorts(orgId, limit)`  | List active projects with stats                   | `Cohort[]`                                                            |
-| `getActiveAllies(orgId)`          | List agents with workload                         | `Agent[]`                                                             |
+| `getActiveAgents(orgId)`          | List agents with workload                         | `Agent[]`                                                             |
 | `getDashboardData()`              | **Main entry point** — fetches all dashboard data | Complete dashboard payload                                            |
 
 #### Row-Level Security (RLS)
@@ -256,7 +256,7 @@ pnpm dev
 ### Database State
 
 - **Organization:** Axon HQ
-- **Agents:** 4 active allies
+- **Agents:** 4 active agents
 - **Projects:** 3 cohorts (2 active, 1 planning)
 - **Tasks:** 5 missions across cohorts
 - **Knowledge:** 2 entries

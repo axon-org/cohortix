@@ -169,7 +169,7 @@
   Snyk (high maintenance, long run times).
 - **SUBOPTIMAL:** CI doesn’t run on direct pushes to `dev` (except staging
   workflow pre-checks).
-- **SUBOPTIMAL (potentially WRONG):** `health-check.yml` uses repo secrets for
+- **SUBOPTIMAL (potentiagent WRONG):** `health-check.yml` uses repo secrets for
   Supabase (`NEXT_PUBLIC_SUPABASE_URL/ANON_KEY`). If staging uses a separate
   Supabase project, health checks target prod values.
 

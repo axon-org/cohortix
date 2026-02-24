@@ -53,13 +53,13 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
 export interface DashboardKPIs {
   kpis: {
     activeCohortsCount: number;
-    totalAllies: number;
+    totalAgents: number;
     avgEngagement: number;
     atRiskCount: number;
   };
   trends: {
     activeCohortsChange: number;
-    totalAlliesChange: number;
+    totalAgentsChange: number;
     avgEngagementChange: number;
     atRiskChange: number;
   };
@@ -253,10 +253,10 @@ export async function getCohortActivity(
 }
 
 // ============================================================================
-// Allies API
+// Agents API
 // ============================================================================
 
-export interface Ally {
+export interface Agent {
   id: string;
   name: string;
   slug: string;
@@ -275,21 +275,21 @@ export interface Ally {
   updated_at: string;
 }
 
-export interface AllyListResponse {
-  data: Ally[];
+export interface AgentListResponse {
+  data: Agent[];
   meta: { page: number; limit: number; total: number; totalPages: number };
 }
 
-export interface AllyQueryParams {
+export interface AgentQueryParams {
   page?: number;
   limit?: number;
-  status?: Ally['status'];
+  status?: Agent['status'];
   search?: string;
   sortBy?: 'name' | 'createdAt' | 'status' | 'totalTasksCompleted';
   sortOrder?: 'asc' | 'desc';
 }
 
-export async function getAllies(params?: AllyQueryParams): Promise<AllyListResponse> {
+export async function getAgents(params?: AgentQueryParams): Promise<AgentListResponse> {
   const searchParams = new URLSearchParams();
   if (params?.page) searchParams.set('page', params.page.toString());
   if (params?.limit) searchParams.set('limit', params.limit.toString());
@@ -298,42 +298,42 @@ export async function getAllies(params?: AllyQueryParams): Promise<AllyListRespo
   if (params?.sortBy) searchParams.set('sortBy', params.sortBy);
   if (params?.sortOrder) searchParams.set('sortOrder', params.sortOrder);
   const query = searchParams.toString();
-  return fetchApi<AllyListResponse>(`/allies${query ? `?${query}` : ''}`);
+  return fetchApi<AgentListResponse>(`/agents${query ? `?${query}` : ''}`);
 }
 
-export interface CreateAllyInput {
+export interface CreateAgentInput {
   name: string;
   description?: string;
   role?: string;
-  status?: Ally['status'];
+  status?: Agent['status'];
   capabilities?: string[];
   runtimeType?: string;
   settings?: Record<string, any>;
 }
 
-export async function getAlly(id: string): Promise<Ally> {
-  const response = await fetchApi<{ data: Ally }>(`/allies/${id}`);
+export async function getAgent(id: string): Promise<Agent> {
+  const response = await fetchApi<{ data: Agent }>(`/agents/${id}`);
   return response.data;
 }
 
-export async function createAlly(data: CreateAllyInput): Promise<Ally> {
-  const response = await fetchApi<{ data: Ally }>('/allies', {
+export async function createAgent(data: CreateAgentInput): Promise<Agent> {
+  const response = await fetchApi<{ data: Agent }>('/agents', {
     method: 'POST',
     body: JSON.stringify(data),
   });
   return response.data;
 }
 
-export async function updateAlly(id: string, data: Partial<CreateAllyInput>): Promise<Ally> {
-  const response = await fetchApi<{ data: Ally }>(`/allies/${id}`, {
+export async function updateAgent(id: string, data: Partial<CreateAgentInput>): Promise<Agent> {
+  const response = await fetchApi<{ data: Agent }>(`/agents/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   });
   return response.data;
 }
 
-export async function deleteAlly(id: string): Promise<void> {
-  await fetchApi(`/allies/${id}`, { method: 'DELETE' });
+export async function deleteAgent(id: string): Promise<void> {
+  await fetchApi(`/agents/${id}`, { method: 'DELETE' });
 }
 
 // ============================================================================
@@ -596,9 +596,9 @@ export interface Insight {
   title: string;
   content: string;
   source?: string;
-  ally_id?: string;
-  ally_name?: string;
-  ally_avatar_url?: string;
+  agent_id?: string;
+  agent_name?: string;
+  agent_avatar_url?: string;
   tags?: string[];
   created_at: string;
 }

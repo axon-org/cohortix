@@ -42,7 +42,7 @@ database schema design.
 - `/missions` (GET, POST, GET/:id, PATCH/:id, DELETE/:id)
 - `/operations` (GET, POST, GET/:id, PATCH/:id, DELETE/:id)
 - `/cohorts` (GET, POST, GET/:id, PATCH/:id, DELETE/:id)
-- `/allies` (GET, POST)
+- `/agents` (GET, POST)
 - `/dashboard/*` (3 routes)
 
 #### ✅ COMPLIANT PATTERNS

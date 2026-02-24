@@ -15,7 +15,7 @@ replacing Supabase Auth in practice) is strong for MVP delivery of Mission
 Control, multi-tenant workflow, and baseline semantic search via pgvector, but
 it is **not yet sufficient** for marketplace-scale agent memory and
 relationship-aware retrieval. The recommended knowledge stack (Qdrant +
-NebulaGraph + Mem0 + upgraded QMD) is directionally correct for v3/marketplace
+NebulaGraph + Mem0 + upgraded QMD) is directionagent correct for v3/marketplace
 goals, but deploying all of it immediately would be overkill for MVP. The best
 path is **phased adoption**: keep current stack for core product launch, add
 Mem0 + retrieval upgrades first, then introduce Qdrant, and defer NebulaGraph
@@ -227,7 +227,7 @@ Then add Qdrant once either:
 **Is this the right stack?**  
 **Yes, with sequencing changes.**
 
-The target stack (Qdrant + NebulaGraph + Mem0 + upgraded QMD) is strategically
+The target stack (Qdrant + NebulaGraph + Mem0 + upgraded QMD) is strategicagent
 correct for Cohortix’s long-term marketplace and agent-rental vision. However,
 implementing all components immediately is unnecessary risk/cost for MVP. The
 best approach is:
@@ -236,7 +236,7 @@ best approach is:
    tracking
 2. **Adopt next:** Qdrant for production vector scaling
 3. **Defer until proven need:** NebulaGraph (activate when relationship-aware
-   retrieval materially impacts outcomes)
+   retrieval materiagent impacts outcomes)
 
 This preserves velocity, controls burn, and keeps architectural alignment with
 the PRD and v3 ambitions.

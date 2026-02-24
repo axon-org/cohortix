@@ -8,14 +8,14 @@
 ## Pipeline Overview
 
 ```
-Pull Request (to dev)
+Pull Request (to dev or main)
   └── ci.yml: lint + type-check + unit tests + security scans
 
 Merge to dev
-  └── deploy-staging.yml: build → deploy to staging → smoke test
+  └── Vercel Git Integration: auto-deploy to staging
 
 Merge to main (via PR from dev)
-  └── deploy-production.yml: CI + [MANUAL APPROVAL] → deploy → smoke test
+  └── Vercel Git Integration: auto-deploy to production
 
 Manual trigger
   └── db-migrate.yml: run migrations against selected environment
@@ -25,14 +25,11 @@ Manual trigger
 
 ## Workflow Files
 
-| File                    | Trigger                      | Purpose                                |
-| ----------------------- | ---------------------------- | -------------------------------------- |
-| `ci.yml`                | PR to `dev` or `main`        | Lint, type-check, unit tests, security |
-| `preview.yml`           | PR to `main`                 | Vercel preview deploy + E2E tests      |
-| `deploy-staging.yml`    | Push to `dev`                | Auto-deploy to staging                 |
-| `deploy-production.yml` | Push to `main`               | Manual-approval production deploy      |
-| `db-migrate.yml`        | Manual (`workflow_dispatch`) | Run migrations on any environment      |
-| `release.yml`           | Push to `main`               | Tag release + generate changelog       |
+| File             | Trigger                      | Purpose                                |
+| ---------------- | ---------------------------- | -------------------------------------- |
+| `ci.yml`         | PR to `dev` or `main`        | Lint, type-check, unit tests, security |
+| `db-migrate.yml` | Manual (`workflow_dispatch`) | Run migrations on any environment      |
+| `release.yml`    | Push to `main`               | Tag release + generate changelog       |
 
 ---
 
@@ -70,67 +67,15 @@ Runs on every PR to `dev` or `main`. All jobs must pass before merge is allowed.
 
 ---
 
-## Staging Deploy (`deploy-staging.yml`)
+## Deployments (Vercel Git Integration)
 
-**Trigger:** push to `dev` branch  
-**Result:** auto-deploys to `staging.cohortix.ai`
+All application deployments are handled by **Vercel Git Integration** — no
+custom GitHub Actions deploy workflows are used.
 
-### Flow
+- **Staging:** push/merge to `dev` → auto-deploys to `staging.cohortix.ai`
+- **Production:** merge to `main` → auto-deploys to `app.cohortix.ai`
 
-```
-push to dev
-  ├── Install + lint + type-check
-  ├── Build with Turborepo (staging env vars)
-  ├── vercel build
-  ├── vercel deploy → staging alias
-  └── Smoke test: GET staging.cohortix.ai/api/health
-```
-
-### Required Secrets (staging)
-
-| Secret                                      | Value source                       |
-| ------------------------------------------- | ---------------------------------- |
-| `STAGING_DATABASE_URL`                      | Supabase cohortix-staging pooler   |
-| `STAGING_DIRECT_URL`                        | Supabase cohortix-staging direct   |
-| `STAGING_NEXT_PUBLIC_SUPABASE_URL`          | Supabase staging URL               |
-| `STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY`     | Supabase staging anon key          |
-| `STAGING_SUPABASE_SERVICE_ROLE_KEY`         | Supabase staging service role      |
-| `STAGING_NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk staging pk*test* key         |
-| `STAGING_CLERK_SECRET_KEY`                  | Clerk staging sk*test* key         |
-| `STAGING_CLERK_WEBHOOK_SECRET`              | Clerk staging webhook secret       |
-| `VERCEL_TOKEN`                              | Vercel personal access token       |
-| `VERCEL_ORG_ID`                             | Vercel org ID                      |
-| `VERCEL_PROJECT_ID`                         | `prj_vKO7YaKzW39eGKtqCLrlaaIFoDO9` |
-
----
-
-## Production Deploy (`deploy-production.yml`)
-
-**Trigger:** push to `main`  
-**Gate:** Manual approval by Ahmad (GitHub Environment: `production`)
-
-### Flow
-
-```
-push to main
-  ├── lint + type-check + tests
-  ├── [WAITS for Ahmad's approval]
-  ├── Build with production env vars
-  ├── vercel build --prod
-  ├── vercel deploy --prod
-  ├── Smoke test: GET app.cohortix.ai/api/health
-  └── Create GitHub Release tag
-```
-
-### How Ahmad approves
-
-1. GitHub Actions → `deploy-production` workflow → "Review deployments" banner
-2. Select `production` environment → click **Approve and deploy**
-
-### Required Secrets (production environment)
-
-Same as staging but using production values — stored in the `production` GitHub
-environment (not repository-level secrets).
+GitHub Actions is used for **CI only** (lint, tests, security, checks).
 
 ---
 
@@ -180,9 +125,8 @@ When adding a new env var to the codebase:
 1. Add it to `.env.local.example` (with a comment)
 2. Add it to `.env.staging.example`
 3. Add it to `.env.production.example`
-4. Add it to the relevant GitHub Actions workflow `env:` block
-5. Tell Ahmad to add the actual value in:
-   - GitHub → Secrets (for CI use)
+4. Tell Ahmad to add the actual value in:
+   - GitHub → Secrets (only if CI needs it)
    - Vercel → Environment Variables (for runtime use)
 
 ---

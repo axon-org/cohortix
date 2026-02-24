@@ -140,7 +140,7 @@ snyk-scan:
 - Keyboard navigation: Error
 - Screen reader compatibility: Error
 
-### Testing Lighthouse Locally
+### Testing Lighthouse locally
 
 ```bash
 cd ~/Projects/cohortix

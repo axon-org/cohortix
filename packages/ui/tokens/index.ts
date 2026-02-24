@@ -52,7 +52,7 @@ export const TOKEN_CHANGELOG = [
     date: '2026-02-11',
     changes: [
       'Initial token extraction from Tailwind config',
-      'Added semantic color mappings for mission/ally statuses',
+      'Added semantic color mappings for mission/agent statuses',
       'Defined component-specific typography styles',
       'Documented responsive spacing patterns',
     ],

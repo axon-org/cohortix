@@ -81,7 +81,7 @@ export function KanbanBoard({ initialTasks, groupBy = 'status' }: KanbanBoardPro
   const columns = useMemo(() => {
     if (groupBy === 'status') return isTaskView ? TASK_COLUMNS : OPERATION_COLUMNS;
 
-    // For Mission or Ally, we extract unique IDs from tasks
+    // For Mission or Agent, we extract unique IDs from tasks
     const uniqueIds = Array.from(
       new Set(
         tasks.map((t) => {

@@ -24,7 +24,7 @@ AI agent coordination interfaces require:
 
 1. **Extended screen time tolerance** — Users monitor mission progress for hours
 2. **Clear visual hierarchy** — Distinguish between active missions, standing-by
-   allies, and completed goals
+   agents, and completed goals
 3. **Professional credibility** — Not a toy, not intimidating; approachable yet
    serious
 4. **Accessibility compliance** — Minimum WCAG 2.2 AA for enterprise customers
@@ -135,7 +135,7 @@ alternative theme.
 
 **Text contrast hierarchy:**
 
-- **Primary text:** 17.8:1 (AAA) — Mission titles, ally names
+- **Primary text:** 17.8:1 (AAA) — Mission titles, agent names
 - **Secondary text:** 4.9:1 (AA) — Metadata, timestamps
 - **Muted text:** 4.5:1 (AA minimum) — Helper text, placeholders
 

@@ -2,7 +2,7 @@
 
 **Date:** February 11, 2026  
 **Task:** Push database schema to Supabase and wire real data into dashboard  
-**Status:** ⚠️ **Partially Complete** (Manual steps required)  
+**Status:** ⚠️ **partially Complete** (Manual steps required)  
 **Subagent:** Devi (AI Developer Specialist)
 
 ---
@@ -73,7 +73,7 @@ When you run the migration SQL, it will create:
   - `organization_memberships` — User ↔ Org with roles
   - `clients` — Client entities
   - `workspaces` — Team-level grouping (optional)
-  - `agents` — AI allies
+  - `agents` — AI agents
   - `agent_assignments` — Agent ↔ Project
   - `agent_client_assignments` — Agent ↔ Client
   - `goals` — OKR-style objectives
@@ -127,7 +127,7 @@ Location: `/Users/alimai/Projects/cohortix/scripts/seed-supabase.ts`
 ### What It Seeds
 
 1. **Demo Organization:** "Axon HQ" (Pro plan)
-2. **4 AI Allies:**
+2. **4 AI Agents:**
    - Devi — AI Developer Specialist
    - Lubna — UI/UX Designer
    - Zara — Content Strategist
@@ -157,8 +157,8 @@ Expected output:
 📦 Creating organization: Axon HQ
 ✅ Created organization: Axon HQ (uuid...)
 
-🤖 Creating AI allies...
-✅ Created 4 allies:
+🤖 Creating AI agents...
+✅ Created 4 agents:
    - Devi (AI Developer Specialist)
    - Lubna (UI/UX Designer)
    - Zara (Content Strategist)
@@ -181,7 +181,7 @@ Expected output:
 
 Summary:
   • 1 organization: Axon HQ
-  • 4 AI allies
+  • 4 AI agents
   • 3 cohorts/projects
   • 5 missions/tasks
   • 2 knowledge entries
@@ -239,7 +239,7 @@ const kpis = await getDashboardKPIs(orgId);
 // Returns: {
 //   activeCohorts: number,
 //   missionsInProgress: number,
-//   activeAllies: number,
+//   activeAgents: number,
 //   completionRate: number (percentage)
 // }
 ```
@@ -279,13 +279,13 @@ const cohorts = await getActiveCohorts(orgId, 6);
 //   stats: { total, completed, inProgress, progress }
 ```
 
-#### 7. `getActiveAllies(organizationId)`
+#### 7. `getActiveAgents(organizationId)`
 
 Fetches agents with workload information.
 
 ```typescript
-const allies = await getActiveAllies(orgId);
-// Returns allies with:
+const agents = await getActiveAgents(orgId);
+// Returns agents with:
 //   workload: { active, total, currentProject }
 ```
 
@@ -305,7 +305,7 @@ Fetches all dashboard data in parallel.
 const data = await getDashboardData();
 // Returns: {
 //   user, organization, role,
-//   kpis, activity, alerts, cohorts, allies, knowledge
+//   kpis, activity, alerts, cohorts, agents, knowledge
 // }
 ```
 
@@ -333,7 +333,7 @@ export default async function DashboardPage() {
       <ActivityFeed activity={data.activity} />
       <AlertsBanner alerts={data.alerts} />
       <CohortsGrid cohorts={data.cohorts} />
-      <AlliesSidebar allies={data.allies} />
+      <AgentsSidebar agents={data.agents} />
     </div>
   );
 }
@@ -415,7 +415,7 @@ export async function KPICards({ organizationId }: { organizationId: string }) {
     <div className="grid grid-cols-4 gap-4">
       <KPICard label="Active Cohorts" value={kpis.activeCohorts} />
       <KPICard label="Missions in Progress" value={kpis.missionsInProgress} />
-      <KPICard label="Active Allies" value={kpis.activeAllies} />
+      <KPICard label="Active Agents" value={kpis.activeAgents} />
       <KPICard label="Completion Rate" value={`${kpis.completionRate}%`} />
     </div>
   );
@@ -713,7 +713,7 @@ After completing setup:
 - [ ] Alerts banner shows relevant warnings
 - [ ] Sidebar shows authenticated user name (not "Alex Chen")
 - [ ] Cohorts grid displays sample projects
-- [ ] Allies section shows sample agents
+- [ ] Agents section shows sample agents
 - [ ] Knowledge entries appear
 - [ ] RLS policies prevent cross-tenant data access
 - [ ] Unauthorized users are redirected to sign-in
@@ -728,12 +728,12 @@ After completing setup:
 data simultaneously.
 
 ```typescript
-const [kpis, activity, alerts, cohorts, allies, knowledge] = await Promise.all([
+const [kpis, activity, alerts, cohorts, agents, knowledge] = await Promise.all([
   getDashboardKPIs(organizationId),
   getRecentActivity(organizationId),
   getActiveAlerts(organizationId),
   getActiveCohorts(organizationId),
-  getActiveAllies(organizationId),
+  getActiveAgents(organizationId),
   getRecentKnowledge(organizationId),
 ]);
 ```

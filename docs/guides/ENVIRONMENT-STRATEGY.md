@@ -98,6 +98,9 @@ graph TB
 **Recommendation:** Use a **single Vercel project** with branch-based
 deployments.
 
+**Deployment Flow:** All app deploys are handled by **Vercel Git Integration**
+(preview, staging, production). GitHub Actions is CI-only.
+
 **Why?**
 
 - ✅ Unified analytics and logs
@@ -118,7 +121,7 @@ deployments.
 ```bash
 # Vercel Dashboard:
 # Project Settings → Git → Ignored Build Step
-# Enable: "Automatically create deployments for all branches and commits"
+# Enable: "automatically create deployments for all branches and commits"
 # Branch Protection Pattern: staging, main (require PR reviews)
 ```
 
@@ -698,7 +701,7 @@ vercel env add DATABASE_URL production
 
 # Rotate secrets regularly
 # - Production API keys: quarterly
-# - Database passwords: semi-annually
+# - Database passwords: semi-annuagent
 # - Clerk keys: on security incidents
 
 # Validate environment variables at app startup
@@ -1041,7 +1044,7 @@ pnpm db:generate
 # 2. Check branch pattern
 # Pattern should include: feature/*, bugfix/*, feat/*
 
-# 3. Manually create branch
+# 3. manually create branch
 supabase branches create <branch-name> --project-ref <prod-ref>
 
 # 4. Verify in Supabase Dashboard
@@ -1122,7 +1125,7 @@ export const db = drizzle(client);
 # ✅ "After branch is deleted"
 # ✅ "After PR is merged or closed"
 
-# Manually delete stale previews
+# manually delete stale previews
 vercel list
 vercel remove <deployment-url>
 ```

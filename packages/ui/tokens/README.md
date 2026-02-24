@@ -111,7 +111,7 @@ colors.dark.primary.DEFAULT; // #5E6AD2
 colors.dark.primary.foreground; // #FFFFFF
 colors.dark.success; // #10B981
 statusColors.mission.active; // Green (On Mission)
-statusColors.ally.standingBy; // Gray (Standing By)
+statusColors.agent.standingBy; // Gray (Standing By)
 ```
 
 ### Spacing

@@ -29,7 +29,7 @@ export const cohortStatusEnum = pgEnum('cohort_status', [
 /**
  * Cohorts Table
  *
- * A cohort is a group of AI allies (agents) working together.
+ * A cohort is a group of AI agents working together.
  * Supports engagement tracking, status management, and multi-tenant isolation.
  */
 export const cohorts = pgTable('cohorts', {

@@ -4,6 +4,9 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "framework": "nextjs",
   "rootDirectory": "apps/web",
+  "git": {
+    "deploymentEnabled": true
+  },
   "headers": [
     {
       "source": "/api/(.*)",

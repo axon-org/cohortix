@@ -35,7 +35,7 @@ export default async function DashboardPage() {
     );
   }
 
-  const { activity, alerts, missions, allies } = dashboardData;
+  const { activity, alerts, missions, agents } = dashboardData;
 
   return (
     <div className="space-y-6">
@@ -63,9 +63,9 @@ export default async function DashboardPage() {
         />
         <QuickStatCard
           icon={<Bot className="w-4 h-4" />}
-          label="Allies"
-          count={dashboardData.kpis.activeAllies}
-          href="/dashboard/allies"
+          label="Agents"
+          count={dashboardData.kpis.activeAgents}
+          href="/dashboard/agents"
         />
         <QuickStatCard
           icon={<Rocket className="w-4 h-4" />}

@@ -69,7 +69,7 @@ http://localhost:3000/cohorts/[any-cohort-id]
 - [ ] Delete button still works (existing functionality)
 - [ ] Back to Cohorts link works
 - [ ] Activity log "View All" button (placeholder)
-- [ ] Members "Filter allies..." button (placeholder)
+- [ ] Members "Filter agents..." button (placeholder)
 - [ ] Chart period buttons (7D/30D/90D - placeholder)
 
 ---

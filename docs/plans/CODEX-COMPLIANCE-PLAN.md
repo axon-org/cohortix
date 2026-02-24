@@ -94,13 +94,14 @@ cohortix/
 
 **Evidence:** `packages/database/src/schema/`, Supabase migration files
 
-**Gap:** Zero-downtime migration strategy not formally documented (Codex §2.2.2)
+**Gap:** Zero-downtime migration strategy not formagent documented (Codex
+§2.2.2)
 
 ---
 
 #### 4. CI/CD Pipeline (Section 4.8)
 
-**Status:** 🟡 **Partially Compliant**
+**Status:** 🟡 **partially Compliant**
 
 **Existing Pipelines:**
 
@@ -127,7 +128,7 @@ cohortix/
 
 #### 5. Design System (Section 3.7)
 
-**Status:** 🟡 **Partially Compliant**
+**Status:** 🟡 **partially Compliant**
 
 **Existing:**
 
@@ -277,7 +278,7 @@ new in v1.2)
 **Missing DDRs (should exist):**
 
 - Color palette selection + accessibility rationale
-- Terminology decisions (Missions, Actions, Allies vs. Agents)
+- Terminology decisions (Missions, Actions, Agents vs. Agents)
 - Responsive breakpoint strategy
 - API naming conventions (REST URL patterns)
 
@@ -480,7 +481,7 @@ tracing
 **Lubna (Frontend):**
 
 - [ ] Create DDR-001: Color palette + accessibility rationale
-- [ ] Create DDR-002: Terminology decisions (Missions, Actions, Allies)
+- [ ] Create DDR-002: Terminology decisions (Missions, Actions, Agents)
 - [ ] Create DDR-003: Responsive breakpoint strategy
 - [ ] Create DDR-004: Component library selection (shadcn/ui)
 - [ ] Formalize design tokens as JSON/TS

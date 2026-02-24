@@ -68,7 +68,7 @@ async function main() {
       organization_id: org.id,
       title: 'Launch Cohortix MVP',
       description:
-        'Successfully launch Cohortix MVP with core features: Ally management, Mission/Operation/Task hierarchy, and authentication.',
+        'Successfully launch Cohortix MVP with core features: Agent management, Mission/Operation/Task hierarchy, and authentication.',
       status: 'active',
       target_date: '2026-03-15',
       progress: 60,
@@ -90,7 +90,7 @@ async function main() {
       organization_id: org.id,
       title: 'Build Agent Marketplace',
       description:
-        'Create a marketplace where users can discover, recruit, and configure pre-built Allies for common use cases.',
+        'Create a marketplace where users can discover, recruit, and configure pre-built agents for common use cases.',
       status: 'active',
       target_date: '2026-05-31',
       progress: 0,
@@ -202,7 +202,7 @@ async function main() {
       mission_id: missions[2].id, // Build Agent Marketplace
       name: 'Design Marketplace UI',
       slug: 'design-marketplace-ui',
-      description: 'Create UI mockups and components for Ally discovery and recruitment.',
+      description: 'Create UI mockups and components for Agent discovery and recruitment.',
       status: 'active',
       start_date: '2026-03-01',
       target_date: '2026-03-20',
@@ -339,8 +339,8 @@ async function main() {
     {
       organization_id: org.id,
       project_id: operations[3].id,
-      title: 'Create Ally card components',
-      description: 'Design reusable card components for Ally listings',
+      title: 'Create Agent card components',
+      description: 'Design reusable card components for Agent listings',
       status: 'todo',
       priority: 'medium',
       created_by_type: 'user',

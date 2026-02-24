@@ -32,7 +32,7 @@ export const missions = pgTable('projects', {
   workspaceId: uuid('workspace_id').references(() => workspaces.id, { onDelete: 'set null' }),
   clientId: uuid('client_id').references(() => clients.id, { onDelete: 'set null' }),
 
-  // Polymorphic owner (can be user or agent/ally)
+  // Polymorphic owner (user or agent)
   ownerType: ownerTypeEnum('owner_type').default('user').notNull(),
   ownerId: uuid('owner_id').notNull(),
 

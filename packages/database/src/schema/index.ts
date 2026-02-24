@@ -5,7 +5,7 @@ export * from './org-memberships';
 export * from './clients';
 export * from './workspaces';
 
-// Agents & AI (Allies in user-facing terminology)
+// Agents & AI
 export * from './agents';
 export * from './agent-assignments';
 export * from './cohorts'; // Groups of agents

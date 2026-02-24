@@ -15,7 +15,7 @@ Instructions:
 2. Create migration file: supabase/migrations/YYYYMMDDHHMMSS_create_cohorts.sql
 3. Define tables:
    - cohorts (id, organization_id, name, description, status, start_date, end_date, metadata, created_at, updated_at)
-   - cohort_members (id, cohort_id, user_id/ally_id, joined_at, engagement_score, metadata)
+   - cohort_members (id, cohort_id, user_id/agent_id, joined_at, engagement_score, metadata)
 4. Add RLS policies for tenant isolation
 5. Add indexes on frequently queried columns
 6. Write spec: docs/specs/database/cohorts-schema.md
@@ -168,8 +168,8 @@ Working directory: ~/Projects/cohortix/
 **Devi:**
 
 1. COH-B4: Cohort API Routes
-2. ALLY-B1: Enhance Ally Queries
-3. ALLY-B2: Ally API Routes
+2. AGENT-B1: Enhance Agent Queries
+3. AGENT-B2: Agent API Routes
 
 **Sami:**
 
@@ -182,7 +182,7 @@ Working directory: ~/Projects/cohortix/
 
 **Both:**
 
-1. ALLY-F1: Ally Profile Page (Sami)
+1. AGENT-F1: Agent Profile Page (Sami)
 2. DS-1: Shared UI Components (Both)
 3. AUTH-F1: Login Page Update (Sami)
 4. Integration testing
@@ -282,7 +282,7 @@ sessions_spawn --agent frontend-developer --label sami-cohorts-table \
 
 **End of Week 3:**
 
-- ✅ Ally profiles implemented
+- ✅ Agent profiles implemented
 - ✅ Auth screens updated
 - ✅ All tests passing (80%+ coverage)
 - ✅ Design matches mockups exactly

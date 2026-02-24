@@ -18,14 +18,14 @@ with Devi's API layer.
 
 ### 1. Components (6 files)
 
-| Component              | Path                                          | Purpose                                                             |
-| ---------------------- | --------------------------------------------- | ------------------------------------------------------------------- |
-| **CohortHeader**       | `components/cohorts/cohort-header.tsx`        | Header with name, status badge, date range, "Invite AI Ally" button |
-| **EngagementTimeline** | `components/cohorts/engagement-timeline.tsx`  | Recharts line chart showing daily interaction counts                |
-| **BatchMembers**       | `components/cohorts/batch-members.tsx`        | Table of AI allies with engagement scores, statuses, and actions    |
-| **ActivityLog**        | `components/cohorts/activity-log.tsx`         | Live feed of cohort activities with timestamps                      |
-| **CohortDetailClient** | `components/cohorts/cohort-detail-client.tsx` | Client component orchestrating all data fetching                    |
-| **Page**               | `app/(dashboard)/cohorts/[id]/page.tsx`       | Server component page wrapper                                       |
+| Component              | Path                                          | Purpose                                                              |
+| ---------------------- | --------------------------------------------- | -------------------------------------------------------------------- |
+| **CohortHeader**       | `components/cohorts/cohort-header.tsx`        | Header with name, status badge, date range, "Invite AI Agent" button |
+| **EngagementTimeline** | `components/cohorts/engagement-timeline.tsx`  | Recharts line chart showing daily interaction counts                 |
+| **BatchMembers**       | `components/cohorts/batch-members.tsx`        | Table of AI agents with engagement scores, statuses, and actions     |
+| **ActivityLog**        | `components/cohorts/activity-log.tsx`         | Live feed of cohort activities with timestamps                       |
+| **CohortDetailClient** | `components/cohorts/cohort-detail-client.tsx` | Client component orchestrating all data fetching                     |
+| **Page**               | `app/(dashboard)/cohorts/[id]/page.tsx`       | Server component page wrapper                                        |
 
 ### 2. API Integration
 
@@ -99,7 +99,7 @@ User can navigate from Cohorts list to detail page:
   ↓ displays:
     - Cohort Header (name, status, date range)
     - Engagement Timeline (30-day chart)
-    - Batch Members (8 allies table)
+    - Batch Members (8 agents table)
     - Activity Log (recent activities)
 ```
 
@@ -138,10 +138,10 @@ Once migration is applied:
 - [ ] Navigate to `/cohorts` page
 - [ ] Click on any cohort row
 - [ ] Verify detail page loads without errors
-- [ ] Check header displays: name, status badge, date range, "Invite AI Ally"
+- [ ] Check header displays: name, status badge, date range, "Invite AI Agent"
       button
 - [ ] Verify engagement timeline chart renders with data
-- [ ] Check batch members table shows allies with:
+- [ ] Check batch members table shows agents with:
   - Avatar/initials
   - Name and slug
   - Role
@@ -178,7 +178,7 @@ CohortDetailClient ('use client')
 
 ### Short-term (Next Sprint)
 
-1. **Invite AI Ally Modal** - Implement form to add members to cohort
+1. **Invite AI Agent Modal** - Implement form to add members to cohort
 2. **Timeline Period Selector** - Wire up 7D/30D/90D buttons to refetch data
 3. **Member Actions Menu** - Implement "⋯" dropdown menu
 4. **Activity Filtering** - Filter by activity type
@@ -207,7 +207,7 @@ CohortDetailClient ('use client')
 
 1. Timeline period selector buttons (7D/30D/90D) are UI-only - not functional
    yet
-2. "Invite AI Ally" button opens no modal yet - needs implementation
+2. "Invite AI Agent" button opens no modal yet - needs implementation
 3. Member actions menu ("⋯") is placeholder - needs dropdown implementation
 4. "View Full Audit Trail" link is placeholder - needs route implementation
 

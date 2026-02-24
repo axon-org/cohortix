@@ -242,7 +242,7 @@ class CustomRuntime implements AgentRuntime {
 
 #### Agent Evolution Pipeline
 
-**Purpose:** Systematic ally learning and expertise growth
+**Purpose:** Systematic agent learning and expertise growth
 
 ```typescript
 interface EvolutionPipeline {
@@ -533,7 +533,7 @@ Webhook-based integrations with event-driven architecture:
 │                         │                                      │
 │                         ▼                                      │
 │  ┌──────────────────────────────────────────────────────┐     │
-│  │         CROSS-ALLY KNOWLEDGE SHARING                  │     │
+│  │         CROSS-AGENT KNOWLEDGE SHARING                  │     │
 │  │                                                       │     │
 │  │  Agent A learns → Knowledge entry created            │     │
 │  │         ↓                                             │     │
@@ -586,8 +586,8 @@ Webhook-based integrations with event-driven architecture:
    - Link to superseding entry
    - Keep for historical reference
 
-4. **Cross-Ally Sharing:**
-   - All knowledge visible to all allies in same HQ (tenant isolation)
+4. **Cross-Agent Sharing:**
+   - All knowledge visible to all agents in same HQ (tenant isolation)
    - Attribution tracking for reputation
    - Usage metrics for quality signals
 

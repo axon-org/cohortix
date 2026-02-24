@@ -25,7 +25,7 @@
 -- TERMINOLOGY NOTE (PPV Hierarchy):
 -- - User-facing: Pillars → Aspirations → Goals → Missions → Actions
 -- - Database tables: goals → projects (Missions) → tasks (Actions)
--- - "Allies" = agents in user-facing terminology
+-- - "Agents" = agents in user-facing terminology
 
 -- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

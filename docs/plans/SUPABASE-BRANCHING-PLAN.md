@@ -121,7 +121,7 @@ supabase branches list
 
 - Is Supabase Branching enabled for the org plan?
 - Do we want to clone prod data into staging?
-- Should staging be persistent or rebuilt periodically?
+- Should staging be persistent or rebuilt periodicagent?
 
 ---
 

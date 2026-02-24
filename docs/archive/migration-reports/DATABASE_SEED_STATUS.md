@@ -14,7 +14,7 @@
   - Plan: Pro
   - Features: AI Agents, Knowledge Base, Analytics enabled
 
-### AI Allies / Agents (4)
+### AI Agents / Agents (4)
 
 1. **Devi** - AI Developer Specialist
    - Capabilities: coding, architecture, ai-integration, testing

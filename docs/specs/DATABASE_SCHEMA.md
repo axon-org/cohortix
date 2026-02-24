@@ -767,7 +767,7 @@ CREATE INDEX idx_time_entries_started ON time_entries(started_at);
 CREATE TYPE knowledge_source_type AS ENUM (
   'action',           -- Learned from completing a action
   'research',       -- From internet research
-  'manual',         -- Manually added
+  'manual',         -- manually added
   'conversation',   -- From conversation/comment
   'integration'     -- From external integration
 );

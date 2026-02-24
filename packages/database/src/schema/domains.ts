@@ -10,7 +10,7 @@ export const domains = pgTable('domains', {
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
 
-  // Polymorphic owner (human user or ally/agent)
+  // Polymorphic owner (user or agent)
   ownerType: ownerTypeEnum('owner_type').notNull(),
   ownerId: uuid('owner_id').notNull(),
 

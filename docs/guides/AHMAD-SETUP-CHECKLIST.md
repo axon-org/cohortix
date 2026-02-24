@@ -71,7 +71,7 @@ Or in Supabase Studio → SQL Editor:
 - [ ] Open `supabase/migrations/20260214000000_add_clerk_integration.sql`
 - [ ] Run the migration
 
-### ☐ 5. Test Locally (10 min)
+### ☐ 5. Test locally (10 min)
 
 ```bash
 pnpm dev

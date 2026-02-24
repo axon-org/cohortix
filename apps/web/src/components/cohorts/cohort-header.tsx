@@ -34,7 +34,7 @@ export function CohortHeader({ name, status, startDate, endDate }: CohortHeaderP
 
       <Button className="gap-2">
         <Plus className="w-4 h-4" />
-        Invite AI Ally
+        Invite AI Agent
       </Button>
     </div>
   );

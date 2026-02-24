@@ -63,7 +63,7 @@ export function KanbanView({ initialTasks, viewType = 'operations' }: KanbanView
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setGroupBy('status')}>By Status</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setGroupBy('mission')}>By Mission</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setGroupBy('owner')}>By Ally</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setGroupBy('owner')}>By Agent</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 

@@ -106,8 +106,8 @@ properly wired**. Most likely causes:
 
 | Widget/Section          | API Endpoint                        | Expected Data                                         | Status | Owner | Notes                             |
 | ----------------------- | ----------------------------------- | ----------------------------------------------------- | ------ | ----- | --------------------------------- |
-| KPI Cards               | `/api/v1/dashboard/mission-control` | Active cohorts, total allies, avg engagement, at-risk | 🟡     | Devi  | Check if returns 0 or actual data |
-| Quick Stats             | Server query: `getDashboardKPIs()`  | Active missions, allies, cohorts counts               | 🟡     | Devi  | May show 0 if DB empty            |
+| KPI Cards               | `/api/v1/dashboard/mission-control` | Active cohorts, total agents, avg engagement, at-risk | 🟡     | Devi  | Check if returns 0 or actual data |
+| Quick Stats             | Server query: `getDashboardKPIs()`  | Active missions, agents, cohorts counts               | 🟡     | Devi  | May show 0 if DB empty            |
 | Recent Activity         | Server query: `getRecentActivity()` | From `audit_logs` table                               | 🟡     | Devi  | Empty if no actions logged        |
 | Urgent Alerts           | Server query: `getActiveAlerts()`   | Unassigned/overdue/blocked tasks                      | 🟡     | Devi  | Empty if no tasks exist           |
 | Active Missions Preview | Server query: `getActiveMissions()` | From `missions` table with stats                      | 🟡     | Devi  | Empty if no missions exist        |
@@ -161,18 +161,18 @@ properly wired**. Most likely causes:
 
 ---
 
-## 🤖 Allies (P1)
+## 🤖 Agents (P1)
 
-| Page/Feature      | Route          | API Endpoint                                    | Expected Data             | Status | Owner | Notes                            |
-| ----------------- | -------------- | ----------------------------------------------- | ------------------------- | ------ | ----- | -------------------------------- |
-| Allies List       | `/allies`      | `/api/v1/allies`                                | List of agents with stats | 🟡     | Devi  | Verify API returns real data     |
-| Ally Detail       | `/allies/[id]` | `/api/v1/allies/[id]`                           | Single agent details      | 🟡     | Devi  | Check detail page implementation |
-| Ally Status       | List + Detail  | From `agents` table                             | active/idle/busy/offline  | 🟡     | Devi  | Status should be real-time       |
-| Ally Stats        | List + Detail  | `total_tasks_completed`, `total_time_worked_ms` | Real stats                | 🟡     | Devi  | Check if incremented properly    |
-| Ally Capabilities | Detail         | `capabilities` array                            | Real capabilities list    | 🟡     | Lubna | Verify UI rendering              |
-| Create Ally       | Modal          | `POST /api/v1/allies`                           | Creates new agent         | 🟡     | Nina  | Test CRUD operations             |
-| Edit Ally         | Modal          | `PATCH /api/v1/allies/[id]`                     | Updates agent             | 🟡     | Nina  | Test CRUD operations             |
-| Delete Ally       | Action         | `DELETE /api/v1/allies/[id]`                    | Deletes agent             | 🟡     | Nina  | Test CRUD operations             |
+| Page/Feature       | Route          | API Endpoint                                    | Expected Data             | Status | Owner | Notes                            |
+| ------------------ | -------------- | ----------------------------------------------- | ------------------------- | ------ | ----- | -------------------------------- |
+| Agents List        | `/agents`      | `/api/v1/agents`                                | List of agents with stats | 🟡     | Devi  | Verify API returns real data     |
+| Agent Detail       | `/agents/[id]` | `/api/v1/agents/[id]`                           | Single agent details      | 🟡     | Devi  | Check detail page implementation |
+| Agent Status       | List + Detail  | From `agents` table                             | active/idle/busy/offline  | 🟡     | Devi  | Status should be real-time       |
+| Agent Stats        | List + Detail  | `total_tasks_completed`, `total_time_worked_ms` | Real stats                | 🟡     | Devi  | Check if incremented properly    |
+| Agent Capabilities | Detail         | `capabilities` array                            | Real capabilities list    | 🟡     | Lubna | Verify UI rendering              |
+| Create Agent       | Modal          | `POST /api/v1/agents`                           | Creates new agent         | 🟡     | Nina  | Test CRUD operations             |
+| Edit Agent         | Modal          | `PATCH /api/v1/agents/[id]`                     | Updates agent             | 🟡     | Nina  | Test CRUD operations             |
+| Delete Agent       | Action         | `DELETE /api/v1/agents/[id]`                    | Deletes agent             | 🟡     | Nina  | Test CRUD operations             |
 
 **Pass Criteria:**
 
@@ -237,7 +237,7 @@ properly wired**. Most likely causes:
 | Operations List    | `/operations`      | `/api/v1/operations`               | Table view of operations     | 🟡     | Devi  | **Ahmad reported dummy data**    |
 | Operation Detail   | `/operations/[id]` | `/api/v1/operations/[id]`          | Single operation with tasks  | 🟡     | Devi  | Check detail page implementation |
 | Linked Mission     | List + Detail      | FK: `goal_id` in `projects` table  | Mission name/color           | 🟡     | Devi  | Verify FK join works             |
-| Owner (Ally)       | List + Detail      | FK: `owner_id` in `projects` table | Ally name                    | 🟡     | Devi  | Verify FK join works             |
+| Owner (Agent)      | List + Detail      | FK: `owner_id` in `projects` table | Agent name                   | 🟡     | Devi  | Verify FK join works             |
 | Task Stats         | List + Detail      | Count from `tasks` table           | Total/completed/in-progress  | 🟡     | Devi  | Check aggregation query          |
 | Create Operation   | Modal              | `POST /api/v1/operations`          | Creates new operation        | 🟡     | Nina  | Test CRUD operations             |
 | Edit Operation     | Modal/Detail       | `PATCH /api/v1/operations/[id]`    | Updates operation            | 🟡     | Nina  | Test CRUD operations             |
@@ -303,7 +303,7 @@ properly wired**. Most likely causes:
 | Task Detail Sheet | Side panel | `/api/v1/operations/[id]`       | Full operation details                     | 🟡     | Lubna | Check detail sheet            |
 | Group By Status   | Toggle     | Client-side grouping            | Columns: Planning/Active/On Hold/Completed | 🟡     | Lubna | Test grouping                 |
 | Group By Mission  | Toggle     | Client-side grouping            | Columns: Mission names + Unassigned        | 🟡     | Lubna | Test grouping                 |
-| Group By Ally     | Toggle     | Client-side grouping            | Columns: Ally names                        | 🟡     | Lubna | Test grouping                 |
+| Group By Agent    | Toggle     | Client-side grouping            | Columns: Agent names                       | 🟡     | Lubna | Test grouping                 |
 
 **INVESTIGATION FINDINGS:**
 
@@ -321,7 +321,7 @@ properly wired**. Most likely causes:
 **Pass Criteria:**
 
 - ✅ Tasks kanban shows real operations from DB
-- ✅ Grouping by Status/Mission/Ally works correctly
+- ✅ Grouping by Status/Mission/Agent works correctly
 - ✅ Drag and drop updates DB
 - ✅ Detail sheet shows correct data
 
@@ -414,7 +414,7 @@ pnpm db:seed
 
 # Verify data exists
 curl http://localhost:3000/api/v1/cohorts
-curl http://localhost:3000/api/v1/allies
+curl http://localhost:3000/api/v1/agents
 curl http://localhost:3000/api/v1/missions
 curl http://localhost:3000/api/v1/operations
 
@@ -463,7 +463,7 @@ curl -v http://localhost:3000/api/v1/operations
 4. ✅ Create seed data script with sample data:
    - 1 organization
    - 3-5 cohorts
-   - 5-10 allies (agents)
+   - 5-10 agents (agents)
    - 3-5 missions
    - 10-15 operations (projects)
    - 20-30 tasks
@@ -502,7 +502,7 @@ curl -v http://localhost:3000/api/v1/operations
 
 ---
 
-### Phase 4: Full System QA (P1) - **FINALLY**
+### Phase 4: Full System QA (P1) - **finally**
 
 **Owner:** Nina (qa-engineer)
 
@@ -528,7 +528,7 @@ curl -v http://localhost:3000/api/v1/operations
 | Auth & Setup (P0) | 5           | 0           | 2              | 0         | 3             |
 | Dashboard (P1)    | 6           | 0           | 6              | 0         | 0             |
 | Cohorts (P1)      | 8           | 5           | 3              | 0         | 0             |
-| Allies (P1)       | 8           | 0           | 8              | 0         | 0             |
+| Agents (P1)       | 8           | 0           | 8              | 0         | 0             |
 | Missions (P1)     | 7           | 0           | 7              | 0         | 0             |
 | Operations (P1)   | 10          | 0           | 10             | 0         | 0             |
 | Tasks (P1)        | 6           | 0           | 6              | 0         | 0             |
@@ -710,13 +710,13 @@ Apps & Pages:
 - apps/web/src/app/(dashboard)/page.tsx (Dashboard)
 - apps/web/src/app/(dashboard)/operations/page.tsx
 - apps/web/src/app/(dashboard)/tasks/page.tsx
-- apps/web/src/app/(dashboard)/allies/page.tsx
+- apps/web/src/app/(dashboard)/agents/page.tsx
 - apps/web/src/app/(dashboard)/missions/page.tsx
 - apps/web/src/app/(dashboard)/cohorts/page.tsx
 
 API Routes:
 - apps/web/src/app/api/v1/operations/route.ts
-- apps/web/src/app/api/v1/allies/route.ts
+- apps/web/src/app/api/v1/agents/route.ts
 - apps/web/src/app/api/v1/missions/route.ts
 - apps/web/src/app/api/v1/cohorts/route.ts
 - apps/web/src/app/api/v1/dashboard/mission-control/route.ts
@@ -727,7 +727,7 @@ Server Queries:
 
 Hooks:
 - apps/web/src/hooks/use-operations.ts
-- apps/web/src/hooks/use-allies.ts
+- apps/web/src/hooks/use-agents.ts
 - apps/web/src/hooks/use-missions.ts
 - apps/web/src/hooks/use-cohorts.ts
 - apps/web/src/hooks/use-dashboard.ts

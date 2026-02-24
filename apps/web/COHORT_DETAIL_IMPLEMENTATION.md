@@ -14,10 +14,10 @@ aesthetic.
 ### ✅ Components Created
 
 1. **`cohort-header.tsx`** - Header with name, status badge, date range, "Invite
-   AI Ally" button
+   AI Agent" button
 2. **`engagement-timeline.tsx`** - Line chart showing daily interaction counts
    (Recharts)
-3. **`batch-members.tsx`** - Table of AI allies with engagement scores and
+3. **`batch-members.tsx`** - Table of AI agents with engagement scores and
    status
 4. **`activity-log.tsx`** - Live feed of cohort activities
 5. **`cohort-detail-client.tsx`** - Client component orchestrating data fetching
@@ -100,7 +100,7 @@ Once migration is applied:
 - [ ] Verify cohort detail page loads
 - [ ] Check header displays: name, status badge, date range
 - [ ] Check engagement timeline renders with data
-- [ ] Check batch members table shows allies with engagement scores
+- [ ] Check batch members table shows agents with engagement scores
 - [ ] Check activity log shows recent activities
 - [ ] Verify loading states display correctly
 - [ ] Verify error states display correctly
@@ -126,7 +126,7 @@ Once migration is applied:
 ### Member Management
 
 - No endpoints yet for adding/removing members from cohorts
-- "Invite AI Ally" button is UI-only (no backend handler yet)
+- "Invite AI Agent" button is UI-only (no backend handler yet)
 - Future feature: POST/DELETE `/api/cohorts/:id/members`
 
 ### Timeline Period Selector
@@ -143,7 +143,7 @@ Once migration is applied:
    Editor
 2. **Seed Test Data** - Add test `cohort_members` records to verify UI
 3. **Test Navigation** - Verify clicking cohort rows navigates to detail page
-4. **Implement "Invite AI Ally"** - Build modal/form for adding members
+4. **Implement "Invite AI Agent"** - Build modal/form for adding members
 5. **Add Timeline Period Selector** - Wire up 7D/30D/90D buttons
 6. **Add Member Actions Menu** - Implement "⋯" menu in members table
 

@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Cohortix - Your AI crew, ready for action',
-  description: 'Allies-as-a-Service platform for managing high-performing AI teams',
+  description: 'Agents-as-a-Service platform for managing high-performing AI teams',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

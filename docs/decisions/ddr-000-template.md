@@ -2,7 +2,7 @@
 
 **Status:** Proposed | Accepted | Deprecated | Superseded  
 **Date:** YYYY-MM-DD  
-**Author:** [Agent Name — Typically Lubna for UI/UX]  
+**Author:** [Agent Name — Typicagent Lubna for UI/UX]  
 **Reviewers:** [Reviewer names]  
 **Related DDRs:** [Links to related DDRs if any]
 
@@ -256,7 +256,7 @@ Desktop: >1024px
 **Component Path:**  
 `components/navigation/BottomTabBar.tsx`
 
-**Owner:** [Agent responsible — typically Lubna]  
+**Owner:** [Agent responsible — typicagent Lubna]  
 **Deadline:** [YYYY-MM-DD]
 
 ### Validation Criteria

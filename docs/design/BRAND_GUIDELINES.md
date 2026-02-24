@@ -11,7 +11,7 @@
 
 ### Name
 
-**Cohortix** — Your AI allies, working together.
+**Cohortix** — Your AI agents, working together.
 
 The name combines "Cohort" (a group of people working toward a common goal) with
 a modern suffix that suggests technology and coordination. It's approachable,
@@ -23,7 +23,7 @@ memorable, and reflects our core value: teamwork between humans and AI.
    - Warm, energetic, action-oriented
 2. **"Build your team. Launch your missions."**
    - Empowering, clear value proposition
-3. **"The HQ for your AI allies."**
+3. **"The HQ for your AI agents."**
    - Playful, establishes the workspace metaphor
 
 **Recommended:** Option 1 for primary marketing, Option 3 for product contexts.
@@ -36,7 +36,7 @@ We use friendly, mission-based language aligned with **PPV Pro productivity
 principles**. This makes AI collaboration feel like teamwork, not IT
 administration.
 
-**Core Principle:** Humans and AI allies use the SAME terminology. There is no
+**Core Principle:** Humans and AI agents use the SAME terminology. There is no
 separate vocabulary.
 
 **Hierarchy:** Domain → Vision → Mission → Operation / Rhythm → Task
@@ -45,7 +45,7 @@ separate vocabulary.
 
 From abstract → concrete:
 
-| PPV Pro Original  | Cohortix Term | Definition                                     | Human Example                        | Ally Example                         |
+| PPV Pro Original  | Cohortix Term | Definition                                     | Human Example                        | Agent Example                        |
 | ----------------- | ------------- | ---------------------------------------------- | ------------------------------------ | ------------------------------------ |
 | Pillars & Purpose | **Domain**    | Core life/expertise area that defines identity | "Family", "Health", "Business"       | "Content Strategy", "Analytics"      |
 | Life Aspirations  | **Vision**    | Big emotional north star — the WHY             | "Achieve financial freedom"          | "Become the best content strategist" |
@@ -69,27 +69,27 @@ From abstract → concrete:
 | Weekly review     | **Weekly Debrief** | "Conduct your Weekly Debrief"              |
 | Bi-monthly review | **Cycle Debrief**  | "Strategic Cycle Debrief (every 2 months)" |
 
-### Ally Identity & Actions
+### Agent Identity & Actions
 
-| Generic Term          | Cohortix Term       | Usage Example                            |
-| --------------------- | ------------------- | ---------------------------------------- |
-| Agent                 | **Ally**            | "Add a new ally to your cohort"          |
-| Agents (group)        | **Cohort**          | "Your cohort is ready for deployment"    |
-| Atomic work           | **Task**            | "Assign this task to your ally"          |
-| Bounded project       | **Operation**       | "This operation includes 5 tasks"        |
-| Dashboard / UI        | **Mission Control** | "View progress in Mission Control"       |
-| Create agent          | **Recruit**         | "Recruit a new ally"                     |
-| Assign work           | **Brief**           | "Brief your ally on this Mission"        |
-| Run / Start / Execute | **Deploy**          | "Deploy your cohort"                     |
-| User workspace        | **Base** or **HQ**  | "Welcome to your HQ"                     |
-| Agent status: running | **On mission**      | "3 allies currently on mission"          |
-| Agent status: idle    | **Standing by**     | "Ally standing by, ready for deployment" |
-| Agent status: offline | **Off duty**        | "This ally is currently off duty"        |
-| Assign action         | **Brief**           | "Brief your ally on this mission"        |
-| Complete task         | **Complete**        | "Task complete! Insights captured."      |
-| Task queue            | **Task roster**     | "5 tasks in the roster"                  |
-| Organization          | **HQ**              | "Invite teammates to your HQ"            |
-| Knowledge base        | **Intelligence**    | "Search your Intelligence"               |
+| Generic Term          | Cohortix Term       | Usage Example                             |
+| --------------------- | ------------------- | ----------------------------------------- |
+| Agent                 | **Agent**           | "Add a new agent to your cohort"          |
+| Agents (group)        | **Cohort**          | "Your cohort is ready for deployment"     |
+| Atomic work           | **Task**            | "Assign this task to your agent"          |
+| Bounded project       | **Operation**       | "This operation includes 5 tasks"         |
+| Dashboard / UI        | **Mission Control** | "View progress in Mission Control"        |
+| Create agent          | **Recruit**         | "Recruit a new agent"                     |
+| Assign work           | **Brief**           | "Brief your agent on this Mission"        |
+| Run / Start / Execute | **Deploy**          | "Deploy your cohort"                      |
+| User workspace        | **Base** or **HQ**  | "Welcome to your HQ"                      |
+| Agent status: running | **On mission**      | "3 agents currently on mission"           |
+| Agent status: idle    | **Standing by**     | "Agent standing by, ready for deployment" |
+| Agent status: offline | **Off duty**        | "This agent is currently off duty"        |
+| Assign action         | **Brief**           | "Brief your agent on this mission"        |
+| Complete task         | **Complete**        | "Task complete! Insights captured."       |
+| Task queue            | **Task roster**     | "5 tasks in the roster"                   |
+| Organization          | **HQ**              | "Invite teammates to your HQ"             |
+| Knowledge base        | **Intelligence**    | "Search your Intelligence"                |
 
 ---
 
@@ -116,13 +116,13 @@ From abstract → concrete:
 
 ### Tone by Context
 
-| Context            | Tone                 | Example                                                                     |
-| ------------------ | -------------------- | --------------------------------------------------------------------------- |
-| **Onboarding**     | Warm, welcoming      | "Welcome to your new HQ! Let's recruit your first ally."                    |
-| **Success states** | Celebratory          | "Mission accomplished! 🎉 Your ally captured some great intel."             |
-| **Errors**         | Helpful, not blaming | "Hmm, that mission hit a snag. Here's what we can try..."                   |
-| **Empty states**   | Encouraging          | "Your cohort is ready and waiting. Recruit your first ally to get started." |
-| **Loading**        | Light, human         | "Your allies are on it..." / "Briefing your cohort..."                      |
+| Context            | Tone                 | Example                                                                      |
+| ------------------ | -------------------- | ---------------------------------------------------------------------------- |
+| **Onboarding**     | Warm, welcoming      | "Welcome to your new HQ! Let's recruit your first agent."                    |
+| **Success states** | Celebratory          | "Mission accomplished! 🎉 Your agent captured some great intel."             |
+| **Errors**         | Helpful, not blaming | "Hmm, that mission hit a snag. Here's what we can try..."                    |
+| **Empty states**   | Encouraging          | "Your cohort is ready and waiting. Recruit your first agent to get started." |
+| **Loading**        | Light, human         | "Your agents are on it..." / "Briefing your cohort..."                       |
 
 ---
 
@@ -134,19 +134,19 @@ From abstract → concrete:
 
 > Welcome to Cohortix! 👋
 >
-> This is your HQ — the place where you and your AI allies work together to get
+> This is your HQ — the place where you and your AI agents work together to get
 > things done.
 >
-> Let's start by recruiting your first ally.
+> Let's start by recruiting your first agent.
 
-**First Ally Creation:**
+**First Agent Creation:**
 
-> Give your ally a name and a specialty. Don't worry, you can always update
+> Give your agent a name and a specialty. Don't worry, you can always update
 > these later.
 
 **First Mission:**
 
-> Nice! Your ally is standing by and ready for action.
+> Nice! Your agent is standing by and ready for action.
 >
 > Now, let's brief them on their first Mission. What measurable outcome would
 > you like to achieve?
@@ -155,7 +155,7 @@ From abstract → concrete:
 
 **Cohort Overview:**
 
-> Your Cohort 3 allies standing by · 2 on mission · 0 off duty
+> Your Cohort 3 agents standing by · 2 on mission · 0 off duty
 
 **Mission Status:**
 
@@ -172,9 +172,9 @@ From abstract → concrete:
 
 > ✅ Mission accomplished!
 >
-> Your ally finished the research goal and added 3 new insights to your intel.
+> Your agent finished the research goal and added 3 new insights to your intel.
 
-**Ally Recruited:**
+**Agent Recruited:**
 
 > 🎉 Welcome to the cohort!
 >
@@ -187,7 +187,8 @@ From abstract → concrete:
 
 > ⚠️ This Operation hit a roadblock.
 >
-> Don't worry — your ally saved their progress. Here's what happened: [Error > >
+> Don't worry — your agent saved their progress. Here's what happened:
+> [Error > >
 >
 > > details]
 >
@@ -195,23 +196,23 @@ From abstract → concrete:
 >
 > - Retry the Operation
 > - Break it into smaller Tasks
-> - Brief a different ally
+> - Brief a different agent
 
 **Connection Issue:**
 
 > 📡 Having trouble reaching your cohort.
 >
-> This usually clears up on its own. If not, try refreshing the page.
+> This usuagent clears up on its own. If not, try refreshing the page.
 
 ### Empty States
 
-**No Allies Yet:**
+**No Agents Yet:**
 
 > Your cohort is empty!
 >
-> Recruit your first ally to start tackling missions together.
+> Recruit your first agent to start tackling missions together.
 >
-> [Recruit an Ally]
+> [Recruit an Agent]
 
 **No Missions:**
 
@@ -225,7 +226,7 @@ From abstract → concrete:
 
 > Your Intelligence is empty for now.
 >
-> As your allies complete Operations and Tasks, they'll capture Insights here.
+> As your agents complete Operations and Tasks, they'll capture Insights here.
 > It's like a team knowledge base that builds itself.
 
 ---
@@ -234,7 +235,7 @@ From abstract → concrete:
 
 Before publishing any copy, check:
 
-- [ ] Did I use Cohortix terminology? (Ally, Cohort, Mission, etc.)
+- [ ] Did I use Cohortix terminology? (Agent, Cohort, Mission, etc.)
 - [ ] Would a non-technical person understand this?
 - [ ] Is it warm and friendly, not robotic?
 - [ ] Am I avoiding enterprise jargon? (leverage, utilize, synergy, optimize)
@@ -294,7 +295,7 @@ PPV HIERARCHY (ALIGNMENT ZONE):
   Domain → Vision → Mission → Operation/Rhythm → Task
 
 TERMINOLOGY:
-  Agent       → Ally
+  Agent       → Agent
   Agents      → Cohort
   Action        → Mission
   Workflow    → Goal
@@ -314,7 +315,7 @@ ANTI-VOICE: Corporate · Cold · Jargon-heavy · Robotic
 - **2026-02-12:** PPV Pro alignment update (v2.0)
   - Updated: Terminology table with full PPV hierarchy (Domain → Vision →
     Mission → Operation/Rhythm → Task)
-  - Added: Human and Ally examples for each PPV level
+  - Added: Human and Agent examples for each PPV level
   - Added: The Dual Human+Agent PPV Model section
   - Updated: All example copy to use new terminology (Mission, Operation, Task,
     Intelligence, Insight, Debrief)

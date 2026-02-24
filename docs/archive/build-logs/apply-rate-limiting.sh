@@ -3,8 +3,8 @@
 # Apply rate limiting to all /api/v1/ routes
 
 ROUTES=(
-  "apps/web/src/app/api/v1/allies/route.ts"
-  "apps/web/src/app/api/v1/allies/[id]/route.ts"
+  "apps/web/src/app/api/v1/agents/route.ts"
+  "apps/web/src/app/api/v1/agents/[id]/route.ts"
   "apps/web/src/app/api/v1/operations/route.ts"
   "apps/web/src/app/api/v1/operations/[id]/route.ts"
   "apps/web/src/app/api/v1/cohorts/route.ts"

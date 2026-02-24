@@ -1589,7 +1589,7 @@ export function useCommentSubscription(taskId: string) {
         },
         (payload) => {
           console.log('New comment:', payload.new);
-          // Refetch comments or optimistically update
+          // Refetch comments or optimisticagent update
         }
       )
       .subscribe();

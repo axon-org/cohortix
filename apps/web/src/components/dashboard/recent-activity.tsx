@@ -95,7 +95,7 @@ function formatEventMessage(eventType: string, eventData: any): string {
     case 'project.created':
       return 'created a new cohort';
     case 'agent.created':
-      return 'added a new ally';
+      return 'added a new agent';
     case 'agent.status_changed':
       return `changed status to ${eventData?.status || 'active'}`;
     case 'knowledge.created':

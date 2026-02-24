@@ -253,7 +253,7 @@ jobs:
 
   sast-scan:
     name: SAST Scan
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
@@ -364,10 +364,9 @@ jobs:
             fi
           fi
 
-          # PR-only jobs (only checked if running)
+          # PR-only jobs (checked but non-blocking)
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # SAST and dependency audit are checked but allowed to continue-on-error
-            # Snyk scan is allowed to continue on error for now
+            echo "SAST and dependency audit run separately (non-blocking)"
           fi
 
           echo "All CI checks passed!"
