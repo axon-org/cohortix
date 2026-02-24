@@ -42,6 +42,24 @@ type NavigationItem =
       badge?: never;
     };
 
+const getNavigation = (orgSlug: string): NavigationItem[] => [
+  // Daily workflow group
+  { name: 'Dashboard', href: `/${orgSlug}`, icon: LayoutGrid },
+  { name: 'Inbox', href: `/${orgSlug}/inbox`, icon: InboxIcon, badge: 'Soon' },
+  { name: 'My Tasks', href: `/${orgSlug}/my-tasks`, icon: CheckSquare },
+  { type: 'divider' },
+  // Workspace group
+  { name: 'Missions', href: `/${orgSlug}/missions`, icon: Target },
+  { name: 'Operations', href: `/${orgSlug}/operations`, icon: FolderKanban },
+  { name: 'Cohorts', href: `/${orgSlug}/cohorts`, icon: Users },
+  { name: 'Agents', href: `/${orgSlug}/agents`, icon: Bot },
+];
+
+const getBottomNavigation = (orgSlug: string): NavigationItem[] => [
+  { name: 'Settings', href: `/${orgSlug}/settings`, icon: Settings },
+  { name: 'Account', href: '/account', icon: UserCircle },
+];
+
 export function Sidebar({ user, orgSlug }: SidebarProps) {
   const pathname = usePathname() ?? '/';
   const [collapsed, setCollapsed] = useState(false);
@@ -50,26 +68,13 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
   const userEmail = user?.email || '';
   const avatarUrl = user?.profile?.avatar_url;
 
-  const navigation: NavigationItem[] = [
-    // Daily workflow group
-    { name: 'Dashboard', href: `/${orgSlug}`, icon: LayoutGrid },
-    { name: 'Inbox', href: `/${orgSlug}/inbox`, icon: InboxIcon, badge: 'Soon' },
-    { name: 'My Tasks', href: `/${orgSlug}/my-tasks`, icon: CheckSquare },
-    { type: 'divider' },
-    // Workspace group
-    { name: 'Missions', href: `/${orgSlug}/missions`, icon: Target },
-    { name: 'Operations', href: `/${orgSlug}/operations`, icon: FolderKanban },
-    { name: 'Cohorts', href: `/${orgSlug}/cohorts`, icon: Users },
-    { name: 'Agents', href: `/${orgSlug}/agents`, icon: Bot },
-  ];
-
-  const bottomNavigation: NavigationItem[] = [
-    { name: 'Settings', href: `/${orgSlug}/settings`, icon: Settings },
-    { name: 'Account', href: '/account', icon: UserCircle },
-  ];
+  const navigation = getNavigation(orgSlug);
+  const bottomNavigation = getBottomNavigation(orgSlug);
 
   return (
     <div
+      role="navigation"
+      aria-label="Main navigation"
       className={cn(
         'bg-[#111113] border-r border-border flex flex-col transition-all duration-200',
         collapsed ? 'w-16' : 'w-60'
@@ -109,6 +114,8 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
             />
             <button
               onClick={() => setCollapsed(!collapsed)}
+              aria-expanded={!collapsed}
+              aria-label="Toggle sidebar"
               className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -117,6 +124,8 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
         ) : (
           <button
             onClick={() => setCollapsed(!collapsed)}
+            aria-expanded={!collapsed}
+            aria-label="Toggle sidebar"
             className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors mx-auto"
           >
             <ChevronLeft className="w-4 h-4 rotate-180" />
@@ -169,7 +178,7 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
       </nav>
 
       {/* Bottom navigation - Settings & Account */}
-      <div className="px-2 pb-1 space-y-0.5">
+      <div className="px-2 pb-1 space-y-0.5" aria-label="Settings">
         {bottomNavigation.map((item) => {
           if (item.type === 'divider') return null;
           const isActive =
