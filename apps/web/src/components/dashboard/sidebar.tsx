@@ -61,8 +61,9 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
     { name: 'Operations', href: `/${orgSlug}/operations`, icon: FolderKanban },
     { name: 'Cohorts', href: `/${orgSlug}/cohorts`, icon: Users },
     { name: 'Agents', href: `/${orgSlug}/agents`, icon: Bot },
-    { type: 'divider' },
-    // Bottom section
+  ];
+
+  const bottomNavigation: NavigationItem[] = [
     { name: 'Settings', href: `/${orgSlug}/settings`, icon: Settings },
     { name: 'Account', href: '/account', icon: UserCircle },
   ];
@@ -83,13 +84,26 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
               afterCreateOrganizationUrl="/:slug"
               afterSelectOrganizationUrl="/:slug"
               appearance={{
+                baseTheme: undefined,
                 elements: {
                   rootBox: 'w-full',
                   organizationSwitcherTrigger:
                     'w-full px-2 py-1.5 rounded-md hover:bg-secondary/50 text-foreground justify-start',
-                  organizationSwitcherPopoverCard: 'bg-[#111113] border border-border',
+                  organizationSwitcherPopoverCard: 'bg-[#111113] border border-border shadow-xl',
+                  organizationSwitcherPopoverActions: 'bg-[#111113]',
                   organizationPreview: 'text-foreground',
+                  organizationPreviewTextContainer: 'text-foreground',
                   organizationSwitcherTriggerIcon: 'text-muted-foreground',
+                  organizationPreviewSecondaryIdentifier: 'text-muted-foreground',
+                  organizationSwitcherPopoverFooter: 'hidden',
+                  card: 'bg-[#111113] border border-border shadow-xl',
+                  headerTitle: 'text-foreground',
+                  headerSubtitle: 'text-muted-foreground',
+                  actionButton: 'text-foreground hover:bg-secondary/50',
+                  userPreview: 'text-foreground',
+                  userPreviewTextContainer: 'text-foreground',
+                  userPreviewSecondaryIdentifier: 'text-muted-foreground',
+                  internal: 'bg-[#111113]',
                 },
               }}
             />
@@ -153,6 +167,35 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
           );
         })}
       </nav>
+
+      {/* Bottom navigation - Settings & Account */}
+      <div className="px-2 pb-1 space-y-0.5">
+        {bottomNavigation.map((item) => {
+          if (item.type === 'divider') return null;
+          const isActive =
+            item.href === '/account' ? pathname === item.href : pathname.startsWith(item.href!);
+          const Icon = item.icon!;
+          return (
+            <Link
+              key={item.name}
+              href={item.href!}
+              title={collapsed ? item.name : undefined}
+              className={cn(
+                'flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium transition-all relative group',
+                isActive
+                  ? 'bg-secondary text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+              )}
+            >
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-foreground rounded-r" />
+              )}
+              <Icon className="w-4 h-4 flex-shrink-0" />
+              {!collapsed && <span>{item.name}</span>}
+            </Link>
+          );
+        })}
+      </div>
 
       {/* User */}
       <div className="px-3 py-3 border-t border-border">
