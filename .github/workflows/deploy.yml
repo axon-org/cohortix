@@ -19,6 +19,11 @@ on:
           - preview
           - production
 
+permissions:
+  contents: read
+  checks: read
+  deployments: write
+
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: true
