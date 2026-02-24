@@ -92,7 +92,7 @@ export function AgentsTable({ data }: AgentsTableProps) {
       searchKey="name"
       searchPlaceholder="Search agents..."
       onRowClick={(agent) => {
-        window.location.href = `/agents/${agent.id}`;
+        window.location.href = `/dashboard/agents/${agent.id}`;
       }}
       emptyMessage="No agents found."
       toolbar={(table) => (
