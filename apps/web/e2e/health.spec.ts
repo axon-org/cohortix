@@ -25,8 +25,14 @@ test.describe('E2E Health', () => {
     }
   });
 
-  test('unauthenticated dashboard redirects to sign-in', async ({ page }) => {
+  test('unauthenticated dashboard redirects to sign-in', async ({ browser }, testInfo) => {
+    const baseURL = testInfo.project.use.baseURL as string | undefined;
+    const context = await browser.newContext({ baseURL });
+    const page = await context.newPage();
+
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/sign-in/);
+
+    await context.close();
   });
 });

@@ -102,8 +102,11 @@ jobs:
 
       - name: Determine environment
         id: env
+        env:
+          GITHUB_REF: ${{ github.ref }}
+          INPUT_ENV: ${{ inputs.environment }}
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ inputs.environment }}" == "production" ]]; then
+          if [[ "$GITHUB_REF" == "refs/heads/main" ]] || [[ "$INPUT_ENV" == "production" ]]; then
             echo "target=production" >> $GITHUB_OUTPUT
             echo "environment=production" >> $GITHUB_OUTPUT
             echo "🚀 Deploying to PRODUCTION (app.cohortix.ai)"
@@ -136,10 +139,15 @@ jobs:
           if [[ "${{ steps.env.outputs.target }}" == "production" ]]; then
             URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
           else
-            URL=$(vercel deploy --prebuilt --target staging --token=${{ secrets.VERCEL_TOKEN }})
+            URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
           fi
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "✅ Deployed to: $URL"
+
+      - name: Promote to staging environment
+        if: ${{ steps.env.outputs.target == 'staging' }}
+        run: |
+          vercel promote "${{ steps.deploy.outputs.url }}" --target staging --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Comment deployment URL on commit
         if: success()
