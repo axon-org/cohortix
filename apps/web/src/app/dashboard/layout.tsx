@@ -1,39 +1,13 @@
 import { redirect } from 'next/navigation';
-import { Sidebar } from '@/components/dashboard/sidebar';
-import { Header } from '@/components/dashboard/header';
-import { getCurrentUser } from '@/server/db/queries/dashboard';
-import { getAuthContext } from '@/lib/auth-helper';
-import { UnauthorizedError, ForbiddenError } from '@/lib/errors';
+import { auth } from '@clerk/nextjs/server';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  try {
-    // getAuthContext() handles everything:
-    // - Checks Clerk auth (throws UnauthorizedError if not signed in)
-    // - Auto-provisions user profile if missing from Supabase
-    // - Auto-provisions org from Clerk if missing from Supabase
-    // - Falls back to org membership lookup
-    // - Throws ForbiddenError if no org at all
-    await getAuthContext();
-  } catch (error) {
-    if (error instanceof UnauthorizedError) {
-      redirect('/sign-in');
-    }
-    if (error instanceof ForbiddenError) {
-      redirect('/onboarding');
-    }
-    // Unexpected error — redirect to sign-in as fallback
-    redirect('/sign-in');
+  // Middleware should handle the redirect, but as a fallback:
+  const { orgSlug } = await auth();
+
+  if (orgSlug) {
+    redirect(`/${orgSlug}/`);
   }
 
-  const currentUser = await getCurrentUser();
-
-  return (
-    <div className="flex h-screen bg-background">
-      <Sidebar user={currentUser} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header user={currentUser} />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
-      </div>
-    </div>
-  );
+  redirect('/onboarding');
 }
