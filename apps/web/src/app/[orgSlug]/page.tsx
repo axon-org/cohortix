@@ -81,7 +81,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ orgS
         <div className="lg:col-span-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Suspense fallback={<SectionSkeleton />}>
-              <RecentActivity activities={activity} />
+              <RecentActivity activities={activity} orgSlug={orgSlug} />
             </Suspense>
             <Suspense fallback={<SectionSkeleton />}>
               <UrgentAlerts alerts={alerts} />
