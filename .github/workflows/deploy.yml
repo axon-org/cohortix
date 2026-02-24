@@ -124,29 +124,30 @@ jobs:
           vercel env pull .env.local --environment=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
           cp .env.local apps/web/.env.local
 
-      - name: Build and deploy
-        id: deploy
+      - name: Build project
         run: |
-          TARGET="${{ steps.env.outputs.target }}"
-
-          if [[ "$TARGET" == "production" ]]; then
-            # Production: build with --prod, deploy with --prod
+          if [[ "${{ steps.env.outputs.target }}" == "production" ]]; then
             vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-            URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
           else
-            # Staging: use vercel deploy (non-prebuilt) with --target
-            # This lets Vercel handle the build AND assign to the staging environment
-            URL=$(vercel deploy --target "$TARGET" --token=${{ secrets.VERCEL_TOKEN }})
+            vercel build --token=${{ secrets.VERCEL_TOKEN }}
           fi
 
+      - name: Deploy to Vercel
+        id: deploy
+        run: |
+          if [[ "${{ steps.env.outputs.target }}" == "production" ]]; then
+            URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          else
+            URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          fi
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "✅ Deployed to: $URL"
 
-      - name: Alias staging domain
+      - name: Assign staging domain
         if: steps.env.outputs.target == 'staging'
-        run: |
-          DEPLOY_URL="${{ steps.deploy.outputs.url }}"
-          vercel alias "$DEPLOY_URL" staging.cohortix.ai --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }}
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+        run: vercel alias "$DEPLOY_URL" staging.cohortix.ai --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }}
 
       - name: Comment deployment URL on commit
         if: success()
