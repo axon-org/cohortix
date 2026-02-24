@@ -1,20 +1,23 @@
 name: E2E Tests
 
 on:
-  pull_request:
-    branches: [main, dev]
+  # Run after Preview or Deploy workflows complete
+  workflow_run:
+    workflows: ['Preview Deployment', 'Deploy']
+    types: [completed]
+  # Manual trigger with custom URL
   workflow_dispatch:
     inputs:
       base_url:
-        description: "Optional base URL override"
+        description: 'Base URL to test against'
         required: false
 
 permissions:
   contents: read
-  deployments: read
+  actions: read
 
 concurrency:
-  group: e2e-${{ github.event_name }}-${{ github.ref }}
+  group: e2e-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -26,9 +29,15 @@ jobs:
     name: Run Playwright E2E
     runs-on: self-hosted
     timeout-minutes: 30
+    # Only run if the triggering workflow succeeded (or manual dispatch)
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -51,11 +60,28 @@ jobs:
         id: base-url
         env:
           INPUT_BASE_URL: ${{ github.event.inputs.base_url }}
+          TRIGGER_WORKFLOW: ${{ github.event.workflow_run.name }}
+          TRIGGER_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: |
-          # Use manual override if provided, otherwise staging
-          BASE_URL="${INPUT_BASE_URL:-https://staging.cohortix.ai}"
+          if [[ -n "$INPUT_BASE_URL" ]]; then
+            BASE_URL="$INPUT_BASE_URL"
+            echo "📌 Manual override: $BASE_URL"
+
+          elif [[ "$TRIGGER_BRANCH" == "main" ]]; then
+            BASE_URL="https://app.cohortix.ai"
+            echo "🚀 Production (main): $BASE_URL"
+
+          elif [[ "$TRIGGER_BRANCH" == "dev" ]]; then
+            BASE_URL="https://staging.cohortix.ai"
+            echo "🔄 Staging (dev): $BASE_URL"
+
+          else
+            # PR branches — use staging as base (preview URLs are ephemeral)
+            BASE_URL="https://staging.cohortix.ai"
+            echo "🔍 PR/other branch — using staging: $BASE_URL"
+          fi
+
           echo "base_url=$BASE_URL" >> "$GITHUB_OUTPUT"
-          echo "🔗 E2E target: $BASE_URL"
 
       - name: Run Playwright E2E tests
         run: pnpm -C apps/web test:e2e
