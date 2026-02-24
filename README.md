@@ -62,4 +62,4 @@ See [TERMINOLOGY.md](docs/guides/TERMINOLOGY.md) for the complete guide.
 
 ---
 
-_Built with ❤️ for everyday people_ // deploy-test 1771927015
+_Built with ❤️ for everyday people_
