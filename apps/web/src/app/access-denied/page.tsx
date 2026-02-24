@@ -13,11 +13,13 @@ function AccessDeniedContent() {
 
   const [isRequesting, setIsRequesting] = useState(false);
   const [requestSuccess, setRequestSuccess] = useState(false);
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   const handleRequestAccess = async () => {
     if (!org) return;
 
     setIsRequesting(true);
+    setRequestError(null);
     try {
       const response = await fetch('/api/v1/access-requests', {
         method: 'POST',
@@ -27,9 +29,13 @@ function AccessDeniedContent() {
 
       if (response.ok) {
         setRequestSuccess(true);
+      } else {
+        const data = await response.json().catch(() => ({}));
+        setRequestError(data.error || 'Failed to send request. Please try again.');
       }
     } catch (error) {
       console.error('Failed to request access:', error);
+      setRequestError('Network error. Please check your connection and try again.');
     } finally {
       setIsRequesting(false);
     }
@@ -127,6 +133,10 @@ function AccessDeniedContent() {
                   </Button>
 
                   <WorkspaceRedirect variant="secondary" />
+
+                  {requestError && (
+                    <p className="text-xs text-[#EF4444] text-center">{requestError}</p>
+                  )}
                 </div>
               </>
             ) : (
