@@ -68,12 +68,8 @@ export async function getDashboardKPIs(organizationId: string) {
     .eq('organization_id', organizationId)
     .in('status', ['in_progress', 'todo']);
 
-  // Total active agents (agents)
-  const { count: activeAgents } = await supabase
-    .from('agents')
-    .select('*', { count: 'exact', head: true })
-    .eq('organization_id', organizationId)
-    .eq('status', 'active');
+  // Total active agents — stubbed until OpenClaw integration
+  const activeAgents = 0;
 
   // Completion rate (completed actions / total actions)
   const { count: completedActions } = await supabase
@@ -293,22 +289,10 @@ export async function getActiveMissions(organizationId: string, limit = 6) {
 export async function getActiveAgents(organizationId: string) {
   const supabase = await createClient();
 
-  const { data: agents, error } = await supabase
-    .from('agents')
-    .select('*')
-    .eq('organization_id', organizationId)
-    .in('status', ['active', 'busy'])
-    .order('created_at', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching agents:', error);
-    return [];
-  }
-
-  return (agents || []).map((agent: any) => ({
-    ...agent,
-    workload: { active: 0, total: 0, currentMission: null },
-  }));
+  // TODO: Replace with OpenClaw agent integration (separate feature branch)
+  // The DB table is still 'allies' (rename migration pending), but this feature
+  // will be rebuilt to pull from OpenClaw anyway. Return empty for now.
+  return [];
 }
 
 /**
