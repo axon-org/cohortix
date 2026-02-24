@@ -13,10 +13,10 @@ on:
       environment:
         description: 'Target environment'
         required: true
-        default: 'preview'
+        default: 'staging'
         type: choice
         options:
-          - preview
+          - staging
           - production
 
 permissions:
@@ -104,26 +104,21 @@ jobs:
         id: env
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ inputs.environment }}" == "production" ]]; then
-            echo "is_production=true" >> $GITHUB_OUTPUT
+            echo "target=production" >> $GITHUB_OUTPUT
             echo "environment=production" >> $GITHUB_OUTPUT
-            echo "🚀 Deploying to PRODUCTION"
+            echo "🚀 Deploying to PRODUCTION (app.cohortix.ai)"
           else
-            echo "is_production=false" >> $GITHUB_OUTPUT
-            echo "environment=preview" >> $GITHUB_OUTPUT
-            echo "🔄 Deploying to STAGING (preview)"
+            echo "target=staging" >> $GITHUB_OUTPUT
+            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "🔄 Deploying to STAGING (staging.cohortix.ai)"
           fi
 
       - name: Pull Vercel environment
-        run: |
-          if [[ "${{ steps.env.outputs.is_production }}" == "true" ]]; then
-            vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-          else
-            vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-          fi
+        run: vercel pull --yes --environment=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build project
         run: |
-          if [[ "${{ steps.env.outputs.is_production }}" == "true" ]]; then
+          if [[ "${{ steps.env.outputs.target }}" == "production" ]]; then
             vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
           else
             vercel build --token=${{ secrets.VERCEL_TOKEN }}
@@ -132,10 +127,10 @@ jobs:
       - name: Deploy to Vercel
         id: deploy
         run: |
-          if [[ "${{ steps.env.outputs.is_production }}" == "true" ]]; then
+          if [[ "${{ steps.env.outputs.target }}" == "production" ]]; then
             URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
           else
-            URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+            URL=$(vercel deploy --prebuilt --target staging --token=${{ secrets.VERCEL_TOKEN }})
           fi
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "✅ Deployed to: $URL"
