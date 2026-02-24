@@ -116,6 +116,9 @@ jobs:
       - name: Pull Vercel environment
         run: vercel pull --yes --environment=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
 
+      - name: Pull environment variables
+        run: vercel env pull .env.local --environment=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
+
       - name: Build project
         run: |
           if [[ "${{ steps.env.outputs.target }}" == "production" ]]; then
