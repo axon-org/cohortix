@@ -31,24 +31,43 @@ concurrency:
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
 
 jobs:
   # ═══════════════════════════════════════════════════════════════
-  # GATE: Wait for CI to pass before deploying
+  # VALIDATE: Lint, type-check, and test before deploying
   # ═══════════════════════════════════════════════════════════════
-  ci-gate:
-    name: Wait for CI
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+  validate:
+    name: Validate
+    runs-on: self-hosted
+    timeout-minutes: 10
     steps:
-      - name: Wait for CI Pipeline
-        uses: lewagon/wait-on-check-action@v1.3.4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
         with:
-          ref: ${{ github.sha }}
-          check-name: 'CI Success'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 15
-          allowed-conclusions: success
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm type-check
+
+      - name: Unit tests
+        run: pnpm test:unit
 
   # ═══════════════════════════════════════════════════════════════
   # DEPLOY: Build on Vercel infrastructure and deploy
@@ -57,7 +76,7 @@ jobs:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [ci-gate]
+    needs: [validate]
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
       url: ${{ steps.deploy.outputs.url }}
@@ -68,7 +87,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
