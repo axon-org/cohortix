@@ -47,7 +47,7 @@ export default function OnboardingPage() {
 
   const handleCreateOrg = async () => {
     if (!orgName.trim() || !slug.trim() || !createOrganization) return;
-    
+
     // Final validation before submission
     if (!validation.valid || slugStatus !== 'available') {
       return;
@@ -68,10 +68,10 @@ export default function OnboardingPage() {
     }
   };
 
-  const canSubmit = 
-    orgName.trim().length > 0 && 
-    slug.trim().length > 0 && 
-    validation.valid && 
+  const canSubmit =
+    orgName.trim().length > 0 &&
+    slug.trim().length > 0 &&
+    validation.valid &&
     slugStatus === 'available' &&
     !isCreating;
 
@@ -186,7 +186,8 @@ export default function OnboardingPage() {
 
                 {/* URL Preview */}
                 <div className="mt-1.5 text-xs text-[#6B7280]">
-                  Your workspace URL: <span className="text-[#9CA3AF]">cohortix.ai/{slug || '...'}</span>
+                  Your workspace URL:{' '}
+                  <span className="text-[#9CA3AF]">cohortix.ai/{slug || '...'}</span>
                 </div>
 
                 {/* Validation Error */}
@@ -198,25 +199,27 @@ export default function OnboardingPage() {
                 )}
 
                 {/* Availability Error + Suggestion */}
-                {slug && validation.valid && slugStatus === 'taken' && (
-                  <div className="mt-2 space-y-1">
-                    <div className="flex items-start gap-1.5 text-xs text-[#EF4444]">
-                      <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                      <span>{slugError || 'This URL is already taken'}</span>
+                {slug &&
+                  validation.valid &&
+                  (slugStatus === 'taken' || (slugStatus === 'idle' && slugError)) && (
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-start gap-1.5 text-xs text-[#EF4444]">
+                        <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                        <span>{slugError || 'This URL is already taken'}</span>
+                      </div>
+                      {suggestion && (
+                        <button
+                          onClick={() => {
+                            setSlug(suggestion);
+                            setSlugTouched(true);
+                          }}
+                          className="text-xs text-[#5E6AD2] hover:text-[#7C8ADE] transition-colors"
+                        >
+                          Try &quot;{suggestion}&quot; instead
+                        </button>
+                      )}
                     </div>
-                    {suggestion && (
-                      <button
-                        onClick={() => {
-                          setSlug(suggestion);
-                          setSlugTouched(true);
-                        }}
-                        className="text-xs text-[#5E6AD2] hover:text-[#7C8ADE] transition-colors"
-                      >
-                        Try &quot;{suggestion}&quot; instead
-                      </button>
-                    )}
-                  </div>
-                )}
+                  )}
 
                 {/* Success Message */}
                 {slug && validation.valid && slugStatus === 'available' && (
