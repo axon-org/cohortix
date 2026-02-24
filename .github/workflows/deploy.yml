@@ -1,0 +1,124 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main, dev]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - 'LICENSE'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - production
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # GATE: Wait for CI to pass before deploying
+  # ═══════════════════════════════════════════════════════════════
+  ci-gate:
+    name: Wait for CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Wait for CI Pipeline
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.sha }}
+          check-name: 'CI Success'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 15
+          allowed-conclusions: success
+
+  # ═══════════════════════════════════════════════════════════════
+  # DEPLOY: Build on Vercel infrastructure and deploy
+  # ═══════════════════════════════════════════════════════════════
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [ci-gate]
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ inputs.environment }}" == "production" ]]; then
+            echo "is_production=true" >> $GITHUB_OUTPUT
+            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "🚀 Deploying to PRODUCTION"
+          else
+            echo "is_production=false" >> $GITHUB_OUTPUT
+            echo "environment=preview" >> $GITHUB_OUTPUT
+            echo "🔄 Deploying to STAGING (preview)"
+          fi
+
+      - name: Pull Vercel environment
+        run: |
+          if [[ "${{ steps.env.outputs.is_production }}" == "true" ]]; then
+            vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+          fi
+
+      - name: Build project
+        run: |
+          if [[ "${{ steps.env.outputs.is_production }}" == "true" ]]; then
+            vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel build --token=${{ secrets.VERCEL_TOKEN }}
+          fi
+
+      - name: Deploy to Vercel
+        id: deploy
+        run: |
+          if [[ "${{ steps.env.outputs.is_production }}" == "true" ]]; then
+            URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          else
+            URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          fi
+          echo "url=$URL" >> $GITHUB_OUTPUT
+          echo "✅ Deployed to: $URL"
+
+      - name: Comment deployment URL on commit
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const env = '${{ steps.env.outputs.environment }}';
+            const url = '${{ steps.deploy.outputs.url }}';
+            const emoji = env === 'production' ? '🚀' : '🔄';
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: `${emoji} **Deployed to ${env}**\n\n🔗 ${url}\n\n_Deployed via GitHub Actions_`
+            });
