@@ -127,7 +127,7 @@ jobs:
           if [[ "${{ steps.env.outputs.target }}" == "production" ]]; then
             vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
           else
-            vercel build --token=${{ secrets.VERCEL_TOKEN }}
+            vercel build --target=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
           fi
 
       - name: Deploy to Vercel
