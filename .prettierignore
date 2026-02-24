@@ -4,6 +4,9 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
+# Local venv
+.venv/
+
 # Build outputs
 dist/
 build/
