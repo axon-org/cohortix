@@ -117,7 +117,10 @@ jobs:
         run: vercel pull --yes --environment=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Pull environment variables
-        run: vercel env pull .env.local --environment=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          vercel env pull .env.local --environment=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
+          # Copy to app directory so Next.js can find them during build
+          cp .env.local apps/web/.env.local
 
       - name: Build project
         run: |

@@ -98,7 +98,9 @@ jobs:
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Pull environment variables
-        run: vercel env pull .env.local --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          vercel env pull .env.local --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+          cp .env.local apps/web/.env.local
 
       - name: Build project
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
