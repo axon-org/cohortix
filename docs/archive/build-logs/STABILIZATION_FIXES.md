@@ -109,7 +109,7 @@ the codebase, creating security risks and inconsistent behavior.
 
 #### Impact
 
-- **More secure**: No auth bypass paths that could accidentagent leak to
+- **More secure**: No auth bypass paths that could accidentally leak to
   production
 - **Consistent behavior**: Development and production use the same auth flow
 - **RLS reliance**: Now fully dependent on proper RLS policies (which we've

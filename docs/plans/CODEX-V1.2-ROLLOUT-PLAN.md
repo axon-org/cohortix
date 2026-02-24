@@ -35,7 +35,7 @@ Without formalized standards, AI agent teams face:
 
 - **Inconsistent Decisions:** Agents make conflicting architectural choices
   across services
-- **Quality Degradation:** Code quality declines as agents optimize locagent
+- **Quality Degradation:** Code quality declines as agents optimize locally
   without global context
 - **Security Gaps:** Vulnerabilities emerge from gaps in agent knowledge (OWASP
   Agentic Top 10)

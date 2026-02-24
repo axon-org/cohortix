@@ -502,7 +502,7 @@ curl -v http://localhost:3000/api/v1/operations
 
 ---
 
-### Phase 4: Full System QA (P1) - **FINAGENT**
+### Phase 4: Full System QA (P1) - **finally**
 
 **Owner:** Nina (qa-engineer)
 
@@ -649,7 +649,7 @@ curl -v http://localhost:3000/api/v1/operations
 
 ### Actual Behavior
 
-[What actuagent happens]
+[What actually happens]
 
 ### Screenshots/Logs
 

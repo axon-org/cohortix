@@ -59,7 +59,7 @@ Development: http://localhost:3000/api/v1
      │                        │  5. JWT Valid + User Claims  │
      │                        │─────────────────────────────▶│
      │                        │                              │
-     │                        │  6. RLS automaticagent filters│
+     │                        │  6. RLS automatically filters│
      │                        │     based on auth.uid()      │
      │                        │                              │
      │  7. Response                                          │
@@ -73,7 +73,7 @@ Content-Type: application/json
 Accept: application/json
 X-Organization-ID: org_xxx  # Optional: Specify org context (if user has multiple)
 
-# JWT is automaticagent sent via httpOnly cookie
+# JWT is automatically sent via httpOnly cookie
 # No Authorization header needed (more secure)
 # For API keys (server-to-server): Authorization: Bearer <supabase_service_key>
 ```
@@ -1528,7 +1528,7 @@ POST /api/v1/webhooks/github
 ### Subscribe to Database Changes
 
 Cohortix uses **Supabase Realtime** for all real-time features. The
-WebSocket-based subscriptions automaticagent sync database changes to clients.
+WebSocket-based subscriptions automatically sync database changes to clients.
 
 **Client-Side Implementation:**
 

@@ -102,7 +102,7 @@ deployments.
 
 - ✅ Unified analytics and logs
 - ✅ Simpler environment variable management
-- ✅ Preview deployments automaticagent created for PRs
+- ✅ Preview deployments automatically created for PRs
 - ✅ Cost-effective (no duplicate projects)
 
 #### 1.2 Configure Production Branch
@@ -118,7 +118,7 @@ deployments.
 ```bash
 # Vercel Dashboard:
 # Project Settings → Git → Ignored Build Step
-# Enable: "Automaticagent create deployments for all branches and commits"
+# Enable: "automatically create deployments for all branches and commits"
 # Branch Protection Pattern: staging, main (require PR reviews)
 ```
 
@@ -140,7 +140,7 @@ npm i -g vercel
 cd /Users/alimai/Projects/cohortix
 vercel link
 
-# Pull development environment variables locagent
+# Pull development environment variables locally
 vercel env pull .env.local
 ```
 
@@ -179,7 +179,7 @@ supabase link --project-ref <your-prod-ref>
 
 **What happens now:**
 
-- Every PR automaticagent creates a Supabase preview branch
+- Every PR automatically creates a Supabase preview branch
 - Branch includes schema/functions but **no production data**
 - Merging PR runs migrations on production
 - Preview branches auto-delete after PR merge/close
@@ -195,7 +195,7 @@ supabase link --project-ref <your-prod-ref>
 supabase db dump --db-url "postgresql://..." > schema.sql
 # Import to staging project via Supabase Dashboard → SQL Editor
 
-# 3. Link staging project locagent
+# 3. Link staging project locally
 supabase link --project-ref <staging-ref>
 
 # 4. Seed with test data
@@ -419,7 +419,7 @@ NODE_ENV=development
    ├─ Edit schema in packages/database/src/schema/
    ├─ Generate migration: pnpm db:generate
    ├─ Review SQL in packages/database/src/migrations/
-   ├─ Test locagent: pnpm db:push
+   ├─ Test locally: pnpm db:push
    ├─ Verify: pnpm db:studio
    └─ Seed: pnpm db:seed
 
@@ -428,7 +428,7 @@ NODE_ENV=development
    ├─ Create PR to dev
    ├─ Supabase auto-creates preview branch
    ├─ Vercel deploys preview (uses preview Supabase branch)
-   ├─ Migrations run automaticagent on preview branch
+   ├─ Migrations run automatically on preview branch
    ├─ Test via preview URL: https://cohortix-git-feature-new-table.vercel.app
    └─ QA approves PR
 
@@ -445,7 +445,7 @@ NODE_ENV=development
    ├─ Staging → Main (manual PR, approved by 2+ reviewers)
    ├─ GitHub Actions runs: supabase db push (to prod project)
    ├─ Vercel deploys to app.cohortix.ai
-   ├─ Smoke tests run automaticagent
+   ├─ Smoke tests run automatically
    ├─ Monitor: Sentry, Vercel Analytics
    └─ Rollback plan: git revert + manual DB rollback
 ```
@@ -564,7 +564,7 @@ jobs:
       - name: Rollback on failure
         if: failure()
         run: |
-          echo "❌ Migration failed! Investigate and rollback manuagent."
+          echo "❌ Migration failed! Investigate and rollback manually."
           # Manual rollback: psql $DATABASE_URL_PROD < backup.sql
 ```
 
@@ -1041,7 +1041,7 @@ pnpm db:generate
 # 2. Check branch pattern
 # Pattern should include: feature/*, bugfix/*, feat/*
 
-# 3. Manuagent create branch
+# 3. manually create branch
 supabase branches create <branch-name> --project-ref <prod-ref>
 
 # 4. Verify in Supabase Dashboard
@@ -1122,7 +1122,7 @@ export const db = drizzle(client);
 # ✅ "After branch is deleted"
 # ✅ "After PR is merged or closed"
 
-# Manuagent delete stale previews
+# manually delete stale previews
 vercel list
 vercel remove <deployment-url>
 ```
@@ -1151,7 +1151,7 @@ pnpm dev                # Start Next.js dev server
 pnpm db:generate
 pnpm db:push
 
-# 5. Test locagent
+# 5. Test locally
 pnpm test:unit
 pnpm test:e2e
 
@@ -1161,7 +1161,7 @@ git commit -m "feat(cohorts): add cohort table with RLS"
 git push origin feature/COH-123-new-cohort-table
 
 # 7. Create PR to dev
-# GitHub automaticagent:
+# GitHub automatically:
 # - Deploys Vercel preview
 # - Creates Supabase preview branch
 # - Runs CI/CD tests
@@ -1173,7 +1173,7 @@ git push origin feature/COH-123-new-cohort-table
 **Debugging preview environment:**
 
 ```bash
-# Pull preview environment variables locagent
+# Pull preview environment variables locally
 vercel env pull .env.preview
 
 # Run local server with preview config
@@ -1260,7 +1260,7 @@ git revert <commit-hash>
 git push origin main
 
 # Option 3: Manual database rollback (LAST RESORT)
-# Restore from backup (created automaticagent by GitHub Actions)
+# Restore from backup (created automatically by GitHub Actions)
 psql $DATABASE_URL_PROD < backup-YYYYMMDD.sql
 ```
 

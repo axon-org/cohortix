@@ -38,7 +38,7 @@
 
 **Why Manual?**
 
-- `psql` not installed locagent
+- `psql` not installed locally
 - Direct postgres connection: "Tenant or user not found" error
 - Pooler connection: Same error
 - Drizzle Kit: Outdated version (v0.20)

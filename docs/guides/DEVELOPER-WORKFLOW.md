@@ -29,7 +29,7 @@ Cohortix uses a trunk-based development model with short-lived feature branches.
 ## 2. Local Development
 
 - **Start the development server:** `pnpm dev`
-- **Run tests locagent:** `pnpm test`
+- **Run tests locally:** `pnpm test`
 - **Check types:** `pnpm type-check`
 - **Lint code:** `pnpm lint`
 
@@ -57,7 +57,7 @@ Once your PR is approved and all checks (CI + Preview) have passed:
 1.  **Merge the PR** (Squash and merge is preferred).
 2.  **Monitor the Release:**
     - Watch the **Production Release** workflow in GitHub Actions.
-    - The workflow will automaticagent:
+    - The workflow will automatically:
       1. Run final tests.
       2. Apply database migrations (`pnpm db:migrate`).
       3. Deploy to Vercel production.
@@ -72,8 +72,8 @@ Once your PR is approved and all checks (CI + Preview) have passed:
 ### CI/Preview Failure
 
 - Check the GitHub Actions logs for the specific failure.
-- Fix the issue locagent, commit, and push. The pipeline will re-run
-  automaticagent.
+- Fix the issue locally, commit, and push. The pipeline will re-run
+  automatically.
 
 ### Production Deployment Failure
 
@@ -96,7 +96,7 @@ If a bug is discovered in production _after_ a successful deployment:
     - This will trigger a new deployment with the reverted code.
 3.  **Database Migration Rollback:**
     - If a migration was destructive, you may need to restore from a Supabase
-      backup or manuagent write a "down" migration (Drizzle does not handle
+      backup or manually write a "down" migration (Drizzle does not handle
       automated rollbacks for all cases).
 
 ---
@@ -108,5 +108,5 @@ If a bug is discovered in production _after_ a successful deployment:
 - [ ] Feature verified in local environment.
 - [ ] PR description explains _what_ and _why_.
 - [ ] CI Pipeline is green.
-- [ ] Preview deployment verified manuagent.
+- [ ] Preview deployment verified manually.
 - [ ] E2E tests passing against preview.

@@ -15,7 +15,7 @@
 
 - **Merged into `dev`**
   - 🟢 `feature/deployment-pipeline` — merged into `dev` (safe candidate to
-    delete locagent)
+    delete locally)
   - 🔴 `main` — merged into `dev` but should not be deleted (protected / active
     mainline)
 - **Unmerged into `dev` (needs review)**

@@ -6,14 +6,14 @@
 **Researched by:** Devi (AI Developer Specialist)  
 **Purpose:** Drive infrastructure decision for Cohortix knowledge layer  
 **Prior Art:** See `V3-TECH-STACK-RESEARCH.md` (v3 runtime stack — this doc
-focuses specificagent on **knowledge storage, graph, and memory**)
+focuses specifically on **knowledge storage, graph, and memory**)
 
 ---
 
 ## Table of Contents
 
 1. [Executive Summary](#1-executive-summary)
-2. [Context: What Cohortix Actuagent Needs](#2-context-what-cohortix-actuagent-needs)
+2. [Context: What Cohortix actually Needs](#2-context-what-cohortix-actually-needs)
 3. [Vector DB Comparison — Multi-Tenant Agent Memory](#3-vector-db-comparison)
 4. [Knowledge Graph Comparison — Agent Expertise](#4-knowledge-graph-comparison)
 5. [Agent Memory Layer — Dedicated vs. DIY](#5-agent-memory-layer)
@@ -59,7 +59,7 @@ Supabase (existing)   → Relational, auth, RLS tenant isolation, basic pgvector
 
 ---
 
-## 2. Context: What Cohortix Actuagent Needs
+## 2. Context: What Cohortix actually Needs
 
 ### 2.1 Platform Architecture
 
@@ -138,7 +138,7 @@ strictly isolated per tenant.
 - **Approach:** One collection per embedding model, partition by `tenant_id`
   payload key
 - **Innovation:** "Tiered" means small tenants share a global shard; large
-  tenants get **promoted to dedicated shards** automaticagent (no reindexing, no
+  tenants get **promoted to dedicated shards** automatically (no reindexing, no
   downtime)
 - **Benefit at 1000 tenants:** 980 small tenants share infra; 20 large ones get
   dedicated resources. Eliminates "noisy neighbor" problem
@@ -319,7 +319,7 @@ complex:
 - **Deduplication** — Don't store the same fact 100 times
 - **Fact evolution** — "User prefers X" → supersedes → "User now prefers Y"
 - **Structured recall** — Inject relevant memories into LLM context
-  automaticagent
+  automatically
 - **Multi-scope** — Separate user memories, session memories, agent knowledge
 - **Compression** — Reduce token overhead (up to 80% reduction)
 
@@ -372,7 +372,7 @@ Mem0 Cloud ←→ Qdrant Cloud (vector store)
 
 **How it works:**
 
-1. User runs OpenClaw locagent (our current setup)
+1. User runs OpenClaw locally (our current setup)
 2. Mem0 plugin is installed and configured with Cohortix's cloud Mem0 instance
 3. Every agent session auto-captures facts → synced to Cohortix's cloud Qdrant
 4. Every response auto-recalls relevant memories → from cloud knowledge base
@@ -555,7 +555,7 @@ The cleanest approach uses Mem0 as the bridge layer:
 1. Cohortix issues tenant-scoped credentials (Qdrant API key + FalkorDB
    connection)
 2. OpenClaw Mem0 plugin uses these credentials
-3. All memory automaticagent flows to Cohortix's cloud infrastructure
+3. All memory automatically flows to Cohortix's cloud infrastructure
 4. Tenant isolation enforced by Qdrant `payload.tenant_id` + FalkorDB graph
    scoping
 5. Axon's base knowledge accessible via separate read-only collection/graph
@@ -582,7 +582,7 @@ Disadvantage: Requires internet connection
 
 ```
 Local QMD (fast, offline-capable) + Cloud Mem0 (persistent, shared)
-OpenClaw runs QMD locagent for speed
+OpenClaw runs QMD locally for speed
 Background sync: local embeddings → cloud Qdrant every 5 minutes
 Advantage: Offline-capable + cloud persistence
 Implementation: Mem0 OSS with Qdrant cloud endpoint
@@ -789,11 +789,11 @@ _Note: This assumes 100 tenants with 20% active at any time_
 | **Fast hybrid search**       | Qdrant BM25 + dense + fusion (reranker) — matches/exceeds QMD's 3-layer approach       |
 | **Concept relationships**    | FalkorDB GraphRAG-SDK — native graph traversal for concept linking                     |
 | **OpenClaw integration**     | Mem0 OpenClaw plugin — official, maintained, zero friction                             |
-| **Fact evolution**           | Mem0 handles dedup + superseding facts automaticagent                                  |
+| **Fact evolution**           | Mem0 handles dedup + superseding facts automatically                                   |
 | **Agent cohort isolation**   | Each cohort = its own Qdrant tenant partition + FalkorDB graph                         |
 | **User-created agents**      | New tenant partition + graph provisioned on agent creation                             |
 | **Cost efficiency**          | $79/month at MVP, scales linearly                                                      |
-| **Migration from local**     | Same Qdrant API locagent → cloud; Mem0 OSS → Cloud upgrade path                        |
+| **Migration from local**     | Same Qdrant API locally → cloud; Mem0 OSS → Cloud upgrade path                         |
 
 ### 10.3 Data Flow: Agent Answers a Question
 
@@ -1170,7 +1170,7 @@ sequenceDiagram
 | **Qdrant cost explosion at 10K tenants** | Medium     | High     | Enable Tiered Multitenancy; plan self-host migration above 5000 tenants |
 | **Mem0 pricing at scale**                | Medium     | Medium   | Negotiate Enterprise; switch to LangMem + custom Qdrant if needed       |
 | **OpenClaw plugin breaks on update**     | Low        | High     | Pin plugin version; maintain fork if needed                             |
-| **Graph schema migrations**              | Medium     | Medium   | Use FalkorDB's schemaless mode initiagent                               |
+| **Graph schema migrations**              | Medium     | Medium   | Use FalkorDB's schemaless mode initially                                |
 | **Tenant knowledge leakage**             | Low        | Critical | Qdrant payload filter enforcement; FalkorDB RBAC; Mem0 userId scoping   |
 | **Single Mac Mini failure**              | High       | Critical | This research solves this — cloud-native resolves SPOF                  |
 

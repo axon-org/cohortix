@@ -111,7 +111,7 @@ Components can subscribe to real-time updates using Supabase Realtime:
 
 - Activity feed updates live
 - Alert notifications appear instantly
-- KPI metrics refresh automaticagent
+- KPI metrics refresh automatically
 
 ## Contributing
 

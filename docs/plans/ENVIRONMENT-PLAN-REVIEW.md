@@ -58,8 +58,8 @@ for some resources. Risk depends on team tolerance.
 
 - **Treat branching as an opt-in, not mandatory** for production right now.
 - **Safer fallback:** keep **prod + staging** as separate projects, and
-  optionagent use branching **only for previews**. This minimizes blast radius
-  if branching tooling fails.
+  optionally use branching **only for previews**. This minimizes blast radius if
+  branching tooling fails.
 - If adopting branching now:
   - Start with **staging branch only** (persistent). Avoid auto-branch previews
     until stable.
@@ -77,7 +77,7 @@ for some resources. Risk depends on team tolerance.
 **Verdict: ⚠️ Needs Adjustment**
 
 **Why:** Repo does not indicate Vercel plan level; Pro plan is required for
-custom environments. Workflows currently assume staging == Preview and manuagent
+custom environments. Workflows currently assume staging == Preview and manually
 alias to `staging.cohortix.ai`.
 
 **Findings from repo:**

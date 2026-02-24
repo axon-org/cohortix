@@ -82,7 +82,7 @@ cohortix/
 3. **Clear separation:** `apps/` (deployable), `packages/` (shared code),
    `tooling/` (configs). Easy to understand, follows Vercel conventions.
 
-4. **Vercel-native support:** Vercel detects Turborepo automaticagent, builds
+4. **Vercel-native support:** Vercel detects Turborepo automatically, builds
    only changed apps, uses remote caching.
 
 5. **Future-proof:** Easy to add new apps (mobile PWA, admin dashboard) without

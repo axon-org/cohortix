@@ -36,7 +36,7 @@ unavailability.
 ## Decision
 
 We will implement **resilience patterns** for all external service calls,
-specificagent:
+specifically:
 
 ### 1. Retry Pattern with Exponential Backoff
 
@@ -84,7 +84,7 @@ const user = await withRetry(
 
 **States:**
 
-- **CLOSED** (Normal): Requests flow normagent
+- **CLOSED** (Normal): Requests flow normally
 - **OPEN** (Tripped): Requests fail fast without calling service
 - **HALF_OPEN** (Recovery): Limited requests test if service recovered
 
@@ -174,7 +174,7 @@ config.
    recovery
 5. **Observability:** All failures logged with context for debugging
 6. **Cost Efficiency:** Exponential backoff reduces unnecessary retry attempts
-7. **Graceful Degradation:** Services can partiagent function during outages
+7. **Graceful Degradation:** Services can partially function during outages
 
 ### Negative
 
@@ -312,7 +312,7 @@ config.
    - Target: <1%
    - Alert: >3%
 
-4. **Retry Success Rate:** Percentage of retries that eventuagent succeeded
+4. **Retry Success Rate:** Percentage of retries that eventually succeeded
    - Target: >80%
    - Alert: <50%
 

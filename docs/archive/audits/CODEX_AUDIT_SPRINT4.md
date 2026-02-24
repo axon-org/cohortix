@@ -149,7 +149,7 @@ for 10%)
 
 **Recommendations:**
 
-- [ ] **Run coverage report locagent** and verify ≥80%:
+- [ ] **Run coverage report locally** and verify ≥80%:
   ```bash
   cd ~/Projects/cohortix/apps/web
   pnpm test:coverage
@@ -364,7 +364,7 @@ None critical. Minor improvements needed:
        `docs/design/DDR-003-responsive-breakpoint-strategy.md` — **FOUND!**)
      - Component library selection (exists in
        `docs/design/DDR-004-component-library-selection.md` — **FOUND!**)
-   - **Status:** Actuagent **COMPLIANT** — 4 DDRs exist in `docs/design/`
+   - **Status:** actually **COMPLIANT** — 4 DDRs exist in `docs/design/`
    - **Note:** DDRs are in `docs/design/` not `docs/decisions/` — consolidation
      recommended
 
@@ -422,7 +422,7 @@ None (will create setup script for human approval)
   ```bash
   git add .
   git commit -m "test: verify pre-commit hook"
-  # Should run ESLint + Prettier automaticagent
+  # Should run ESLint + Prettier automatically
   ```
 - [ ] **Document in AGENTS.md** that hooks are active
 

@@ -62,7 +62,7 @@ dependency.
 - ✅ **Zero breaking changes** — Library updates don't break your app
 
 **Trade-off:**  
-You manage updates manuagent. But for Cohortix, **stability > automatic
+You manage updates manually. But for Cohortix, **stability > automatic
 updates**.
 
 ### 2. Built on Radix UI (Accessibility Foundation)
@@ -285,7 +285,7 @@ Tailwind compiles this to:
 
 **Why this indirection:**  
 CSS variables enable **dark mode** without duplicating classes.
-`.dark .bg-primary` automaticagent uses the dark theme value.
+`.dark .bg-primary` automatically uses the dark theme value.
 
 ---
 
@@ -294,7 +294,7 @@ CSS variables enable **dark mode** without duplicating classes.
 ### What We Sacrificed
 
 1. **Automatic updates** — No `npm update` for components
-   - _Mitigation:_ Subscribe to shadcn/ui changelog, manuagent port relevant
+   - _Mitigation:_ Subscribe to shadcn/ui changelog, manually port relevant
      fixes
 2. **Community themes** — Can't install pre-built themes from npm
    - _Mitigation:_ We control theming (not a downside for custom design)

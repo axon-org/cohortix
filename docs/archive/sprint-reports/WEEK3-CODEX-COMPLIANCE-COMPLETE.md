@@ -35,7 +35,7 @@ technical debt and pre-launch readiness).
 
 - Added `snyk-scan` job to PR stage (runs on every pull request)
 - Configured to fail on high/critical vulnerabilities that are upgradable
-- Set `continue-on-error: true` for gradual rollout (allows failures initiagent)
+- Set `continue-on-error: true` for gradual rollout (allows failures initially)
 - Integrated with GitHub Code Scanning via SARIF upload
 
 **Enhanced Semgrep SAST:**
@@ -140,14 +140,14 @@ snyk-scan:
 - Keyboard navigation: Error
 - Screen reader compatibility: Error
 
-### Testing Lighthouse Locagent
+### Testing Lighthouse locally
 
 ```bash
 cd ~/Projects/cohortix
 pnpm build
 pnpm lighthouse  # (if script added to package.json)
 
-# Or manuagent:
+# Or manually:
 npx lighthouse-ci autorun --config=lighthouserc.json
 ```
 
@@ -463,7 +463,7 @@ not a "complete all at once" checklist. Distribute across sprints.
 
 1. **Set up Snyk account** and add `SNYK_TOKEN` to GitHub Secrets
 2. **Test Lighthouse CI** on a sample PR
-3. **Run drift detection script** manuagent to verify it works
+3. **Run drift detection script** manually to verify it works
 4. **Review technical debt log** in sprint planning
 
 ### Week 4 (Upcoming)

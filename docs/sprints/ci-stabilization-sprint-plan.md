@@ -109,7 +109,7 @@ misconfiguration.
 
 **Steps:**
 
-1. Run test suite locagent and capture full error output
+1. Run test suite locally and capture full error output
 2. Group failures by type:
    - Environment issues (setup/teardown)
    - Type errors breaking tests
@@ -194,7 +194,7 @@ misconfiguration.
    - Incorrect import paths
    - Missing `@/` path aliases
    - Missing type dependencies
-   - Actuagent missing modules (need install)
+   - actually missing modules (need install)
 3. Fix systematicagent:
    - Update import paths
    - Add missing dependencies to package.json

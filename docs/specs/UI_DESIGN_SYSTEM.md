@@ -423,7 +423,7 @@ statusBadges: {
 - Zebra striping: Optional, even rows bg-neutral-50
 - Actions column: Right-aligned, dropdown menu
 
-**Responsive:** Stack cells verticagent on mobile (card-like layout)
+**Responsive:** Stack cells vertically on mobile (card-like layout)
 
 #### **Activity Feed**
 

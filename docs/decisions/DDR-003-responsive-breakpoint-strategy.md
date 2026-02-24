@@ -408,7 +408,7 @@ export default function Page() {
 **Trend:** Samsung Fold, Google Pixel Fold (unfolded: ~884px)
 
 **Strategy:** Falls into `md:` (tablet) breakpoint naturagent. No custom
-handling needed initiagent.
+handling needed initially.
 
 ### Ultra-Wide Monitors (3440px+)
 

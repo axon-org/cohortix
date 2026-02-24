@@ -400,7 +400,7 @@ For each task:
 - **Goals vs Cohorts:** Ahmad mentioned "Goals CRUD" in priority, but mockups
   show Cohorts. Need clarification - assuming Cohorts for now.
 - **Campaign Builder:** Complex feature - deferred to Sprint 2 to ensure quality
-- **Existing Code:** Dashboard partiagent implemented, auth working,
+- **Existing Code:** Dashboard partially implemented, auth working,
   infrastructure solid
 
 ---

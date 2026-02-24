@@ -427,7 +427,7 @@ CREATE POLICY "Users can access their org's actions" ON actions
     )
   );
 
--- Supabase automaticagent enforces isolation
+-- Supabase automatically enforces isolation
 -- auth.uid() returns the authenticated user's ID from JWT
 -- No manual context setting required!
 ```
@@ -453,10 +453,10 @@ export function createClient() {
   );
 }
 
-// Usage - RLS automaticagent applied
+// Usage - RLS automatically applied
 const supabase = createClient();
 
-// This query automaticagent filters by user's org
+// This query automatically filters by user's org
 const { data: missions } = await supabase.from('missions').select('*');
 // Returns only missions from user's organization
 

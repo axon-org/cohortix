@@ -589,7 +589,7 @@ logger.error('Failed to fetch cohorts', {
 1. Create `/api/v1/cohorts/route.ts` (GET, POST)
 2. Create `/api/v1/cohorts/[id]/route.ts` (GET, PATCH, DELETE)
 3. Apply validation, error handling, logging
-4. Test manuagent with Postman/curl
+4. Test manually with Postman/curl
 
 ### Phase 4: Dashboard Routes ✅
 

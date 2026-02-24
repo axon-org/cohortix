@@ -38,7 +38,7 @@ After fixing auth, users hit the onboarding page but couldn't create
 organizations because the feature was disabled in Clerk Dashboard.
 
 **Fix:** Enabled Organizations in Clerk Dashboard with "Create first
-organization automaticagent" setting.
+organization automatically" setting.
 
 ## Timeline
 
@@ -46,7 +46,7 @@ organization automaticagent" setting.
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | Feb 22, 10:00 | Issue reported — redirect loop on production                                                                                                |
 | Feb 22, 10:30 | Identified cookie scoping as likely cause                                                                                                   |
-| Feb 22, 11:00 | Attempted proxy approach (`/clerkproxy`) — partiagent worked                                                                                |
+| Feb 22, 11:00 | Attempted proxy approach (`/clerkproxy`) — partially worked                                                                                 |
 | Feb 22, 12:00 | Proxy route deployed, Clerk dashboard configured                                                                                            |
 | Feb 22, 13:00 | Discovered trailing `\n` in ALL Vercel env vars corrupting headers                                                                          |
 | Feb 22, 14:00 | Fixed env vars, proxy working but Google OAuth still failing                                                                                |
@@ -75,7 +75,7 @@ organization automaticagent" setting.
 
 ## What Went Right
 
-1. **Debug logging in middleware** finagent revealed the real root cause
+1. **Debug logging in middleware** finally revealed the real root cause
    (Supabase permissions, not Clerk).
 2. **Browser testing** confirmed cookies were being set correctly.
 3. **Vercel runtime logs** showed the exact error

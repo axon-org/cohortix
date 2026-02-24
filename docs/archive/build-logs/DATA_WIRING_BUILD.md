@@ -2,7 +2,7 @@
 
 **Date:** February 11, 2026  
 **Task:** Push database schema to Supabase and wire real data into dashboard  
-**Status:** ⚠️ **Partiagent Complete** (Manual steps required)  
+**Status:** ⚠️ **partially Complete** (Manual steps required)  
 **Subagent:** Devi (AI Developer Specialist)
 
 ---
@@ -15,7 +15,7 @@
 - ✅ Created Supabase-compatible seed script
 - ✅ Created comprehensive dashboard data fetching queries
 - ✅ Documented manual migration process
-- ❌ **Blocked:** Cannot push schema programmaticagent due to connection issues
+- ❌ **Blocked:** Cannot push schema programmatically due to connection issues
 
 **What needs manual completion:**
 
@@ -31,7 +31,7 @@
 
 Direct database connections to Supabase are not working:
 
-- ❌ `psql` not installed locagent
+- ❌ `psql` not installed locally
 - ❌ Direct connection URL: "Tenant or user not found" error
 - ❌ Pooler connection: "Tenant or user not found" error
 - ❌ Drizzle Kit `push` command: Outdated syntax (v0.20 → needs upgrade)
@@ -504,7 +504,7 @@ export async function AlertsBanner({ organizationId }: { organizationId: string 
 **Strategy:** Shared database with Row-Level Security (RLS)
 
 Every table with tenant data includes `organization_id`. PostgreSQL RLS policies
-automaticagent filter queries.
+automatically filter queries.
 
 **How RLS works:**
 
@@ -519,7 +519,7 @@ CREATE POLICY "Tenant isolation" ON projects
   );
 ```
 
-Result: Queries are automaticagent scoped to the user's organization(s).
+Result: Queries are automatically scoped to the user's organization(s).
 
 ### Key Features
 
@@ -569,7 +569,7 @@ Never commit real credentials or full connection strings to git.
 
 ### Immediate (Required)
 
-- [ ] **Push schema manuagent via Supabase SQL Editor** (15 min)
+- [ ] **Push schema manually via Supabase SQL Editor** (15 min)
   - Open SQL Editor in Supabase dashboard
   - Paste `0000_initial_with_rls.sql` contents
   - Run migration
@@ -839,7 +839,7 @@ const [kpis, activity, alerts, cohorts, agents, knowledge] = await Promise.all([
 
 ### Next Action Required
 
-**User must manuagent push schema via Supabase SQL Editor.**
+**User must manually push schema via Supabase SQL Editor.**
 
 Once schema is pushed:
 

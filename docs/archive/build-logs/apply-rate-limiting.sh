@@ -33,4 +33,4 @@ import { withRateLimit, standardRateLimit } from '\''@/lib/rate-limit'\''
   fi
 done
 
-echo "Done! Now manuagent wrap handlers with withRateLimit(standardRateLimit, ...)"
+echo "Done! Now manually wrap handlers with withRateLimit(standardRateLimit, ...)"

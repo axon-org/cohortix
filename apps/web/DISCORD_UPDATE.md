@@ -51,7 +51,7 @@ Ready for testing! 🎯
 
 ---
 
-**To test locagent:**
+**To test locally:**
 
 ```bash
 cd /Users/alimai/Projects/cohortix/apps/web

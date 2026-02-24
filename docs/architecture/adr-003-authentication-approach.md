@@ -80,7 +80,7 @@ multi-tenant isolation.**
 │      )                                                       │
 │    );                                                        │
 │                                                              │
-│  → Every query automaticagent filtered by user's org(s)       │
+│  → Every query automatically filtered by user's org(s)       │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -151,7 +151,7 @@ could leak data across tenants.
 - **Requires self-management:** Must handle password hashing, session storage,
   OAuth setup
 - **No database-level isolation:** Same risk as Option 1
-- **More boilerplate:** Must set up OAuth apps manuagent for each provider
+- **More boilerplate:** Must set up OAuth apps manually for each provider
 - **Email sending:** Must integrate separate email service (Resend, SendGrid)
 
 **Why not chosen:**  
@@ -197,7 +197,7 @@ vs. $25/mo) is a bonus.
 - ✅ **Zero-trust architecture:** Application bugs cannot leak data across
   tenants
 - ✅ **Simple API:** `auth.getUser()` returns current user, RLS filters queries
-  automaticagent
+  automatically
 - ✅ **OAuth included:** GitHub/Google OAuth with zero setup
 - ✅ **Cost-effective:** Auth + DB + realtime for $25/mo
 - ✅ **Audit trail:** Supabase logs all auth events (sign-in, sign-up, password

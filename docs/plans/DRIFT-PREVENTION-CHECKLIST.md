@@ -33,7 +33,7 @@ cd ~/Projects/cohortix
 ./scripts/drift-detection.sh
 ```
 
-This script automaticagent checks:
+This script automatically checks:
 
 - ✅ Outdated dependencies (`pnpm outdated`)
 - ✅ Security vulnerabilities (`pnpm audit`)

@@ -41,11 +41,11 @@ http://localhost:3000/cohorts/[any-cohort-id]
 ### Responsive Behavior:
 
 - [ ] **Desktop (>1024px):** Two-column layout (2/3 + 1/3)
-- [ ] **Mobile (<1024px):** Stacked verticagent (members, then activity)
+- [ ] **Mobile (<1024px):** Stacked vertically (members, then activity)
 
 ### Data Loading:
 
-- [ ] All components show loading states initiagent
+- [ ] All components show loading states initially
 - [ ] Data populates from APIs:
   - `/api/cohorts/:id/members`
   - `/api/cohorts/:id/timeline`

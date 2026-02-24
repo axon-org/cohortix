@@ -223,7 +223,7 @@ traces/month, then $39/month.
 
 E2B provides **production-ready sandboxed code execution environments** using
 Firecracker microVMs (the same technology AWS Lambda uses). It's designed
-specificagent for AI agents executing untrusted code.
+specifically for AI agents executing untrusted code.
 
 **Strengths:**
 
@@ -362,7 +362,7 @@ const response = await fetch('http://litellm:4000/chat/completions', {
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    model: 'gpt-4-turbo', // LiteLLM routes automaticagent
+    model: 'gpt-4-turbo', // LiteLLM routes automatically
     messages: [{ role: 'user', content: 'Analyze this mission' }],
   }),
 });

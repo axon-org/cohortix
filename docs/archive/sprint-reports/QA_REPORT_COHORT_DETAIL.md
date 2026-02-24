@@ -45,7 +45,7 @@
 ### 3. **Responsiveness**
 
 - [x] **Desktop (1920x1080)** — Layout renders properly, full width utilization
-- [x] **Mobile (375x667)** — Content stacks verticagent, text is readable
+- [x] **Mobile (375x667)** — Content stacks vertically, text is readable
 - [x] **Tablet (1024px breakpoint)** — Would use `lg:` grid classes for 2-column
       layout
 

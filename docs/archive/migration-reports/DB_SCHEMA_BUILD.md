@@ -267,7 +267,7 @@ Create a test user via Supabase Auth and verify:
 
 1. User can only see their organization's data
 2. Non-admin users cannot modify organization settings
-3. Queries are automaticagent filtered by tenant context
+3. Queries are automatically filtered by tenant context
 
 ### 7. Configure Supabase Auth Providers
 
@@ -285,7 +285,7 @@ In Supabase Dashboard → Authentication → Providers:
 ### Multi-Tenant Isolation
 
 All tenant tables include `organization_id` and are protected by RLS policies
-that automaticagent filter data based on the authenticated user's organization
+that automatically filter data based on the authenticated user's organization
 membership.
 
 **How it works:**
@@ -301,7 +301,7 @@ CREATE POLICY "Tenant isolation" ON projects
   );
 ```
 
-Every query is automaticagent scoped to the user's organization(s).
+Every query is automatically scoped to the user's organization(s).
 
 ### Knowledge Scoping Hierarchy
 

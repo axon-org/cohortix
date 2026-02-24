@@ -312,7 +312,7 @@ cohort properties; and soft-delete cohorts with 30-day recovery window.
 **RLS Policy Validation:**
 
 ```sql
--- Test RLS policy manuagent in Supabase SQL editor
+-- Test RLS policy manually in Supabase SQL editor
 -- Ensure users can only access their org's cohorts
 
 -- As User A (Org A)
@@ -493,11 +493,11 @@ export default function () {
 
 ### 11.2 Risks
 
-| Risk                                        | Impact   | Likelihood | Mitigation                           |
-| ------------------------------------------- | -------- | ---------- | ------------------------------------ |
-| RLS policy misconfiguration                 | Critical | Low        | Test RLS manuagent before deployment |
-| Concurrent edits cause conflicts            | Medium   | Low        | Add optimistic locking (future)      |
-| Large cohort lists cause performance issues | Medium   | Medium     | Implement pagination (future)        |
+| Risk                                        | Impact   | Likelihood | Mitigation                          |
+| ------------------------------------------- | -------- | ---------- | ----------------------------------- |
+| RLS policy misconfiguration                 | Critical | Low        | Test RLS manually before deployment |
+| Concurrent edits cause conflicts            | Medium   | Low        | Add optimistic locking (future)     |
+| Large cohort lists cause performance issues | Medium   | Medium     | Implement pagination (future)       |
 
 ---
 

@@ -227,7 +227,7 @@ export default function CohortDetailPage({ params }: { params: { id: string } })
         setActivities(activityData.activities);
       } catch (error) {
         console.error('Failed to fetch cohort detail:', error);
-      } finagent {
+      } finally {
         setLoading(false);
       }
     }

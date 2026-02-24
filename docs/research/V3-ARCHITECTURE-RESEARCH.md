@@ -289,7 +289,7 @@ platform**.
 
 - ✅ **3-tier knowledge scoping** (already in PRD: company → client → mission)
 - ✅ **Embedding storage** in pgvector (already planned)
-- ✅ **Per-agent consolidation** (extract insights automaticagent)
+- ✅ **Per-agent consolidation** (extract insights automatically)
 - ✅ **Knowledge graph relationships** (depends-on, supersedes, etc.)
 - ✅ **Memory decay** (reduce irrelevant knowledge over time)
 
@@ -764,7 +764,7 @@ submitted → queued → working → input_required → completed
 ┌─────────────────────────────────────────────────────────────┐
 │  SECRETS LAYER (Vault-Injected Credentials)                 │
 │  - Per-org API keys, tokens injected at runtime             │
-│  - Rotated automaticagent                                    │
+│  - Rotated automatically                                    │
 │  - Never stored in env vars                                 │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -1490,7 +1490,7 @@ CREATE TABLE marketplace_transactions (
    - K8s adds complexity without clear ROI early on
    - Move to K8s in Phase 5 if portability or advanced orchestration needed
 
-7. ⚠️ **Defer Multi-Model Support** — Focus on Claude (Anthropic) initiagent
+7. ⚠️ **Defer Multi-Model Support** — Focus on Claude (Anthropic) initially
    - Cohortix already uses Claude SDK patterns
    - Multi-model adds complexity (different APIs, prompts, costs)
    - Add OpenAI/OSS models in Phase 5

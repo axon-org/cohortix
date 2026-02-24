@@ -52,4 +52,4 @@ Feb 16, 2026 – Feb 27, 2026 (2 Weeks)
 - Tasks can be dragged between status columns with immediate persistence.
 - Task detail view shows a functional comment thread and history.
 - Users can filter the List View by at least 3 different criteria.
-- Insights can be manuagent added via a Task and are viewable in a global feed.
+- Insights can be manually added via a Task and are viewable in a global feed.

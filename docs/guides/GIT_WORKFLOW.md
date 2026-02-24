@@ -100,7 +100,7 @@ Center. The strategy is designed for:
      │  # Create PR to dev
      │
      ▼
-  4. CI runs automaticagent
+  4. CI runs automatically
      │
      │  • Lint
      │  • Type check
@@ -306,7 +306,7 @@ Closes #123
 - [ ] I have commented my code where necessary
 - [ ] I have updated documentation
 - [ ] My changes generate no new warnings
-- [ ] New and existing unit tests pass locagent
+- [ ] New and existing unit tests pass locally
 - [ ] I have checked for security implications
 
 ## Deployment Notes

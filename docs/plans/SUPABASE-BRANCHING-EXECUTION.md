@@ -220,7 +220,7 @@ Then inject the branch’s URL + anon key into preview deployment envs.
 1. **Local development**
    - Run `supabase start` to spin local DB
    - Add migrations via `supabase migration new <name>`
-   - Apply locagent: `supabase db push`
+   - Apply locally: `supabase db push`
 
 2. **Push to `dev` branch (staging)**
    - CI runs `supabase db push --branch staging`

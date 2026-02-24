@@ -214,7 +214,7 @@ export type Aspiration = Vision;
 
 ### Verification Queries
 
-Run these manuagent to verify migration success:
+Run these manually to verify migration success:
 
 ```sql
 -- Verify all new tables exist

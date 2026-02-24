@@ -148,7 +148,7 @@ Stitch failed due to browser automation timeouts.
 
 #### Option B: Manual Design Tool (REQUIRES AHMAD)
 
-- Hafiz/Lubna manuagent create mockups in Figma/Sketch
+- Hafiz/Lubna manually create mockups in Figma/Sketch
 - Ahmad approves visuals before dev
 - **Risk:** Design iteration delays
 - **Time:** 4-8 hours
@@ -536,7 +536,7 @@ RBAC/multi-tenant to Month 1.
 4. Mission Control dashboard (view-only)
 5. Agent directory (view-only)
 
-**Defer to Post-MVP:** 6. Kanban board (use list view initiagent) 7. Intel base
+**Defer to Post-MVP:** 6. Kanban board (use list view initially) 7. Intel base
 (just add to backlog) 8. Threaded comments (just use mission descriptions) 9.
 Multi-tenant RBAC (build for Ahmad first)
 
@@ -583,7 +583,7 @@ Multi-tenant RBAC (build for Ahmad first)
 1. **Don't wait for perfect mockups** → Implement from Lubna's specs (Option C)
 2. **Don't wait for full PRD approval** → Build MVP features, iterate based on
    usage
-3. **Don't wait for 100% test coverage** → Ship at 80%, improve incrementagent
+3. **Don't wait for 100% test coverage** → Ship at 80%, improve incrementally
 4. **Don't wait for all tech debt resolved** → Fix critical (P0) items, defer
    the rest
 

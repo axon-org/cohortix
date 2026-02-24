@@ -4,7 +4,7 @@
 
 Cohortix uses **GitHub Actions for CI checks** and **Vercel Git Integration for
 all deployments**. The self-hosted macOS ARM64 runner powers CI workflows while
-Vercel handles production, staging, and preview deployments automaticagent.
+Vercel handles production, staging, and preview deployments automatically.
 
 ## Runner Setup
 

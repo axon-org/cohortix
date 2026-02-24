@@ -113,7 +113,7 @@ The database is ready. Frontend can now:
 ## 📝 Notes
 
 - Initial seed script failed due to existing data (expected behavior)
-- Audit logs were missing initiagent but have been added
+- Audit logs were missing initially but have been added
 - All data is properly linked with foreign keys
 - RLS policies should be configured if needed
 

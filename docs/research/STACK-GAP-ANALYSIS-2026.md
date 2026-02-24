@@ -28,20 +28,20 @@ until graph-specific retrieval pain appears in production.
 > Sources: `PRD.md`, `ARCHITECTURE.md`, `DATABASE_SCHEMA.md`, `API_DESIGN.md`,
 > `TECH_STACK.md`, `CLERK-MIGRATION-SUMMARY.md`, `ARCHITECTURAL_DECISIONS.md`
 
-| Layer           | Current State                                      | Status                               | Notes                                          |
-| --------------- | -------------------------------------------------- | ------------------------------------ | ---------------------------------------------- |
-| Frontend        | Next.js 15 + React 19 + Tailwind/shadcn            | ✅ In place                          | Matches PRD constraints                        |
-| API/BFF         | Next.js route handlers + service layer pattern     | ✅ Designed / partiagent implemented | Good for MVP speed                             |
-| Primary DB      | Supabase PostgreSQL                                | ✅ In place                          | RLS strategy documented                        |
-| Vector Search   | pgvector in Supabase                               | ✅ In place                          | Adequate for MVP scale                         |
-| Auth            | **Clerk migrated in code** (from Supabase Auth)    | ✅ Recently migrated                 | Important architecture drift from original PRD |
-| Realtime        | Supabase Realtime                                  | ✅ In place                          | Supports mission/activity live updates         |
-| File Storage    | Supabase Storage / Blob strategy                   | ✅ In place                          | Sufficient for MVP                             |
-| Queue/Workers   | Inngest planned                                    | 🟡 Partial                           | Needed for background workflows                |
-| Agent Runtime   | Clawdbot adapter + runtime abstraction             | 🟡 Transitional                      | v1 still external-runtime dependent            |
-| Knowledge Graph | Postgres tables/relationships (JSONB + FK pattern) | 🟡 Basic only                        | No dedicated graph engine                      |
-| LLM Routing     | No robust gateway baseline                         | 🔴 Gap                               | LiteLLM not fully institutionalized yet        |
-| Cost tracking   | Schema decision approved                           | 🟡 Partial                           | Critical for marketplace billing later         |
+| Layer           | Current State                                      | Status                              | Notes                                          |
+| --------------- | -------------------------------------------------- | ----------------------------------- | ---------------------------------------------- |
+| Frontend        | Next.js 15 + React 19 + Tailwind/shadcn            | ✅ In place                         | Matches PRD constraints                        |
+| API/BFF         | Next.js route handlers + service layer pattern     | ✅ Designed / partially implemented | Good for MVP speed                             |
+| Primary DB      | Supabase PostgreSQL                                | ✅ In place                         | RLS strategy documented                        |
+| Vector Search   | pgvector in Supabase                               | ✅ In place                         | Adequate for MVP scale                         |
+| Auth            | **Clerk migrated in code** (from Supabase Auth)    | ✅ Recently migrated                | Important architecture drift from original PRD |
+| Realtime        | Supabase Realtime                                  | ✅ In place                         | Supports mission/activity live updates         |
+| File Storage    | Supabase Storage / Blob strategy                   | ✅ In place                         | Sufficient for MVP                             |
+| Queue/Workers   | Inngest planned                                    | 🟡 Partial                          | Needed for background workflows                |
+| Agent Runtime   | Clawdbot adapter + runtime abstraction             | 🟡 Transitional                     | v1 still external-runtime dependent            |
+| Knowledge Graph | Postgres tables/relationships (JSONB + FK pattern) | 🟡 Basic only                       | No dedicated graph engine                      |
+| LLM Routing     | No robust gateway baseline                         | 🔴 Gap                              | LiteLLM not fully institutionalized yet        |
+| Cost tracking   | Schema decision approved                           | 🟡 Partial                          | Critical for marketplace billing later         |
 
 ---
 
