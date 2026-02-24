@@ -98,6 +98,9 @@ graph TB
 **Recommendation:** Use a **single Vercel project** with branch-based
 deployments.
 
+**Deployment Flow:** All app deploys are handled by **Vercel Git Integration**
+(preview, staging, production). GitHub Actions is CI-only.
+
 **Why?**
 
 - ✅ Unified analytics and logs

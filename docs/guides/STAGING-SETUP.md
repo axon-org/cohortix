@@ -14,8 +14,8 @@ already configured.
 ```
 GitHub dev branch
       │
-      ▼  (GitHub Actions: deploy-staging.yml)
-  Vercel Preview / Staging
+      ▼  (Vercel Git Integration — auto-deploy)
+  Vercel Staging (staging.cohortix.ai)
       │
       ├── Supabase: cohortix-staging
       └── Clerk: cohortix-staging app
@@ -78,30 +78,27 @@ Configure the `dev` branch deployment:
    - OR: use Vercel's **Git Branch Aliases** — add `dev` → `staging.cohortix.ai`
 4. Confirm automatic deployments are **enabled** for the `dev` branch
 
-> Note: The current `apps/web/vercel.json` has `"deploymentEnabled": false`.
-> This is intentional — deployments are triggered via GitHub Actions (see Phase
-> 4). Don't change this.
+> Note: The current `apps/web/vercel.json` has `"deploymentEnabled": true`. This
+> is required so Vercel Git Integration can handle deployments.
 
 ---
 
-## Step 4 — Add Staging Secrets to GitHub **[AHMAD]**
+## Step 4 — Add Staging Environment Variables in Vercel **[AHMAD]**
 
-Go to your GitHub repo → **Settings → Secrets and variables → Actions** → **New
-repository secret**:
+Go to Vercel → **cohortix** project → **Settings → Environment Variables** and
+add the staging values (scope: **Preview** or **Development**, mapped to `dev`
+branch):
 
-| Secret Name                                 | Value                                                    |
-| ------------------------------------------- | -------------------------------------------------------- |
-| `STAGING_DATABASE_URL`                      | Transaction pooler URL from staging Supabase             |
-| `STAGING_DIRECT_URL`                        | Direct URL from staging Supabase                         |
-| `STAGING_NEXT_PUBLIC_SUPABASE_URL`          | staging Supabase project URL                             |
-| `STAGING_NEXT_PUBLIC_SUPABASE_ANON_KEY`     | staging anon key                                         |
-| `STAGING_SUPABASE_SERVICE_ROLE_KEY`         | staging service role key                                 |
-| `STAGING_NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | staging Clerk `pk_test_` key                             |
-| `STAGING_CLERK_SECRET_KEY`                  | staging Clerk `sk_test_` key                             |
-| `STAGING_CLERK_WEBHOOK_SECRET`              | staging Clerk webhook signing secret                     |
-| `VERCEL_TOKEN`                              | Vercel personal access token (Settings → Tokens)         |
-| `VERCEL_ORG_ID`                             | From `.vercel/project.json` or Vercel Settings → General |
-| `VERCEL_PROJECT_ID`                         | `prj_vKO7YaKzW39eGKtqCLrlaaIFoDO9`                       |
+| Variable Name                       | Value                                        |
+| ----------------------------------- | -------------------------------------------- |
+| `DATABASE_URL`                      | Transaction pooler URL from staging Supabase |
+| `DIRECT_URL`                        | Direct URL from staging Supabase             |
+| `NEXT_PUBLIC_SUPABASE_URL`          | Staging Supabase project URL                 |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`     | Staging anon key                             |
+| `SUPABASE_SERVICE_ROLE_KEY`         | Staging service role key                     |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Staging Clerk `pk_test_` key                 |
+| `CLERK_SECRET_KEY`                  | Staging Clerk `sk_test_` key                 |
+| `CLERK_WEBHOOK_SECRET`              | Staging Clerk webhook signing secret         |
 
 ---
 
@@ -122,7 +119,7 @@ Or trigger it via GitHub Actions (see `db-migrate.yml`).
 ## Step 6 — Verify Staging is Working
 
 1. Push any commit to `dev` branch
-2. Watch the **deploy-staging** workflow run in GitHub Actions
+2. Confirm Vercel auto-deploys the `dev` branch
 3. Visit `https://staging.cohortix.ai`
 4. Sign in with a test Clerk account
 5. Verify the DB connection works (dashboard should load data)
@@ -139,7 +136,7 @@ See `.env.staging.example` for all required variables with descriptions.
 
 | Issue                            | Fix                                                            |
 | -------------------------------- | -------------------------------------------------------------- |
-| Vercel build fails — missing env | Add missing secrets in GitHub → Secrets                        |
+| Vercel build fails — missing env | Add missing env vars in Vercel → Environment Variables         |
 | Clerk auth error on staging      | Ensure webhook URL is `staging.cohortix.ai/api/webhooks/clerk` |
-| DB connection refused            | Check `STAGING_DATABASE_URL` — use port 6543 for pooler        |
+| DB connection refused            | Check `DATABASE_URL` — use port 6543 for pooler                |
 | 500 error on staging             | Check Vercel deployment logs for the specific error            |
