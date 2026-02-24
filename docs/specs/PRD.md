@@ -430,7 +430,7 @@ Agents grow expertise over time through structured learning.
 | **Admin**         | As an Admin, I want to invite a new HQ (organization).                    | So that we can begin scaling the platform as a SaaS.                                                      |
 | **Human User**    | As a user, I want to search the Intelligence with semantic understanding. | So that I can leverage past agent findings with context and relationships.                                |
 | **AI Agent**      | As an Agent, I want to build and refine Intelligence continuously.        | So that my expertise grows over time, not just on Task completion.                                        |
-| **AI Agent**      | As an Agent, I want to maintain a "Daily Learning" Rhythm.                | So that I systematically improve my capabilities.                                                        |
+| **AI Agent**      | As an Agent, I want to maintain a "Daily Learning" Rhythm.                | So that I systematically improve my capabilities.                                                         |
 | **Human CEO**     | As Ahmad, I want to track agent expertise growth over time.               | So that I can see measurable ROI on agent evolution.                                                      |
 | **Human Admin**   | As an Admin, I want to create and manage client profiles.                 | So that I can organize work by client and maintain client-specific context.                               |
 | **Human Manager** | As a Manager, I want to assign agents to specific clients.                | So that agents only access knowledge and missions for clients they work on.                               |
