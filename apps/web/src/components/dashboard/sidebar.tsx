@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { OrganizationSwitcher } from '@clerk/nextjs';
+import { OrgSwitcher } from './org-switcher';
 import {
   LayoutGrid,
   Users,
@@ -84,34 +84,7 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
       <div className="flex items-center gap-2.5 px-2 h-14 border-b border-border">
         {!collapsed ? (
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <OrganizationSwitcher
-              hidePersonal={true}
-              afterCreateOrganizationUrl="/:slug"
-              afterSelectOrganizationUrl="/:slug"
-              appearance={{
-                baseTheme: undefined,
-                elements: {
-                  rootBox: 'w-full',
-                  organizationSwitcherTrigger:
-                    'w-full px-2 py-1.5 rounded-md hover:bg-secondary/50 text-foreground justify-start',
-                  organizationSwitcherPopoverCard: 'bg-[#111113] border border-border shadow-xl',
-                  organizationSwitcherPopoverActions: 'bg-[#111113]',
-                  organizationPreview: 'text-foreground',
-                  organizationPreviewTextContainer: 'text-foreground',
-                  organizationSwitcherTriggerIcon: 'text-muted-foreground',
-                  organizationPreviewSecondaryIdentifier: 'text-muted-foreground',
-                  organizationSwitcherPopoverFooter: 'hidden',
-                  card: 'bg-[#111113] border border-border shadow-xl',
-                  headerTitle: 'text-foreground',
-                  headerSubtitle: 'text-muted-foreground',
-                  actionButton: 'text-foreground hover:bg-secondary/50',
-                  userPreview: 'text-foreground',
-                  userPreviewTextContainer: 'text-foreground',
-                  userPreviewSecondaryIdentifier: 'text-muted-foreground',
-                  internal: 'bg-[#111113]',
-                },
-              }}
-            />
+            <OrgSwitcher collapsed={collapsed} />
             <button
               onClick={() => setCollapsed(!collapsed)}
               aria-expanded={!collapsed}
@@ -122,14 +95,17 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
             </button>
           </div>
         ) : (
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            aria-expanded={!collapsed}
-            aria-label="Toggle sidebar"
-            className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors mx-auto"
-          >
-            <ChevronLeft className="w-4 h-4 rotate-180" />
-          </button>
+          <div className="flex flex-col items-center gap-2 w-full">
+            <OrgSwitcher collapsed={collapsed} />
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              aria-expanded={!collapsed}
+              aria-label="Toggle sidebar"
+              className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors mx-auto"
+            >
+              <ChevronLeft className="w-4 h-4 rotate-180" />
+            </button>
+          </div>
         )}
       </div>
 
