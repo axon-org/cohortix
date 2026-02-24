@@ -70,7 +70,7 @@ jobs:
         run: pnpm test:unit
 
   # ═══════════════════════════════════════════════════════════════
-  # DEPLOY: Build on Vercel infrastructure and deploy
+  # DEPLOY: Build and deploy via Vercel CLI
   # ═══════════════════════════════════════════════════════════════
   deploy:
     name: Deploy to Vercel
@@ -103,51 +103,50 @@ jobs:
       - name: Determine environment
         id: env
         env:
-          GITHUB_REF: ${{ github.ref }}
+          GIT_REF: ${{ github.ref }}
           INPUT_ENV: ${{ inputs.environment }}
         run: |
-          if [[ "$GITHUB_REF" == "refs/heads/main" ]] || [[ "$INPUT_ENV" == "production" ]]; then
-            echo "target=production" >> $GITHUB_OUTPUT
-            echo "environment=production" >> $GITHUB_OUTPUT
+          if [[ "$GIT_REF" == "refs/heads/main" ]] || [[ "$INPUT_ENV" == "production" ]]; then
+            echo "target=production" >> "$GITHUB_OUTPUT"
+            echo "environment=production" >> "$GITHUB_OUTPUT"
             echo "🚀 Deploying to PRODUCTION (app.cohortix.ai)"
           else
-            echo "target=staging" >> $GITHUB_OUTPUT
-            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "target=staging" >> "$GITHUB_OUTPUT"
+            echo "environment=staging" >> "$GITHUB_OUTPUT"
             echo "🔄 Deploying to STAGING (staging.cohortix.ai)"
           fi
 
-      - name: Pull Vercel environment
+      - name: Pull Vercel project settings
         run: vercel pull --yes --environment=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Pull environment variables
         run: |
           vercel env pull .env.local --environment=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
-          # Copy to app directory so Next.js can find them during build
           cp .env.local apps/web/.env.local
 
-      - name: Build project
-        run: |
-          if [[ "${{ steps.env.outputs.target }}" == "production" ]]; then
-            vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-          else
-            vercel build --target=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
-          fi
-
-      - name: Deploy to Vercel
+      - name: Build and deploy
         id: deploy
         run: |
-          if [[ "${{ steps.env.outputs.target }}" == "production" ]]; then
+          TARGET="${{ steps.env.outputs.target }}"
+
+          if [[ "$TARGET" == "production" ]]; then
+            # Production: build with --prod, deploy with --prod
+            vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
             URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
           else
-            URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+            # Staging: use vercel deploy (non-prebuilt) with --target
+            # This lets Vercel handle the build AND assign to the staging environment
+            URL=$(vercel deploy --target "$TARGET" --token=${{ secrets.VERCEL_TOKEN }})
           fi
-          echo "url=$URL" >> $GITHUB_OUTPUT
+
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "✅ Deployed to: $URL"
 
-      - name: Promote to staging environment
-        if: ${{ steps.env.outputs.target == 'staging' }}
+      - name: Alias staging domain
+        if: steps.env.outputs.target == 'staging'
         run: |
-          vercel promote "${{ steps.deploy.outputs.url }}" --target staging --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+          DEPLOY_URL="${{ steps.deploy.outputs.url }}"
+          vercel alias "$DEPLOY_URL" staging.cohortix.ai --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }}
 
       - name: Comment deployment URL on commit
         if: success()
@@ -157,9 +156,10 @@ jobs:
             const env = '${{ steps.env.outputs.environment }}';
             const url = '${{ steps.deploy.outputs.url }}';
             const emoji = env === 'production' ? '🚀' : '🔄';
+            const domain = env === 'production' ? 'app.cohortix.ai' : 'staging.cohortix.ai';
             github.rest.repos.createCommitComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               commit_sha: context.sha,
-              body: `${emoji} **Deployed to ${env}**\n\n🔗 ${url}\n\n_Deployed via GitHub Actions_`
+              body: `${emoji} **Deployed to ${env}**\n\n🔗 https://${domain}\n📎 ${url}\n\n_Deployed via GitHub Actions_`
             });
