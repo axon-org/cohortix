@@ -3,15 +3,30 @@
 import { useUser, useOrganizationList } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Rocket, ArrowRight, Loader2 } from 'lucide-react';
+import { Rocket, ArrowRight, Loader2, Check, X, AlertCircle } from 'lucide-react';
+import { generateSlug, isValidSlug } from '@/lib/slug-utils';
+import { useSlugCheck } from '@/hooks/use-slug-check';
 
 export default function OnboardingPage() {
   const { user, isLoaded: userLoaded } = useUser();
   const { createOrganization, setActive, isLoaded: orgLoaded } = useOrganizationList();
   const router = useRouter();
   const [orgName, setOrgName] = useState('');
+  const [slug, setSlug] = useState('');
+  const [slugTouched, setSlugTouched] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [step, setStep] = useState<'welcome' | 'create-org'>('welcome');
+
+  // Auto-generate slug from org name when not manually edited
+  useEffect(() => {
+    if (!slugTouched && orgName) {
+      setSlug(generateSlug(orgName));
+    }
+  }, [orgName, slugTouched]);
+
+  // Slug validation and availability check
+  const validation = isValidSlug(slug);
+  const { status: slugStatus, suggestion, error: slugError } = useSlugCheck(slug);
 
   useEffect(() => {
     if (userLoaded && !user) {
@@ -31,23 +46,46 @@ export default function OnboardingPage() {
   }
 
   const handleCreateOrg = async () => {
-    if (!orgName.trim() || !createOrganization) return;
+    if (!orgName.trim() || !slug.trim() || !createOrganization) return;
+    
+    // Final validation before submission
+    if (!validation.valid || slugStatus !== 'available') {
+      return;
+    }
+
     setIsCreating(true);
     try {
-      const org = await createOrganization({ name: orgName.trim() });
+      const org = await createOrganization({ name: orgName.trim(), slug: slug.trim() });
       // Set the new org as active so auth() returns the orgId server-side
       if (setActive && org) {
         await setActive({ organization: org.id });
       }
-      router.push('/dashboard');
+      // Redirect to the new org's dashboard using the slug
+      router.push(`/${slug}/`);
     } catch (err) {
       console.error('Failed to create organization:', err);
       setIsCreating(false);
     }
   };
 
-  const handleSkip = () => {
-    router.push('/dashboard');
+  const canSubmit = 
+    orgName.trim().length > 0 && 
+    slug.trim().length > 0 && 
+    validation.valid && 
+    slugStatus === 'available' &&
+    !isCreating;
+
+  const getSlugStatusIcon = () => {
+    if (slugStatus === 'checking') {
+      return <Loader2 className="w-4 h-4 text-[#9CA3AF] animate-spin" />;
+    }
+    if (slugStatus === 'available' && validation.valid) {
+      return <Check className="w-4 h-4 text-[#10B981]" />;
+    }
+    if (slugStatus === 'taken' || !validation.valid) {
+      return <X className="w-4 h-4 text-[#EF4444]" />;
+    }
+    return null;
   };
 
   return (
@@ -96,7 +134,8 @@ export default function OnboardingPage() {
               This is where your AI agents and missions will live.
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
+              {/* Organization Name Input */}
               <div>
                 <label
                   htmlFor="org-name"
@@ -111,15 +150,94 @@ export default function OnboardingPage() {
                   onChange={(e) => setOrgName(e.target.value)}
                   placeholder="e.g. Acme Corp"
                   className="w-full px-3 py-2.5 bg-[#0A0A0B] border border-[#27282D] rounded-lg text-[#F2F2F2] placeholder-[#6B7280] focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2] outline-none transition-colors"
-                  onKeyDown={(e) => e.key === 'Enter' && handleCreateOrg()}
+                  onKeyDown={(e) => e.key === 'Enter' && canSubmit && handleCreateOrg()}
                   autoFocus
                 />
               </div>
 
+              {/* Slug Input */}
+              <div>
+                <label
+                  htmlFor="org-slug"
+                  className="block text-sm font-medium text-[#D1D5DB] mb-1.5"
+                >
+                  Workspace URL
+                </label>
+                <div className="relative">
+                  <div className="flex items-center">
+                    <span className="text-[#6B7280] text-sm pr-1">cohortix.ai/</span>
+                    <input
+                      id="org-slug"
+                      type="text"
+                      value={slug}
+                      onChange={(e) => {
+                        setSlug(e.target.value.toLowerCase());
+                        setSlugTouched(true);
+                      }}
+                      placeholder="acme-corp"
+                      className="flex-1 px-3 py-2.5 bg-[#0A0A0B] border border-[#27282D] rounded-lg text-[#F2F2F2] placeholder-[#6B7280] focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2] outline-none transition-colors"
+                      onKeyDown={(e) => e.key === 'Enter' && canSubmit && handleCreateOrg()}
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {getSlugStatusIcon()}
+                    </div>
+                  </div>
+                </div>
+
+                {/* URL Preview */}
+                <div className="mt-1.5 text-xs text-[#6B7280]">
+                  Your workspace URL: <span className="text-[#9CA3AF]">cohortix.ai/{slug || '...'}</span>
+                </div>
+
+                {/* Validation Error */}
+                {slug && !validation.valid && (
+                  <div className="mt-2 flex items-start gap-1.5 text-xs text-[#EF4444]">
+                    <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <span>{validation.error}</span>
+                  </div>
+                )}
+
+                {/* Availability Error + Suggestion */}
+                {slug && validation.valid && slugStatus === 'taken' && (
+                  <div className="mt-2 space-y-1">
+                    <div className="flex items-start gap-1.5 text-xs text-[#EF4444]">
+                      <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                      <span>{slugError || 'This URL is already taken'}</span>
+                    </div>
+                    {suggestion && (
+                      <button
+                        onClick={() => {
+                          setSlug(suggestion);
+                          setSlugTouched(true);
+                        }}
+                        className="text-xs text-[#5E6AD2] hover:text-[#7C8ADE] transition-colors"
+                      >
+                        Try &quot;{suggestion}&quot; instead
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Success Message */}
+                {slug && validation.valid && slugStatus === 'available' && (
+                  <div className="mt-2 flex items-start gap-1.5 text-xs text-[#10B981]">
+                    <Check className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                    <span>This URL is available</span>
+                  </div>
+                )}
+
+                {/* Warning */}
+                <div className="mt-2 flex items-start gap-1.5 text-xs text-[#F59E0B]">
+                  <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+                  <span>⚠️ This URL cannot be changed later</span>
+                </div>
+              </div>
+
+              {/* Create Button */}
               <button
                 onClick={handleCreateOrg}
-                disabled={!orgName.trim() || isCreating}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5E6AD2] hover:bg-[#7C8ADE] disabled:opacity-50 disabled:hover:bg-[#5E6AD2] text-white rounded-lg font-medium transition-colors"
+                disabled={!canSubmit}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5E6AD2] hover:bg-[#7C8ADE] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5E6AD2] text-white rounded-lg font-medium transition-colors"
               >
                 {isCreating ? (
                   <>
@@ -132,13 +250,6 @@ export default function OnboardingPage() {
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
-              </button>
-
-              <button
-                onClick={handleSkip}
-                className="w-full text-center text-sm text-[#6B7280] hover:text-[#9CA3AF] transition-colors py-2"
-              >
-                Skip for now
               </button>
             </div>
           </div>
