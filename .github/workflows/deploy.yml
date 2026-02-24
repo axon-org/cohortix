@@ -78,7 +78,8 @@ jobs:
     timeout-minutes: 15
     needs: [validate]
     environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      name:
+        ${{ inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - name: Checkout code
@@ -106,7 +107,15 @@ jobs:
           GIT_REF: ${{ github.ref }}
           INPUT_ENV: ${{ inputs.environment }}
         run: |
-          if [[ "$GIT_REF" == "refs/heads/main" ]] || [[ "$INPUT_ENV" == "production" ]]; then
+          if [[ -n "$INPUT_ENV" ]]; then
+            TARGET="$INPUT_ENV"
+          elif [[ "$GIT_REF" == "refs/heads/main" ]]; then
+            TARGET="production"
+          else
+            TARGET="staging"
+          fi
+
+          if [[ "$TARGET" == "production" ]]; then
             echo "target=production" >> "$GITHUB_OUTPUT"
             echo "environment=production" >> "$GITHUB_OUTPUT"
             echo "🚀 Deploying to PRODUCTION (app.cohortix.ai)"
@@ -117,7 +126,9 @@ jobs:
           fi
 
       - name: Pull Vercel project settings
-        run: vercel pull --yes --environment=${{ steps.env.outputs.target }} --token=${{ secrets.VERCEL_TOKEN }}
+        run:
+          vercel pull --yes --environment=${{ steps.env.outputs.target }} --token=${{
+          secrets.VERCEL_TOKEN }}
 
       - name: Pull environment variables
         run: |
@@ -147,7 +158,9 @@ jobs:
         if: steps.env.outputs.target == 'staging'
         env:
           DEPLOY_URL: ${{ steps.deploy.outputs.url }}
-        run: vercel alias "$DEPLOY_URL" staging.cohortix.ai --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }}
+        run:
+          vercel alias "$DEPLOY_URL" staging.cohortix.ai --token=${{ secrets.VERCEL_TOKEN }}
+          --scope=${{ secrets.VERCEL_ORG_ID }}
 
       - name: Comment deployment URL on commit
         if: success()
