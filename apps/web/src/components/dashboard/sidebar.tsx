@@ -13,23 +13,33 @@ import {
   ChevronLeft,
   FolderKanban,
   CheckSquare,
+  Inbox as InboxIcon,
 } from 'lucide-react';
 import { useState } from 'react';
-
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
-  { name: 'Cohorts', href: '/dashboard/cohorts', icon: Users },
-  { name: 'Agents', href: '/dashboard/agents', icon: Bot },
-  { name: 'Missions', href: '/dashboard/missions', icon: Rocket },
-  { name: 'Operations', href: '/dashboard/operations', icon: FolderKanban },
-  { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
-];
+import type { LucideIcon } from 'lucide-react';
 
 interface SidebarProps {
   user: any;
+  orgSlug: string;
 }
 
-export function Sidebar({ user }: SidebarProps) {
+type NavigationItem =
+  | {
+      name: string;
+      href: string;
+      icon: LucideIcon;
+      badge?: string;
+      type?: never;
+    }
+  | {
+      type: 'divider';
+      name?: never;
+      href?: never;
+      icon?: never;
+      badge?: never;
+    };
+
+export function Sidebar({ user, orgSlug }: SidebarProps) {
   const pathname = usePathname() ?? '/';
   const [collapsed, setCollapsed] = useState(false);
 
@@ -37,6 +47,17 @@ export function Sidebar({ user }: SidebarProps) {
   const userEmail = user?.email || '';
   const avatarUrl = user?.profile?.avatar_url;
   const orgName = user?.profile?.organization_name || 'Cohortix';
+
+  const navigation: NavigationItem[] = [
+    { name: 'Dashboard', href: `/${orgSlug}`, icon: LayoutGrid },
+    { name: 'Inbox', href: `/${orgSlug}/inbox`, icon: InboxIcon, badge: 'Soon' },
+    { name: 'My Tasks', href: `/${orgSlug}/my-tasks`, icon: CheckSquare },
+    { type: 'divider' },
+    { name: 'Missions', href: `/${orgSlug}/missions`, icon: Rocket },
+    { name: 'Operations', href: `/${orgSlug}/operations`, icon: FolderKanban },
+    { name: 'Cohorts', href: `/${orgSlug}/cohorts`, icon: Users },
+    { name: 'Agents', href: `/${orgSlug}/agents`, icon: Bot },
+  ];
 
   return (
     <div
@@ -64,9 +85,15 @@ export function Sidebar({ user }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-3 space-y-0.5">
-        {navigation.map((item) => {
+        {navigation.map((item, index) => {
+          if (item.type === 'divider') {
+            return <div key={`divider-${index}`} className="h-px bg-border my-2 mx-2" />;
+          }
+
           const isActive =
-            item.href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(item.href);
+            item.href === `/${orgSlug}`
+              ? pathname === `/${orgSlug}`
+              : pathname.startsWith(item.href);
           const Icon = item.icon;
 
           return (
@@ -85,21 +112,38 @@ export function Sidebar({ user }: SidebarProps) {
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-foreground rounded-r" />
               )}
               <Icon className="w-4 h-4 flex-shrink-0" />
-              {!collapsed && <span>{item.name}</span>}
+              {!collapsed && (
+                <span className="flex items-center gap-2">
+                  {item.name}
+                  {item.badge && (
+                    <span className="text-[10px] px-1.5 py-0.5 bg-warning/20 text-warning rounded">
+                      {item.badge}
+                    </span>
+                  )}
+                </span>
+              )}
             </Link>
           );
         })}
       </nav>
 
       {/* Settings */}
-      <div className="px-2 py-2 border-t border-border">
+      <div className="px-2 py-2 border-t border-border space-y-0.5">
         <Link
-          href="/dashboard/settings"
+          href={`/${orgSlug}/settings`}
           title={collapsed ? 'Settings' : undefined}
           className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
         >
           <Settings className="w-4 h-4 flex-shrink-0" />
           {!collapsed && <span>Settings</span>}
+        </Link>
+        <Link
+          href="/account"
+          title={collapsed ? 'Account' : undefined}
+          className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+        >
+          <UserIcon className="w-4 h-4 flex-shrink-0" />
+          {!collapsed && <span>Account</span>}
         </Link>
       </div>
 

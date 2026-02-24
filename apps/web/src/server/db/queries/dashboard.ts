@@ -54,38 +54,33 @@ export async function getUserOrganization(userId: string) {
 export async function getDashboardKPIs(organizationId: string) {
   const supabase = await createClient();
 
-  // Total active missions (database table: missions)
-  const { count: activeMissions } = await supabase
-    .from('missions')
-    .select('*', { count: 'exact', head: true })
-    .eq('organization_id', organizationId)
-    .eq('status', 'active');
-
-  // Total actions in progress (database table: tasks)
-  const { count: actionsInProgress } = await supabase
-    .from('tasks')
-    .select('*', { count: 'exact', head: true })
-    .eq('organization_id', organizationId)
-    .in('status', ['in_progress', 'todo']);
-
-  // Total active agents (agents)
-  const { count: activeAgents } = await supabase
-    .from('agents')
-    .select('*', { count: 'exact', head: true })
-    .eq('organization_id', organizationId)
-    .eq('status', 'active');
-
-  // Completion rate (completed actions / total actions)
-  const { count: completedActions } = await supabase
-    .from('tasks')
-    .select('*', { count: 'exact', head: true })
-    .eq('organization_id', organizationId)
-    .eq('status', 'done');
-
-  const { count: totalActions } = await supabase
-    .from('tasks')
-    .select('*', { count: 'exact', head: true })
-    .eq('organization_id', organizationId);
+  // Run all KPI queries in parallel
+  const [
+    { count: activeMissions },
+    { count: actionsInProgress },
+    { count: completedActions },
+    { count: totalActions },
+  ] = await Promise.all([
+    supabase
+      .from('missions')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', organizationId)
+      .eq('status', 'active'),
+    supabase
+      .from('tasks')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', organizationId)
+      .in('status', ['in_progress', 'todo']),
+    supabase
+      .from('tasks')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', organizationId)
+      .eq('status', 'done'),
+    supabase
+      .from('tasks')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', organizationId),
+  ]);
 
   const completionRate =
     totalActions && totalActions > 0 ? Math.round((completedActions! / totalActions) * 100) : 0;
@@ -93,7 +88,7 @@ export async function getDashboardKPIs(organizationId: string) {
   return {
     activeMissions: activeMissions || 0,
     actionsInProgress: actionsInProgress || 0,
-    activeAgents: activeAgents || 0,
+    activeAgents: 0, // Stubbed until OpenClaw integration
     completionRate,
   };
 }
@@ -293,22 +288,10 @@ export async function getActiveMissions(organizationId: string, limit = 6) {
 export async function getActiveAgents(organizationId: string) {
   const supabase = await createClient();
 
-  const { data: agents, error } = await supabase
-    .from('agents')
-    .select('*')
-    .eq('organization_id', organizationId)
-    .in('status', ['active', 'busy'])
-    .order('created_at', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching agents:', error);
-    return [];
-  }
-
-  return (agents || []).map((agent: any) => ({
-    ...agent,
-    workload: { active: 0, total: 0, currentMission: null },
-  }));
+  // TODO: Replace with OpenClaw agent integration (separate feature branch)
+  // The DB table is still 'allies' (rename migration pending), but this feature
+  // will be rebuilt to pull from OpenClaw anyway. Return empty for now.
+  return [];
 }
 
 /**
@@ -341,17 +324,17 @@ export async function getDashboardData() {
   const authContext = await getAuthContext();
   const { supabase, userId, organizationId } = authContext;
 
-  // Get user profile
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).single();
+  // Get user profile + org membership in parallel
+  const [{ data: profile }, { data: membership }] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', userId).single(),
+    supabase
+      .from('organization_memberships')
+      .select(`*, organization:organizations(*)`)
+      .eq('user_id', userId)
+      .eq('organization_id', organizationId)
+      .single(),
+  ]);
   const user = { id: userId, profile };
-
-  // Get organization details
-  const { data: membership } = await supabase
-    .from('organization_memberships')
-    .select(`*, organization:organizations(*)`)
-    .eq('user_id', userId)
-    .eq('organization_id', organizationId)
-    .single();
 
   const [kpis, activity, alerts, missions, agents, knowledge] = await Promise.all([
     getDashboardKPIs(organizationId),
