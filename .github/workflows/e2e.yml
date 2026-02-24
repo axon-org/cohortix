@@ -37,9 +37,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # nosemgrep: yaml.github-actions.security.workflow-run-target-code-checkout
-          # Safe: this workflow only triggers after a successful deploy (not on untrusted PRs)
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          # Safe: use the workflow's SHA (target repo) to avoid checking out untrusted PR code
+          ref: ${{ github.sha }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
