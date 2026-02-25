@@ -27,8 +27,15 @@ export function useSlugCheck(slug: string): SlugCheckResult {
     setError(undefined);
 
     try {
-      const response = await fetch(`/api/v1/org-slug/check?slug=${encodeURIComponent(slugToCheck)}`);
-      const data = await response.json();
+      const response = await fetch(
+        `/api/v1/org-slug/check?slug=${encodeURIComponent(slugToCheck)}`
+      );
+      const data = (await response.json()) as {
+        available?: boolean;
+        suggestion?: string;
+        reason?: string;
+        error?: string;
+      };
 
       if (!response.ok) {
         setStatus('idle');

@@ -147,7 +147,7 @@ export default function OnboardingPage() {
                   id="org-name"
                   type="text"
                   value={orgName}
-                  onChange={(e) => setOrgName(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOrgName(e.target.value)}
                   placeholder="e.g. Acme Corp"
                   className="w-full px-3 py-2.5 bg-[#0A0A0B] border border-[#27282D] rounded-lg text-[#F2F2F2] placeholder-[#6B7280] focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2] outline-none transition-colors"
                   onKeyDown={(e) => e.key === 'Enter' && canSubmit && handleCreateOrg()}
@@ -170,7 +170,7 @@ export default function OnboardingPage() {
                       id="org-slug"
                       type="text"
                       value={slug}
-                      onChange={(e) => {
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setSlug(e.target.value.toLowerCase());
                         setSlugTouched(true);
                       }}
