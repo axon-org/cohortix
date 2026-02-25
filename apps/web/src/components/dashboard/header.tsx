@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Search, Bell, ChevronRight } from 'lucide-react';
+import { Search, Bell, ChevronRight, Menu } from 'lucide-react';
 
 interface HeaderProps {
   user: any;
@@ -34,28 +34,40 @@ export function Header({ user }: HeaderProps) {
   const breadcrumbs = useBreadcrumbs();
 
   return (
-    <header className="h-12 border-b border-border bg-[#111113] px-6 flex items-center justify-between">
-      {/* Breadcrumbs */}
-      <nav className="flex items-center gap-1 text-sm">
-        {breadcrumbs.map((crumb, i) => (
-          <div key={crumb.href} className="flex items-center gap-1">
-            {i > 0 && <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
-            {i === breadcrumbs.length - 1 ? (
-              <span className="font-medium text-foreground">{crumb.label}</span>
-            ) : (
-              <Link
-                href={crumb.href}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {crumb.label}
-              </Link>
-            )}
-          </div>
-        ))}
-      </nav>
+    <header className="h-12 border-b border-border bg-[#111113] px-4 md:px-6 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        {/* Mobile Menu Toggle */}
+        <button className="p-2 -ml-2 md:hidden text-muted-foreground hover:text-foreground transition-colors">
+          <Menu className="w-5 h-5" />
+        </button>
+
+        {/* Breadcrumbs */}
+        <nav className="hidden sm:flex items-center gap-1 text-sm">
+          {breadcrumbs.map((crumb, i) => (
+            <div key={crumb.href} className="flex items-center gap-1">
+              {i > 0 && <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+              {i === breadcrumbs.length - 1 ? (
+                <span className="font-medium text-foreground">{crumb.label}</span>
+              ) : (
+                <Link
+                  href={crumb.href}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {crumb.label}
+                </Link>
+              )}
+            </div>
+          ))}
+        </nav>
+
+        {/* Mobile Page Title fallback when breadcrumbs hidden */}
+        <span className="sm:hidden font-medium text-foreground text-sm">
+          {breadcrumbs[breadcrumbs.length - 1]?.label || 'Dashboard'}
+        </span>
+      </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
         <button className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
           <Search className="w-4 h-4" />
         </button>
