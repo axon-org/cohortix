@@ -13,8 +13,13 @@ export function useSlugCheck(slug: string): SlugCheckResult {
   const [suggestion, setSuggestion] = useState<string | undefined>();
   const [error, setError] = useState<string | undefined>();
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const abortControllerRef = useRef<AbortController>();
 
   const checkSlug = useCallback(async (slugToCheck: string) => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
     if (!slugToCheck || slugToCheck.length < 3) {
       setStatus('idle');
       setSuggestion(undefined);
@@ -22,13 +27,17 @@ export function useSlugCheck(slug: string): SlugCheckResult {
       return;
     }
 
+    abortControllerRef.current = new AbortController();
+    const { signal } = abortControllerRef.current;
+
     setStatus('checking');
     setSuggestion(undefined);
     setError(undefined);
 
     try {
       const response = await fetch(
-        `/api/v1/org-slug/check?slug=${encodeURIComponent(slugToCheck)}`
+        `/api/v1/org-slug/check?slug=${encodeURIComponent(slugToCheck)}`,
+        { signal }
       );
       const data = (await response.json()) as {
         available?: boolean;
@@ -53,6 +62,9 @@ export function useSlugCheck(slug: string): SlugCheckResult {
         setError(data.reason);
       }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
       setStatus('idle');
       setError('Failed to check slug availability');
       console.error('Slug check error:', err);
