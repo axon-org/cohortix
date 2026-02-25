@@ -30,7 +30,7 @@ function AccessDeniedContent() {
       if (response.ok) {
         setRequestSuccess(true);
       } else {
-        const data = await response.json().catch(() => ({}));
+        const data = (await response.json().catch(() => ({}))) as { error?: string };
         setRequestError(data.error || 'Failed to send request. Please try again.');
       }
     } catch (error) {

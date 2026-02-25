@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     }
 
     // 2. Parse request body
-    const body = await request.json();
+    const body = (await request.json()) as { orgSlug?: string };
     const { orgSlug } = body;
 
     if (!orgSlug || typeof orgSlug !== 'string') {
