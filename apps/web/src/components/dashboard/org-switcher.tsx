@@ -42,8 +42,8 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
     );
   }
 
-  const handleOrgSwitch = async (orgId: string, slug: string) => {
-    if (setActive) {
+  const handleOrgSwitch = async (orgId: string, slug: string | null) => {
+    if (setActive && slug) {
       await setActive({ organization: orgId });
       router.push(`/${slug}`);
     }
@@ -96,7 +96,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
             return (
               <DropdownMenuItem
                 key={org.id}
-                onClick={() => handleOrgSwitch(org.id, org.slug!)}
+                onClick={() => handleOrgSwitch(org.id, org.slug)}
                 className={cn(
                   'flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[13px] cursor-pointer transition-colors',
                   isActive
@@ -135,7 +135,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => router.push(`/${currentOrg?.slug}/settings`)}
+          onClick={() => currentOrg?.slug && router.push(`/${currentOrg.slug}/settings`)}
           className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/50 cursor-pointer"
         >
           <Settings className="w-4 h-4" />

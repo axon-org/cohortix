@@ -30,7 +30,6 @@ export default function ProfilePage() {
         firstName,
         lastName,
       });
-      console.log('Profile updated successfully');
     } catch (error) {
       console.error('Failed to update profile:', error);
     } finally {
@@ -44,7 +43,6 @@ export default function ProfilePage() {
 
     try {
       await user.setProfileImage({ file });
-      console.log('Avatar updated successfully');
     } catch (error) {
       console.error('Failed to update avatar:', error);
     }
