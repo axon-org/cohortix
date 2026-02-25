@@ -2,13 +2,16 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { OrgSwitcher } from './org-switcher';
 import {
   LayoutGrid,
   Users,
   Bot,
-  Rocket,
+  Target,
   Settings,
+  UserCircle,
   User as UserIcon,
   ChevronLeft,
   FolderKanban,
@@ -39,6 +42,24 @@ type NavigationItem =
       badge?: never;
     };
 
+const getNavigation = (orgSlug: string): NavigationItem[] => [
+  // Daily workflow group
+  { name: 'Dashboard', href: `/${orgSlug}`, icon: LayoutGrid },
+  { name: 'Inbox', href: `/${orgSlug}/inbox`, icon: InboxIcon, badge: 'Soon' },
+  { name: 'My Tasks', href: `/${orgSlug}/my-tasks`, icon: CheckSquare },
+  { type: 'divider' },
+  // Workspace group
+  { name: 'Missions', href: `/${orgSlug}/missions`, icon: Target },
+  { name: 'Operations', href: `/${orgSlug}/operations`, icon: FolderKanban },
+  { name: 'Cohorts', href: `/${orgSlug}/cohorts`, icon: Users },
+  { name: 'Agents', href: `/${orgSlug}/agents`, icon: Bot },
+];
+
+const getBottomNavigation = (orgSlug: string): NavigationItem[] => [
+  { name: 'Settings', href: `/${orgSlug}/settings`, icon: Settings },
+  { name: 'Account', href: '/account', icon: UserCircle },
+];
+
 export function Sidebar({ user, orgSlug }: SidebarProps) {
   const pathname = usePathname() ?? '/';
   const [collapsed, setCollapsed] = useState(false);
@@ -46,41 +67,46 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
   const displayName = user?.profile?.display_name || user?.email?.split('@')[0] || 'User';
   const userEmail = user?.email || '';
   const avatarUrl = user?.profile?.avatar_url;
-  const orgName = user?.profile?.organization_name || 'Cohortix';
 
-  const navigation: NavigationItem[] = [
-    { name: 'Dashboard', href: `/${orgSlug}`, icon: LayoutGrid },
-    { name: 'Inbox', href: `/${orgSlug}/inbox`, icon: InboxIcon, badge: 'Soon' },
-    { name: 'My Tasks', href: `/${orgSlug}/my-tasks`, icon: CheckSquare },
-    { type: 'divider' },
-    { name: 'Missions', href: `/${orgSlug}/missions`, icon: Rocket },
-    { name: 'Operations', href: `/${orgSlug}/operations`, icon: FolderKanban },
-    { name: 'Cohorts', href: `/${orgSlug}/cohorts`, icon: Users },
-    { name: 'Agents', href: `/${orgSlug}/agents`, icon: Bot },
-  ];
+  const navigation = getNavigation(orgSlug);
+  const bottomNavigation = getBottomNavigation(orgSlug);
 
   return (
     <div
+      role="navigation"
+      aria-label="Main navigation"
       className={cn(
         'bg-[#111113] border-r border-border flex flex-col transition-all duration-200',
         collapsed ? 'w-16' : 'w-60'
       )}
     >
-      {/* Org header */}
-      <div className="flex items-center gap-2.5 px-4 h-14 border-b border-border">
-        <div className="w-7 h-7 bg-foreground rounded-md flex items-center justify-center flex-shrink-0">
-          <Rocket className="w-4 h-4 text-background" />
-        </div>
-        {!collapsed && <span className="text-sm font-semibold truncate">{orgName}</span>}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className={cn(
-            'ml-auto p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors',
-            collapsed && 'ml-0'
-          )}
-        >
-          <ChevronLeft className={cn('w-4 h-4 transition-transform', collapsed && 'rotate-180')} />
-        </button>
+      {/* Org switcher header */}
+      <div className="flex items-center gap-2.5 px-2 h-14 border-b border-border">
+        {!collapsed ? (
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <OrgSwitcher collapsed={collapsed} />
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              aria-expanded={!collapsed}
+              aria-label="Toggle sidebar"
+              className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-2 w-full">
+            <OrgSwitcher collapsed={collapsed} />
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              aria-expanded={!collapsed}
+              aria-label="Toggle sidebar"
+              className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors mx-auto"
+            >
+              <ChevronLeft className="w-4 h-4 rotate-180" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Navigation */}
@@ -91,8 +117,8 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
           }
 
           const isActive =
-            item.href === `/${orgSlug}`
-              ? pathname === `/${orgSlug}`
+            item.href === `/${orgSlug}` || item.href === '/account'
+              ? pathname === item.href
               : pathname.startsWith(item.href);
           const Icon = item.icon;
 
@@ -116,7 +142,7 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
                 <span className="flex items-center gap-2">
                   {item.name}
                   {item.badge && (
-                    <span className="text-[10px] px-1.5 py-0.5 bg-warning/20 text-warning rounded">
+                    <span className="text-[10px] bg-secondary px-1.5 py-0.5 rounded-full text-muted-foreground">
                       {item.badge}
                     </span>
                   )}
@@ -127,34 +153,45 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
         })}
       </nav>
 
-      {/* Settings */}
-      <div className="px-2 py-2 border-t border-border space-y-0.5">
-        <Link
-          href={`/${orgSlug}/settings`}
-          title={collapsed ? 'Settings' : undefined}
-          className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-        >
-          <Settings className="w-4 h-4 flex-shrink-0" />
-          {!collapsed && <span>Settings</span>}
-        </Link>
-        <Link
-          href="/account"
-          title={collapsed ? 'Account' : undefined}
-          className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-        >
-          <UserIcon className="w-4 h-4 flex-shrink-0" />
-          {!collapsed && <span>Account</span>}
-        </Link>
+      {/* Bottom navigation - Settings & Account */}
+      <div className="px-2 pb-1 space-y-0.5" aria-label="Settings">
+        {bottomNavigation.map((item) => {
+          if (item.type === 'divider') return null;
+          const isActive =
+            item.href === '/account' ? pathname === item.href : pathname.startsWith(item.href!);
+          const Icon = item.icon!;
+          return (
+            <Link
+              key={item.name}
+              href={item.href!}
+              title={collapsed ? item.name : undefined}
+              className={cn(
+                'flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] font-medium transition-all relative group',
+                isActive
+                  ? 'bg-secondary text-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+              )}
+            >
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-foreground rounded-r" />
+              )}
+              <Icon className="w-4 h-4 flex-shrink-0" />
+              {!collapsed && <span>{item.name}</span>}
+            </Link>
+          );
+        })}
       </div>
 
       {/* User */}
       <div className="px-3 py-3 border-t border-border">
         <div className="flex items-center gap-2.5">
           {avatarUrl ? (
-            <img
+            <Image
               src={avatarUrl}
               alt={displayName}
-              className="w-7 h-7 rounded-full object-cover flex-shrink-0"
+              width={28}
+              height={28}
+              className="rounded-full object-cover flex-shrink-0"
             />
           ) : (
             <div className="w-7 h-7 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
