@@ -114,7 +114,7 @@ export default function OnboardingPage() {
             </div>
             <button
               onClick={() => setStep('create-org')}
-              className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-primary-foreground rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 px-6 py-3 bg-foreground text-background hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] rounded-lg font-medium transition-all"
             >
               Get Started
               <ArrowRight className="w-4 h-4" />
@@ -235,7 +235,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handleCreateOrg}
                 disabled={!canSubmit}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary text-primary-foreground rounded-lg font-medium transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-foreground text-background hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-medium transition-all"
               >
                 {isCreating ? (
                   <>

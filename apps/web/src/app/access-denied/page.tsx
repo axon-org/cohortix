@@ -111,11 +111,7 @@ function AccessDeniedContent() {
                 </div>
 
                 <div className="w-full space-y-3">
-                  <Button
-                    onClick={handleRequestAccess}
-                    disabled={isRequesting}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:hover:bg-primary text-primary-foreground rounded-lg font-medium transition-colors"
-                  >
+                  <Button onClick={handleRequestAccess} disabled={isRequesting} className="w-full">
                     {isRequesting ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />

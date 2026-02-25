@@ -17,15 +17,22 @@ All UI components MUST use these Tailwind tokens — never hardcode hex values.
 | `border-border`    | `#27282D` | Borders, dividers               |
 | `border-input`     | `#27282D` | Input borders                   |
 
-### Brand / Interactive
+### Brand / Interactive (Monochrome — Linear style)
 
-| Token                     | Hex       | Usage                                 |
-| ------------------------- | --------- | ------------------------------------- |
-| `bg-primary`              | `#5E6AD2` | Primary buttons, active states, links |
-| `bg-primary-hover`        | `#7C8ADE` | Primary button hover                  |
-| `text-primary`            | `#5E6AD2` | Accent text, links                    |
-| `text-primary-foreground` | `#FFFFFF` | Text on primary backgrounds           |
-| `ring-ring`               | `#5E6AD2` | Focus rings                           |
+| Token                                           | Usage                                                            |
+| ----------------------------------------------- | ---------------------------------------------------------------- |
+| `bg-foreground text-background`                 | **Primary CTA buttons** — white bg, dark text (monochrome)       |
+| `hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]` | Primary button hover — white glow effect                         |
+| `bg-primary` (`#5E6AD2`)                        | **Accent only:** active nav indicator, focus rings, inline links |
+| `bg-primary-hover` (`#7C8ADE`)                  | Accent hover states                                              |
+| `text-primary` (`#5E6AD2`)                      | Accent text, highlighted words, links                            |
+| `ring-ring` (`#5E6AD2`)                         | Focus rings on inputs                                            |
+
+> **⚠️ Button Rule:** Primary CTA buttons are ALWAYS monochrome white
+> (`bg-foreground text-background`), NOT purple. Use the `<Button>` component
+> from `@/components/ui/button` which has this built in. The purple/indigo
+> (`primary`) is only for subtle accents like active nav indicators, inline
+> links, and focus rings.
 
 ### Secondary
 

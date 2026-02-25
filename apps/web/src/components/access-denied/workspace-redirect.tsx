@@ -46,7 +46,7 @@ export function WorkspaceRedirect({ variant = 'primary' }: WorkspaceRedirectProp
       <button
         onClick={handleRedirect}
         disabled={isRedirecting}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:hover:bg-primary text-primary-foreground rounded-lg font-medium transition-colors"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-foreground text-background hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] disabled:opacity-50 rounded-lg font-medium transition-all"
       >
         {isRedirecting ? (
           <>
