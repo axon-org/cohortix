@@ -13,7 +13,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
 import { agents } from './agents';
-import { missions as projects } from './missions'; // missions table (DB name: projects)
+import { operations as projects } from './operations';
 import { clients } from './clients';
 
 export const knowledgeSourceTypeEnum = pgEnum('knowledge_source_type', [

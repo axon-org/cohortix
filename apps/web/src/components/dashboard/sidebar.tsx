@@ -17,6 +17,7 @@ import {
   FolderKanban,
   CheckSquare,
   Inbox as InboxIcon,
+  Compass,
 } from 'lucide-react';
 import { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
@@ -33,9 +34,11 @@ type NavigationItem =
       icon: LucideIcon;
       badge?: string;
       type?: never;
+      label?: never;
     }
   | {
       type: 'divider';
+      label?: string;
       name?: never;
       href?: never;
       icon?: never;
@@ -43,14 +46,17 @@ type NavigationItem =
     };
 
 const getNavigation = (orgSlug: string): NavigationItem[] => [
-  // Daily workflow group
-  { name: 'Dashboard', href: `/${orgSlug}`, icon: LayoutGrid },
-  { name: 'Inbox', href: `/${orgSlug}/inbox`, icon: InboxIcon, badge: 'Soon' },
-  { name: 'My Tasks', href: `/${orgSlug}/my-tasks`, icon: CheckSquare },
-  { type: 'divider' },
-  // Workspace group
+  // Strategy
+  { type: 'divider', label: 'Strategy' },
+  { name: 'Visions', href: `/${orgSlug}/visions`, icon: Compass },
   { name: 'Missions', href: `/${orgSlug}/missions`, icon: Target },
+  // Execution
+  { type: 'divider', label: 'Execution' },
   { name: 'Operations', href: `/${orgSlug}/operations`, icon: FolderKanban },
+  { name: 'My Tasks', href: `/${orgSlug}/my-tasks`, icon: CheckSquare },
+  { name: 'Inbox', href: `/${orgSlug}/inbox`, icon: InboxIcon, badge: 'Soon' },
+  // Team
+  { type: 'divider', label: 'Team' },
   { name: 'Cohorts', href: `/${orgSlug}/cohorts`, icon: Users },
   { name: 'Agents', href: `/${orgSlug}/agents`, icon: Bot },
 ];
@@ -113,7 +119,16 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
       <nav className="flex-1 px-2 py-3 space-y-0.5">
         {navigation.map((item, index) => {
           if (item.type === 'divider') {
-            return <div key={`divider-${index}`} className="h-px bg-border my-2 mx-2" />;
+            return (
+              <div key={`divider-${index}`} className="pt-3 pb-1">
+                {!collapsed && item.label && (
+                  <p className="px-2.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground/60">
+                    {item.label}
+                  </p>
+                )}
+                {collapsed && <div className="h-px bg-border mx-2" />}
+              </div>
+            );
           }
 
           const isActive =

@@ -11,7 +11,7 @@ import {
   type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
-import { missions } from './missions';
+import { operations as missions } from './operations';
 import { milestones } from './milestones';
 import { ownerTypeEnum } from './goals';
 

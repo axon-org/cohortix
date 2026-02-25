@@ -2,7 +2,8 @@ import { pgTable, uuid, varchar, text, timestamp, date, jsonb, pgEnum } from 'dr
 import { organizations } from './organizations';
 import { workspaces } from './workspaces';
 import { clients } from './clients';
-import { missions, ownerTypeEnum } from './missions';
+import { goals } from './goals';
+import { ownerTypeEnum } from './goals';
 
 // Note: Table name remains 'projects' in database for backwards compatibility
 // User-facing terminology: "Operation" (bounded initiative with start/end)
@@ -41,7 +42,7 @@ export const operations = pgTable('projects', {
   completedAt: timestamp('completed_at', { withTimezone: true }),
 
   // Linked mission (Operations support Missions in PPV hierarchy)
-  missionId: uuid('goal_id').references(() => missions.id, { onDelete: 'set null' }), // DB column: goal_id
+  missionId: uuid('mission_id').references(() => goals.id, { onDelete: 'set null' }),
 
   settings: jsonb('settings').default({}).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
