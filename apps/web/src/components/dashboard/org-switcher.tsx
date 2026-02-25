@@ -81,7 +81,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"
-        className="w-56 bg-[#111113] border-[#27282D] p-1 shadow-xl"
+        className="w-56 bg-card-elevated border-border p-1 shadow-xl"
         sideOffset={8}
       >
         <DropdownMenuLabel className="text-[11px] font-medium text-muted-foreground px-2 py-1.5">
@@ -114,7 +114,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
                 {membership.role && (
                   <Badge
                     variant="secondary"
-                    className="text-[10px] px-1.5 py-0 rounded-full bg-[#1A1B1E] text-muted-foreground border-none font-normal lowercase"
+                    className="text-[10px] px-1.5 py-0 rounded-full bg-secondary text-muted-foreground border-none font-normal lowercase"
                   >
                     {membership.role.replace('org:', '')}
                   </Badge>
@@ -124,7 +124,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
           })}
         </div>
 
-        <DropdownMenuSeparator className="bg-[#27282D] my-1" />
+        <DropdownMenuSeparator className="bg-muted my-1" />
 
         <DropdownMenuItem
           onClick={() => router.push('/create-organization')}

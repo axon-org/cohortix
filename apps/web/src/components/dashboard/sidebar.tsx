@@ -76,7 +76,7 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
       role="navigation"
       aria-label="Main navigation"
       className={cn(
-        'bg-[#111113] border-r border-border flex flex-col transition-all duration-200',
+        'bg-card-elevated border-r border-border flex flex-col transition-all duration-200',
         collapsed ? 'w-16' : 'w-60'
       )}
     >
