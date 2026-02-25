@@ -1086,6 +1086,44 @@ what requires human approval.**
 - Staging: Tier 3 (explicit permission)
 - Production: Tier 3 + manual review + backup verification
 
+### Database Migration Protocol (Supabase Branching + GitHub Integration)
+
+**Infrastructure:**
+
+- Production DB: `qobvewyakovekbuvwjkt` (Supabase main branch, linked to Git
+  `main`)
+- Staging DB: `cclsfxrnlgjfididtzym` (Supabase persistent branch)
+- GitHub Integration: auto-deploys migrations to production on merge to `main`
+- CLI linked to production project (`supabase/.temp/project-ref`)
+
+**Workflow for new migrations:**
+
+```
+1. Create migration file:
+   supabase/migrations/YYYYMMDDHHMMSS_description.sql
+
+2. Use IF NOT EXISTS / ADD COLUMN IF NOT EXISTS everywhere (idempotent)
+
+3. Push to staging first (manual):
+   supabase link --project-ref cclsfxrnlgjfididtzym
+   supabase db push
+   supabase link --project-ref qobvewyakovekbuvwjkt  # restore production link
+
+4. Test locally with .env.local (points to staging DB)
+
+5. Merge feature → dev → Vercel deploys to staging.cohortix.ai
+
+6. Merge dev → main → GitHub Integration auto-applies migrations to production
+```
+
+**Rules:**
+
+- `.env.local` always points to staging Supabase (`cclsfxrnlgjfididtzym`)
+- Never manually `db push` to production — let GitHub Integration handle it
+- Always test migrations on staging before merging to main
+- End migration files with `NOTIFY pgrst, 'reload schema';` to refresh PostgREST
+  cache
+
 **External API Calls:**
 
 - Read-only APIs: Tier 1
