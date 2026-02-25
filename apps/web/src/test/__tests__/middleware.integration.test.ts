@@ -74,7 +74,7 @@ describe('Middleware Integration', () => {
 
   describe('Path Matching', () => {
     it('should match protected routes', () => {
-      const protectedPaths = ['/dashboard', '/missions', '/settings'];
+      const protectedPaths = ['/test-org', '/test-org/missions', '/test-org/settings'];
 
       protectedPaths.forEach((path) => {
         const request = new NextRequest(`https://example.com${path}`);

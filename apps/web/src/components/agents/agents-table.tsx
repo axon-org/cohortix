@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useParams } from 'next/navigation';
 import { type ColumnDef } from '@tanstack/react-table';
 import { DataTable, SortableHeader } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,8 @@ interface AgentsTableProps {
 }
 
 export function AgentsTable({ data }: AgentsTableProps) {
+  const params = useParams<{ orgSlug: string }>();
+  const orgSlug = params?.orgSlug ?? '';
   const columns = useMemo<ColumnDef<AgentRow>[]>(
     () => [
       {
@@ -92,7 +95,7 @@ export function AgentsTable({ data }: AgentsTableProps) {
       searchKey="name"
       searchPlaceholder="Search agents..."
       onRowClick={(agent) => {
-        window.location.href = `/dashboard/agents/${agent.id}`;
+        window.location.href = `/${orgSlug}/agents/${agent.id}`;
       }}
       emptyMessage="No agents found."
       toolbar={(table) => (

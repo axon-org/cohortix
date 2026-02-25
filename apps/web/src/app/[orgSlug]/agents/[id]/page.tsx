@@ -21,8 +21,8 @@ const STATUS_COLORS: Record<string, string> = {
   error: 'bg-destructive',
 };
 
-export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function AgentDetailPage({ params }: { params: Promise<{ orgSlug: string; id: string }> }) {
+  const { orgSlug, id } = use(params);
   const router = useRouter();
   const { data: agent, isLoading, error } = useAgent(id);
   const updateMutation = useUpdateAgent();
@@ -36,7 +36,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
       <div className="text-center py-20">
         <p className="text-muted-foreground">Agent not found</p>
         <Link
-          href="/dashboard/agents"
+          href={`/${orgSlug}/agents`}
           className="text-sm text-foreground underline mt-2 inline-block"
         >
           Back to Agents
@@ -68,14 +68,14 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
   const handleDelete = async () => {
     await deleteMutation.mutateAsync(id);
-    router.push('/dashboard/agents');
+    router.push(`/${orgSlug}/agents`);
   };
 
   return (
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
         <Link
-          href="/dashboard/agents"
+          href={`/${orgSlug}/agents`}
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Agents

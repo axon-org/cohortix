@@ -30,8 +30,8 @@ const STATUS_COLORS: Record<string, string> = {
   completed: 'bg-info',
 };
 
-export default function CohortDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function CohortDetailPage({ params }: { params: Promise<{ orgSlug: string; id: string }> }) {
+  const { orgSlug, id } = use(params);
   const router = useRouter();
   const { data: cohort, isLoading, error } = useCohort(id);
   const { data: membersData } = useCohortMembers(id);
@@ -48,7 +48,7 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
       <div className="text-center py-20">
         <p className="text-muted-foreground">Cohort not found</p>
         <Link
-          href="/dashboard/cohorts"
+          href={`/${orgSlug}/cohorts`}
           className="text-sm text-foreground underline mt-2 inline-block"
         >
           Back to Cohorts
@@ -75,7 +75,7 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
 
   const handleDelete = async () => {
     await deleteMutation.mutateAsync(id);
-    router.push('/dashboard/cohorts');
+    router.push(`/${orgSlug}/cohorts`);
   };
 
   return (
@@ -83,7 +83,7 @@ export default function CohortDetailPage({ params }: { params: Promise<{ id: str
       {/* Back + Actions */}
       <div className="flex items-center justify-between">
         <Link
-          href="/dashboard/cohorts"
+          href={`/${orgSlug}/cohorts`}
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />

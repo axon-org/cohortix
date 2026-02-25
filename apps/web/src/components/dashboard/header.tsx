@@ -13,7 +13,7 @@ function useBreadcrumbs() {
   const segments = pathname.split('/').filter(Boolean);
 
   if (segments.length === 0) {
-    return [{ label: 'Dashboard', href: '/dashboard' }];
+    return [{ label: 'Dashboard', href: '/' }];
   }
 
   const crumbs: { label: string; href: string }[] = [];

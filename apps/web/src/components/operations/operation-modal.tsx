@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useCreateOperation, useUpdateOperation } from '@/hooks/use-operations';
 import { useMissions } from '@/hooks/use-missions';
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,8 @@ const STATUS_OPTIONS = [
 
 export function OperationModal({ open, onOpenChange, operation }: OperationModalProps) {
   const router = useRouter();
+  const params = useParams<{ orgSlug: string }>();
+  const orgSlug = params?.orgSlug ?? '';
   const isEditing = !!operation;
   const createMutation = useCreateOperation();
   const updateMutation = useUpdateOperation();
@@ -123,7 +125,7 @@ export function OperationModal({ open, onOpenChange, operation }: OperationModal
         await updateMutation.mutateAsync({ id: operation.id, data: payload });
       } else {
         const newOperation = await createMutation.mutateAsync(payload);
-        router.push(`/dashboard/operations/${newOperation.id}`);
+        router.push(`/${orgSlug}/operations/${newOperation.id}`);
       }
 
       onOpenChange(false);

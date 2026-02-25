@@ -29,7 +29,7 @@ export function RecentActivity({ activities, orgSlug }: RecentActivityProps) {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Recent Activity</h3>
         <Link
-          href={orgSlug ? `/${orgSlug}/activity` : '/dashboard/activity'}
+          href={orgSlug ? `/${orgSlug}/activity` : '/activity'}
           className="text-sm text-primary hover:underline"
         >
           View All
