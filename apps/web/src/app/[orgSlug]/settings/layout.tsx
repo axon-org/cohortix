@@ -1,40 +1,23 @@
-import Link from 'next/link';
+import type { ReactNode } from 'react';
+import { SettingsNav } from './settings-nav';
 
-export default async function SettingsLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: Promise<{ orgSlug: string }>;
-}) {
-  const { orgSlug } = await params;
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Organization Settings</h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage your workspace configuration</p>
-      </div>
-
-      <nav className="flex gap-4 border-b border-border">
-        <NavLink href={`/${orgSlug}/settings`}>General</NavLink>
-        <NavLink href={`/${orgSlug}/settings/members`}>Members</NavLink>
-        <NavLink href={`/${orgSlug}/settings/billing`}>Billing</NavLink>
-        <NavLink href={`/${orgSlug}/settings/integrations`}>Integrations</NavLink>
-      </nav>
-
-      <div>{children}</div>
-    </div>
-  );
+interface SettingsLayoutProps {
+  children: ReactNode;
 }
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+export default function SettingsLayout({ children }: SettingsLayoutProps) {
   return (
-    <Link
-      href={href}
-      className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-    >
-      {children}
-    </Link>
+    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Organization Settings</h1>
+        <p className="text-muted-foreground mt-1">
+          Manage your organization profile, members, and preferences.
+        </p>
+      </div>
+
+      <SettingsNav />
+
+      <div className="mt-6">{children}</div>
+    </div>
   );
 }
