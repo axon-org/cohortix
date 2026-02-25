@@ -187,6 +187,9 @@ importers:
       eslint-config-next:
         specifier: ^15.1.0
         version: 15.5.12(eslint@8.57.1)(typescript@5.9.3)
+      eslint-plugin-cohortix:
+        specifier: workspace:*
+        version: link:../../packages/eslint-plugin-cohortix
       jsdom:
         specifier: ^28.0.0
         version: 28.1.0
@@ -242,6 +245,8 @@ importers:
       typescript:
         specifier: ^5.5.0
         version: 5.9.3
+
+  packages/eslint-plugin-cohortix: {}
 
   packages/types:
     devDependencies:
