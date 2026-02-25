@@ -82,8 +82,10 @@ export function Sidebar({ user, orgSlug }: SidebarProps) {
       role="navigation"
       aria-label="Main navigation"
       className={cn(
-        'bg-card-elevated border-r border-border flex flex-col transition-all duration-200',
-        collapsed ? 'w-16' : 'w-60'
+        'bg-card-elevated border-r border-border flex-col transition-all duration-200',
+        'fixed inset-y-0 left-0 z-50 md:relative md:flex',
+        collapsed ? 'w-16' : 'w-60',
+        'hidden md:flex' // This is the temporary state until we add a toggle or use a sheet
       )}
     >
       {/* Org switcher header */}
