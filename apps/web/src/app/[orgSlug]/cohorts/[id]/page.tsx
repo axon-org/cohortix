@@ -30,7 +30,11 @@ const STATUS_COLORS: Record<string, string> = {
   completed: 'bg-info',
 };
 
-export default function CohortDetailPage({ params }: { params: Promise<{ orgSlug: string; id: string }> }) {
+export default function CohortDetailPage({
+  params,
+}: {
+  params: Promise<{ orgSlug: string; id: string }>;
+}) {
   const { orgSlug, id } = use(params);
   const router = useRouter();
   const { data: cohort, isLoading, error } = useCohort(id);

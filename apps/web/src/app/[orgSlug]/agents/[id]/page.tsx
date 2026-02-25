@@ -21,7 +21,11 @@ const STATUS_COLORS: Record<string, string> = {
   error: 'bg-destructive',
 };
 
-export default function AgentDetailPage({ params }: { params: Promise<{ orgSlug: string; id: string }> }) {
+export default function AgentDetailPage({
+  params,
+}: {
+  params: Promise<{ orgSlug: string; id: string }>;
+}) {
   const { orgSlug, id } = use(params);
   const router = useRouter();
   const { data: agent, isLoading, error } = useAgent(id);

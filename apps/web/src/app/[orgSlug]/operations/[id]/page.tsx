@@ -22,7 +22,11 @@ const STATUS_OPTIONS: OperationStatus[] = [
   'archived',
 ];
 
-export default function OperationDetailPage({ params }: { params: Promise<{ orgSlug: string; id: string }> }) {
+export default function OperationDetailPage({
+  params,
+}: {
+  params: Promise<{ orgSlug: string; id: string }>;
+}) {
   const { orgSlug, id } = use(params);
   const router = useRouter();
   const { data: operation, isLoading, error } = useOperation(id);
