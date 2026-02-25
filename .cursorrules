@@ -4,6 +4,8 @@ Read CLAUDE.md for project context, commands, and conventions.
 
 ## Dev Standards (Axon Codex)
 
+Routing guide: docs/dev-codex/ROUTING.md — read this first to know which packs apply.
+
 Read these before writing any code:
 1. Core rules (always): docs/dev-codex/core/
 2. Backend standards: docs/dev-codex/domains/backend/
