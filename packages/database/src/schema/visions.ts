@@ -5,12 +5,14 @@ import {
   text,
   timestamp,
   integer,
+  date,
   jsonb,
   pgEnum,
 } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
 import { domains } from './domains';
-import { ownerTypeEnum } from './missions';
+// ownerTypeEnum is defined in goals.ts but we avoid circular import
+// by using varchar for owner_type here (matches DB column type)
 
 // User-facing terminology: "Vision" (Emotional north star - big WHY)
 // PPV Pro equivalent: "Life Aspirations"
@@ -27,36 +29,31 @@ export const visions = pgTable('visions', {
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
 
-  // Polymorphic owner (user or agent)
-  ownerType: ownerTypeEnum('owner_type').notNull(),
-  ownerId: uuid('owner_id').notNull(),
+  // Linked domain (optional — Visions can roll up to Domains)
+  domainId: uuid('domain_id').references(() => domains.id, { onDelete: 'set null' }),
 
-  // Created by (who defined this vision)
-  createdByType: ownerTypeEnum('created_by_type').notNull(),
-  createdById: uuid('created_by_id').notNull(),
+  // Polymorphic owner (human only for visions)
+  ownerType: varchar('owner_type', { length: 50 }).default('user').notNull(),
+  ownerId: uuid('owner_id'),
 
-  // Linked domain (Visions roll up to Domains)
-  domainId: uuid('domain_id')
-    .notNull()
-    .references(() => domains.id, { onDelete: 'cascade' }),
-
-  title: varchar('title', { length: 500 }).notNull(),
+  name: varchar('name', { length: 500 }).notNull(),
   description: text('description'),
-
-  // Why this matters (emotional driver)
-  whyStatement: text('why_statement'),
 
   status: visionStatusEnum('status').default('active').notNull(),
 
+  // Timeline fields for roadmap view
+  targetDate: date('target_date'),
+  reviewDate: date('review_date'), // Next quarterly review
+
+  // Progress (rolled up from missions)
+  progress: integer('progress').default(0),
+
   // Visual settings
-  color: varchar('color', { length: 7 }), // Hex color
-  icon: varchar('icon', { length: 50 }), // Icon name
+  color: varchar('color', { length: 7 }),
+  icon: varchar('icon', { length: 50 }),
 
-  // Ordering within domain
+  // Ordering
   orderIndex: integer('order_index').default(0).notNull(),
-
-  // Achievement tracking (optional - visions are aspirational)
-  achievedAt: timestamp('achieved_at', { withTimezone: true }),
 
   // Metadata
   metadata: jsonb('metadata').default({}).notNull(),

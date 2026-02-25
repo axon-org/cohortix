@@ -11,11 +11,14 @@ export * from './agent-assignments';
 export * from './cohorts'; // Groups of agents
 export * from './cohort-members'; // Agent-to-cohort memberships
 
-// PPV Hierarchy: Domain → Vision → Mission → Operation/Rhythm → Task
-export * from './goals';
-// Note: Both missions.ts and projects.ts export the same types with legacy aliases
-// Only export from missions.ts to avoid duplicate exports
-export * from './missions'; // User-facing: "Missions" (DB table: projects)
+// PPV Hierarchy: Domain → Vision → Mission → Operation → Task
+export * from './domains'; // Life pillars (top of PPV pyramid)
+export * from './visions'; // Life aspirations (emotional north stars)
+export * from './goals'; // Missions (measurable goals, DB table: missions)
+// Note: operations.ts is the canonical schema for DB table 'projects'
+// missions.ts is a legacy alias file — we skip re-exporting it to avoid
+// duplicate Mission/missionStatusEnum conflicts with goals.ts
+export * from './operations'; // Operations (bounded initiatives, DB table: projects)
 export * from './milestones';
 
 // Actions (User-facing: "Actions", DB table: tasks)
