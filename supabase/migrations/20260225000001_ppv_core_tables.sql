@@ -43,25 +43,27 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_domains_org_name
 -- RLS
 ALTER TABLE domains ENABLE ROW LEVEL SECURITY;
 
--- RLS policies (Clerk-based, matching existing patterns)
+-- RLS policies (Clerk-based, matching existing patterns from rls_clerk_option_a_foundation)
+-- Pattern: JOIN profiles to get clerk_user_id
 DO $$
 BEGIN
-  -- Check if we have the Clerk helper function (from rls_clerk_option_a_foundation)
   IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'get_current_clerk_user_id') THEN
-    -- Clerk-based policies
     CREATE POLICY "domains_select_org_member" ON domains
       FOR SELECT USING (
         organization_id IN (
           SELECT om.organization_id FROM organization_memberships om
-          WHERE om.clerk_user_id = get_current_clerk_user_id()
+          JOIN profiles p ON om.user_id = p.id
+          WHERE p.clerk_user_id = get_current_clerk_user_id()
         )
+        OR (get_current_clerk_user_id() IS NULL AND is_service_role())
       );
 
     CREATE POLICY "domains_insert_org_member" ON domains
       FOR INSERT WITH CHECK (
         organization_id IN (
           SELECT om.organization_id FROM organization_memberships om
-          WHERE om.clerk_user_id = get_current_clerk_user_id()
+          JOIN profiles p ON om.user_id = p.id
+          WHERE p.clerk_user_id = get_current_clerk_user_id()
         )
       );
 
@@ -69,7 +71,8 @@ BEGIN
       FOR UPDATE USING (
         organization_id IN (
           SELECT om.organization_id FROM organization_memberships om
-          WHERE om.clerk_user_id = get_current_clerk_user_id()
+          JOIN profiles p ON om.user_id = p.id
+          WHERE p.clerk_user_id = get_current_clerk_user_id()
         )
       );
 
@@ -77,7 +80,8 @@ BEGIN
       FOR DELETE USING (
         organization_id IN (
           SELECT om.organization_id FROM organization_memberships om
-          WHERE om.clerk_user_id = get_current_clerk_user_id()
+          JOIN profiles p ON om.user_id = p.id
+          WHERE p.clerk_user_id = get_current_clerk_user_id()
             AND om.role IN ('owner', 'admin')
         )
       );
@@ -267,29 +271,30 @@ END;
 $$;
 
 -- ===========================================================================
--- 4. ADD RECURRENCE TO TASKS
+-- 4. ADD RECURRENCE TO TASKS (only if tasks table exists)
 -- ===========================================================================
 
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'public'
-      AND table_name = 'tasks'
-      AND column_name = 'is_recurring'
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'tasks'
   ) THEN
-    ALTER TABLE tasks ADD COLUMN is_recurring BOOLEAN DEFAULT false;
-    ALTER TABLE tasks ADD COLUMN recurrence JSONB;
-    -- recurrence shape: { frequency: 'daily'|'weekly'|'monthly', days?: string[], endDate?: string }
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name = 'tasks'
+        AND column_name = 'is_recurring'
+    ) THEN
+      ALTER TABLE tasks ADD COLUMN is_recurring BOOLEAN DEFAULT false;
+      ALTER TABLE tasks ADD COLUMN recurrence JSONB;
+      -- recurrence shape: { frequency: 'daily'|'weekly'|'monthly', days?: string[], endDate?: string }
+    END IF;
+    EXECUTE $c$COMMENT ON COLUMN tasks.is_recurring IS 'Whether this task recurs on a schedule'$c$;
+    EXECUTE $c$COMMENT ON COLUMN tasks.recurrence IS 'Recurrence config: { frequency, days?, endDate? }'$c$;
   END IF;
 END;
 $$;
-
--- Remove rhythmId FK if it exists (rhythms table is being dropped conceptually)
--- We don't drop the column if it exists to avoid data loss, just leave it
-
-COMMENT ON COLUMN tasks.is_recurring IS 'Whether this task recurs on a schedule';
-COMMENT ON COLUMN tasks.recurrence IS 'Recurrence config: { frequency, days?, endDate? }';
 
 -- ===========================================================================
 -- 5. DOCUMENTATION
