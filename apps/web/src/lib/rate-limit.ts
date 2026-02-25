@@ -292,8 +292,15 @@ export function withMiddleware(
 
   return async (request: NextRequest, context?: any): Promise<NextResponse> => {
     try {
-      // Apply rate limiting first
-      await rateLimiter(request);
+      // Skip rate limiting in test/E2E environments to prevent false failures
+      const isTest =
+        process.env.NODE_ENV === 'test' ||
+        process.env.E2E_SKIP_AUTH === 'true' ||
+        process.env.BYPASS_AUTH === 'true';
+
+      if (!isTest) {
+        await rateLimiter(request);
+      }
 
       // Then execute the handler
       return await handler(request, context);
