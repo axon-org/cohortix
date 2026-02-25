@@ -1,0 +1,3 @@
+#!/bin/sh
+# Auto-update submodules (Axon Dev Codex) after checkout/pull
+git submodule update --init --recursive
