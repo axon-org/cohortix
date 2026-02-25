@@ -102,7 +102,7 @@ UI, real-time updates, mobile responsive, global search
 **Last completed:** Sprint 4 (Mission Control + stabilization), terminology
 migration `allies` → `agents` (PR #31)
 
-**Known issues:** Port 3000 often occupied (kill orphans), old `/dashboard/*`
+**Known issues:** Port 3000 often occupied (kill orphans), legacy `/dashboard/*` routes redirect to `/${orgSlug}/*`
 routes coexist with `/[orgSlug]/*`, test API routes need cleanup before prod
 
 ---

@@ -101,7 +101,7 @@ apps/web/src/server/db/queries/dashboard.ts
 
 ### Update Your Dashboard Page
 
-**Example: `apps/web/src/app/(dashboard)/page.tsx`**
+**Example: `apps/web/src/app/[orgSlug]/page.tsx`**
 
 ```typescript
 import { getDashboardData } from '@/server/db/queries/dashboard';
@@ -168,7 +168,7 @@ pnpm dev
 ### Open Dashboard
 
 ```
-http://localhost:3000/dashboard
+http://localhost:3000/{orgSlug}
 ```
 
 ### Verify

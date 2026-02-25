@@ -140,7 +140,7 @@ export async function middleware(request: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard');
+  const isProtectedRoute = !isPublicRoute(request);
 
   if (isProtectedRoute && !session) {
     return NextResponse.redirect(new URL('/sign-in', request.url));
