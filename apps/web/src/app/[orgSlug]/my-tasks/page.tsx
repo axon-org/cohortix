@@ -69,7 +69,7 @@ export default function MyTasksPage({ params }: MyTasksPageProps) {
       status: statusFilter === 'all' ? undefined : statusFilter,
       priority: priorityFilter === 'all' ? undefined : priorityFilter,
       sort,
-      limit: 200,
+      limit: 100,
     };
   }, [statusFilter, priorityFilter, sort]);
 
