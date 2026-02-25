@@ -36,7 +36,7 @@ export function WorkspaceRedirect({ variant = 'primary' }: WorkspaceRedirectProp
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center py-2">
-        <Loader2 className="w-4 h-4 text-[#6B7280] animate-spin" />
+        <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
       </div>
     );
   }
@@ -46,7 +46,7 @@ export function WorkspaceRedirect({ variant = 'primary' }: WorkspaceRedirectProp
       <button
         onClick={handleRedirect}
         disabled={isRedirecting}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5E6AD2] hover:bg-[#7C8ADE] disabled:opacity-50 disabled:hover:bg-[#5E6AD2] text-white rounded-lg font-medium transition-colors"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:hover:bg-primary text-primary-foreground rounded-lg font-medium transition-colors"
       >
         {isRedirecting ? (
           <>
@@ -67,7 +67,7 @@ export function WorkspaceRedirect({ variant = 'primary' }: WorkspaceRedirectProp
     <button
       onClick={handleRedirect}
       disabled={isRedirecting}
-      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-transparent hover:bg-[#1C1917] disabled:opacity-50 text-[#9CA3AF] hover:text-white border border-[#27282D] rounded-lg font-medium transition-colors"
+      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-transparent hover:bg-secondary disabled:opacity-50 text-muted-foreground hover:text-foreground border border-border rounded-lg font-medium transition-colors"
     >
       {isRedirecting ? (
         <>

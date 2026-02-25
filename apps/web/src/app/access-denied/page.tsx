@@ -44,30 +44,27 @@ function AccessDeniedContent() {
   // Variant A: Not Found
   if (reason === 'not-found') {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
-        style={{ backgroundColor: '#0A0A0B' }}
-      >
+      <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-background">
         {/* Radial gradient glow effect */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div
             className="w-[800px] h-[800px] rounded-full opacity-10 blur-3xl"
             style={{
-              background: 'radial-gradient(circle, #EF4444 0%, transparent 70%)',
+              background: 'radial-gradient(circle, hsl(0 84% 60%) 0%, transparent 70%)',
             }}
           />
         </div>
 
         <div className="relative z-10 w-full max-w-md">
-          <div className="bg-[#101012] border border-[#27282D] rounded-xl p-8 shadow-2xl">
+          <div className="bg-card-elevated border border-border rounded-xl p-8 shadow-2xl">
             <div className="flex flex-col items-center text-center gap-6">
-              <div className="w-16 h-16 bg-[#1C1917] border border-[#44403C] rounded-2xl flex items-center justify-center">
-                <Globe className="w-8 h-8 text-[#EF4444]" />
+              <div className="w-16 h-16 bg-stone-900 border border-stone-700 rounded-2xl flex items-center justify-center">
+                <Globe className="w-8 h-8 text-destructive" />
               </div>
 
               <div>
-                <h1 className="text-2xl font-bold text-white mb-2">Workspace not found</h1>
-                <p className="text-[#9CA3AF] text-base">
+                <h1 className="text-2xl font-bold text-foreground mb-2">Workspace not found</h1>
+                <p className="text-muted-foreground text-base">
                   The workspace you&apos;re looking for doesn&apos;t exist or may have been removed.
                 </p>
               </div>
@@ -82,35 +79,32 @@ function AccessDeniedContent() {
 
   // Variant B: Not Member
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
-      style={{ backgroundColor: '#0A0A0B' }}
-    >
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-background">
       {/* Radial gradient glow effect */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div
           className="w-[800px] h-[800px] rounded-full opacity-10 blur-3xl"
           style={{
-            background: 'radial-gradient(circle, #F97316 0%, transparent 70%)',
+            background: 'radial-gradient(circle, hsl(25 95% 53%) 0%, transparent 70%)',
           }}
         />
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        <div className="bg-[#101012] border border-[#27282D] rounded-xl p-8 shadow-2xl">
+        <div className="bg-card-elevated border border-border rounded-xl p-8 shadow-2xl">
           <div className="flex flex-col items-center text-center gap-6">
             {!requestSuccess ? (
               <>
-                <div className="w-16 h-16 bg-[#1C1917] border border-[#44403C] rounded-2xl flex items-center justify-center">
-                  <ShieldX className="w-8 h-8 text-[#F97316]" />
+                <div className="w-16 h-16 bg-stone-900 border border-stone-700 rounded-2xl flex items-center justify-center">
+                  <ShieldX className="w-8 h-8 text-orange-500" />
                 </div>
 
                 <div>
-                  <h1 className="text-2xl font-bold text-white mb-2">
+                  <h1 className="text-2xl font-bold text-foreground mb-2">
                     You don&apos;t have access to{' '}
-                    <span className="text-[#5E6AD2]">{org || 'this workspace'}</span>
+                    <span className="text-primary">{org || 'this workspace'}</span>
                   </h1>
-                  <p className="text-[#9CA3AF] text-base">
+                  <p className="text-muted-foreground text-base">
                     You&apos;re not a member of this workspace. You can request access from the
                     workspace admin.
                   </p>
@@ -120,7 +114,7 @@ function AccessDeniedContent() {
                   <Button
                     onClick={handleRequestAccess}
                     disabled={isRequesting}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5E6AD2] hover:bg-[#7C8ADE] disabled:opacity-50 disabled:hover:bg-[#5E6AD2] text-white rounded-lg font-medium transition-colors"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:hover:bg-primary text-primary-foreground rounded-lg font-medium transition-colors"
                   >
                     {isRequesting ? (
                       <>
@@ -135,19 +129,19 @@ function AccessDeniedContent() {
                   <WorkspaceRedirect variant="secondary" />
 
                   {requestError && (
-                    <p className="text-xs text-[#EF4444] text-center">{requestError}</p>
+                    <p className="text-xs text-destructive text-center">{requestError}</p>
                   )}
                 </div>
               </>
             ) : (
               <>
-                <div className="w-16 h-16 bg-[#14532D] border border-[#166534] rounded-2xl flex items-center justify-center">
-                  <CheckCircle className="w-8 h-8 text-[#22C55E]" />
+                <div className="w-16 h-16 bg-green-950 border border-green-900 rounded-2xl flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 text-success" />
                 </div>
 
                 <div>
-                  <h1 className="text-2xl font-bold text-white mb-2">Access requested</h1>
-                  <p className="text-[#9CA3AF] text-base">
+                  <h1 className="text-2xl font-bold text-foreground mb-2">Access requested</h1>
+                  <p className="text-muted-foreground text-base">
                     The workspace admin will review your request. You&apos;ll be notified once your
                     access is approved.
                   </p>
@@ -167,11 +161,8 @@ export default function AccessDeniedPage() {
   return (
     <Suspense
       fallback={
-        <div
-          className="min-h-screen flex items-center justify-center"
-          style={{ backgroundColor: '#0A0A0B' }}
-        >
-          <Loader2 className="w-8 h-8 text-[#5E6AD2] animate-spin" />
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
         </div>
       }
     >

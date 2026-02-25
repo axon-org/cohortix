@@ -36,11 +36,8 @@ export default function OnboardingPage() {
 
   if (!userLoaded || !orgLoaded) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: '#0A0A0B' }}
-      >
-        <Loader2 className="w-8 h-8 text-[#5E6AD2] animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
   }
@@ -77,28 +74,26 @@ export default function OnboardingPage() {
 
   const getSlugStatusIcon = () => {
     if (slugStatus === 'checking') {
-      return <Loader2 className="w-4 h-4 text-[#9CA3AF] animate-spin" />;
+      return <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />;
     }
     if (slugStatus === 'available' && validation.valid) {
-      return <Check className="w-4 h-4 text-[#10B981]" />;
+      return <Check className="w-4 h-4 text-success" />;
     }
     if (slugStatus === 'taken' || !validation.valid) {
-      return <X className="w-4 h-4 text-[#EF4444]" />;
+      return <X className="w-4 h-4 text-destructive" />;
     }
     return null;
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
-      style={{ backgroundColor: '#0A0A0B' }}
-    >
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-background">
       {/* Radial gradient glow effect */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div
           className="w-[800px] h-[800px] rounded-full opacity-10 blur-3xl"
           style={{
-            background: 'radial-gradient(circle, #5E6AD2 0%, transparent 70%)',
+            background:
+              'radial-gradient(circle, hsl(var(--primary, 235 58% 60%)) 0%, transparent 70%)',
           }}
         />
       </div>
@@ -107,19 +102,19 @@ export default function OnboardingPage() {
         {step === 'welcome' && (
           <div className="flex flex-col items-center text-center gap-6">
             <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center">
-              <Rocket className="w-8 h-8 text-[#0A0A0B]" />
+              <Rocket className="w-8 h-8 text-background" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
+              <h1 className="text-3xl font-bold text-foreground mb-2">
                 Welcome to Cohortix{user?.firstName ? `, ${user.firstName}` : ''}!
               </h1>
-              <p className="text-[#9CA3AF] text-base">
+              <p className="text-muted-foreground text-base">
                 Your AI crew is ready. Let&apos;s set up your workspace.
               </p>
             </div>
             <button
               onClick={() => setStep('create-org')}
-              className="flex items-center gap-2 px-6 py-3 bg-[#5E6AD2] hover:bg-[#7C8ADE] text-white rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-primary-foreground rounded-lg font-medium transition-colors"
             >
               Get Started
               <ArrowRight className="w-4 h-4" />
@@ -128,9 +123,9 @@ export default function OnboardingPage() {
         )}
 
         {step === 'create-org' && (
-          <div className="bg-[#101012] border border-[#27282D] rounded-xl p-8 shadow-2xl">
-            <h2 className="text-xl font-bold text-white mb-1">Create your organization</h2>
-            <p className="text-[#9CA3AF] text-sm mb-6">
+          <div className="bg-card-elevated border border-border rounded-xl p-8 shadow-2xl">
+            <h2 className="text-xl font-bold text-foreground mb-1">Create your organization</h2>
+            <p className="text-muted-foreground text-sm mb-6">
               This is where your AI agents and missions will live.
             </p>
 
@@ -139,7 +134,7 @@ export default function OnboardingPage() {
               <div>
                 <label
                   htmlFor="org-name"
-                  className="block text-sm font-medium text-[#D1D5DB] mb-1.5"
+                  className="block text-sm font-medium text-foreground/90 mb-1.5"
                 >
                   Organization name
                 </label>
@@ -149,7 +144,7 @@ export default function OnboardingPage() {
                   value={orgName}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOrgName(e.target.value)}
                   placeholder="e.g. Acme Corp"
-                  className="w-full px-3 py-2.5 bg-[#0A0A0B] border border-[#27282D] rounded-lg text-[#F2F2F2] placeholder-[#6B7280] focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2] outline-none transition-colors"
+                  className="w-full px-3 py-2.5 bg-background border border-input rounded-lg text-foreground placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-ring outline-none transition-colors"
                   onKeyDown={(e) => e.key === 'Enter' && canSubmit && handleCreateOrg()}
                   autoFocus
                 />
@@ -159,13 +154,13 @@ export default function OnboardingPage() {
               <div>
                 <label
                   htmlFor="org-slug"
-                  className="block text-sm font-medium text-[#D1D5DB] mb-1.5"
+                  className="block text-sm font-medium text-foreground/90 mb-1.5"
                 >
                   Workspace URL
                 </label>
                 <div className="relative">
                   <div className="flex items-center">
-                    <span className="text-[#6B7280] text-sm pr-1">cohortix.ai/</span>
+                    <span className="text-muted-foreground text-sm pr-1">cohortix.ai/</span>
                     <input
                       id="org-slug"
                       type="text"
@@ -175,7 +170,7 @@ export default function OnboardingPage() {
                         setSlugTouched(true);
                       }}
                       placeholder="acme-corp"
-                      className="flex-1 px-3 py-2.5 bg-[#0A0A0B] border border-[#27282D] rounded-lg text-[#F2F2F2] placeholder-[#6B7280] focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2] outline-none transition-colors"
+                      className="flex-1 px-3 py-2.5 bg-background border border-input rounded-lg text-foreground placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-ring outline-none transition-colors"
                       onKeyDown={(e) => e.key === 'Enter' && canSubmit && handleCreateOrg()}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -185,14 +180,14 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* URL Preview */}
-                <div className="mt-1.5 text-xs text-[#6B7280]">
+                <div className="mt-1.5 text-xs text-muted-foreground">
                   Your workspace URL:{' '}
-                  <span className="text-[#9CA3AF]">cohortix.ai/{slug || '...'}</span>
+                  <span className="text-muted-foreground/80">cohortix.ai/{slug || '...'}</span>
                 </div>
 
                 {/* Validation Error */}
                 {slug && !validation.valid && (
-                  <div className="mt-2 flex items-start gap-1.5 text-xs text-[#EF4444]">
+                  <div className="mt-2 flex items-start gap-1.5 text-xs text-destructive">
                     <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     <span>{validation.error}</span>
                   </div>
@@ -203,7 +198,7 @@ export default function OnboardingPage() {
                   validation.valid &&
                   (slugStatus === 'taken' || (slugStatus === 'idle' && slugError)) && (
                     <div className="mt-2 space-y-1">
-                      <div className="flex items-start gap-1.5 text-xs text-[#EF4444]">
+                      <div className="flex items-start gap-1.5 text-xs text-destructive">
                         <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                         <span>{slugError || 'This URL is already taken'}</span>
                       </div>
@@ -213,7 +208,7 @@ export default function OnboardingPage() {
                             setSlug(suggestion);
                             setSlugTouched(true);
                           }}
-                          className="text-xs text-[#5E6AD2] hover:text-[#7C8ADE] transition-colors"
+                          className="text-xs text-primary hover:text-primary-hover transition-colors"
                         >
                           Try &quot;{suggestion}&quot; instead
                         </button>
@@ -223,14 +218,14 @@ export default function OnboardingPage() {
 
                 {/* Success Message */}
                 {slug && validation.valid && slugStatus === 'available' && (
-                  <div className="mt-2 flex items-start gap-1.5 text-xs text-[#10B981]">
+                  <div className="mt-2 flex items-start gap-1.5 text-xs text-success">
                     <Check className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     <span>This URL is available</span>
                   </div>
                 )}
 
                 {/* Warning */}
-                <div className="mt-2 flex items-start gap-1.5 text-xs text-[#F59E0B]">
+                <div className="mt-2 flex items-start gap-1.5 text-xs text-warning">
                   <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                   <span>⚠️ This URL cannot be changed later</span>
                 </div>
@@ -240,7 +235,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handleCreateOrg}
                 disabled={!canSubmit}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#5E6AD2] hover:bg-[#7C8ADE] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5E6AD2] text-white rounded-lg font-medium transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary text-primary-foreground rounded-lg font-medium transition-colors"
               >
                 {isCreating ? (
                   <>
