@@ -23,11 +23,16 @@ will fail if files aren't formatted. This applies to ALL file types: `.ts`,
 
 1. **UI Mockups** — 8 screens designed (v1 + v3) in
    `/Users/alimai/clawd/cohortix-mockups/v3/`
-2. **Mission Control Dashboard** — Built with sidebar, header, KPI cards,
-   sparklines, engagement chart, activity feed, alerts
-3. **Auth Screens** — Sign-in, sign-up, forgot-password with Supabase Auth
+2. **Mission Control Dashboard** — Built with sidebar (Strategy/Execution/Team
+   structure), header, KPI cards, sparklines, engagement chart, activity feed,
+   alerts
+3. **Auth Screens** — Sign-in, sign-up, forgot-password with Clerk
    (email/password + GitHub/Google OAuth)
-4. **Database Schema** — 16 tables, 14 enums, RLS policies pushed to Supabase
+4. **Database Schema** — 21 tables (PostgreSQL 17), 14 enums, RLS policies
+   pushed to Supabase
+   - PPV Core: domains, visions, missions, operations, tasks (via goals.ts,
+     operations.ts, actions.ts)
+   - See §12 Database Conventions for Drizzle schema naming disambiguation
 5. **Data Seeding** — Axon HQ org, 4 AI agents (Devi, Lubna, Zara, Khalid),
    missions, actions
 6. **Dashboard Wiring** — Real Supabase data flowing to all dashboard components
@@ -60,6 +65,15 @@ will fail if files aren't formatted. This applies to ALL file types: `.ts`,
   shared packages — Next.js `cookies()` can't run from packages)
 
 ### Credentials & Environment Architecture (Updated 2026-02-19)
+
+### Environment Architecture Pattern (Universal)
+
+```
+Git branch    → Vercel              → Supabase                → Clerk
+feature/*     → Preview URL         → Ephemeral preview       → Dev instance
+dev           → staging.domain.com  → Persistent staging      → Dev instance
+main          → app.domain.com      → Main (production)       → Prod instance
+```
 
 **Domains:**
 
@@ -443,10 +457,13 @@ apps/web/
 │   │   ├── (auth)/             # Auth routes (sign-in, sign-up)
 │   │   ├── (marketing)/        # Public pages (landing, pricing)
 │   │   ├── (dashboard)/        # Protected routes (main app)
-│   │   │   ├── missions/
+│   │   │   ├── domains/        # PPV: Domains (life pillars)
+│   │   │   ├── visions/        # PPV: Visions (aspirations)
+│   │   │   ├── missions/       # PPV: Missions (measurable goals)
+│   │   │   ├── operations/     # PPV: Operations (bounded initiatives)
+│   │   │   ├── actions/        # PPV: Tasks/Actions
 │   │   │   ├── agents/
 │   │   │   ├── knowledge/
-│   │   │   ├── goals/
 │   │   │   ├── analytics/
 │   │   │   └── settings/
 │   │   │
@@ -466,8 +483,11 @@ apps/web/
 │   ├── components/             # React components
 │   │   ├── ui/                 # shadcn/ui primitives
 │   │   ├── features/           # Feature-specific components
-│   │   │   ├── missions/
-│   │   │   ├── actions/
+│   │   │   ├── domains/        # PPV: Domains
+│   │   │   ├── visions/        # PPV: Visions
+│   │   │   ├── missions/       # PPV: Missions
+│   │   │   ├── operations/     # PPV: Operations
+│   │   │   ├── actions/        # PPV: Tasks/Actions
 │   │   │   ├── agents/
 │   │   │   └── knowledge/
 │   │   ├── layouts/            # Layout components
@@ -1086,7 +1106,32 @@ what requires human approval.**
 - Staging: Tier 3 (explicit permission)
 - Production: Tier 3 + manual review + backup verification
 
+### Supabase GitHub Integration Protocol
+
+- Enable GitHub Integration on every Supabase project (auto-deploys migrations
+  on merge to the production branch).
+- Config:
+  - Working directory = `supabase`
+  - Deploy to production = ON
+  - Automatic branching = ON
+  - Supabase changes only = ON
+- This replaces manual `supabase db push` to production. Production migrations
+  should flow through GitHub Integration.
+
 ### Database Migration Protocol (Supabase Branching + GitHub Integration)
+
+**Universal Workflow:**
+
+- Always use a persistent staging branch for QA.
+- Push migrations to staging first via CLI (`supabase link` → `supabase db push`
+  → re-link to production).
+- GitHub Integration applies production migrations automatically on merge to
+  `main`.
+- `.env.local` always points to the staging Supabase branch.
+- All migrations must be idempotent (use `IF NOT EXISTS`,
+  `ADD COLUMN IF NOT EXISTS`).
+- End migrations with `NOTIFY pgrst, 'reload schema';` to refresh PostgREST
+  cache.
 
 **Infrastructure:**
 
@@ -1123,6 +1168,14 @@ what requires human approval.**
 - Always test migrations on staging before merging to main
 - End migration files with `NOTIFY pgrst, 'reload schema';` to refresh PostgREST
   cache
+
+### Sub-Agent Delegation Lesson
+
+- Sub-agents spawned via `sessions_spawn` do **not** have real filesystem access
+  (they can hallucinate git commits).
+- For actual coding work, use Codex CLI (`codex exec`) or do it directly.
+- Always verify sub-agent deliverables exist on disk before reporting
+  completion.
 
 **External API Calls:**
 
@@ -2242,6 +2295,57 @@ const projects = await db.query.projects.findMany({
 | Foreign Keys    | `<table>_id`        | `project_id`, `user_id`         |
 | Junction Tables | `<table1>_<table2>` | `agent_assignments`             |
 | Enums           | snake_case          | `task_status`, `agent_role`     |
+
+### Drizzle Schema Naming (Critical: Read Before Working with DB)
+
+**⚠️ IMPORTANT:** Drizzle schema file names DO NOT always match database table
+names or user-facing terminology.
+
+**PPV Hierarchy Mapping:**
+
+| User-Facing Term | DB Table Name | Drizzle Schema File | Canonical Export |
+| ---------------- | ------------- | ------------------- | ---------------- |
+| Domains          | `domains`     | `domains.ts`        | ✅ domains.ts    |
+| Visions          | `visions`     | `visions.ts`        | ✅ visions.ts    |
+| Missions         | `missions`    | `goals.ts`          | ✅ goals.ts      |
+| Operations       | `projects`    | `operations.ts`     | ✅ operations.ts |
+| Tasks/Actions    | `tasks`       | `actions.ts`        | ✅ actions.ts    |
+
+**Legacy Files (DO NOT USE):**
+
+- `missions.ts` — Legacy alias for `goals.ts`, NOT exported to avoid duplicate
+  types
+- `tasks.ts` — Legacy alias for `actions.ts`, NOT exported to avoid duplicate
+  types
+
+**Why This Matters:**
+
+When working with the database:
+
+- **In SQL/migrations:** Use DB table names (`missions`, `projects`, `tasks`)
+- **In Drizzle schemas:** Import from canonical files (`goals.ts`,
+  `operations.ts`, `actions.ts`)
+- **In UI/docs:** Use user-facing terms (Missions, Operations, Tasks)
+
+**Example:**
+
+```typescript
+// ✅ CORRECT: Import from canonical schema
+import { missions, missionStatusEnum } from './goals';
+import { projects } from './operations';
+import { tasks } from './actions';
+
+// ❌ WRONG: Import from legacy alias (will cause duplicate export errors)
+import { missions } from './missions'; // This file is not exported!
+```
+
+### Drizzle Schema Best Practices
+
+- Avoid circular imports between schema files (use `varchar` for shared enum
+  types if needed).
+- One `pgTable` per database table — no duplicate mappings.
+- Export `$inferSelect` and `$inferInsert` types from every schema.
+- Keep schema file names matching database table names.
 
 ### Schema Standards
 
