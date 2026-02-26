@@ -7,6 +7,7 @@ import { getDashboardData } from '@/server/db/queries/dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { ArrowRight, Users, Bot, Rocket } from 'lucide-react';
+import { colors } from '@repo/ui/tokens/colors';
 
 function SectionSkeleton() {
   return (
@@ -110,7 +111,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ orgS
                     <div className="flex items-center gap-3">
                       <div
                         className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: mission.color || '#5E6AD2' }}
+                        style={{ backgroundColor: mission.color || colors.dark.primary.DEFAULT }}
                       />
                       <span className="text-sm font-medium group-hover:text-foreground">
                         {mission.name}
