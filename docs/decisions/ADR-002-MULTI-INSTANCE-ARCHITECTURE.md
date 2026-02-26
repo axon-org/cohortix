@@ -457,7 +457,429 @@ Session: operation-status-<operation_id>
 └── No persistent conversation
 ```
 
-### 6.5 Summarization Cascade
+### 6.5 Knowledge Hub Architecture
+
+Every Cohort has a Knowledge Hub — a structured, searchable repository of
+everything learned by agents and contributed by humans within that Cohort.
+
+#### 6.5.1 Knowledge Types
+
+| Knowledge Type       | Owner            | Stored In                                           | Searchable By                                               |
+| -------------------- | ---------------- | --------------------------------------------------- | ----------------------------------------------------------- |
+| **Agent Memory**     | Individual agent | OpenClaw `MEMORY.md` + `memory/`                    | That agent only (auto-recalled)                             |
+| **Agent Expertise**  | Individual agent | OpenClaw `expertise/` folders                       | That agent + Cohort members (read-only UI)                  |
+| **Agent Lessons**    | Individual agent | OpenClaw `memory/lessons/`                          | That agent + Cohort members (read-only UI)                  |
+| **Agent Decisions**  | Individual agent | OpenClaw `memory/decisions/`                        | That agent + Cohort members (read-only UI)                  |
+| **User Notes**       | Individual user  | Supabase `knowledge_items` table                    | Only that user (personal Cohort) or Cohort members (shared) |
+| **Cohort Knowledge** | Shared Cohort    | Supabase `knowledge_items` + OpenClaw shared memory | All Cohort members + Cohort agents                          |
+| **Org Knowledge**    | Organization     | Supabase `knowledge_items`                          | All org members                                             |
+
+#### 6.5.2 OpenClaw Memory Stack (The Foundation)
+
+Cohortix does NOT build a separate knowledge system. It wraps OpenClaw's
+existing three-layer memory stack in a visual UI:
+
+**Layer 1: OpenClaw Built-in Memory (File-based)**
+
+```
+~/.openclaw-<cohort-id>/
+├── MEMORY.md              → Curated long-term knowledge (agent-maintained)
+├── memory/
+│   ├── YYYY-MM-DD.md      → Daily activity logs (append-only)
+│   ├── lessons/           → Reusable learnings (searchable)
+│   ├── decisions/         → Key decisions with rationale
+│   └── people/            → User preferences and working styles
+```
+
+- **Search:** `memory_search` — semantic search over all markdown files
+- **Recall:** `memory_get` — pull specific lines from memory files
+- **Strengths:** Zero-cost storage, human-readable, git-friendly, auto-loaded
+  into agent context
+- **Use for:** Session continuity, curated knowledge, daily logs, structured
+  learnings
+
+**Layer 2: Mem0 (Auto-Deduplicating Agent Memory)**
+
+```
+CLI: /Users/alimai/bin/mem0-memory
+├── search "query" --agent <agent-id>   → Find relevant memories
+├── add "fact" --agent <agent-id>       → Store new knowledge
+└── Auto-deduplication: newer facts update older ones
+```
+
+- **Strengths:** LLM-based fact extraction, automatic dedup, per-agent scoping
+- **Use for:** Evolving facts ("user prefers X" → later "user now prefers Y"),
+  conversational memory that self-maintains, cross-session insights
+- **Each Cohort's agents get their own Mem0 scope** — agent ID includes Cohort
+  ID for isolation
+
+**Layer 3: Cognee (Knowledge Graph)**
+
+```
+CLI: /Users/alimai/bin/cognee-memory
+├── search "query"    → Semantic search + graph traversal
+├── add "content"     → Extract entities and relationships
+└── Graph: concepts ←→ relationships ←→ entities
+```
+
+- **Strengths:** Entity relationships, concept mapping, graph-powered discovery
+- **Use for:** "How does X relate to Y?", structured domain knowledge, expertise
+  mapping
+- **Each Cohort gets its own Cognee graph** — no cross-Cohort traversal
+
+**How the three layers work together:**
+
+```
+Agent completes a task
+    │
+    ├── OpenClaw memory: logs to memory/YYYY-MM-DD.md (daily log)
+    │   └── If reusable lesson → memory/lessons/
+    │   └── If key decision → memory/decisions/
+    │
+    ├── Mem0: extracts key facts automatically
+    │   └── "This codebase uses Drizzle ORM, not Prisma"
+    │   └── Auto-deduplicates with existing memories
+    │
+    └── Cognee: builds knowledge graph relationships
+        └── Node: "Drizzle ORM" → connects to → "PostgreSQL", "TypeScript", "Supabase"
+        └── Enables: "What do we know about our database stack?" (graph query)
+```
+
+**Cohortix Knowledge Hub = UI for all three layers:**
+
+```
+Knowledge Hub UI
+├── Search bar → queries ALL three layers simultaneously
+│   ├── OpenClaw memory_search (semantic over markdown)
+│   ├── Mem0 search (fact recall)
+│   └── Cognee search (graph + semantic)
+│   └── Results merged, deduplicated, ranked by relevance
+│
+├── Browse by Agent
+│   ├── Agent's MEMORY.md (rendered as rich text)
+│   ├── Agent's lessons (filterable list)
+│   ├── Agent's decisions (timeline view)
+│   ├── Agent's Mem0 facts (searchable list)
+│   └── Agent's knowledge graph (visual node map via Cognee)
+│
+├── Browse by Topic
+│   └── Cognee graph visualization — explore concepts and relationships
+│
+└── Contribute
+    ├── Add note (human → stored in Supabase + optionally pushed to Cognee)
+    ├── Correct agent memory (human edits → updates Mem0/MEMORY.md)
+    └── Pin important knowledge (bookmarks for quick access)
+```
+
+#### 6.5.3 Agent Knowledge Lifecycle
+
+Agents continuously learn — just like our Axon agents do today:
+
+```
+Agent executes task
+    │
+    ├── Encounters error → lesson in OpenClaw memory/lessons/
+    ├── Makes a decision → logged in memory/decisions/
+    ├── Learns user preference → Mem0 auto-extracts and stores
+    ├── Discovers domain relationship → Cognee builds graph edge
+    ├── Develops expertise → updates expertise/ folder
+    └── Daily summary → memory/YYYY-MM-DD.md
+
+Over time, agent becomes:
+    ├── Better at tasks (Mem0 recalls past solutions)
+    ├── Aware of team patterns (OpenClaw memory preferences)
+    ├── A knowledge repository humans can browse (all three layers via UI)
+    └── Connected to domain concepts (Cognee graph)
+```
+
+**In Cohortix UI, this surfaces as:**
+
+```
+Agent Profile: "Devi (Backend Dev)"
+├── Overview: Role, skills, assigned tasks
+├── Knowledge Tab:
+│   ├── Learnings: "Use batch inserts for >100 rows" (OpenClaw lesson)
+│   ├── Decisions: "Chose Drizzle over Prisma because..." (OpenClaw decision)
+│   ├── Facts: "Codebase has 47 API endpoints" (Mem0)
+│   ├── Expertise Graph: PostgreSQL ←→ Supabase ←→ RLS (Cognee visualization)
+│   └── Activity: Recent daily logs (OpenClaw memory/)
+└── Settings: Permissions, model, tools
+```
+
+#### 6.5.4 Agent Evolution Tracking
+
+Every learning event is tracked with metadata so Cohortix can show **when**,
+**what**, and **from where** an agent learned.
+
+**Evolution Event Schema:**
+
+```sql
+CREATE TABLE agent_evolution_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    cohort_id UUID REFERENCES cohorts(id) ON DELETE CASCADE,
+    agent_id VARCHAR(100) NOT NULL,  -- OpenClaw agent identifier
+
+    -- What happened
+    event_type VARCHAR(30) NOT NULL CHECK (event_type IN (
+        'learning',      -- Agent learned something new
+        'correction',    -- Human corrected the agent
+        'decision',      -- Agent made/recorded a decision
+        'expertise_gain', -- Expertise score increased
+        'self_reflection' -- Self-evolution loop finding
+    )),
+
+    -- The knowledge
+    title VARCHAR(500) NOT NULL,       -- "RLS needs explicit policy per scope"
+    description TEXT,                   -- Detailed explanation
+
+    -- Where it came from
+    source_type VARCHAR(30) NOT NULL CHECK (source_type IN (
+        'task_execution',   -- Learned while doing a task
+        'human_correction', -- Human said "actually..."
+        'self_evolution',   -- Weekly self-review / reflection loop
+        'agent_collaboration', -- Learned from another agent in same Cohort
+        'knowledge_import'  -- Imported from marketplace/shared knowledge
+    )),
+    source_task_id UUID REFERENCES tasks(id),  -- NULL if not from a task
+    source_user_id UUID,                        -- Who corrected (if human_correction)
+
+    -- Expertise tracking
+    expertise_area VARCHAR(100),       -- e.g., "PostgreSQL", "React", "API Design"
+    expertise_before SMALLINT,         -- Score before (0-100)
+    expertise_after SMALLINT,          -- Score after (0-100)
+
+    -- Storage references (where the knowledge was persisted)
+    memory_ref TEXT,     -- OpenClaw memory file path (e.g., "memory/lessons/2026-02-24-rls.md")
+    mem0_ref TEXT,       -- Mem0 memory ID
+    cognee_ref TEXT,     -- Cognee entity/relationship ID
+
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for timeline queries
+CREATE INDEX evolution_agent_time_idx ON agent_evolution_events(cohort_id, agent_id, created_at DESC);
+
+-- Index for source analysis
+CREATE INDEX evolution_source_idx ON agent_evolution_events(source_type, created_at DESC);
+
+-- RLS: same Cohort scoping
+CREATE POLICY cohort_evolution ON agent_evolution_events
+    FOR ALL USING (cohort_id IN (
+        SELECT cohort_id FROM cohort_members WHERE user_id = auth.uid()
+    ));
+```
+
+**How events are captured:**
+
+```
+Task-based learning:
+  Agent completes task → self-improvement protocol triggers →
+  Logs lesson/decision to OpenClaw memory →
+  Cohortix webhook receives event →
+  Creates agent_evolution_events row with source_task_id
+
+Human correction:
+  Human comments "@Devi actually, use X not Y" →
+  Agent processes correction → updates Mem0 →
+  Logs correction event with source_user_id
+
+Self-evolution loop (cron):
+  Weekly cron triggers agent self-review →
+  Agent analyzes past week's tasks →
+  Identifies patterns, updates expertise scores →
+  Logs self_reflection events with before/after scores
+
+Agent collaboration:
+  Agent reads shared Cohort knowledge →
+  Incorporates into own context →
+  Logs knowledge_import event
+```
+
+**Cohortix UI — Agent Evolution Dashboard:**
+
+```
+┌─────────────────────────────────────────────────┐
+│ Agent: Devi (Backend Dev)              [Active] │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│  Evolution Timeline                    [Filter] │
+│  ─────────────────                              │
+│  Today                                          │
+│  🧠 Learned: "RLS needs explicit policy..."     │
+│     └─ From: Task #47 "Fix RLS policies"        │
+│  ⚠️ Corrected: "batch_size 500, not 1000"       │
+│     └─ From: Ahmad (comment on Task #43)        │
+│                                                 │
+│  Yesterday                                      │
+│  🧠 Learned: "Use JSONB for flexible columns"   │
+│     └─ From: Task #45                           │
+│  📝 Decision: "UUID over serial for new PKs"    │
+│     └─ From: Self-reflection (pattern in 5 tasks)│
+│                                                 │
+├─────────────────────────────────────────────────┤
+│  Learning Sources          Expertise Growth     │
+│  ┌──────────┐             ┌──────────────┐      │
+│  │ ████ 60% │ Tasks       │ PostgreSQL 78%│ ↑6  │
+│  │ ██   25% │ Self-review │ Drizzle    65%│ ↑4  │
+│  │ █    10% │ Corrections │ Supabase   70%│ ↑8  │
+│  │ ▪     5% │ Collab      │ API Design 55%│ new │
+│  └──────────┘             └──────────────┘      │
+│                                                 │
+│  This month: +34 learnings │ Correction rate: 4%│
+└─────────────────────────────────────────────────┘
+```
+
+**Correction rate** is a key metric — it shows how often humans need to correct
+the agent. A decreasing correction rate = agent is genuinely improving. This is
+visible to Cohort members and gives confidence that agents are trustworthy.
+
+#### 6.5.5 Knowledge Segmentation Rules
+
+Each Cohort's OpenClaw instance has its own isolated memory stack:
+
+```
+Personal Cohort (Ahmad's)
+├── OpenClaw memory/     → ONLY Ahmad's agents recall this
+├── Mem0 scope           → --agent <personal-cohort-agent-id> (isolated)
+├── Cognee graph         → Separate graph instance, personal context only
+├── User's personal notes → ONLY Ahmad (Supabase, personal scope)
+└── Nothing flows out without explicit user action
+
+Shared Cohort (Engineering)
+├── OpenClaw memory/     → Shared agents recall this, members browse via UI
+├── Mem0 scope           → --agent <shared-cohort-agent-id> (isolated to Cohort)
+├── Cognee graph         → Shared graph, Cohort-scoped entities
+├── Team notes/wiki      → All Cohort members (Supabase, cohort scope)
+└── Agents learn from shared context, NOT from members' personal Cohorts
+
+Org-wide Knowledge
+├── Supabase knowledge_items (org scope) → All org members
+├── Curated exports from Cohort graphs   → Admin-reviewed before publishing
+├── No direct Mem0/Cognee access         → Org knowledge is explicit, not auto-extracted
+└── Curated by org admin
+```
+
+**Key isolation rule:** Each Cohort's Mem0 and Cognee instances are scoped by
+Cohort ID. An agent in the Engineering Cohort calling
+`mem0-memory search "database"` will ONLY get results from Engineering's memory,
+never from Ahmad's personal Cohort or Marketing's Cohort. This is enforced by
+the `--agent` flag scoping in Mem0 and separate graph namespaces in Cognee.
+
+#### 6.5.6 Knowledge Sharing Mechanisms
+
+**Within a Cohort (automatic):**
+
+- Agents in a shared Cohort naturally learn from the work they do there
+- Their memory and expertise grow organically within that Cohort's scope
+- All Cohort members can browse agent knowledge via the Knowledge Hub UI
+
+**Personal → Shared Cohort (explicit, user-initiated):**
+
+```
+User action: "Share this note with Engineering Cohort"
+    │
+    ├── Note is COPIED (not linked) to shared Cohort knowledge
+    ├── Original stays in personal Cohort
+    ├── No ongoing sync — it's a snapshot
+    └── User can update shared copy independently
+```
+
+**Agent knowledge sharing (template-based):**
+
+When an agent template is shared/cloned between Cohorts:
+
+- **Config + skills** → copied (this is the template)
+- **Memory + expertise** → NOT copied (starts fresh)
+- **Rationale:** Memory contains context-specific learnings that may include
+  sensitive data from the source Cohort
+
+**Optional: Curated knowledge export:**
+
+```
+Admin action: "Export Devi's PostgreSQL expertise to Org Knowledge"
+    │
+    ├── Admin selects specific knowledge entries to export
+    ├── Entries are reviewed (no sensitive task data included)
+    ├── Exported to Org Knowledge base
+    └── Available to all org members and their agents
+```
+
+#### 6.5.7 Knowledge Hub Database Schema
+
+```sql
+-- Knowledge items (user-contributed notes, wiki entries)
+CREATE TABLE knowledge_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    scope_type VARCHAR(20) NOT NULL,  -- 'personal', 'cohort', 'org'
+    scope_id UUID NOT NULL,
+    cohort_id UUID REFERENCES cohorts(id),
+
+    title VARCHAR(500) NOT NULL,
+    content TEXT NOT NULL,
+    content_type VARCHAR(50) DEFAULT 'note',  -- note, wiki, decision, lesson, reference
+    tags TEXT[] DEFAULT '{}',
+
+    created_by_type VARCHAR(20) NOT NULL,  -- 'human', 'agent'
+    created_by_id UUID NOT NULL,
+
+    source_type VARCHAR(50),  -- 'manual', 'agent_memory', 'agent_lesson', 'imported'
+    source_ref TEXT,           -- reference to original (e.g., memory file path)
+
+    is_pinned BOOLEAN DEFAULT FALSE,
+
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Full-text search index
+CREATE INDEX knowledge_items_search_idx ON knowledge_items
+    USING gin(to_tsvector('english', title || ' ' || content));
+
+-- Scope + type index for filtered queries
+CREATE INDEX knowledge_items_scope_idx ON knowledge_items(scope_type, scope_id, content_type);
+
+-- RLS policies (same pattern as other scoped tables)
+CREATE POLICY personal_knowledge ON knowledge_items
+    FOR ALL USING (scope_type = 'personal' AND scope_id = auth.uid());
+
+CREATE POLICY cohort_knowledge ON knowledge_items
+    FOR ALL USING (scope_type = 'cohort' AND scope_id IN (
+        SELECT cohort_id FROM cohort_members WHERE user_id = auth.uid()
+    ));
+
+CREATE POLICY org_knowledge ON knowledge_items
+    FOR ALL USING (scope_type = 'org' AND scope_id IN (
+        SELECT organization_id FROM organization_members WHERE user_id = auth.uid()
+    ));
+```
+
+#### 6.5.8 Knowledge Hub UI
+
+```
+Knowledge Hub (in sidebar navigation)
+│
+├── My Knowledge (personal Cohort)
+│   ├── My Notes
+│   ├── My Agents' Learnings (browse agent memory/expertise)
+│   └── Saved Items (bookmarked from shared/org)
+│
+├── [Cohort Name] Knowledge (per shared Cohort)
+│   ├── Team Wiki
+│   ├── Decisions Log
+│   ├── Agent Insights (what agents have learned)
+│   └── Shared Resources
+│
+└── Company Knowledge (org-wide)
+    ├── Standards & Guidelines
+    ├── Cross-team Insights
+    └── Onboarding Materials
+```
+
+**Search spans all accessible scopes** — a user searching "PostgreSQL
+optimization" would see results from their personal notes, their shared Cohorts'
+agent learnings, and org-wide knowledge, with clear scope labels on each result.
+
+### 6.6 Summarization Cascade
 
 Progress rolls up through the hierarchy using summarization, not raw data:
 
@@ -688,6 +1110,9 @@ User clicks "Install" on marketplace
 - [ ] Cron-based agent status reports
 - [ ] Activity feed (all agent actions in a Cohort)
 - [ ] Cohort settings page (start/stop, health, resource usage)
+- [ ] Knowledge Hub: `knowledge_items` table + RLS + full-text search
+- [ ] Knowledge Hub UI: personal notes, Cohort wiki, org knowledge
+- [ ] Agent Knowledge browsing (view agent memory/expertise/lessons via UI)
 
 ### Phase 3: BYOH & Advanced Features (Weeks 9-12)
 
@@ -700,6 +1125,9 @@ User clicks "Install" on marketplace
 - [ ] Skills management UI (browse, install, toggle)
 - [ ] Summarization cascade (task → operation → mission → vision rollups)
 - [ ] Context injection optimization (measure token usage, tune scoping)
+- [ ] Knowledge sharing: personal → shared Cohort (copy mechanism)
+- [ ] Curated knowledge export: agent expertise → org knowledge
+- [ ] Cross-scope knowledge search (search across all accessible scopes)
 
 ### Phase 4: Marketplace (Weeks 13-16)
 
