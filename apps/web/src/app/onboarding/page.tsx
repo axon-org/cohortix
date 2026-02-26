@@ -15,6 +15,7 @@ export default function OnboardingPage() {
   const [slug, setSlug] = useState('');
   const [slugTouched, setSlugTouched] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [creationError, setCreationError] = useState<string | null>(null);
   const [step, setStep] = useState<'welcome' | 'create-org'>('welcome');
 
   // Auto-generate slug from org name when not manually edited
@@ -51,6 +52,7 @@ export default function OnboardingPage() {
     }
 
     setIsCreating(true);
+    setCreationError(null);
     try {
       const org = await createOrganization({ name: orgName.trim(), slug: slug.trim() });
       // Set the new org as active so auth() returns the orgId server-side
@@ -61,6 +63,9 @@ export default function OnboardingPage() {
       router.push(`/${slug}/`);
     } catch (err) {
       console.error('Failed to create organization:', err);
+      setCreationError(
+        'Failed to create organization. The URL may have been taken by another user. Please try a different URL.'
+      );
       setIsCreating(false);
     }
   };
@@ -168,6 +173,7 @@ export default function OnboardingPage() {
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setSlug(e.target.value.toLowerCase());
                         setSlugTouched(true);
+                        setCreationError(null);
                       }}
                       placeholder="acme-corp"
                       className="flex-1 px-3 py-2.5 bg-background border border-input rounded-lg text-foreground placeholder-muted-foreground focus:border-primary focus:ring-1 focus:ring-ring outline-none transition-colors"
@@ -230,6 +236,14 @@ export default function OnboardingPage() {
                   <span>⚠️ This URL cannot be changed later</span>
                 </div>
               </div>
+
+              {/* Creation Error */}
+              {creationError && (
+                <div className="flex items-start gap-1.5 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-3">
+                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  <span>{creationError}</span>
+                </div>
+              )}
 
               {/* Create Button */}
               <button
