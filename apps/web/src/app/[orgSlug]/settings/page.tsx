@@ -12,7 +12,7 @@ import { Loader2, Upload, Trash } from 'lucide-react';
 export default function GeneralSettingsPage() {
   const { organization, isLoaded, membership } = useOrganization();
   const [name, setName] = useState('');
-  const [slug, setSlug] = useState(''); // Clerk orgs have slugs now? The spec says yes.
+  const [slug, setSlug] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -69,16 +69,6 @@ export default function GeneralSettingsPage() {
       setError(err.message || 'Failed to update logo.');
     }
   };
-
-  // Note: Clerk organization description isn't standard in the basic types usually,
-  // but if the task asks for "description", I might need metadata.
-  // The prompt says "General settings: org name + description form using Clerk useOrganization() + organization.update()".
-  // Looking at Clerk docs, publicMetadata is often used for description if top-level isn't supported.
-  // OR maybe the user means just Name. But "description form" implies a field.
-  // I will assume metadata if not top-level. Or maybe just skip description if Clerk types strictly forbid it and I can't confirm.
-  // Actually, Clerk Organizations don't have a built-in 'description' field in the core update payload usually.
-  // I will implement Name. For Description, I'll use publicMetadata if I can, or just omit if it causes type errors.
-  // Let's try to add it to publicMetadata.
 
   return (
     <div className="space-y-8">
