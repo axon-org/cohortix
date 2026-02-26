@@ -104,7 +104,7 @@ jobs:
             TABLES=$(grep -iE '^\s*CREATE TABLE' "$FILE" | sed -E 's/.*CREATE TABLE\s+(IF NOT EXISTS\s+)?("?[a-zA-Z0-9_]+"?\.)?("?[a-zA-Z0-9_]+"?).*/\3/I' || true)
             for TABLE in $TABLES; do
               CLEAN_TABLE=$(echo "$TABLE" | tr -d '"')
-              if ! grep -qiE "GRANT.*ON.*${CLEAN_TABLE}.*TO.*(authenticated|anon)" "$FILE"; then
+              if ! grep -qiE "GRANT.*ON.*${CLEAN_TABLE}.*TO.*authenticated" "$FILE"; then
                 echo "❌  Missing GRANT for table '$TABLE' in $FILE"
                 echo "    Add: GRANT SELECT, INSERT, UPDATE, DELETE ON public.${CLEAN_TABLE} TO authenticated;"
                 MISSING_GRANTS=1
