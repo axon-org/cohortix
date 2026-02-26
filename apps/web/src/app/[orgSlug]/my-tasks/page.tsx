@@ -124,7 +124,15 @@ export default function MyTasksPage({ params }: MyTasksPageProps) {
     );
   }
 
-  if (!data?.data || data.data.length === 0) {
+  const currentStatusLabel = STATUS_FILTERS.find((s) => s.value === statusFilter)?.label ?? 'All';
+  const currentPriorityLabel =
+    PRIORITY_FILTERS.find((p) => p.value === priorityFilter)?.label ?? 'All';
+  const currentSortLabel = SORT_OPTIONS.find((s) => s.value === sort)?.label ?? 'Due Date';
+
+  const hasActiveFilters = statusFilter !== 'all' || priorityFilter !== 'all';
+  const hasNoTasks = !data?.data || data.data.length === 0;
+
+  if (hasNoTasks && !hasActiveFilters) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mb-4">
@@ -135,11 +143,6 @@ export default function MyTasksPage({ params }: MyTasksPageProps) {
       </div>
     );
   }
-
-  const currentStatusLabel = STATUS_FILTERS.find((s) => s.value === statusFilter)?.label ?? 'All';
-  const currentPriorityLabel =
-    PRIORITY_FILTERS.find((p) => p.value === priorityFilter)?.label ?? 'All';
-  const currentSortLabel = SORT_OPTIONS.find((s) => s.value === sort)?.label ?? 'Due Date';
 
   return (
     <div className="space-y-6">
@@ -209,103 +212,118 @@ export default function MyTasksPage({ params }: MyTasksPageProps) {
         </div>
       </div>
 
-      <div className="space-y-4">
-        {groupedTasks.map((group) => {
-          const isOpen = openGroups.has(group.id);
-          return (
-            <div key={group.id} className="bg-card border border-border rounded-lg overflow-hidden">
-              <button
-                type="button"
-                onClick={() => toggleGroup(group.id)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-secondary/30 hover:bg-secondary/50 transition-colors"
+      {hasNoTasks ? (
+        <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
+          <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mb-4">
+            <Filter className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-semibold mb-2">No tasks match your filters</h2>
+          <p className="text-muted-foreground mb-4 max-w-md">
+            Try adjusting the status or priority filters above to see more tasks.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {groupedTasks.map((group) => {
+            const isOpen = openGroups.has(group.id);
+            return (
+              <div
+                key={group.id}
+                className="bg-card border border-border rounded-lg overflow-hidden"
               >
-                <div className="flex items-center gap-2">
-                  <ChevronDown
-                    className={cn('w-4 h-4 transition-transform', isOpen && 'rotate-180')}
-                  />
-                  <span className="font-medium text-sm">{group.name}</span>
-                  <Badge variant="secondary" className="text-[10px]">
-                    {group.tasks.length}
-                  </Badge>
-                </div>
-                {group.href && (
-                  <Link
-                    href={group.href}
-                    onClick={(event) => event.stopPropagation()}
-                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    View Operation
-                  </Link>
-                )}
-              </button>
-
-              {isOpen && (
-                <div className="divide-y divide-border">
-                  <div className="grid grid-cols-12 gap-4 px-4 py-2 text-xs text-muted-foreground uppercase tracking-wider">
-                    <div className="col-span-4">Task</div>
-                    <div className="col-span-2">Status</div>
-                    <div className="col-span-2">Priority</div>
-                    <div className="col-span-3">Operation</div>
-                    <div className="col-span-1 text-right">Due</div>
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(group.id)}
+                  className="w-full flex items-center justify-between px-4 py-3 bg-secondary/30 hover:bg-secondary/50 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <ChevronDown
+                      className={cn('w-4 h-4 transition-transform', isOpen && 'rotate-180')}
+                    />
+                    <span className="font-medium text-sm">{group.name}</span>
+                    <Badge variant="secondary" className="text-[10px]">
+                      {group.tasks.length}
+                    </Badge>
                   </div>
-                  {group.tasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="grid grid-cols-12 gap-4 px-4 py-3 text-sm items-center hover:bg-secondary/20 transition-colors"
+                  {group.href && (
+                    <Link
+                      href={group.href}
+                      onClick={(event) => event.stopPropagation()}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      <div className="col-span-4">
-                        {task.project_id ? (
-                          <Link
-                            href={`/${orgSlug}/operations/${task.project_id}`}
-                            className="font-medium hover:text-foreground transition-colors"
-                          >
-                            {task.title}
-                          </Link>
-                        ) : (
-                          <span className="font-medium">{task.title}</span>
-                        )}
-                      </div>
-                      <div className="col-span-2">
-                        <TaskStatusChip status={task.status} />
-                      </div>
-                      <div className="col-span-2">
-                        {task.priority ? (
-                          <Badge
-                            variant="outline"
-                            className={cn(
-                              'text-[10px] px-2 py-0.5 font-normal',
-                              priorityClasses[task.priority]
-                            )}
-                          >
-                            {task.priority}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-xs">—</span>
-                        )}
-                      </div>
-                      <div className="col-span-3">
-                        {group.href ? (
-                          <Link
-                            href={group.href}
-                            className="text-muted-foreground hover:text-foreground transition-colors"
-                          >
-                            {group.name}
-                          </Link>
-                        ) : (
-                          <span className="text-muted-foreground">{group.name}</span>
-                        )}
-                      </div>
-                      <div className="col-span-1 text-right text-muted-foreground">
-                        {task.due_date ? formatDate(task.due_date) : '—'}
-                      </div>
+                      View Operation
+                    </Link>
+                  )}
+                </button>
+
+                {isOpen && (
+                  <div className="divide-y divide-border">
+                    <div className="grid grid-cols-12 gap-4 px-4 py-2 text-xs text-muted-foreground uppercase tracking-wider">
+                      <div className="col-span-4">Task</div>
+                      <div className="col-span-2">Status</div>
+                      <div className="col-span-2">Priority</div>
+                      <div className="col-span-3">Operation</div>
+                      <div className="col-span-1 text-right">Due</div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                    {group.tasks.map((task) => (
+                      <div
+                        key={task.id}
+                        className="grid grid-cols-12 gap-4 px-4 py-3 text-sm items-center hover:bg-secondary/20 transition-colors"
+                      >
+                        <div className="col-span-4">
+                          {task.project_id ? (
+                            <Link
+                              href={`/${orgSlug}/operations/${task.project_id}`}
+                              className="font-medium hover:text-foreground transition-colors"
+                            >
+                              {task.title}
+                            </Link>
+                          ) : (
+                            <span className="font-medium">{task.title}</span>
+                          )}
+                        </div>
+                        <div className="col-span-2">
+                          <TaskStatusChip status={task.status} />
+                        </div>
+                        <div className="col-span-2">
+                          {task.priority ? (
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                'text-[10px] px-2 py-0.5 font-normal',
+                                priorityClasses[task.priority]
+                              )}
+                            >
+                              {task.priority}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">—</span>
+                          )}
+                        </div>
+                        <div className="col-span-3">
+                          {group.href ? (
+                            <Link
+                              href={group.href}
+                              className="text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                              {group.name}
+                            </Link>
+                          ) : (
+                            <span className="text-muted-foreground">{group.name}</span>
+                          )}
+                        </div>
+                        <div className="col-span-1 text-right text-muted-foreground">
+                          {task.due_date ? formatDate(task.due_date) : '—'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

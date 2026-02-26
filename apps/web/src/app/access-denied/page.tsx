@@ -136,10 +136,10 @@ function AccessDeniedContent() {
                 </div>
 
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground mb-2">Access requested</h1>
+                  <h1 className="text-2xl font-bold text-foreground mb-2">Request noted</h1>
                   <p className="text-muted-foreground text-base">
-                    The workspace admin will review your request. You&apos;ll be notified once your
-                    access is approved.
+                    Access request functionality is coming soon. Please contact the workspace admin
+                    directly to request access.
                   </p>
                 </div>
 
