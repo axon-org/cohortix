@@ -172,7 +172,8 @@ export default function MembersPage() {
                     <AvatarImage src={mem.publicUserData.imageUrl} />
                     <AvatarFallback>
                       {mem.publicUserData.firstName?.charAt(0) ||
-                        mem.publicUserData.identifier.charAt(0)}
+                        mem.publicUserData.identifier?.charAt(0) ||
+                        '?'}
                     </AvatarFallback>
                   </Avatar>
                   <div>

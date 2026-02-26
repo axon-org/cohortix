@@ -127,7 +127,7 @@ export function OrgSwitcher({ collapsed }: OrgSwitcherProps) {
         <DropdownMenuSeparator className="bg-muted my-1" />
 
         <DropdownMenuItem
-          onClick={() => router.push('/create-organization')}
+          onClick={() => router.push('/onboarding')}
           className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/50 cursor-pointer"
         >
           <PlusCircle className="w-4 h-4" />
