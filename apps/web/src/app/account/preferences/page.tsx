@@ -24,9 +24,13 @@ export default function PreferencesPage() {
 
     const savedNotifs = localStorage.getItem('notification-prefs');
     if (savedNotifs) {
-      const parsed = JSON.parse(savedNotifs);
-      setEmailNotifs(parsed.email);
-      setInAppNotifs(parsed.inApp);
+      try {
+        const parsed = JSON.parse(savedNotifs);
+        setEmailNotifs(parsed.email);
+        setInAppNotifs(parsed.inApp);
+      } catch {
+        // Ignore corrupted localStorage and use defaults
+      }
     }
   }, []);
 
