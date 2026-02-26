@@ -138,8 +138,8 @@ Full records: `docs/decisions/`
 
 ## Dev Standards (Axon Codex v1.8.2)
 
-The Axon Dev Codex is installed as **skills** (auto-loaded by context) and as a
-**git submodule** at `docs/dev-codex/` for reference.
+The Axon Dev Codex is installed as **7 auto-loading skills**. No local copy
+needed — skills are globally installed and symlinked to the source repo.
 
 ### Skills (auto-loaded by agents)
 
@@ -153,7 +153,7 @@ The Axon Dev Codex is installed as **skills** (auto-loaded by context) and as a
 | `codex-design-system` | Design tokens, components, responsive          |
 | `codex-ai-ml`         | LLM integration, RAG, prompt engineering       |
 
-### Key additions in v1.8.2
+### Key standards (v1.8.2)
 
 - **Multi-stage security prompting** — agents MUST self-review for
   vulnerabilities
@@ -162,13 +162,12 @@ The Axon Dev Codex is installed as **skills** (auto-loaded by context) and as a
   dual-layer verification (UI + DB), severity-based auto-fix boundaries
 - **codex-init.sh** — bootstrap CLAUDE.md/AGENTS.md from project scan
 
-### Direct reference
+### Direct reference (source repo)
 
-- Routing guide: `docs/dev-codex/ROUTING.md`
-- Playbooks: `docs/dev-codex/playbooks/`
-- Templates: `docs/dev-codex/templates/`
+- Playbooks: `~/Projects/axon/dev-codex/playbooks/`
+- Templates: `~/Projects/axon/dev-codex/templates/`
+- Routing guide: `~/Projects/axon/dev-codex/ROUTING.md`
 - Source: [axon-org/axon-dev-codex](https://github.com/axon-org/axon-dev-codex)
-  (submodule at `docs/dev-codex/`)
 
 ---
 
