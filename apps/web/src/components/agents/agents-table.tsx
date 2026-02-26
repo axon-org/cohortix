@@ -24,7 +24,12 @@ interface AgentsTableProps {
 
 export function AgentsTable({ data }: AgentsTableProps) {
   const params = useParams<{ orgSlug: string }>();
-  const orgSlug = params?.orgSlug ?? '';
+  const orgSlug = params?.orgSlug;
+
+  if (!orgSlug) {
+    console.error('AgentsTable: orgSlug is missing from route params');
+  }
+
   const columns = useMemo<ColumnDef<AgentRow>[]>(
     () => [
       {
@@ -95,7 +100,9 @@ export function AgentsTable({ data }: AgentsTableProps) {
       searchKey="name"
       searchPlaceholder="Search agents..."
       onRowClick={(agent) => {
-        window.location.href = `/${orgSlug}/agents/${agent.id}`;
+        if (orgSlug) {
+          window.location.href = `/${orgSlug}/agents/${agent.id}`;
+        }
       }}
       emptyMessage="No agents found."
       toolbar={(table) => (
