@@ -6,6 +6,7 @@ import {
   timestamp,
   integer,
   decimal,
+  boolean,
   jsonb,
   pgEnum,
   type AnyPgColumn,
@@ -13,7 +14,7 @@ import {
 import { organizations } from './organizations';
 import { operations } from './operations'; // Operations (bounded initiatives)
 import { milestones } from './milestones';
-import { ownerTypeEnum } from './missions';
+import { ownerTypeEnum } from './goals';
 
 // Note: Table name remains 'tasks' in database for backwards compatibility
 // User-facing terminology: "Task" (atomic unit of work)
@@ -34,7 +35,11 @@ export const tasks = pgTable('tasks', {
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
   projectId: uuid('project_id').references(() => operations.id, { onDelete: 'set null' }), // References operations (projects table in DB) - optional for rhythm tasks
-  rhythmId: uuid('rhythm_id'), // References rhythms table - added via migration (circular dependency)
+  rhythmId: uuid('rhythm_id'), // Legacy — rhythms replaced by task recurrence
+
+  // Recurrence (replaces separate rhythms table)
+  isRecurring: boolean('is_recurring').default(false),
+  recurrence: jsonb('recurrence'), // { frequency: 'daily'|'weekly'|'monthly', days?: string[], endDate?: string }
   parentTaskId: uuid('parent_task_id').references((): AnyPgColumn => tasks.id, {
     onDelete: 'cascade',
   }),

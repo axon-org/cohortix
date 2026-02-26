@@ -56,9 +56,20 @@ cohortix/
 
 See [TERMINOLOGY.md](docs/guides/TERMINOLOGY.md) for the complete guide.
 
+## 🏗️ Getting Started
+
+```bash
+git clone https://github.com/ahmadashfq/cohortix.git
+cd cohortix
+git submodule update --init          # Pull Axon Dev Codex
+pnpm install
+cp .env.example .env.local           # Add your credentials
+pnpm dev                             # localhost:3000
+```
+
 ## 🚀 Status
 
-**Phase:** Pre-Development (Planning Complete)
+**Phase:** Active Development (Sprint 4 complete)
 
 ---
 

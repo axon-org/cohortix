@@ -1,9 +1,12 @@
 module.exports = {
-  // TypeScript/TSX files
-  '*.{ts,tsx}': ['eslint --fix --max-warnings=0', 'prettier --write'],
+  // TypeScript/TSX files (with custom design token enforcement)
+  '*.{ts,tsx}': [
+    'eslint --fix --max-warnings=0 --rulesdir apps/web/eslint-rules',
+    'prettier --write',
+  ],
 
-  // JavaScript/JSX files
-  '*.{js,jsx}': ['eslint --fix --max-warnings=0', 'prettier --write'],
+  // JavaScript/JSX files (skip eslint for config files outside app)
+  '*.{js,jsx}': ['prettier --write'],
 
   // CSS/SCSS files
   '*.{css,scss}': ['prettier --write'],

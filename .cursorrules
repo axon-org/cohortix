@@ -1,0 +1,17 @@
+# Cohortix — Cursor Rules
+
+Read CLAUDE.md for project context, commands, and conventions.
+
+## Dev Standards (Axon Codex)
+
+Routing guide: docs/dev-codex/ROUTING.md — read this first to know which packs apply.
+
+Read these before writing any code:
+1. Core rules (always): docs/dev-codex/core/
+2. Backend standards: docs/dev-codex/domains/backend/
+3. Frontend standards: docs/dev-codex/domains/frontend/
+4. QA standards: docs/dev-codex/domains/qa/
+5. DevOps standards: docs/dev-codex/domains/devops/
+6. Design system: docs/dev-codex/domains/design-system/
+7. Playbooks: docs/dev-codex/playbooks/
+8. Templates: docs/dev-codex/templates/

@@ -521,6 +521,53 @@ export async function deleteOperation(id: string): Promise<void> {
 }
 
 // ============================================================================
+// My Tasks API
+// ============================================================================
+
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'backlog' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  due_date?: string;
+  assignee_id?: string;
+  project_id?: string;
+  projects?: { id: string; name: string };
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface MyTasksListResponse {
+  data: Task[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface MyTasksQueryParams {
+  page?: number;
+  limit?: number;
+  status?: Task['status'];
+  priority?: Task['priority'];
+  sort?: 'due_date' | 'priority' | 'updated_at';
+}
+
+export async function getMyTasks(params?: MyTasksQueryParams): Promise<MyTasksListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.set('page', params.page.toString());
+  if (params?.limit) searchParams.set('limit', params.limit.toString());
+  if (params?.status) searchParams.set('status', params.status);
+  if (params?.priority) searchParams.set('priority', params.priority);
+  if (params?.sort) searchParams.set('sort', params.sort);
+  const query = searchParams.toString();
+  return fetchApi<MyTasksListResponse>(`/my-tasks${query ? `?${query}` : ''}`);
+}
+
+// ============================================================================
 // Comments API
 // ============================================================================
 

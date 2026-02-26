@@ -14,9 +14,11 @@ const config: Config = {
         background: '#0A0A0B',
         foreground: '#FAFAFA',
         card: '#141416',
+        'card-elevated': '#101012',
         'card-foreground': '#FAFAFA',
         primary: {
           DEFAULT: '#5E6AD2',
+          hover: '#7C8ADE',
           foreground: '#FFFFFF',
         },
         secondary: {

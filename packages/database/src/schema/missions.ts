@@ -12,17 +12,21 @@ import {
 import { organizations } from './organizations';
 import { workspaces } from './workspaces';
 import { clients } from './clients';
-import { goals, ownerTypeEnum } from './goals';
+import { goals } from './goals';
 
 // Note: Table name remains 'projects' in database for backwards compatibility
 // User-facing terminology: "Mission" (not "Project")
-export const missionStatusEnum = pgEnum('project_status', [
+// Note: This is actually the Operations table (DB: 'projects')
+// The name 'missionStatusEnum' is legacy — use operationStatusEnum
+export const operationStatusEnum = pgEnum('project_status', [
   'planning',
   'active',
   'on_hold',
   'completed',
   'archived',
 ]);
+// Legacy alias
+export const missionStatusEnum = operationStatusEnum;
 
 export const missions = pgTable('projects', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -33,7 +37,7 @@ export const missions = pgTable('projects', {
   clientId: uuid('client_id').references(() => clients.id, { onDelete: 'set null' }),
 
   // Polymorphic owner (user or agent)
-  ownerType: ownerTypeEnum('owner_type').default('user').notNull(),
+  ownerType: varchar('owner_type', { length: 50 }).default('user').notNull(),
   ownerId: uuid('owner_id').notNull(),
 
   name: varchar('name', { length: 255 }).notNull(),
@@ -62,8 +66,8 @@ export const missions = pgTable('projects', {
 export type Mission = typeof missions.$inferSelect;
 export type InsertMission = typeof missions.$inferInsert;
 
-// Re-export ownerTypeEnum for use in other schemas
-export { ownerTypeEnum };
+// Re-export ownerTypeEnum from goals for backwards compatibility
+export { ownerTypeEnum } from './goals';
 
 // Legacy aliases for backwards compatibility
 export const projects = missions;

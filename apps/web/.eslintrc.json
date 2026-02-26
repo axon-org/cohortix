@@ -1,3 +1,21 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "plugins": ["cohortix"],
+  "rules": {
+    "cohortix/no-hardcoded-colors": "warn"
+  },
+  "overrides": [
+    {
+      "files": [
+        "tailwind.config.*",
+        "*.config.*",
+        "**/__tests__/**",
+        "**/*.test.*",
+        "**/*.spec.*"
+      ],
+      "rules": {
+        "cohortix/no-hardcoded-colors": "off"
+      }
+    }
+  ]
 }

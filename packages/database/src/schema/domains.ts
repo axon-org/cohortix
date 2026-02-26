@@ -1,6 +1,5 @@
 import { pgTable, uuid, varchar, text, timestamp, integer, jsonb } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
-import { ownerTypeEnum } from './missions';
 
 // User-facing terminology: "Domain" (Core life/expertise area - top of PPV pyramid)
 // PPV Pro equivalent: "Pillars & Purpose"
@@ -10,12 +9,12 @@ export const domains = pgTable('domains', {
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
 
-  // Polymorphic owner (user or agent)
-  ownerType: ownerTypeEnum('owner_type').notNull(),
+  // Polymorphic owner (human only for domains)
+  ownerType: varchar('owner_type', { length: 50 }).default('user').notNull(),
   ownerId: uuid('owner_id').notNull(),
 
-  // Created by (who defined this domain)
-  createdByType: ownerTypeEnum('created_by_type').notNull(),
+  // Created by
+  createdByType: varchar('created_by_type', { length: 50 }).default('user').notNull(),
   createdById: uuid('created_by_id').notNull(),
 
   name: varchar('name', { length: 255 }).notNull(),

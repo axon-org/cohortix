@@ -10,7 +10,7 @@ import AxeBuilder from '@axe-core/playwright';
  * All three are valid outcomes. Tests verify the app doesn't crash.
  */
 
-const TEST_COHORT_PATH = '/dashboard/cohorts/test-cohort-id';
+const TEST_COHORT_PATH = '/test-org/cohorts/test-cohort-id';
 
 async function isOnSignIn(page: any): Promise<boolean> {
   await page.waitForTimeout(2000);
@@ -85,7 +85,7 @@ test.describe('Cohort Detail Page', () => {
 
 test.describe('Cohorts List Page', () => {
   test('should load cohorts list or redirect to sign-in', async ({ page }) => {
-    await page.goto('/dashboard/cohorts', { waitUntil: 'domcontentloaded' });
+    await page.goto('/test-org/cohorts', { waitUntil: 'domcontentloaded' });
 
     if (await isOnSignIn(page)) {
       await expect(page.locator('body')).toBeVisible();

@@ -47,3 +47,6 @@ public/
 
 # Config files that should stay as-is
 pnpm-workspace.yaml
+
+# Git submodules (external repos, don't reformat)
+docs/dev-codex/
