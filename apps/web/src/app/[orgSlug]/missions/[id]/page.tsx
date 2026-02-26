@@ -1,7 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useMission, useUpdateMission, useDeleteMission } from '@/hooks/use-missions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
