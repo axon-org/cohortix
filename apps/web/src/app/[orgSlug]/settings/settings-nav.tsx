@@ -18,7 +18,11 @@ export function SettingsNav() {
 
   if (!orgSlug) {
     console.error('SettingsNav: orgSlug is missing from route params');
-    return null;
+    return (
+      <div className="border-b border-destructive/20 mb-8 pb-3">
+        <p className="text-sm text-destructive">Settings navigation unavailable</p>
+      </div>
+    );
   }
 
   return (

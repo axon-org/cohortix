@@ -39,6 +39,16 @@ export default async function DashboardPage({ params }: { params: Promise<{ orgS
 
   const { activity, alerts, missions, agents } = dashboardData;
 
+  const orgScopedAlerts = alerts.map((alert) => ({
+    ...alert,
+    action: alert.action
+      ? {
+          ...alert.action,
+          href: alert.action.href.replace(/^\/actions/, `/${orgSlug}/my-tasks`),
+        }
+      : undefined,
+  }));
+
   return (
     <div className="space-y-6">
       {/* Page Title */}
@@ -85,7 +95,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ orgS
               <RecentActivity activities={activity} />
             </Suspense>
             <Suspense fallback={<SectionSkeleton />}>
-              <UrgentAlerts alerts={alerts} />
+              <UrgentAlerts alerts={orgScopedAlerts} />
             </Suspense>
           </div>
 

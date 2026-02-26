@@ -32,7 +32,10 @@ const statusConfig: Record<TaskStatus, { label: string; className: string }> = {
 };
 
 export function TaskStatusChip({ status, className }: TaskStatusChipProps) {
-  const config = statusConfig[status];
+  const config = statusConfig[status] ?? {
+    label: status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' '),
+    className: 'bg-gray-500/10 text-gray-400 border border-gray-500/20',
+  };
   return (
     <span
       className={cn(
