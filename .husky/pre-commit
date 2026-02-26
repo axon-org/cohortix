@@ -5,7 +5,7 @@ pnpm exec lint-staged || exit 1
 # Axon Dev Codex enforcement
 STAGED_DOCS=$(git diff --cached --name-only --diff-filter=ACMRTUXB | grep -E '^(CLAUDE|CONSTITUTION)\.md$' || true)
 if [ -n "$STAGED_DOCS" ]; then
-  git reset -q $STAGED_DOCS
+  git reset -q HEAD -- $STAGED_DOCS
 fi
 
 # Optional: Run Axon Dev Codex hook if configured
