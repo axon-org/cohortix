@@ -97,14 +97,46 @@ jobs:
             done
           done <<< "$CHANGED_FILES"
 
+          # Also check for GRANT statements
+          MISSING_GRANTS=0
+          while IFS= read -r FILE; do
+            [ -f "$FILE" ] || continue
+            TABLES=$(grep -iE '^\s*CREATE TABLE' "$FILE" | sed -E 's/.*CREATE TABLE\s+(IF NOT EXISTS\s+)?("?[a-zA-Z0-9_]+"?\.)?("?[a-zA-Z0-9_]+"?).*/\3/I' || true)
+            for TABLE in $TABLES; do
+              CLEAN_TABLE=$(echo "$TABLE" | tr -d '"')
+              if ! grep -qiE "GRANT.*ON.*${CLEAN_TABLE}.*TO.*(authenticated|anon)" "$FILE"; then
+                echo "❌  Missing GRANT for table '$TABLE' in $FILE"
+                echo "    Add: GRANT SELECT, INSERT, UPDATE, DELETE ON public.${CLEAN_TABLE} TO authenticated;"
+                MISSING_GRANTS=1
+              fi
+              if ! grep -qiE "GRANT.*ON.*${CLEAN_TABLE}.*TO.*service_role" "$FILE"; then
+                echo "❌  Missing GRANT for service_role on table '$TABLE' in $FILE"
+                echo "    Add: GRANT ALL ON public.${CLEAN_TABLE} TO service_role;"
+                MISSING_GRANTS=1
+              fi
+            done
+          done <<< "$CHANGED_FILES"
+
+          FAILED=0
           if [ "$MISSING_RLS" -eq 1 ]; then
             echo ""
             echo "One or more tables are missing RLS. Add:"
             echo "  ALTER TABLE <table> ENABLE ROW LEVEL SECURITY;"
+            FAILED=1
+          fi
+
+          if [ "$MISSING_GRANTS" -eq 1 ]; then
+            echo ""
+            echo "One or more tables are missing GRANT statements."
+            echo "PostgREST will return 'permission denied' without them."
+            FAILED=1
+          fi
+
+          if [ "$FAILED" -eq 1 ]; then
             exit 1
           fi
 
-          echo "✅  All tables in migrations have RLS enabled."
+          echo "✅  All tables in migrations have RLS enabled and proper grants."
 
       - name: Lint SQL migrations (sqlfluff)
         run: |
