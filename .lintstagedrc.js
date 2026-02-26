@@ -1,7 +1,7 @@
 module.exports = {
   // TypeScript/TSX files (with custom design token enforcement)
   '*.{ts,tsx}': [
-    'eslint --fix --max-warnings=0 --rulesdir apps/web/eslint-rules',
+    'eslint --fix --max-warnings=0',
     'prettier --write',
   ],
 
