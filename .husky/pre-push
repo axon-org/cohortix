@@ -12,3 +12,8 @@ echo "🎨 Running format check..."
 pnpm format:check
 
 echo "✅ Pre-push checks passed."
+
+# Optional: Run Axon Dev Codex hook if configured
+if [ -n "$AXON_CODEX_PATH" ] && [ -f "$AXON_CODEX_PATH/hooks/pre-deploy.sh" ]; then
+  TEST_CMD="pnpm test" BUILD_CMD="pnpm build" sh "$AXON_CODEX_PATH/hooks/pre-deploy.sh"
+fi

@@ -21,6 +21,9 @@ export default function Home() {
     }
     if (organization?.slug) {
       router.replace(`/${organization.slug}`);
+    } else if (organization && !organization.slug) {
+      console.error('Organization exists but has no slug:', organization.id);
+      router.replace('/onboarding?error=missing-slug');
     } else {
       router.replace('/onboarding');
     }

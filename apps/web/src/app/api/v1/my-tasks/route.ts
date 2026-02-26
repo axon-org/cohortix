@@ -29,13 +29,20 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     .from('tasks')
     .select('*, projects(id, name)', { count: 'exact' })
     .eq('organization_id', organizationId)
+    .eq('assignee_type', 'user')
     .eq('assignee_id', userId);
 
   if (query.status) queryBuilder = queryBuilder.eq('status', query.status);
   if (query.priority) queryBuilder = queryBuilder.eq('priority', query.priority);
 
-  const sortColumn = query.sort === 'due_date' ? 'due_date' : query.sort;
-  const ascending = query.sort === 'due_date';
+  const sortColumn = query.sort;
+  // due_date: ascending (earliest first)
+  // priority: descending (urgent → low)
+  // updated_at: descending (newest → oldest)
+  let ascending = true;
+  if (query.sort === 'priority' || query.sort === 'updated_at') {
+    ascending = false;
+  }
   queryBuilder = queryBuilder.order(sortColumn, { ascending });
 
   const start = (query.page - 1) * query.limit;

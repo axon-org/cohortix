@@ -14,7 +14,16 @@ const navItems = [
 export function SettingsNav() {
   const pathname = usePathname();
   const params = useParams();
-  const orgSlug = params?.orgSlug as string;
+  const orgSlug = params?.orgSlug as string | undefined;
+
+  if (!orgSlug) {
+    console.error('SettingsNav: orgSlug is missing from route params');
+    return (
+      <div className="border-b border-destructive/20 mb-8 pb-3">
+        <p className="text-sm text-destructive">Settings navigation unavailable</p>
+      </div>
+    );
+  }
 
   return (
     <nav className="flex space-x-6 border-b border-border mb-8">

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { MoreHorizontal, Activity as ActivityIcon } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -19,21 +18,14 @@ interface Activity {
 
 interface RecentActivityProps {
   activities: Activity[];
-  orgSlug?: string;
 }
 
-export function RecentActivity({ activities, orgSlug }: RecentActivityProps) {
+export function RecentActivity({ activities }: RecentActivityProps) {
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Recent Activity</h3>
-        <Link
-          href={orgSlug ? `/${orgSlug}/activity` : '/activity'}
-          className="text-sm text-primary hover:underline"
-        >
-          View All
-        </Link>
       </div>
 
       {/* Activity List */}

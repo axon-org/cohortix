@@ -37,17 +37,23 @@ export default function MembersPage() {
   const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function fetchMembers() {
       if (organization) {
         setLoadingMembers(true);
         try {
           // Fetch members (simple pagination for now)
           const response = await organization.getMemberships();
-          setMembers(response.data);
+          if (isMounted) {
+            setMembers(response.data);
+          }
         } catch (e) {
           console.error(e);
         } finally {
-          setLoadingMembers(false);
+          if (isMounted) {
+            setLoadingMembers(false);
+          }
         }
       }
     }
@@ -55,6 +61,10 @@ export default function MembersPage() {
     if (isLoaded && organization) {
       fetchMembers();
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [isLoaded, organization]);
 
   const isAdmin = membership?.role === 'org:admin';
@@ -172,7 +182,8 @@ export default function MembersPage() {
                     <AvatarImage src={mem.publicUserData.imageUrl} />
                     <AvatarFallback>
                       {mem.publicUserData.firstName?.charAt(0) ||
-                        mem.publicUserData.identifier.charAt(0)}
+                        mem.publicUserData.identifier?.charAt(0) ||
+                        '?'}
                     </AvatarFallback>
                   </Avatar>
                   <div>

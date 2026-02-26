@@ -60,7 +60,12 @@ export default function OnboardingPage() {
         await setActive({ organization: org.id });
       }
       // Redirect to the new org's dashboard using the slug
-      router.push(`/${slug}/`);
+      if (org?.slug) {
+        router.push(`/${org.slug}/`);
+      } else {
+        setCreationError('Organization created but slug is missing. Please contact support.');
+        setIsCreating(false);
+      }
     } catch (err) {
       console.error('Failed to create organization:', err);
       setCreationError(

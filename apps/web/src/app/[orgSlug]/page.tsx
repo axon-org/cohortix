@@ -7,6 +7,7 @@ import { getDashboardData } from '@/server/db/queries/dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { ArrowRight, Users, Bot, Rocket } from 'lucide-react';
+import { colors } from '@repo/ui/tokens/colors';
 
 function SectionSkeleton() {
   return (
@@ -37,6 +38,16 @@ export default async function DashboardPage({ params }: { params: Promise<{ orgS
   }
 
   const { activity, alerts, missions, agents } = dashboardData;
+
+  const orgScopedAlerts = alerts.map((alert) => ({
+    ...alert,
+    action: alert.action
+      ? {
+          ...alert.action,
+          href: alert.action.href.replace(/^\/actions/, `/${orgSlug}/my-tasks`),
+        }
+      : undefined,
+  }));
 
   return (
     <div className="space-y-6">
@@ -81,10 +92,10 @@ export default async function DashboardPage({ params }: { params: Promise<{ orgS
         <div className="lg:col-span-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Suspense fallback={<SectionSkeleton />}>
-              <RecentActivity activities={activity} orgSlug={orgSlug} />
+              <RecentActivity activities={activity} />
             </Suspense>
             <Suspense fallback={<SectionSkeleton />}>
-              <UrgentAlerts alerts={alerts} />
+              <UrgentAlerts alerts={orgScopedAlerts} />
             </Suspense>
           </div>
 
@@ -110,7 +121,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ orgS
                     <div className="flex items-center gap-3">
                       <div
                         className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: mission.color || '#5E6AD2' }}
+                        style={{ backgroundColor: mission.color || colors.dark.primary.DEFAULT }}
                       />
                       <span className="text-sm font-medium group-hover:text-foreground">
                         {mission.name}

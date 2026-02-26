@@ -136,24 +136,51 @@ Full records: `docs/decisions/`
 
 ---
 
-## Dev Standards (Axon Codex)
+## Dev Standards (Axon Codex v1.8.2)
 
-**Routing guide:** `docs/dev-codex/ROUTING.md` — read this first to know which
-packs apply.
+The Axon Dev Codex is installed as **7 auto-loading skills**. No local copy
+needed — skills are globally installed and symlinked to the source repo.
 
-Read these before writing any code:
+### Skills (auto-loaded by agents)
 
-1. **Core rules (always):** `docs/dev-codex/core/`
-2. **Backend standards:** `docs/dev-codex/domains/backend/`
-3. **Frontend standards:** `docs/dev-codex/domains/frontend/`
-4. **QA standards:** `docs/dev-codex/domains/qa/`
-5. **DevOps standards:** `docs/dev-codex/domains/devops/`
-6. **Design system:** `docs/dev-codex/domains/design-system/`
-7. **Playbooks:** `docs/dev-codex/playbooks/`
-8. **Templates:** `docs/dev-codex/templates/`
+| Skill                 | When It Loads                                  |
+| --------------------- | ---------------------------------------------- |
+| `codex-core`          | Always — architecture, conventions, operations |
+| `codex-backend`       | Backend work — API, DB, auth, security         |
+| `codex-frontend`      | Frontend work — Next.js, React, Tailwind, a11y |
+| `codex-qa`            | Testing — pyramid, validation protocol, E2E    |
+| `codex-devops`        | CI/CD, deployment, infra, observability        |
+| `codex-design-system` | Design tokens, components, responsive          |
+| `codex-ai-ml`         | LLM integration, RAG, prompt engineering       |
 
-Source: [axon-org/axon-dev-codex](https://github.com/axon-org/axon-dev-codex)
-(git submodule)
+### Key standards (v1.8.2)
+
+- **Multi-stage security prompting** — agents MUST self-review for
+  vulnerabilities
+- **MCP integration standards** — tool interop patterns
+- **Agent self-validation protocol** — Plan → Implement → Validate loop with
+  dual-layer verification (UI + DB), severity-based auto-fix boundaries
+- **codex-init.sh** — bootstrap CLAUDE.md/AGENTS.md from project scan
+
+### Direct reference (source repo)
+
+- Playbooks: `~/Projects/axon/dev-codex/playbooks/`
+- Templates: `~/Projects/axon/dev-codex/templates/`
+- Routing guide: `~/Projects/axon/dev-codex/ROUTING.md`
+- Source: [axon-org/axon-dev-codex](https://github.com/axon-org/axon-dev-codex)
+
+---
+
+## Constitution
+
+Using **default** constitution (`CONSTITUTION.md`). Defines strictness levels:
+
+- Test coverage target: 70%
+- PR reviews: 1 required
+- Security: mandatory input validation + no secrets in code
+- Docs: README + CLAUDE.md required
+
+Upgrade path: default → enterprise (when paying customers onboard)
 
 ---
 

@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { Globe, ShieldX, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useRef, useEffect } from 'react';
 import { WorkspaceRedirect } from '@/components/access-denied/workspace-redirect';
 
 function AccessDeniedContent() {
@@ -14,6 +14,13 @@ function AccessDeniedContent() {
   const [isRequesting, setIsRequesting] = useState(false);
   const [requestSuccess, setRequestSuccess] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const handleRequestAccess = async () => {
     if (!org) return;
@@ -27,6 +34,8 @@ function AccessDeniedContent() {
         body: JSON.stringify({ orgSlug: org }),
       });
 
+      if (!isMountedRef.current) return;
+
       if (response.ok) {
         setRequestSuccess(true);
       } else {
@@ -35,9 +44,12 @@ function AccessDeniedContent() {
       }
     } catch (error) {
       console.error('Failed to request access:', error);
+      if (!isMountedRef.current) return;
       setRequestError('Network error. Please check your connection and try again.');
     } finally {
-      setIsRequesting(false);
+      if (isMountedRef.current) {
+        setIsRequesting(false);
+      }
     }
   };
 

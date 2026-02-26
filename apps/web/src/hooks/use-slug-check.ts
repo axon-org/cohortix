@@ -87,6 +87,7 @@ export function useSlugCheck(slug: string): SlugCheckResult {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      abortControllerRef.current?.abort();
     };
   }, [slug, checkSlug]);
 

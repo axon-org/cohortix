@@ -1,11 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Search, Bell, ChevronRight, Menu } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sidebar } from './sidebar';
 
 interface HeaderProps {
   user: any;
+  orgSlug: string;
 }
 
 function useBreadcrumbs() {
@@ -30,16 +34,24 @@ function useBreadcrumbs() {
   return crumbs;
 }
 
-export function Header({ user }: HeaderProps) {
+export function Header({ user, orgSlug }: HeaderProps) {
   const breadcrumbs = useBreadcrumbs();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="h-12 border-b border-border bg-[#111113] px-4 md:px-6 flex items-center justify-between">
       <div className="flex items-center gap-3">
         {/* Mobile Menu Toggle */}
-        <button className="p-2 -ml-2 md:hidden text-muted-foreground hover:text-foreground transition-colors">
-          <Menu className="w-5 h-5" />
-        </button>
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <button className="p-2 -ml-2 md:hidden text-muted-foreground hover:text-foreground transition-colors">
+              <Menu className="w-5 h-5" />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-60">
+            <Sidebar user={user} orgSlug={orgSlug} />
+          </SheetContent>
+        </Sheet>
 
         {/* Breadcrumbs */}
         <nav className="hidden sm:flex items-center gap-1 text-sm">
