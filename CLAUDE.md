@@ -136,24 +136,39 @@ Full records: `docs/decisions/`
 
 ---
 
-## Dev Standards (Axon Codex)
+## Dev Standards (Axon Codex v1.8.2)
 
-**Routing guide:** `docs/dev-codex/ROUTING.md` — read this first to know which
-packs apply.
+The Axon Dev Codex is installed as **skills** (auto-loaded by context) and as a
+**git submodule** at `docs/dev-codex/` for reference.
 
-Read these before writing any code:
+### Skills (auto-loaded by agents)
 
-1. **Core rules (always):** `docs/dev-codex/core/`
-2. **Backend standards:** `docs/dev-codex/domains/backend/`
-3. **Frontend standards:** `docs/dev-codex/domains/frontend/`
-4. **QA standards:** `docs/dev-codex/domains/qa/`
-5. **DevOps standards:** `docs/dev-codex/domains/devops/`
-6. **Design system:** `docs/dev-codex/domains/design-system/`
-7. **Playbooks:** `docs/dev-codex/playbooks/`
-8. **Templates:** `docs/dev-codex/templates/`
+| Skill                 | When It Loads                                  |
+| --------------------- | ---------------------------------------------- |
+| `codex-core`          | Always — architecture, conventions, operations |
+| `codex-backend`       | Backend work — API, DB, auth, security         |
+| `codex-frontend`      | Frontend work — Next.js, React, Tailwind, a11y |
+| `codex-qa`            | Testing — pyramid, validation protocol, E2E    |
+| `codex-devops`        | CI/CD, deployment, infra, observability        |
+| `codex-design-system` | Design tokens, components, responsive          |
+| `codex-ai-ml`         | LLM integration, RAG, prompt engineering       |
 
-Source: [axon-org/axon-dev-codex](https://github.com/axon-org/axon-dev-codex)
-(git submodule)
+### Key additions in v1.8.2
+
+- **Multi-stage security prompting** — agents MUST self-review for
+  vulnerabilities
+- **MCP integration standards** — tool interop patterns
+- **Agent self-validation protocol** — Plan → Implement → Validate loop with
+  dual-layer verification (UI + DB), severity-based auto-fix boundaries
+- **codex-init.sh** — bootstrap CLAUDE.md/AGENTS.md from project scan
+
+### Direct reference
+
+- Routing guide: `docs/dev-codex/ROUTING.md`
+- Playbooks: `docs/dev-codex/playbooks/`
+- Templates: `docs/dev-codex/templates/`
+- Source: [axon-org/axon-dev-codex](https://github.com/axon-org/axon-dev-codex)
+  (submodule at `docs/dev-codex/`)
 
 ---
 
