@@ -27,6 +27,7 @@ const RESERVED_SLUGS = [
   'cohorts',
   'agents',
   'tasks',
+  'visions',
 ];
 
 function isValidSlug(slug: string): boolean {
