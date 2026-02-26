@@ -171,4 +171,17 @@ needed — skills are globally installed and symlinked to the source repo.
 
 ---
 
+## Constitution
+
+Using **default** constitution (`CONSTITUTION.md`). Defines strictness levels:
+
+- Test coverage target: 70%
+- PR reviews: 1 required
+- Security: mandatory input validation + no secrets in code
+- Docs: README + CLAUDE.md required
+
+Upgrade path: default → enterprise (when paying customers onboard)
+
+---
+
 _Living document. Update when significant changes land._

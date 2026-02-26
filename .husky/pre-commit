@@ -1,2 +1,6 @@
 #!/usr/bin/env sh
-pnpm exec lint-staged
+
+pnpm exec lint-staged || exit 1
+
+# Axon Dev Codex enforcement
+TODO_THRESHOLD=50 ANY_THRESHOLD=300 sh /Users/alimai/Projects/axon/dev-codex/hooks/pre-commit.sh
