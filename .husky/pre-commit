@@ -6,7 +6,9 @@ pnpm exec lint-staged || exit 1
 STAGED_DOCS=$(git diff --cached --name-only --diff-filter=ACMRTUXB | grep -E '^(CLAUDE|CONSTITUTION)\.md$' || true)
 if [ -n "$STAGED_DOCS" ]; then
   git reset -q $STAGED_DOCS
-  trap 'git add $STAGED_DOCS' EXIT
 fi
 
-TODO_THRESHOLD=50 ANY_THRESHOLD=300 sh /Users/alimai/Projects/axon/dev-codex/hooks/pre-commit.sh
+# Optional: Run Axon Dev Codex hook if configured
+if [ -n "$AXON_CODEX_PATH" ] && [ -f "$AXON_CODEX_PATH/hooks/pre-commit.sh" ]; then
+  TODO_THRESHOLD=50 ANY_THRESHOLD=300 sh "$AXON_CODEX_PATH/hooks/pre-commit.sh"
+fi
