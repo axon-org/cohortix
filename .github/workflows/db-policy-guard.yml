@@ -114,6 +114,11 @@ jobs:
                 echo "    Add: GRANT ALL ON public.${CLEAN_TABLE} TO service_role;"
                 MISSING_GRANTS=1
               fi
+              if grep -qiE "GRANT.*ON.*${CLEAN_TABLE}.*TO.*anon" "$FILE"; then
+                echo "❌  Forbidden GRANT to anon role on table '$TABLE' in $FILE"
+                echo "    anon role should not have direct table access. Remove the GRANT to anon."
+                MISSING_GRANTS=1
+              fi
             done
           done <<< "$CHANGED_FILES"
 
