@@ -10,11 +10,11 @@ import { useRouter } from 'next/navigation';
  */
 export default function Home() {
   const { isLoaded, isSignedIn } = useAuth();
-  const { organization } = useOrganization();
+  const { isLoaded: isOrgLoaded, organization } = useOrganization();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || !isOrgLoaded) return;
     if (!isSignedIn) {
       router.replace('/sign-in');
       return;
@@ -24,7 +24,7 @@ export default function Home() {
     } else {
       router.replace('/onboarding');
     }
-  }, [isLoaded, isSignedIn, organization, router]);
+  }, [isLoaded, isOrgLoaded, isSignedIn, organization, router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">
