@@ -15,10 +15,17 @@ ADR defines the multi-instance architecture, data ownership model, security
 boundaries, agent-human collaboration patterns, context management strategy, and
 marketplace model.
 
-**Key Decision:** Every user gets a personal Cohort (OpenClaw instance).
-Organizations can create additional shared Cohorts. Users can bring their own
-hardware or use Cohortix-managed cloud instances. Cohortix is the GUI — users
-never interact with OpenClaw directly.
+**Key Decision:** Every user gets a personal Cohort (isolated AI workspace) tied
+to their user account — NOT to any organization. Organizations are optional and
+created explicitly when users want to collaborate. Orgs can create additional
+shared Cohorts. Users can bring their own hardware or use Cohortix-managed cloud
+instances. Cohortix is the GUI — users never see the underlying engine.
+
+**Branding Rule (Non-Negotiable):** The term "OpenClaw" MUST NEVER appear
+anywhere in the Cohortix product UI, marketing, or user-facing documentation.
+Users see "Cohort" (their AI workspace). OpenClaw is the internal engine —
+referenced only in technical architecture docs like this ADR. In code, use
+abstractions like `CohortEngine`, `CohortRuntime`, never `OpenClawClient`.
 
 ---
 
@@ -110,7 +117,84 @@ No existing PM tool offers this. We're building it with OpenClaw as the engine.
 | **Shared**                         | Org admin        | Cloud or BYOH       | Assigned org members                 | Team collaboration, shared operations   |
 | **BYOH (Bring Your Own Hardware)** | User             | User's Mac/Linux/Pi | Depends on type (personal or shared) | Data sovereignty, power users           |
 
-### 3.3 Hosting Models
+**Critical: Personal Cohorts are USER-level, not org-level.** A user who belongs
+to 3 organizations still has exactly ONE personal Cohort. It travels with them.
+It is not inside any organization. Shared Cohorts belong to organizations;
+personal Cohorts belong to users.
+
+```
+User: Ahmad
+├── Personal Cohort (ONE, global, tied to user_id)
+│   └── Personal visions, agents, knowledge — always accessible
+│
+├── Member of "Acme Corp" org
+│   └── Can access: Acme Engineering Cohort (shared), Acme Marketing Cohort (shared)
+│
+├── Member of "Filmzya" org
+│   └── Can access: Filmzya Production Cohort (shared)
+│
+└── No org needed to start using Cohortix
+    └── Solo users just have their personal Cohort
+    └── Creating an org is an explicit later action
+```
+
+**Signup Flow (No Org Required):**
+
+1. User signs up via Clerk (email/social login)
+2. Cohortix auto-provisions personal Cohort
+3. User starts using Cohortix immediately (personal visions, tasks, agents)
+4. Later: User goes to Settings → "Create Organization" when they want to
+   collaborate
+5. Org admin creates shared Cohorts and invites members
+6. Invited users keep their existing personal Cohort, gain access to shared ones
+
+### 3.3 Clone Foundation (First Agent = Your AI Clone)
+
+Every user's first agent is their **Clone** — an AI version of themselves that
+learns who they are, how they think, and what they care about.
+
+**Onboarding Flow:**
+
+```
+1. User signs up → personal Cohort provisioned
+2. First screen: "Let's create your Clone"
+   ├── Name your Clone (default: first name + "AI")
+   ├── Quick personality quiz (5-10 questions)
+   │   ├── "How do you make decisions?" (gut / data / consensus)
+   │   ├── "What matters most to you?" (select 3-5 values)
+   │   ├── "What's your communication style?" (direct / diplomatic / detailed)
+   │   └── "What are you working toward?" (free text → first Vision)
+   └── Clone created with initial identity foundation
+3. Starter tasks assigned (onboarding kit):
+   ├── "Tell your Clone about your background" (builds expertise profile)
+   ├── "Share your first Vision" (starts PPV hierarchy)
+   └── "Assign your Clone its first task" (teaches the interaction model)
+```
+
+**Clone Identity Structure (stored in Cohort engine workspace):**
+
+```
+clone-foundation/
+├── identity.md        — Who the user is (bio, role, background)
+├── values.md          — What matters most to them
+├── decision-making.md — How they think and decide
+├── expertise.md       — What they know deeply
+├── communication.md   — How they prefer to interact
+└── aspirations.md     — Long-term goals (feeds into Visions)
+```
+
+The Clone evolves over time:
+
+- User conversations update the foundation automatically
+- Clone learns preferences from task interactions
+- Correction events refine the Clone's understanding
+- Users can manually edit any foundation file via the UI
+
+**Why this matters:** The Clone is what makes Cohortix personal. It's not a
+generic AI assistant — it's YOUR AI that knows YOU. This is the emotional hook
+that drives retention and the foundation for meaningful Vision/Mission planning.
+
+### 3.4 Hosting Models
 
 **Managed Cloud (Default)**
 
@@ -133,7 +217,7 @@ No existing PM tool offers this. We're building it with OpenClaw as the engine.
 - Example: Personal Cohorts on cloud, Engineering shared Cohort on company
   server
 
-### 3.4 Instance Lifecycle
+### 3.5 Instance Lifecycle
 
 ```
 User signs up
@@ -200,18 +284,27 @@ ALTER TABLE tasks ADD COLUMN cohort_id UUID REFERENCES cohorts(id);
 -- New: Cohorts table
 CREATE TABLE cohorts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,  -- NULL for personal cohorts
     name VARCHAR(255) NOT NULL,
     type VARCHAR(20) NOT NULL CHECK (type IN ('personal', 'shared')),
     hosting VARCHAR(20) NOT NULL CHECK (hosting IN ('managed', 'self_hosted')),
-    owner_user_id UUID REFERENCES users(id),  -- NULL for shared cohorts
-    gateway_url TEXT,           -- OpenClaw Gateway endpoint
+    owner_user_id UUID REFERENCES users(id),  -- Set for personal cohorts, NULL for shared
+    gateway_url TEXT,           -- Internal engine endpoint (never exposed to UI)
     auth_token_hash TEXT,       -- Hashed connection token
     status VARCHAR(20) DEFAULT 'provisioning',
     hardware_info JSONB,        -- For BYOH: { os, arch, ram, model }
     last_heartbeat TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+
+    -- Constraints: personal = user-owned, shared = org-owned
+    CONSTRAINT personal_has_user CHECK (
+        (type = 'personal' AND owner_user_id IS NOT NULL AND organization_id IS NULL)
+        OR (type = 'shared' AND organization_id IS NOT NULL)
+    ),
+    -- Each user gets exactly ONE personal cohort
+    CONSTRAINT one_personal_per_user UNIQUE (owner_user_id)
+        WHERE (type = 'personal')  -- Partial unique index
 );
 
 -- Cohort membership
@@ -527,7 +620,28 @@ CLI: /Users/alimai/bin/cognee-memory
   mapping
 - **Each Cohort gets its own Cognee graph** — no cross-Cohort traversal
 
-**How the three layers work together:**
+**Layer 4: QMD (Document Search + Vector Embeddings)**
+
+```
+CLI: /Users/alimai/.bun/bin/qmd
+├── collection add [path] --name <name>  → Index a document collection
+├── query "search term"                   → Combined BM25 + vector + reranking
+├── vsearch "query"                       → Pure vector similarity search
+├── search "query"                        → Full-text BM25 search
+└── mcp                                   → MCP server for agent integration
+```
+
+- **Strengths:** Local-first (no API calls), hybrid search (BM25 + embeddings +
+  reranking), document collections, line-level precision
+- **Models:** embeddinggemma-300M (embedding), qwen3-reranker-0.6b (reranking),
+  Qwen3-0.6B (generation) — all local
+- **Use for:** Searching across large document sets (specs, guides, codebases),
+  retrieving specific sections with line numbers, powering "search across all
+  project docs"
+- **Each Cohort has its own QMD index** — isolated document collections per
+  Cohort
+
+**How the four layers work together:**
 
 ```
 Agent completes a task
@@ -587,9 +701,10 @@ Agent executes task
 
 Over time, agent becomes:
     ├── Better at tasks (Mem0 recalls past solutions)
-    ├── Aware of team patterns (OpenClaw memory preferences)
-    ├── A knowledge repository humans can browse (all three layers via UI)
-    └── Connected to domain concepts (Cognee graph)
+    ├── Aware of team patterns (memory preferences)
+    ├── A searchable knowledge repository (all four layers via UI)
+    ├── Connected to domain concepts (Cognee graph)
+    └── A document expert (QMD indexes all project docs for retrieval)
 ```
 
 **In Cohortix UI, this surfaces as:**
@@ -923,7 +1038,84 @@ OpenClaw offers.
 | `openclaw gateway start/stop`  | Start/Stop Cohort — power button in settings                |
 | `openclaw memory`              | Knowledge Base — view/edit agent memory and learnings       |
 
-### 7.3 Technical Integration
+### 7.3 Complete Engine Feature Mapping (21 Systems)
+
+The Cohort engine exposes 21 subsystems. Each needs a Cohortix GUI equivalent:
+
+| #   | Engine System                                                    | Cohortix UI                                                | Priority | Phase |
+| --- | ---------------------------------------------------------------- | ---------------------------------------------------------- | -------- | ----- |
+| 1   | **Agents** (create, list, delete, identity, routing)             | Agents page — CRUD, profile editor, avatar, routing rules  | P0       | 1     |
+| 2   | **Config** (21 sections: models, tools, bindings, session, etc.) | Settings pages — organized by category                     | P0       | 1     |
+| 3   | **Skills** (152+ available, install/enable/disable)              | Skills Marketplace — browse, install, toggle               | P1       | 2     |
+| 4   | **Plugins** (channel adapters, extensions)                       | Integrations page — enable/configure plugins               | P1       | 2     |
+| 5   | **Cron** (scheduled jobs)                                        | Scheduled Tasks — create, edit, enable/disable, logs       | P1       | 2     |
+| 6   | **Hooks** (boot-md, command-logger, etc.)                        | Advanced Settings — hook configuration                     | P2       | 3     |
+| 7   | **Nodes** (device pairing, camera, canvas, invoke)               | Devices page — pair, manage, invoke commands               | P1       | 3     |
+| 8   | **Channels** (Discord, Telegram, WhatsApp, etc.)                 | Connections page — connect/disconnect messaging platforms  | P2       | 3     |
+| 9   | **Sessions** (conversation management)                           | Activity Feed — browse sessions, view history              | P0       | 1     |
+| 10  | **Memory** (search, reindex)                                     | Knowledge Hub — search, browse, manage                     | P0       | 1     |
+| 11  | **Sandbox** (Docker agent isolation)                             | Security Settings — sandbox config                         | P2       | 3     |
+| 12  | **Browser** (managed browser for agents)                         | Agent Tools — browser access toggle                        | P2       | 3     |
+| 13  | **Models** (discover, scan, configure LLM providers)             | AI Models page — add providers, set keys, assign to agents | P0       | 1     |
+| 14  | **Gateway** (start/stop/health/status)                           | Cohort Dashboard — power toggle, health indicators         | P0       | 1     |
+| 15  | **Security** (audits, config checks)                             | Security Audit page — run checks, view results             | P2       | 3     |
+| 16  | **Approvals** (exec approval management)                         | Permissions page — approve/deny agent actions              | P1       | 2     |
+| 17  | **DNS** (Tailscale + CoreDNS)                                    | Network Settings — discovery config (BYOH)                 | P2       | 3     |
+| 18  | **Dashboard** (control UI)                                       | IS the Cohortix UI itself                                  | P0       | 1     |
+| 19  | **Pairing** (secure DM pairing)                                  | Device Setup wizard                                        | P2       | 3     |
+| 20  | **System** (events, heartbeat, presence)                         | System Status — events log, uptime                         | P1       | 2     |
+| 21  | **Logs** (gateway file logs)                                     | Logs page — real-time log viewer with filters              | P1       | 2     |
+
+**Phase 1 (P0):** 7 systems — enough for basic Cohort management **Phase 2
+(P1):** 7 systems — skills, cron, channels, approvals **Phase 3 (P2):** 7
+systems — advanced (sandbox, browser, DNS, security)
+
+### 7.4 BYOH Bootstrap Package (Cohortix Compatibility Kit)
+
+When a user connects their own hardware, their engine instance may not have the
+required tools. Cohortix runs a compatibility check and offers automated
+installation:
+
+**Required Tools (must-have for Cohortix integration):**
+
+| Tool                    | Purpose                            | Install Method                     | Size                     |
+| ----------------------- | ---------------------------------- | ---------------------------------- | ------------------------ |
+| **Mem0**                | Agent memory with auto-dedup       | `pip install mem0ai` + CLI wrapper | ~50MB                    |
+| **Cognee**              | Knowledge graph                    | `pip install cognee` + CLI wrapper | ~100MB                   |
+| **QMD**                 | Document search + embeddings       | `bun install -g qmd`               | ~500MB (includes models) |
+| **Cohortix Agent Hook** | Webhook bridge to Cohortix backend | npm package                        | ~5MB                     |
+
+**Optional Tools (enhanced features):**
+
+| Tool           | Purpose                   | When Needed                       |
+| -------------- | ------------------------- | --------------------------------- |
+| **NeuroBits**  | Learning materials search | If using learning/course features |
+| **Notion RAG** | Notion workspace search   | If Notion integration enabled     |
+| **n8n**        | Workflow automation       | If using automation features      |
+
+**Bootstrap Flow:**
+
+```
+1. User connects BYOH instance → Cohortix sends compatibility check request
+2. Engine Gateway responds with installed tools list
+3. Cohortix compares against required tools
+4. If missing tools:
+   a. Show user: "Your Cohort needs 2 additional tools to work with Cohortix"
+   b. User clicks "Install" → Cohortix sends install commands via Gateway
+   c. Progress bar shows installation
+   d. Verification check confirms tools work
+5. If all tools present: "Your Cohort is ready! ✅"
+```
+
+**Version Compatibility:**
+
+- Cohortix maintains a compatibility matrix (engine version ↔ required tool
+  versions)
+- BYOH instances that fall behind get a notification: "Update available for your
+  Cohort"
+- Critical security updates can be flagged as mandatory
+
+### 7.5 Technical Integration
 
 Cohortix communicates with OpenClaw via the Gateway's WebSocket RPC interface:
 
@@ -1038,7 +1230,34 @@ User clicks "Install" on marketplace
 - Published through marketplace review process
 - Buyer gets a clean install, no connection to seller's data
 
-### 8.5 Revenue Model
+**Sanitized Knowledge Export (for marketplace agents with valuable learnings):**
+
+An agent that has evolved significantly has valuable knowledge. The seller can
+optionally include curated learnings:
+
+```
+"Prepare for Marketplace" flow:
+1. Seller selects agent to publish
+2. System extracts:
+   ✅ SHARED: Skills, config, system prompt, tool permissions
+   ✅ SHARED: Expertise topics ("knows PostgreSQL, Drizzle, RLS")
+   ✅ OPTIONAL: Curated lessons (seller reviews each one)
+      → Auto-strips: org names, user names, task IDs, project names
+      → Keeps: generic patterns ("batch inserts > 100 rows use transactions")
+   ❌ NEVER: Raw Mem0 facts, daily logs, Cognee graph, task history, comments
+3. Seller reviews sanitized package
+4. Submitted to marketplace review
+5. Buyer installs: gets template + sanitized expertise, starts fresh memory
+```
+
+This means a buyer purchasing "Axon Dev Codex Backend Agent" gets:
+
+- Agent config + personality + skills ✅
+- Generic backend development lessons (sanitized) ✅
+- Knowledge that "Drizzle ORM works well with Supabase" ✅
+- NOT: "Ahmad's Cohortix project uses table X with column Y" ❌
+
+### 8.5 Revenue Model (DRAFT — Pending Financial Modeling with Malik)
 
 | Revenue Stream                 | Pricing                                                            | Who Pays |
 | ------------------------------ | ------------------------------------------------------------------ | -------- |
