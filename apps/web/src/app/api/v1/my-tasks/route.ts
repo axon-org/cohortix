@@ -29,6 +29,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     .from('tasks')
     .select('*, projects(id, name)', { count: 'exact' })
     .eq('organization_id', organizationId)
+    .eq('assignee_type', 'user')
     .eq('assignee_id', userId);
 
   if (query.status) queryBuilder = queryBuilder.eq('status', query.status);
