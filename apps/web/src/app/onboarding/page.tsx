@@ -78,6 +78,7 @@ export default function OnboardingPage() {
     !isCreating;
 
   const getSlugStatusIcon = () => {
+    if (!slug) return null;
     if (slugStatus === 'checking') {
       return <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />;
     }

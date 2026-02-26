@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContextBasic } from '@/lib/auth-helper';
+import { isValidSlug as validateSlug } from '@/lib/slug-utils';
 
 const RESERVED_SLUGS = [
   'api',
@@ -30,20 +31,6 @@ const RESERVED_SLUGS = [
   'visions',
 ];
 
-function isValidSlug(slug: string): boolean {
-  // Lowercase alphanumeric + hyphens, 3-50 chars
-  const regex = /^[a-z0-9-]{3,50}$/;
-  if (!regex.test(slug)) return false;
-
-  // No leading/trailing hyphens
-  if (slug.startsWith('-') || slug.endsWith('-')) return false;
-
-  // No consecutive hyphens
-  if (slug.includes('--')) return false;
-
-  return true;
-}
-
 function generateSuggestion(baseSlug: string, attempt: number = 1): string {
   if (attempt === 1) {
     return `${baseSlug}-${Math.floor(Math.random() * 1000)}`;
@@ -62,7 +49,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate format
-    if (!isValidSlug(slug)) {
+    if (!validateSlug(slug).valid) {
       return NextResponse.json({
         available: false,
         suggestion: null,
