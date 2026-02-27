@@ -1170,7 +1170,60 @@ class CohortGatewayClient {
 
 ## 8. Marketplace Model
 
-### 8.1 What Gets Sold
+### 8.1 What Gets Sold — Operational Systems (Not Just Agents)
+
+The marketplace sells **complete operational systems** — living packages of
+frameworks, agents, skills, and evolution loops that represent entire ways of
+working.
+
+**Evolution of the concept:**
+
+- ❌ Old model: Individual agents or simple agent packs
+- ✅ New model: Full operational systems — framework + agents + skills +
+  evolution, continuously improving
+
+**An Operational System includes:**
+
+| Component           | What It Is                                  | Example (Axon Dev Codex)                                               |
+| ------------------- | ------------------------------------------- | ---------------------------------------------------------------------- |
+| **Framework**       | Methodology docs, standards, conventions    | 7 codex documents (core, backend, frontend, QA, DevOps, design, AI/ML) |
+| **Agents**          | Pre-configured specialists with identities  | 14 agents (PM, Backend Dev, Frontend Dev, QA Engineer, etc.)           |
+| **Skills**          | Agent capabilities mapped to roles          | 50+ skills (drizzle-orm, shadcn-ui, vitest, clerk, etc.)               |
+| **Evolution Loops** | Cron jobs that keep agents learning         | Daily evolution, weekly reviews, self-improvement protocols            |
+| **Conventions**     | Governance rules, file structure, workflows | AGENTS.md, CONVENTIONS.md, git workflow, PR templates                  |
+
+**The key differentiator:** These are LIVING products. The agents evolve
+through:
+
+- Daily evolution cron loops (self-reflection and learning)
+- Task-based learning (improving from every task they execute)
+- Skill updates (new skills added, existing ones refined)
+- Framework updates (methodology improves over time)
+
+Buyers don't just get a static template — they get a system that keeps getting
+better.
+
+**Anyone can create and sell operational systems:**
+
+```
+Examples:
+├── "Axon Dev Codex" — Full software development team + methodology
+│   └── By: Axon (us) — 14 agents, 50+ skills, 7 framework docs
+│
+├── "Content Machine" — Content marketing operation
+│   └── By: Marketing agency — Writer, Editor, SEO, Social agents + content strategy
+│
+├── "Legal Eagle" — Contract review and compliance workflow
+│   └── By: Law firm — Reviewer, Analyst, Compliance agents + legal framework
+│
+├── "FitOS" — Personal training and nutrition coaching
+│   └── By: Fitness coach — Trainer, Nutritionist, Accountability agents + programs
+│
+└── "Startup Launch Kit" — Idea to MVP operational system
+    └── By: Accelerator — PM, Developer, Designer agents + lean startup framework
+```
+
+### 8.2 What Gets Sold (Detailed)
 
 The marketplace offers **Agent Packs** — bundles of agent configurations,
 skills, and roadmaps:
@@ -1188,7 +1241,7 @@ Marketplace Listing: "Axon Dev Codex"
 └── Install: One-click → deploys into user's Cohort
 ```
 
-### 8.2 Installation Flow
+### 8.3 Installation Flow
 
 ```
 User clicks "Install" on marketplace
@@ -1203,7 +1256,7 @@ User clicks "Install" on marketplace
     └── Agents appear in user's Agents page, ready to assign tasks
 ```
 
-### 8.3 Security for Marketplace Agents
+### 8.4 Security for Marketplace Agents
 
 | Control                    | Implementation                                                           |
 | -------------------------- | ------------------------------------------------------------------------ |
@@ -1215,7 +1268,7 @@ User clicks "Install" on marketplace
 | **Version Pinning**        | Users choose when to update; no silent changes                           |
 | **Rating System**          | Community ratings + verified publisher badges                            |
 
-### 8.4 Agent Sharing Between Cohorts
+### 8.5 Agent Sharing Between Cohorts
 
 **Within an org (Personal → Shared or Shared → Shared):**
 
