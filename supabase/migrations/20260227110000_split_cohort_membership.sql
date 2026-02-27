@@ -50,12 +50,32 @@ INSERT INTO cohort_agent_members (
 SELECT
   id,
   cohort_id,
-  agent_id,
+  ally_id,
   'member'::cohort_member_role,
-  engagement_score,
+  COALESCE(engagement_score, 0),
+  COALESCE(joined_at, now()),
+  COALESCE(updated_at, now())
+FROM cohort_members
+WHERE ally_id IS NOT NULL;
+
+-- ---------------------------------------------------------------------------
+-- Backfill: move existing cohort_members (users) to cohort_user_members
+-- ---------------------------------------------------------------------------
+INSERT INTO cohort_user_members (
+  cohort_id,
+  user_id,
+  role,
   joined_at,
   updated_at
-FROM cohort_members;
+)
+SELECT
+  cohort_id,
+  user_id,
+  'member'::cohort_member_role,
+  COALESCE(joined_at, now()),
+  COALESCE(updated_at, now())
+FROM cohort_members
+WHERE user_id IS NOT NULL;
 
 -- ---------------------------------------------------------------------------
 -- Drop old table
