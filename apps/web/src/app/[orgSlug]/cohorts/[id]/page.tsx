@@ -30,6 +30,14 @@ const STATUS_COLORS: Record<string, string> = {
   completed: 'bg-info',
 };
 
+const RUNTIME_STATUS_COLORS: Record<string, string> = {
+  online: 'bg-success',
+  degraded: 'bg-warning',
+  disconnected: 'bg-destructive',
+  offline: 'bg-muted-foreground',
+  provisioning: 'bg-primary animate-pulse',
+};
+
 export default function CohortDetailPage({
   params,
 }: {
@@ -145,10 +153,19 @@ export default function CohortDetailPage({
               ))}
             </select>
           ) : (
-            <span className="flex items-center gap-1.5 text-xs font-medium">
-              <span className={cn('w-2 h-2 rounded-full', STATUS_COLORS[cohort.status])} />
-              {cohort.status}
-            </span>
+            <>
+              <span className="flex items-center gap-1.5 text-xs font-medium">
+                <span className={cn('w-2 h-2 rounded-full', STATUS_COLORS[cohort.status])} />
+                {cohort.status}
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-medium bg-secondary px-2 py-0.5 rounded-full">
+                <span className={cn('w-2 h-2 rounded-full', RUNTIME_STATUS_COLORS[cohort.runtime_status || 'offline'])} />
+                {cohort.runtime_status || 'offline'}
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
+                {cohort.type}
+              </span>
+            </>
           )}
           <span className="text-xs text-muted-foreground">
             {cohort.member_count} members · {cohort.engagement_percent}% engagement
@@ -156,68 +173,83 @@ export default function CohortDetailPage({
         </div>
       </div>
 
-      {/* Details */}
-      <div className="bg-card border border-border rounded-lg divide-y divide-border">
-        <Field label="Description" editing={editing}>
-          {editing ? (
-            <textarea
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              rows={3}
-              className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-foreground"
-            />
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              {cohort.description || 'No description'}
-            </p>
-          )}
-        </Field>
-        <Field label="Start Date" editing={editing}>
-          {editing ? (
-            <Input
-              type="date"
-              value={form.startDate}
-              onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-              className="w-48"
-            />
-          ) : (
-            <p className="text-sm">{cohort.start_date || '—'}</p>
-          )}
-        </Field>
-        <Field label="End Date" editing={editing}>
-          {editing ? (
-            <Input
-              type="date"
-              value={form.endDate}
-              onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-              className="w-48"
-            />
-          ) : (
-            <p className="text-sm">{cohort.end_date || '—'}</p>
-          )}
-        </Field>
-        <Field label="Created">
-          <p className="text-sm text-muted-foreground">
-            {new Date(cohort.created_at).toLocaleDateString()}
-          </p>
-        </Field>
+      {/* Stats Dashboard */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StatsCard label="Total Agents" value={cohort.agent_count || 0} />
+        <StatsCard label="Active Tasks" value={cohort.active_tasks || 0} />
+        <StatsCard label="Engagement Score" value={`${cohort.engagement_percent}%`} />
       </div>
 
-      {/* Engagement Timeline */}
-      {timelineData && <EngagementTimeline data={timelineData.timeline} days={30} />}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-3 space-y-6">
+          {/* Details */}
+          <div className="bg-card border border-border rounded-lg divide-y divide-border">
+            <Field label="Description" editing={editing}>
+              {editing ? (
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  rows={3}
+                  className="w-full bg-secondary border border-border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-foreground"
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {cohort.description || 'No description'}
+                </p>
+              )}
+            </Field>
+            {cohort.hosting === 'self_hosted' && (
+              <Field label="Gateway URL">
+                <p className="text-sm font-mono text-primary">{cohort.gateway_url || 'Pending...'}</p>
+              </Field>
+            )}
+            <Field label="Start Date" editing={editing}>
+              {editing ? (
+                <Input
+                  type="date"
+                  value={form.startDate}
+                  onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+                  className="w-48"
+                />
+              ) : (
+                <p className="text-sm">{cohort.start_date || '—'}</p>
+              )}
+            </Field>
+            <Field label="End Date" editing={editing}>
+              {editing ? (
+                <Input
+                  type="date"
+                  value={form.endDate}
+                  onChange={(e) => setForm({ ...form, endDate: e.target.value })}
+                  className="w-48"
+                />
+              ) : (
+                <p className="text-sm">{cohort.end_date || '—'}</p>
+              )}
+            </Field>
+          </div>
 
-      {/* Two-Column Layout: Members (left, wider) + Activity (right, narrower) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Members List - Takes 2/3 of the space */}
-        <div className="lg:col-span-2">
+          {/* Engagement Timeline */}
+          {timelineData && <EngagementTimeline data={timelineData.timeline} days={30} />}
+
+          {/* Members List */}
           {membersData && <BatchMembers members={membersData.members} />}
         </div>
 
-        {/* Activity Log - Takes 1/3 of the space */}
-        <div className="lg:col-span-1">
+        {/* Activity Log - Takes 1/4 of the space */}
+        <div className="lg:col-span-1 space-y-6">
           {activityData && <ActivityLog activities={activityData.activities} />}
         </div>
       </div>
+    </div>
+  );
+}
+
+function StatsCard({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="bg-card border border-border rounded-xl p-4">
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
+      <p className="text-2xl font-bold">{value}</p>
     </div>
   );
 }
