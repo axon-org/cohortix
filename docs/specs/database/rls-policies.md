@@ -104,4 +104,5 @@ Policy:
 - Cohort membership is determined only via `cohort_user_members`.
 - Org access is determined via `organization_memberships`.
 - Personal scope always maps `scope_id` to the current user profile ID.
+- **Personal cohort isolation:** org admins are NOT implicitly granted access.
 - The API should validate scope_type/scope_id before insert to avoid accidental scope leakage.

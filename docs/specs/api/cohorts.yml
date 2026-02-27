@@ -165,6 +165,135 @@ paths:
                     type: string
                   cohort:
                     $ref: '#/components/schemas/Cohort'
+  /cohorts/{id}/start:
+    post:
+      summary: Start cohort runtime
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Runtime started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cohort'
+  /cohorts/{id}/stop:
+    post:
+      summary: Stop cohort runtime
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Runtime stopped
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cohort'
+  /cohorts/{id}/heartbeat:
+    post:
+      summary: Record runtime heartbeat
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: Authorization
+          required: false
+          schema:
+            type: string
+          description: Bearer connection token (gateway)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardwareInfo:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Heartbeat accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cohort'
+  /cohorts/{id}/connection-token:
+    post:
+      summary: Generate connection token
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Connection token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      expiresIn:
+                        type: integer
+  /cohorts/{id}/runtime-status:
+    get:
+      summary: Get runtime status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Runtime status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      runtimeStatus:
+                        type: string
+                      lastHeartbeatAt:
+                        type: string
+                        format: date-time
+                      hosting:
+                        type: string
 components:
   schemas:
     Cohort:
