@@ -50,7 +50,7 @@ export const knowledgeEntries = pgTable(
       .references(() => organizations.id, { onDelete: 'cascade' }),
 
     scopeType: scopeTypeEnum('scope_type').default('personal').notNull(),
-    scopeId: uuid('scope_id').notNull(),
+    scopeId: uuid('scope_id'),
     cohortId: uuid('cohort_id').references(() => cohorts.id, { onDelete: 'set null' }),
 
     // Source agent (who learned this)
