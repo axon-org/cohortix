@@ -1,6 +1,8 @@
-import { pgTable, uuid, text, timestamp, varchar, jsonb, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, varchar, index } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
 import { users } from './users';
+import { cohorts } from './cohorts';
+import { scopeTypeEnum } from './scope-types';
 
 export const comments = pgTable(
   'comments',
@@ -9,6 +11,11 @@ export const comments = pgTable(
     organizationId: uuid('organization_id')
       .notNull()
       .references(() => organizations.id, { onDelete: 'cascade' }),
+
+    scopeType: scopeTypeEnum('scope_type').default('personal').notNull(),
+    scopeId: uuid('scope_id').notNull(),
+    cohortId: uuid('cohort_id').references(() => cohorts.id, { onDelete: 'set null' }),
+
     entityType: varchar('entity_type', { length: 50 }).notNull(), // 'task', 'operation', 'mission'
     entityId: uuid('entity_id').notNull(),
     authorId: uuid('author_id')
