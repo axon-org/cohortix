@@ -14,12 +14,14 @@ import {
   removeMemberSchema,
   updateCohortSchema,
   updateMemberRoleSchema,
+  updateCohortRuntimeSchema,
   type AddAgentMemberInput,
   type AddUserMemberInput,
   type CreateCohortInput,
   type RemoveMemberInput,
   type UpdateCohortInput,
   type UpdateMemberRoleInput,
+  type UpdateCohortRuntimeInput,
 } from '@/lib/validations/cohorts';
 import { generateSlug } from '@/lib/utils/cohort';
 
@@ -30,6 +32,7 @@ export {
   addAgentMemberSchema,
   updateMemberRoleSchema,
   removeMemberSchema,
+  updateCohortRuntimeSchema,
 };
 
 const slugSuffix = () => Date.now().toString(36);
@@ -258,6 +261,24 @@ export async function updateMemberRole(input: UpdateMemberRoleInput) {
     .returning();
 
   return member ?? null;
+}
+
+/**
+ * Update cohort runtime fields
+ */
+export async function updateCohortRuntime(cohortId: string, input: UpdateCohortRuntimeInput) {
+  const validated = updateCohortRuntimeSchema.parse(input);
+
+  const [cohort] = await db
+    .update(cohorts)
+    .set({
+      ...validated,
+      updatedAt: new Date(),
+    })
+    .where(eq(cohorts.id, cohortId))
+    .returning();
+
+  return cohort ?? null;
 }
 
 /**

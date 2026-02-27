@@ -115,3 +115,13 @@ export const removeMemberSchema = z.object({
 });
 
 export type RemoveMemberInput = z.infer<typeof removeMemberSchema>;
+
+export const updateCohortRuntimeSchema = z.object({
+  runtimeStatus: cohortRuntimeStatusEnum.optional(),
+  gatewayUrl: z.string().optional().nullable(),
+  authTokenHash: z.string().optional().nullable(),
+  hardwareInfo: z.record(z.any()).optional(),
+  lastHeartbeatAt: z.coerce.date().optional(),
+});
+
+export type UpdateCohortRuntimeInput = z.input<typeof updateCohortRuntimeSchema>;
