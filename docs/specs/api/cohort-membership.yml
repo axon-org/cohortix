@@ -1,0 +1,220 @@
+openapi: 3.0.3
+info:
+  title: Cohort Membership API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /cohorts/{id}/members:
+    get:
+      summary: List cohort members (users + agents)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Members list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      users:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CohortUserMember'
+                      agents:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CohortAgentMember'
+  /cohorts/{id}/members/users:
+    post:
+      summary: Add a user member
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserMemberRequest'
+      responses:
+        '201':
+          description: User member added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CohortUserMember'
+  /cohorts/{id}/members/agents:
+    post:
+      summary: Add an agent member
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAgentMemberRequest'
+      responses:
+        '201':
+          description: Agent member added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CohortAgentMember'
+  /cohorts/{id}/members/{memberId}:
+    delete:
+      summary: Remove a member
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: memberId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: type
+          required: true
+          schema:
+            type: string
+            enum: [user, agent]
+      responses:
+        '200':
+          description: Member removed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+  /cohorts/{id}/members/{memberId}/role:
+    patch:
+      summary: Update member role
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: memberId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberRoleRequest'
+      responses:
+        '200':
+          description: Role updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+components:
+  schemas:
+    CohortUserMember:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [owner, admin, member, viewer]
+        joinedAt:
+          type: string
+          format: date-time
+    CohortAgentMember:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        agentId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [owner, admin, member, viewer]
+        engagementScore:
+          type: number
+        joinedAt:
+          type: string
+          format: date-time
+    AddUserMemberRequest:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [owner, admin, member, viewer]
+    AddAgentMemberRequest:
+      type: object
+      required:
+        - agentId
+      properties:
+        agentId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [owner, admin, member, viewer]
+    UpdateMemberRoleRequest:
+      type: object
+      required:
+        - role
+        - type
+      properties:
+        role:
+          type: string
+          enum: [owner, admin, member, viewer]
+        type:
+          type: string
+          enum: [user, agent]
