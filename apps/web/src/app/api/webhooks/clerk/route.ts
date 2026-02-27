@@ -17,6 +17,8 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import type { WebhookEvent } from '@clerk/nextjs/server';
 import { generateOrgSlug } from '@/lib/utils';
+import { provisionPersonalCohort } from '@/server/db/mutations/cohorts';
+import { getPersonalCohortByOwner } from '@/server/db/queries/cohorts';
 
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 
@@ -174,7 +176,56 @@ export async function POST(req: Request) {
     }
 
     switch (eventType) {
-      case 'user.created':
+      case 'user.created': {
+        const { id, email_addresses, first_name, last_name, image_url } = evt.data;
+        const primaryEmail = email_addresses.find(
+          (e) => e.id === evt.data.primary_email_address_id
+        );
+
+        const { error } = await supabase.from('profiles').upsert(
+          {
+            clerk_user_id: id,
+            email: primaryEmail?.email_address || '',
+            first_name: first_name || null,
+            last_name: last_name || null,
+            avatar_url: image_url || null,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'clerk_user_id' }
+        );
+
+        if (error) throw error;
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, settings')
+          .eq('clerk_user_id', id)
+          .single();
+
+        if (profile?.id) {
+          const existing = await getPersonalCohortByOwner(profile.id);
+          const cohortId =
+            existing?.id || (await provisionPersonalCohort(profile.id, first_name || 'Personal'))?.id;
+
+          if (cohortId) {
+            const settings = (profile.settings ?? {}) as Record<string, unknown>;
+            if (settings.defaultCohortId !== cohortId) {
+              await supabase
+                .from('profiles')
+                .update({
+                  settings: {
+                    ...settings,
+                    defaultCohortId: cohortId,
+                  },
+                  updated_at: new Date().toISOString(),
+                })
+                .eq('id', profile.id);
+            }
+          }
+        }
+        break;
+      }
+
       case 'user.updated': {
         const { id, email_addresses, first_name, last_name, image_url } = evt.data;
         const primaryEmail = email_addresses.find(
