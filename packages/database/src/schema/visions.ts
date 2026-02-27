@@ -11,6 +11,8 @@ import {
 } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
 import { domains } from './domains';
+import { cohorts } from './cohorts';
+import { scopeTypeEnum } from './scope-types';
 // ownerTypeEnum is defined in goals.ts but we avoid circular import
 // by using varchar for owner_type here (matches DB column type)
 
@@ -28,6 +30,10 @@ export const visions = pgTable('visions', {
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
+
+  scopeType: scopeTypeEnum('scope_type').default('personal').notNull(),
+  scopeId: uuid('scope_id').notNull(),
+  cohortId: uuid('cohort_id').references(() => cohorts.id, { onDelete: 'set null' }),
 
   // Linked domain (optional — Visions can roll up to Domains)
   domainId: uuid('domain_id').references(() => domains.id, { onDelete: 'set null' }),

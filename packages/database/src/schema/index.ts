@@ -14,6 +14,7 @@ export * from './cohort-user-members';
 export * from './cohort-agent-members';
 
 // PPV Hierarchy: Domain → Vision → Mission → Operation → Task
+export * from './scope-types';
 export * from './domains'; // Life pillars (top of PPV pyramid)
 export * from './visions'; // Life aspirations (emotional north stars)
 export * from './goals'; // Missions (measurable goals, DB table: missions)
