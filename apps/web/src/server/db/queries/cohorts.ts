@@ -283,6 +283,16 @@ export async function getCohortById(cohortId: string) {
   };
 }
 
+export async function getPersonalCohortByOwner(userId: string) {
+  const [cohort] = await db
+    .select()
+    .from(cohorts)
+    .where(and(eq(cohorts.ownerUserId, userId), eq(cohorts.type, 'personal')))
+    .limit(1);
+
+  return cohort ?? null;
+}
+
 /**
  * Get cohort statistics: engagement metrics, member breakdown, activity
  */
