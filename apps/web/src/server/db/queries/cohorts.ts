@@ -145,6 +145,29 @@ function buildAccessPredicate(organizationId?: string, userId?: string, type?: C
  * List cohorts with pagination, filtering, and sorting
  */
 export async function getCohorts(
+  organizationId: string,
+  filters?: CohortFilters,
+  pagination?: CohortPagination
+): Promise<{
+  cohorts: Array<Record<string, unknown>>;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}>;
+export async function getCohorts(
+  organizationId?: string,
+  userId?: string,
+  filters?: CohortFilters,
+  pagination?: CohortPagination
+): Promise<{
+  cohorts: Array<Record<string, unknown>>;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}>;
+export async function getCohorts(
   organizationId?: string,
   userIdOrFilters?: string | CohortFilters,
   filtersOrPagination?: CohortFilters | CohortPagination,
