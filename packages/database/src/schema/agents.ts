@@ -10,6 +10,9 @@ import {
   pgEnum,
 } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
+import { users } from './users';
+import { cohorts } from './cohorts';
+import { scopeTypeEnum } from './scope-types';
 
 export const agentStatusEnum = pgEnum('agent_status', [
   'active',
@@ -21,9 +24,16 @@ export const agentStatusEnum = pgEnum('agent_status', [
 
 export const agents = pgTable('agents', {
   id: uuid('id').primaryKey().defaultRandom(),
-  organizationId: uuid('organization_id')
-    .notNull()
-    .references(() => organizations.id, { onDelete: 'cascade' }),
+  organizationId: uuid('organization_id').references(() => organizations.id, {
+    onDelete: 'cascade',
+  }),
+  ownerUserId: uuid('owner_user_id').references(() => users.id, { onDelete: 'set null' }),
+
+  scopeType: scopeTypeEnum('scope_type').default('personal').notNull(),
+  scopeId: uuid('scope_id').notNull(),
+  defaultCohortId: uuid('default_cohort_id').references(() => cohorts.id, {
+    onDelete: 'set null',
+  }),
   externalId: varchar('external_id', { length: 255 }), // ID in external runtime (e.g., Clawdbot)
   name: varchar('name', { length: 255 }).notNull(),
   slug: varchar('slug', { length: 100 }).notNull(),
