@@ -74,4 +74,34 @@ describe('Cohort members API', () => {
     expect(response.status).toBe(201);
     expect(mockAddUserMember).toHaveBeenCalled();
   });
+
+  it('blocks non-admins from adding members', async () => {
+    mockGetCohortUserMembers.mockResolvedValue([{ userId: 'user-123', role: 'member' }] as any);
+
+    const request = new NextRequest('https://example.com/api/v1/cohorts/cohort-123/members/users', {
+      method: 'POST',
+      body: JSON.stringify({ userId: 'user-789', role: 'member' }),
+    });
+
+    const response = await addUserHandler(request, {
+      params: Promise.resolve({ id: 'cohort-123' }),
+    });
+
+    expect(response.status).toBe(403);
+  });
+
+  it('blocks org admins from accessing personal cohorts', async () => {
+    mockGetCohortById.mockResolvedValue({
+      id: 'cohort-999',
+      type: 'personal',
+      ownerUserId: 'user-owner',
+    } as any);
+
+    const request = new NextRequest('https://example.com/api/v1/cohorts/cohort-999/members');
+    const response = await getMembersHandler(request, {
+      params: Promise.resolve({ id: 'cohort-999' }),
+    });
+
+    expect(response.status).toBe(403);
+  });
 });
