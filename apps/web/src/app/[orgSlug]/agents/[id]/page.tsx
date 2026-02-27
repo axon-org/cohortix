@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DeleteDialog } from '@/components/ui/delete-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Pencil, Save, X, Bot, Zap, History, BarChart3, Clock } from 'lucide-react';
+import { ArrowLeft, Pencil, Save, X, Bot, Zap, History, BarChart3, Clock, Check } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -116,8 +116,8 @@ export default function AgentDetailPage({
       {/* Header Profile Section */}
       <div className="bg-card border border-border rounded-xl p-8 flex flex-col md:flex-row items-center md:items-start gap-6">
         <div className="w-24 h-24 bg-secondary rounded-2xl flex items-center justify-center flex-shrink-0 border border-border overflow-hidden">
-          {agent.avatar_url ? (
-            <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover" />
+          {agent.avatarUrl ? (
+            <img src={agent.avatarUrl} alt={agent.name} className="w-full h-full object-cover" />
           ) : (
             <Bot className="w-12 h-12 text-muted-foreground" />
           )}
@@ -126,7 +126,7 @@ export default function AgentDetailPage({
           <div className="flex flex-col md:flex-row md:items-center gap-2 mb-1">
             <h1 className="text-3xl font-bold">{agent.name}</h1>
             <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider w-fit mx-auto md:mx-0">
-              {agent.scope_type || 'personal'}
+              {agent.scopeType || 'personal'}
             </span>
           </div>
           <p className="text-lg text-muted-foreground mb-4">{agent.role || 'General Assistant'}</p>
@@ -137,11 +137,11 @@ export default function AgentDetailPage({
             </span>
             <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <Zap className="w-4 h-4" />
-              {agent.runtime_type || 'Managed'}
+              {agent.runtimeType || 'Managed'}
             </span>
             <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <Clock className="w-4 h-4" />
-              Created {new Date(agent.created_at).toLocaleDateString()}
+              Created {new Date(agent.createdAt).toLocaleDateString()}
             </span>
           </div>
         </div>
@@ -149,10 +149,10 @@ export default function AgentDetailPage({
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatsCard label="Tasks Completed" value={agent.total_tasks_completed || 0} icon={Check} />
-        <StatsCard label="Success Rate" value={`${statsData?.success_rate || 0}%`} icon={BarChart3} />
-        <StatsCard label="Evolution Score" value={statsData?.evolution_score || 0} icon={Zap} />
-        <StatsCard label="Time Worked" value={`${statsData?.total_hours || 0}h`} icon={Clock} />
+        <StatsCard label="Tasks Completed" value={agent.totalTasksCompleted || 0} icon={Check} />
+        <StatsCard label="Success Rate" value={`${statsData?.successRate ?? 0}%`} icon={BarChart3} />
+        <StatsCard label="Sessions Completed" value={statsData?.completedCount ?? 0} icon={Zap} />
+        <StatsCard label="Avg Response" value={`${statsData?.avgResponseTimeMs ?? 0}ms`} icon={Clock} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -192,13 +192,13 @@ export default function AgentDetailPage({
                   <div key={i} className="relative pl-8">
                     <div className={cn(
                       "absolute left-1.5 top-1.5 w-3 h-3 rounded-full border-2 border-background z-10",
-                      event.type === 'learning' ? 'bg-primary' : event.type === 'correction' ? 'bg-warning' : 'bg-success'
+                      event.eventType === 'learning' ? 'bg-primary' : event.eventType === 'correction' ? 'bg-warning' : 'bg-success'
                     )} />
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full", EVENT_TYPE_COLORS[event.type])}>
-                        {event.type}
+                      <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full", EVENT_TYPE_COLORS[event.eventType])}>
+                        {event.eventType}
                       </span>
-                      <span className="text-xs text-muted-foreground">{new Date(event.created_at).toLocaleDateString()}</span>
+                      <span className="text-xs text-muted-foreground">{new Date(event.createdAt).toLocaleDateString()}</span>
                     </div>
                     <p className="text-sm font-medium">{event.summary}</p>
                     {event.metadata && (

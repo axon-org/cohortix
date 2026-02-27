@@ -79,6 +79,9 @@ export default function CloneFoundationOnboardingPage() {
     }));
   };
 
+  const step = STEPS[currentStep];
+  if (!step) return null;
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-background">
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -114,8 +117,8 @@ export default function CloneFoundationOnboardingPage() {
           {/* Step Content */}
           <div className="min-h-[300px] flex flex-col">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold mb-2">{STEPS[currentStep].title}</h2>
-              <p className="text-muted-foreground">{STEPS[currentStep].description}</p>
+              <h2 className="text-2xl font-bold mb-2">{step.title}</h2>
+              <p className="text-muted-foreground">{step.description}</p>
             </div>
 
             <div className="flex-1">

@@ -102,7 +102,7 @@ const RUNTIME_STATUS_COLORS: Record<string, string> = {
 };
 
 function CohortCard({ cohort }: { cohort: any }) {
-  const engagement = parseFloat(cohort.engagement_percent);
+  const engagement = parseFloat(cohort.engagementPercent);
   
   return (
     <Link href={`cohorts/${cohort.id}`} className="group">
@@ -126,15 +126,15 @@ function CohortCard({ cohort }: { cohort: any }) {
                 </span>
                 <span className="w-1 h-1 rounded-full bg-border" />
                 <span className="text-[10px] text-muted-foreground">
-                  {formatDate(cohort.start_date || cohort.created_at)}
+                  {formatDate(cohort.startDate || cohort.createdAt)}
                 </span>
               </div>
             </div>
           </div>
           <div className={cn(
             "w-2.5 h-2.5 rounded-full",
-            RUNTIME_STATUS_COLORS[cohort.runtime_status || 'offline']
-          )} title={cohort.runtime_status} />
+            RUNTIME_STATUS_COLORS[cohort.runtimeStatus || 'offline']
+          )} title={cohort.runtimeStatus} />
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-auto">
@@ -142,7 +142,7 @@ function CohortCard({ cohort }: { cohort: any }) {
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Members</p>
             <div className="flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5 text-muted-foreground" />
-              <span className="text-sm font-bold">{cohort.member_count}</span>
+              <span className="text-sm font-bold">{cohort.memberCount}</span>
             </div>
           </div>
           <div className="space-y-1">

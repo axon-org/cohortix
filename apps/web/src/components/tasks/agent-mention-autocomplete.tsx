@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAgents } from '@/hooks/use-agents';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Bot, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -51,8 +50,8 @@ export function AgentMentionAutocomplete({
                   className="flex items-center gap-2 cursor-pointer p-2 hover:bg-secondary transition-colors"
                 >
                   <div className="w-6 h-6 rounded bg-secondary flex items-center justify-center">
-                    {agent.avatar_url ? (
-                      <img src={agent.avatar_url} alt="" className="w-full h-full object-cover rounded" />
+                    {agent.avatarUrl ? (
+                      <img src={agent.avatarUrl} alt="" className="w-full h-full object-cover rounded" />
                     ) : (
                       <Bot className="w-3.5 h-3.5" />
                     )}

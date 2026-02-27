@@ -37,7 +37,7 @@ import { Loader2 } from 'lucide-react';
 const formSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters').max(255),
   description: z.string().max(1000).optional(),
-  hosting: z.enum(['managed', 'self_hosted']).default('managed'),
+  hosting: z.enum(['managed', 'self_hosted']),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
 });
@@ -60,8 +60,8 @@ export function CohortFormModal({ open, onOpenChange, cohort, orgId }: CohortFor
       name: cohort?.name || '',
       description: cohort?.description || '',
       hosting: cohort?.hosting || 'managed',
-      startDate: cohort?.start_date || '',
-      endDate: cohort?.end_date || '',
+      startDate: cohort?.startDate || '',
+      endDate: cohort?.endDate || '',
     },
   });
 

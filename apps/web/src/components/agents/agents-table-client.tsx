@@ -59,8 +59,8 @@ export function AgentsTableClient() {
     role: agent.role || null,
     status: agent.status,
     capabilities: agent.capabilities,
-    totalTasksCompleted: agent.total_tasks_completed,
-    lastActiveAt: agent.last_active_at || null,
+    totalTasksCompleted: agent.totalTasksCompleted,
+    lastActiveAt: agent.lastActiveAt || null,
   }));
 
   return <AgentsTable data={tableData} />;

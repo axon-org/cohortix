@@ -74,8 +74,8 @@ export default function CohortDetailPage({
       name: cohort.name,
       description: cohort.description || '',
       status: cohort.status,
-      startDate: cohort.start_date || '',
-      endDate: cohort.end_date || '',
+      startDate: cohort.startDate || '',
+      endDate: cohort.endDate || '',
     });
     setEditing(true);
   };
@@ -159,8 +159,8 @@ export default function CohortDetailPage({
                 {cohort.status}
               </span>
               <span className="flex items-center gap-1.5 text-xs font-medium bg-secondary px-2 py-0.5 rounded-full">
-                <span className={cn('w-2 h-2 rounded-full', RUNTIME_STATUS_COLORS[cohort.runtime_status || 'offline'])} />
-                {cohort.runtime_status || 'offline'}
+                <span className={cn('w-2 h-2 rounded-full', RUNTIME_STATUS_COLORS[cohort.runtimeStatus || 'offline'])} />
+                {cohort.runtimeStatus || 'offline'}
               </span>
               <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
                 {cohort.type}
@@ -168,16 +168,16 @@ export default function CohortDetailPage({
             </>
           )}
           <span className="text-xs text-muted-foreground">
-            {cohort.member_count} members · {cohort.engagement_percent}% engagement
+            {cohort.memberCount} members · {cohort.engagementPercent}% engagement
           </span>
         </div>
       </div>
 
       {/* Stats Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatsCard label="Total Agents" value={cohort.agent_count || 0} />
-        <StatsCard label="Active Tasks" value={cohort.active_tasks || 0} />
-        <StatsCard label="Engagement Score" value={`${cohort.engagement_percent}%`} />
+        <StatsCard label="Total Agents" value={cohort.agentCount || 0} />
+        <StatsCard label="Active Tasks" value={cohort.activeTasks || 0} />
+        <StatsCard label="Engagement Score" value={`${cohort.engagementPercent}%`} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -200,7 +200,7 @@ export default function CohortDetailPage({
             </Field>
             {cohort.hosting === 'self_hosted' && (
               <Field label="Gateway URL">
-                <p className="text-sm font-mono text-primary">{cohort.gateway_url || 'Pending...'}</p>
+                <p className="text-sm font-mono text-primary">{cohort.gatewayUrl || 'Pending...'}</p>
               </Field>
             )}
             <Field label="Start Date" editing={editing}>
@@ -212,7 +212,7 @@ export default function CohortDetailPage({
                   className="w-48"
                 />
               ) : (
-                <p className="text-sm">{cohort.start_date || '—'}</p>
+                <p className="text-sm">{cohort.startDate || '—'}</p>
               )}
             </Field>
             <Field label="End Date" editing={editing}>
@@ -224,7 +224,7 @@ export default function CohortDetailPage({
                   className="w-48"
                 />
               ) : (
-                <p className="text-sm">{cohort.end_date || '—'}</p>
+                <p className="text-sm">{cohort.endDate || '—'}</p>
               )}
             </Field>
           </div>
