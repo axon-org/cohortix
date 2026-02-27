@@ -13,6 +13,7 @@ export * from './cohort-member-role';
 export * from './cohort-user-members';
 export * from './cohort-agent-members';
 export * from './task-sessions';
+export * from './agent-evolution-events';
 
 // PPV Hierarchy: Domain → Vision → Mission → Operation → Task
 export * from './scope-types';
