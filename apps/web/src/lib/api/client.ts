@@ -582,12 +582,15 @@ export interface Task {
   description?: string;
   status: 'backlog' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
   priority?: 'low' | 'medium' | 'high' | 'urgent';
-  due_date?: string;
-  assignee_id?: string;
-  project_id?: string;
+  due_date?: string | null;
+  assignee_id?: string | null;
+  project_id?: string | null;
   projects?: { id: string; name: string };
   created_at: string;
-  updated_at?: string;
+  updated_at?: string | null;
+  cohort_id?: string | null;
+  cohort_name?: string | null;
+  cohort_type?: 'personal' | 'shared' | null;
 }
 
 export interface MyTasksListResponse {
@@ -605,7 +608,11 @@ export interface MyTasksQueryParams {
   limit?: number;
   status?: Task['status'];
   priority?: Task['priority'];
-  sort?: 'due_date' | 'priority' | 'updated_at';
+  cohortId?: string;
+  dueFrom?: string;
+  dueTo?: string;
+  sort?: 'due_date' | 'priority' | 'created_at';
+  sortOrder?: 'asc' | 'desc';
 }
 
 export async function getMyTasks(params?: MyTasksQueryParams): Promise<MyTasksListResponse> {
@@ -614,7 +621,11 @@ export async function getMyTasks(params?: MyTasksQueryParams): Promise<MyTasksLi
   if (params?.limit) searchParams.set('limit', params.limit.toString());
   if (params?.status) searchParams.set('status', params.status);
   if (params?.priority) searchParams.set('priority', params.priority);
+  if (params?.cohortId) searchParams.set('cohortId', params.cohortId);
+  if (params?.dueFrom) searchParams.set('dueFrom', params.dueFrom);
+  if (params?.dueTo) searchParams.set('dueTo', params.dueTo);
   if (params?.sort) searchParams.set('sort', params.sort);
+  if (params?.sortOrder) searchParams.set('sortOrder', params.sortOrder);
   const query = searchParams.toString();
   return fetchApi<MyTasksListResponse>(`/my-tasks${query ? `?${query}` : ''}`);
 }

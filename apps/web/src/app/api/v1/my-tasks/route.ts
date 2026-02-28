@@ -9,6 +9,7 @@ import { logger } from '@/lib/logger';
 import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
 import { validateData } from '@/lib/validation';
 import { myTasksQuerySchema, type MyTasksQueryParams } from '@/lib/validations/my-tasks';
+import { getMyTasks } from '@/server/db/queries/my-tasks';
 
 // ============================================================================
 // GET /api/v1/my-tasks
@@ -21,50 +22,54 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries());
   const query = validateData(myTasksQuerySchema, searchParams) as MyTasksQueryParams;
 
-  const { supabase, organizationId, userId } = await getAuthContext();
+  const { userId } = await getAuthContext();
 
-  logger.info('Fetching my tasks', { correlationId, userId, organizationId, query });
+  logger.info('Fetching my tasks', { correlationId, userId, query });
 
-  let queryBuilder = supabase
-    .from('tasks')
-    .select('*, projects(id, name)', { count: 'exact' })
-    .eq('organization_id', organizationId)
-    .eq('assignee_type', 'user')
-    .eq('assignee_id', userId);
+  const { tasks, meta } = await getMyTasks(
+    userId,
+    {
+      status: query.status,
+      priority: query.priority,
+      cohortId: query.cohortId,
+      dueFrom: query.dueFrom,
+      dueTo: query.dueTo,
+      sort: query.sort,
+      sortOrder: query.sortOrder,
+    },
+    {
+      page: query.page,
+      pageSize: query.limit,
+    }
+  );
 
-  if (query.status) queryBuilder = queryBuilder.eq('status', query.status);
-  if (query.priority) queryBuilder = queryBuilder.eq('priority', query.priority);
+  const data = tasks.map((row) => {
+    const task = row.task;
 
-  const sortColumn = query.sort;
-  // due_date: ascending (earliest first)
-  // priority: descending (urgent → low)
-  // updated_at: descending (newest → oldest)
-  let ascending = true;
-  if (query.sort === 'priority' || query.sort === 'updated_at') {
-    ascending = false;
-  }
-  queryBuilder = queryBuilder.order(sortColumn, { ascending });
-
-  const start = (query.page - 1) * query.limit;
-  queryBuilder = queryBuilder.range(start, start + query.limit - 1);
-
-  const { data: tasks, error, count } = await queryBuilder;
-
-  if (error) {
-    logger.error('Failed to fetch my tasks', {
-      correlationId,
-      error: { message: error.message, code: error.code },
-    });
-    throw error;
-  }
+    return {
+      id: task.id,
+      title: task.title,
+      description: task.description ?? undefined,
+      status: task.status,
+      priority: task.priority ?? undefined,
+      due_date: task.dueDate ? task.dueDate.toISOString() : null,
+      assignee_id: task.assigneeId ?? null,
+      project_id: task.projectId ?? null,
+      created_at: task.createdAt.toISOString(),
+      updated_at: task.updatedAt ? task.updatedAt.toISOString() : null,
+      cohort_id: row.cohortId ?? null,
+      cohort_name: row.cohortName ?? null,
+      cohort_type: row.cohortType ?? null,
+    };
+  });
 
   return NextResponse.json({
-    data: tasks || [],
+    data,
     meta: {
-      page: query.page,
-      limit: query.limit,
-      total: count || 0,
-      totalPages: count ? Math.ceil(count / query.limit) : 0,
+      page: meta.page,
+      limit: meta.pageSize,
+      total: meta.total,
+      totalPages: meta.totalPages,
     },
   });
 });
