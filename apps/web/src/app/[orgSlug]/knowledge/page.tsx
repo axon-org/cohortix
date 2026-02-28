@@ -6,11 +6,8 @@ export const metadata = {
   title: 'Knowledge Hub | Cohortix',
 };
 
-export default function KnowledgePage({
-  params,
-}: {
-  params: { orgSlug: string };
-}) {
+export default async function KnowledgePage({ params }: { params: Promise<{ orgSlug: string }> }) {
+  const { orgSlug } = await params;
   return (
     <div className="flex flex-col h-full space-y-6 p-6">
       <div className="flex flex-col space-y-2">
@@ -21,7 +18,7 @@ export default function KnowledgePage({
       </div>
 
       <Suspense fallback={<KnowledgeSkeleton />}>
-        <KnowledgeSearch orgSlug={params.orgSlug} />
+        <KnowledgeSearch orgSlug={orgSlug} />
       </Suspense>
     </div>
   );

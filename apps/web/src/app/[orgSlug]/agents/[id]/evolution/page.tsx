@@ -10,10 +10,10 @@ export const metadata = {
 export default async function AgentEvolutionPage({
   params,
 }: {
-  params: { orgSlug: string; id: string };
+  params: Promise<{ orgSlug: string; id: string }>;
 }) {
   const { id, orgSlug } = await params;
-  
+
   return (
     <div className="flex flex-col h-full space-y-6 p-6">
       <div className="flex flex-col space-y-2">
