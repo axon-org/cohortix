@@ -42,7 +42,12 @@ vi.mock('@/server/db/mutations/cohorts', () => ({
 
 import { getAuthContext, getAuthContextBasic } from '@/lib/auth-helper';
 import { currentUser } from '@clerk/nextjs/server';
-import { getCohorts, getCohortById, getCohortStats, getCohortUserMembers } from '@/server/db/queries/cohorts';
+import {
+  getCohorts,
+  getCohortById,
+  getCohortStats,
+  getCohortUserMembers,
+} from '@/server/db/queries/cohorts';
 import { ensureCohortMember, ensureCohortAdmin } from '@/lib/auth-access';
 import {
   createCohort,
