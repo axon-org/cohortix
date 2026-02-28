@@ -46,7 +46,7 @@ interface CohortFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   cohort?: any; // If provided, we are in Edit mode
-  orgId: string;
+  orgId?: string;
 }
 
 export function CohortFormModal({ open, onOpenChange, cohort, orgId }: CohortFormModalProps) {
@@ -75,7 +75,6 @@ export function CohortFormModal({ open, onOpenChange, cohort, orgId }: CohortFor
       } else {
         await createMutation.mutateAsync({
           ...values,
-          organizationId: orgId,
           type: 'shared',
         } as any);
       }
