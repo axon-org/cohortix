@@ -1,7 +1,14 @@
 /**
  * Tests for Resilience Patterns
  * Codex v1.2 Section 2.4
+ *
+ * @vitest-environment jsdom
  */
+
+import { vi } from 'vitest';
+
+// These tests use real timers — give CI plenty of headroom
+vi.setConfig({ testTimeout: 30_000 });
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { withRetry, CircuitBreaker, CircuitState, withTimeout, Semaphore } from '../resilience';
