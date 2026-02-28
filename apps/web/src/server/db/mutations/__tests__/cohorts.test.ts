@@ -20,12 +20,16 @@ const makeQueryMock = <T>(result: T) => {
   return query;
 };
 
-const mockDb = vi.hoisted(() => ({
-  insert: vi.fn(),
-  update: vi.fn(),
-  delete: vi.fn(),
-  select: vi.fn(),
-}));
+const mockDb = vi.hoisted(() => {
+  const db: any = {
+    insert: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    select: vi.fn(),
+    transaction: vi.fn((fn: any) => fn(db)),
+  };
+  return db;
+});
 
 vi.mock('@repo/database/client', () => ({
   db: mockDb,
@@ -41,6 +45,8 @@ describe('Cohort Mutations', () => {
   it('createCohort inserts a cohort row', async () => {
     const cohortRow = { id: '00000000-0000-0000-0000-000000000002', name: 'Alpha' };
     mockDb.insert.mockReturnValueOnce(makeMutationMock([cohortRow]));
+    mockDb.insert.mockReturnValueOnce(makeMutationMock([]));
+    mockDb.update.mockReturnValueOnce(makeMutationMock([]));
 
     const result = await createCohort({
       name: 'Alpha',

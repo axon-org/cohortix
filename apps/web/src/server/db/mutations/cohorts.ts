@@ -84,26 +84,49 @@ export async function createCohort(
   const validated = createCohortSchema.parse(normalizedInput);
   const now = new Date();
 
-  const [cohort] = await db
-    .insert(cohorts)
-    .values({
-      organizationId: validated.type === 'shared' ? (validated.organizationId ?? null) : null,
-      ownerUserId: validated.type === 'personal' ? (validated.ownerUserId ?? null) : null,
-      type: validated.type,
-      name: validated.name,
-      slug: generateSlug(validated.name, slugSuffix()),
-      description: validated.description ?? null,
-      status: 'active',
-      hosting: validated.hosting,
-      runtimeStatus: validated.runtimeStatus ?? 'provisioning',
-      startDate: validated.startDate ?? null,
-      endDate: validated.endDate ?? null,
-      settings: validated.settings ?? {},
-      createdBy: validated.createdBy,
-      createdAt: now,
-      updatedAt: now,
-    })
-    .returning();
+  const cohort = await db.transaction(async (tx) => {
+    const [newCohort] = await tx
+      .insert(cohorts)
+      .values({
+        organizationId: validated.type === 'shared' ? (validated.organizationId ?? null) : null,
+        ownerUserId: validated.type === 'personal' ? (validated.ownerUserId ?? null) : null,
+        type: validated.type,
+        name: validated.name,
+        slug: generateSlug(validated.name, slugSuffix()),
+        description: validated.description ?? null,
+        status: 'active',
+        hosting: validated.hosting,
+        runtimeStatus: validated.runtimeStatus ?? 'provisioning',
+        startDate: validated.startDate ?? null,
+        endDate: validated.endDate ?? null,
+        settings: validated.settings ?? {},
+        createdBy: validated.createdBy,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning();
+
+    if (!newCohort) {
+      throw new Error('Failed to create cohort');
+    }
+
+    // Auto-add creator as owner member
+    if (validated.createdBy) {
+      await tx.insert(cohortUserMembers).values({
+        cohortId: newCohort.id,
+        userId: validated.createdBy,
+        role: 'owner',
+      });
+
+      // Update denormalized member count
+      await tx
+        .update(cohorts)
+        .set({ memberCount: 1, updatedAt: new Date() })
+        .where(eq(cohorts.id, newCohort.id));
+    }
+
+    return newCohort;
+  });
 
   return cohort ?? null;
 }
