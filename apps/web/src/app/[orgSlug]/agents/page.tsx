@@ -12,7 +12,7 @@ export default function AgentsPage() {
             Manage your AI agents and their capabilities.
           </p>
         </div>
-        <Button variant="primary">
+        <Button variant="primary" onClick={() => alert('New Agent creation coming soon!')}>
           <Plus className="w-4 h-4 mr-2" />
           New Agent
         </Button>
