@@ -41,6 +41,7 @@ describe('Cohort Mutations', () => {
   it('createCohort inserts a cohort row', async () => {
     const cohortRow = { id: '00000000-0000-0000-0000-000000000002', name: 'Alpha' };
     mockDb.insert.mockReturnValueOnce(makeMutationMock([cohortRow]));
+    mockDb.insert.mockReturnValueOnce(makeMutationMock([]));
 
     const result = await createCohort({
       name: 'Alpha',

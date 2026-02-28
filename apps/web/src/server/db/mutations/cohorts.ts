@@ -105,6 +105,15 @@ export async function createCohort(
     })
     .returning();
 
+  // Auto-add creator as owner member
+  if (cohort && validated.createdBy) {
+    await db.insert(cohortUserMembers).values({
+      cohortId: cohort.id,
+      userId: validated.createdBy,
+      role: 'owner',
+    });
+  }
+
   return cohort ?? null;
 }
 
