@@ -5,8 +5,6 @@
  * @vitest-environment jsdom
  */
 
-import { vi } from 'vitest';
-
 // These tests use real timers — give CI plenty of headroom
 vi.setConfig({ testTimeout: 30_000 });
 
