@@ -135,13 +135,8 @@ function cronMatches(value: number, part: string) {
 }
 
 function nextCron(cron: string, from: Date) {
-  const [
-    minPart = '*',
-    hourPart = '*',
-    domPart = '*',
-    monthPart = '*',
-    dowPart = '*',
-  ] = parseCronParts(cron);
+  const [minPart = '*', hourPart = '*', domPart = '*', monthPart = '*', dowPart = '*'] =
+    parseCronParts(cron);
   const start = new Date(from.getTime() + 60000);
 
   for (let i = 0; i < 525600; i++) {

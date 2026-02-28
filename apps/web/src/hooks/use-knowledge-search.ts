@@ -2,7 +2,15 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export function useKnowledgeSearch({ query, filters, orgSlug }: { query: string, filters: any, orgSlug: string }) {
+export function useKnowledgeSearch({
+  query,
+  filters,
+  orgSlug,
+}: {
+  query: string;
+  filters: any;
+  orgSlug: string;
+}) {
   const queryClient = useQueryClient();
 
   const searchFn = async () => {

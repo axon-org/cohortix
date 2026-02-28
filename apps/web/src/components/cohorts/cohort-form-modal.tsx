@@ -94,8 +94,8 @@ export function CohortFormModal({ open, onOpenChange, cohort, orgId }: CohortFor
         <DialogHeader>
           <DialogTitle>{isEdit ? 'Edit Cohort' : 'Create New Cohort'}</DialogTitle>
           <DialogDescription>
-            {isEdit 
-              ? 'Update the details for this cohort.' 
+            {isEdit
+              ? 'Update the details for this cohort.'
               : 'Create a new shared cohort for your organization.'}
           </DialogDescription>
         </DialogHeader>
@@ -123,10 +123,10 @@ export function CohortFormModal({ open, onOpenChange, cohort, orgId }: CohortFor
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="What is this cohort for?" 
-                      className="resize-none" 
-                      {...field} 
+                    <Textarea
+                      placeholder="What is this cohort for?"
+                      className="resize-none"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -189,9 +189,9 @@ export function CohortFormModal({ open, onOpenChange, cohort, orgId }: CohortFor
             </div>
 
             <DialogFooter className="pt-4">
-              <Button 
-                type="button" 
-                variant="ghost" 
+              <Button
+                type="button"
+                variant="ghost"
                 onClick={() => onOpenChange(false)}
                 disabled={isLoading}
               >

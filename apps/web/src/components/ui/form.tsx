@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
   name: TName;
 };
@@ -27,7 +27,7 @@ const Form = FormProvider;
 
 function FormField<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({ ...props }: ControllerProps<TFieldValues, TName>) {
   return (
     <FormFieldContext.Provider value={{ name: props.name }}>
@@ -48,12 +48,13 @@ const FormItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
 );
 FormItem.displayName = 'FormItem';
 
-const FormLabel = React.forwardRef<React.ElementRef<typeof Label>, React.ComponentPropsWithoutRef<typeof Label>>(
-  ({ className, ...props }, ref) => {
-    const { formItemId } = useFormField();
-    return <Label ref={ref} className={className} htmlFor={formItemId} {...props} />;
-  }
-);
+const FormLabel = React.forwardRef<
+  React.ElementRef<typeof Label>,
+  React.ComponentPropsWithoutRef<typeof Label>
+>(({ className, ...props }, ref) => {
+  const { formItemId } = useFormField();
+  return <Label ref={ref} className={className} htmlFor={formItemId} {...props} />;
+});
 FormLabel.displayName = 'FormLabel';
 
 const FormControl = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(

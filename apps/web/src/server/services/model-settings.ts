@@ -94,10 +94,7 @@ export async function getCohortModelSettings(cohortId: string) {
   return sanitizeSettings(models);
 }
 
-export async function updateCohortModelSettings(
-  cohortId: string,
-  input: UpdateModelSettingsInput
-) {
+export async function updateCohortModelSettings(cohortId: string, input: UpdateModelSettingsInput) {
   const cohort = await getCohortById(cohortId);
   if (!cohort) throw new NotFoundError('Cohort', cohortId);
 

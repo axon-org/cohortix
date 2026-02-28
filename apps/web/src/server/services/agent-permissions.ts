@@ -15,11 +15,7 @@ export type AgentCapabilities =
   | Record<string, unknown>;
 
 function hasCapabilityString(capabilities: string[], resource: AgentResource, action: AgentAction) {
-  const candidates = [
-    `${resource}:${action}`,
-    `${resource}.${action}`,
-    `${action}:${resource}`,
-  ];
+  const candidates = [`${resource}:${action}`, `${resource}.${action}`, `${action}:${resource}`];
 
   return candidates.some((candidate) => capabilities.includes(candidate));
 }

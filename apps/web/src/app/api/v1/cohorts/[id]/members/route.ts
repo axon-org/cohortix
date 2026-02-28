@@ -53,22 +53,25 @@ async function ensureCohortMember(cohortId: string, userId: string) {
   return cohort;
 }
 
-export const GET = withMiddleware(cohortRateLimit, async (request: NextRequest, context: RouteContext) => {
-  const correlationId = logger.generateCorrelationId();
-  logger.setContext({ correlationId });
+export const GET = withMiddleware(
+  cohortRateLimit,
+  async (request: NextRequest, context: RouteContext) => {
+    const correlationId = logger.generateCorrelationId();
+    logger.setContext({ correlationId });
 
-  const { id } = await context.params;
-  const cohortId = validateData(uuidSchema, id);
+    const { id } = await context.params;
+    const cohortId = validateData(uuidSchema, id);
 
-  const { userId } = await getAuthContext();
-  await enforceUserRateLimit(request, userId);
+    const { userId } = await getAuthContext();
+    await enforceUserRateLimit(request, userId);
 
-  await ensureCohortMember(cohortId, userId);
+    await ensureCohortMember(cohortId, userId);
 
-  const [users, agents] = await Promise.all([
-    getCohortUserMembers(cohortId),
-    getCohortAgentMembers(cohortId),
-  ]);
+    const [users, agents] = await Promise.all([
+      getCohortUserMembers(cohortId),
+      getCohortAgentMembers(cohortId),
+    ]);
 
-  return NextResponse.json({ data: { users, agents } });
-});
+    return NextResponse.json({ data: { users, agents } });
+  }
+);

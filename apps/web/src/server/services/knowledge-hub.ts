@@ -76,14 +76,14 @@ function sortResults(results: GatewaySearchResult[]) {
   });
 }
 
-export async function searchKnowledge(params: KnowledgeSearchParams): Promise<KnowledgeSearchResponse> {
+export async function searchKnowledge(
+  params: KnowledgeSearchParams
+): Promise<KnowledgeSearchResponse> {
   const page = params.page ?? 1;
   const cohort = await getCohortById(params.cohortId);
   const gatewayUrl = cohort?.gatewayUrl ?? null;
 
-  const requestedLayers = params.filters?.layers?.length
-    ? params.filters.layers
-    : ALL_LAYERS;
+  const requestedLayers = params.filters?.layers?.length ? params.filters.layers : ALL_LAYERS;
 
   const gatewayFilters = normalizeFilters(params.filters);
 

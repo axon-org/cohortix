@@ -8,7 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DeleteDialog } from '@/components/ui/delete-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Pencil, Save, X, Bot, Zap, History, BarChart3, Clock, Check } from 'lucide-react';
+import {
+  ArrowLeft,
+  Pencil,
+  Save,
+  X,
+  Bot,
+  Zap,
+  History,
+  BarChart3,
+  Clock,
+  Check,
+} from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -150,9 +161,17 @@ export default function AgentDetailPage({
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatsCard label="Tasks Completed" value={agent.totalTasksCompleted || 0} icon={Check} />
-        <StatsCard label="Success Rate" value={`${statsData?.successRate ?? 0}%`} icon={BarChart3} />
+        <StatsCard
+          label="Success Rate"
+          value={`${statsData?.successRate ?? 0}%`}
+          icon={BarChart3}
+        />
         <StatsCard label="Sessions Completed" value={statsData?.completedCount ?? 0} icon={Zap} />
-        <StatsCard label="Avg Response" value={`${statsData?.avgResponseTimeMs ?? 0}ms`} icon={Clock} />
+        <StatsCard
+          label="Avg Response"
+          value={`${statsData?.avgResponseTimeMs ?? 0}ms`}
+          icon={Clock}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -167,7 +186,10 @@ export default function AgentDetailPage({
             <Field label="Enabled Skills">
               <div className="flex flex-wrap gap-2 mt-2">
                 {(agent.capabilities || []).map((skill: string) => (
-                  <span key={skill} className="px-2 py-1 bg-secondary rounded-md text-xs font-medium border border-border">
+                  <span
+                    key={skill}
+                    className="px-2 py-1 bg-secondary rounded-md text-xs font-medium border border-border"
+                  >
                     {skill}
                   </span>
                 ))}
@@ -185,20 +207,33 @@ export default function AgentDetailPage({
                 Evolution Timeline
               </h2>
             </div>
-            
+
             <div className="space-y-8 relative before:absolute before:inset-0 before:left-3 before:w-px before:bg-border">
               {(evolutionData?.events || []).length > 0 ? (
                 evolutionData?.events.map((event: any, i: number) => (
                   <div key={i} className="relative pl-8">
-                    <div className={cn(
-                      "absolute left-1.5 top-1.5 w-3 h-3 rounded-full border-2 border-background z-10",
-                      event.eventType === 'learning' ? 'bg-primary' : event.eventType === 'correction' ? 'bg-warning' : 'bg-success'
-                    )} />
+                    <div
+                      className={cn(
+                        'absolute left-1.5 top-1.5 w-3 h-3 rounded-full border-2 border-background z-10',
+                        event.eventType === 'learning'
+                          ? 'bg-primary'
+                          : event.eventType === 'correction'
+                            ? 'bg-warning'
+                            : 'bg-success'
+                      )}
+                    />
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full", EVENT_TYPE_COLORS[event.eventType])}>
+                      <span
+                        className={cn(
+                          'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full',
+                          EVENT_TYPE_COLORS[event.eventType]
+                        )}
+                      >
                         {event.eventType}
                       </span>
-                      <span className="text-xs text-muted-foreground">{new Date(event.createdAt).toLocaleDateString()}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(event.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
                     <p className="text-sm font-medium">{event.summary}</p>
                     {event.metadata && (
@@ -209,7 +244,9 @@ export default function AgentDetailPage({
                   </div>
                 ))
               ) : (
-                <p className="text-center py-10 text-muted-foreground italic">No evolution events recorded yet.</p>
+                <p className="text-center py-10 text-muted-foreground italic">
+                  No evolution events recorded yet.
+                </p>
               )}
             </div>
           </div>
@@ -226,7 +263,9 @@ function StatsCard({ label, value, icon: Icon }: any) {
         <Icon className="w-5 h-5 text-muted-foreground" />
       </div>
       <div>
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{label}</p>
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          {label}
+        </p>
         <p className="text-xl font-bold">{value}</p>
       </div>
     </div>
@@ -250,7 +289,9 @@ function DetailSkeleton() {
       <Skeleton className="h-5 w-20" />
       <Skeleton className="h-32 w-full rounded-xl" />
       <div className="grid grid-cols-4 gap-4">
-        {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-20 w-full rounded-xl" />)}
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-20 w-full rounded-xl" />
+        ))}
       </div>
       <div className="grid grid-cols-3 gap-6">
         <Skeleton className="h-64 rounded-xl" />

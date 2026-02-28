@@ -20,7 +20,9 @@ interface RecurrenceEditorProps {
 }
 
 export function RecurrenceEditor({ value = 'none', onChange }: RecurrenceEditorProps) {
-  const [type, setType] = useState(value === 'none' ? 'none' : value.includes('*') ? 'custom' : value);
+  const [type, setType] = useState(
+    value === 'none' ? 'none' : value.includes('*') ? 'custom' : value
+  );
   const [cron, setCron] = useState(value.includes('*') ? value : '0 9 * * *');
 
   const handleTypeChange = (newType: string) => {
@@ -43,7 +45,9 @@ export function RecurrenceEditor({ value = 'none', onChange }: RecurrenceEditorP
       <div className="flex flex-col space-y-1.5">
         <div className="flex items-center gap-2">
           <Repeat className="h-3.5 w-3.5 text-muted-foreground" />
-          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Recurrence</Label>
+          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Recurrence
+          </Label>
         </div>
         <Select value={type} onValueChange={handleTypeChange}>
           <SelectTrigger className="w-full bg-background">
@@ -62,15 +66,19 @@ export function RecurrenceEditor({ value = 'none', onChange }: RecurrenceEditorP
       {type === 'custom' && (
         <div className="flex flex-col space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
           <div className="flex items-center justify-between">
-            <Label className="text-[10px] font-semibold text-muted-foreground">Cron Expression</Label>
-            <Badge variant="outline" className="text-[9px] font-mono py-0 h-4">0 9 * * *</Badge>
+            <Label className="text-[10px] font-semibold text-muted-foreground">
+              Cron Expression
+            </Label>
+            <Badge variant="outline" className="text-[9px] font-mono py-0 h-4">
+              0 9 * * *
+            </Badge>
           </div>
-          <Input 
-            value={cron} 
+          <Input
+            value={cron}
             onChange={(e) => {
               setCron(e.target.value);
               onChange(e.target.value);
-            }} 
+            }}
             className="font-mono text-xs bg-background"
             placeholder="0 9 * * *"
           />
@@ -82,7 +90,9 @@ export function RecurrenceEditor({ value = 'none', onChange }: RecurrenceEditorP
 
       {type !== 'none' && (
         <div className="pt-2 border-t border-border flex items-center justify-between">
-          <span className="text-[10px] font-medium text-muted-foreground uppercase">Estimated Next Instance:</span>
+          <span className="text-[10px] font-medium text-muted-foreground uppercase">
+            Estimated Next Instance:
+          </span>
           <div className="flex items-center gap-1.5 text-[10px] font-bold text-primary">
             <CalendarIcon className="h-3 w-3" />
             <span>Tomorrow at 9:00 AM</span>

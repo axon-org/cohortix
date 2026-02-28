@@ -159,7 +159,12 @@ export default function CohortDetailPage({
                 {cohort.status}
               </span>
               <span className="flex items-center gap-1.5 text-xs font-medium bg-secondary px-2 py-0.5 rounded-full">
-                <span className={cn('w-2 h-2 rounded-full', RUNTIME_STATUS_COLORS[cohort.runtimeStatus || 'offline'])} />
+                <span
+                  className={cn(
+                    'w-2 h-2 rounded-full',
+                    RUNTIME_STATUS_COLORS[cohort.runtimeStatus || 'offline']
+                  )}
+                />
                 {cohort.runtimeStatus || 'offline'}
               </span>
               <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
@@ -200,7 +205,9 @@ export default function CohortDetailPage({
             </Field>
             {cohort.hosting === 'self_hosted' && (
               <Field label="Gateway URL">
-                <p className="text-sm font-mono text-primary">{cohort.gatewayUrl || 'Pending...'}</p>
+                <p className="text-sm font-mono text-primary">
+                  {cohort.gatewayUrl || 'Pending...'}
+                </p>
               </Field>
             )}
             <Field label="Start Date" editing={editing}>
@@ -248,7 +255,9 @@ export default function CohortDetailPage({
 function StatsCard({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="bg-card border border-border rounded-xl p-4">
-      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
+        {label}
+      </p>
       <p className="text-2xl font-bold">{value}</p>
     </div>
   );

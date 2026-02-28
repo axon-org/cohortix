@@ -208,7 +208,8 @@ export async function POST(req: Request) {
         if (profile?.id) {
           const existing = await getPersonalCohortByOwner(profile.id);
           const cohortId =
-            existing?.id || (await provisionPersonalCohort(profile.id, first_name || 'Personal'))?.id;
+            existing?.id ||
+            (await provisionPersonalCohort(profile.id, first_name || 'Personal'))?.id;
 
           if (cohortId) {
             const settings = (profile.settings ?? {}) as Record<string, unknown>;

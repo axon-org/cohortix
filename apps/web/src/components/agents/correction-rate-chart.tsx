@@ -1,7 +1,15 @@
 'use client';
 
 import React from 'react';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from 'recharts';
 
 interface CorrectionRateChartProps {
   data: any[];
@@ -19,35 +27,31 @@ export function CorrectionRateChart({ data }: CorrectionRateChartProps) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
-          <XAxis 
-            dataKey="date" 
-            axisLine={false} 
-            tickLine={false} 
+          <XAxis
+            dataKey="date"
+            axisLine={false}
+            tickLine={false}
             tick={{ fontSize: 10, fill: '#666' }}
             dy={10}
           />
-          <YAxis 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fontSize: 10, fill: '#666' }}
-          />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: '#111', 
+          <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#666' }} />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: '#111',
               border: '1px solid #333',
               borderRadius: '8px',
               fontSize: '12px',
-              color: '#fff'
+              color: '#fff',
             }}
             itemStyle={{ color: '#3b82f6' }}
           />
-          <Area 
-            type="monotone" 
-            dataKey="count" 
-            stroke="#3b82f6" 
+          <Area
+            type="monotone"
+            dataKey="count"
+            stroke="#3b82f6"
             strokeWidth={2}
-            fillOpacity={1} 
-            fill="url(#colorRate)" 
+            fillOpacity={1}
+            fill="url(#colorRate)"
           />
         </AreaChart>
       </ResponsiveContainer>

@@ -55,28 +55,31 @@ async function ensureAdmin(cohortId: string, userId: string) {
   return cohort;
 }
 
-export const POST = withMiddleware(cohortRateLimit, async (request: NextRequest, context: RouteContext) => {
-  const correlationId = logger.generateCorrelationId();
-  logger.setContext({ correlationId });
+export const POST = withMiddleware(
+  cohortRateLimit,
+  async (request: NextRequest, context: RouteContext) => {
+    const correlationId = logger.generateCorrelationId();
+    logger.setContext({ correlationId });
 
-  const { id } = await context.params;
-  const cohortId = validateData(uuidSchema, id);
+    const { id } = await context.params;
+    const cohortId = validateData(uuidSchema, id);
 
-  const validator = validateRequest(addUserRequestSchema, { target: 'body' });
-  const data = await validator(request);
+    const validator = validateRequest(addUserRequestSchema, { target: 'body' });
+    const data = await validator(request);
 
-  const { userId } = await getAuthContext();
-  await enforceUserRateLimit(request, userId);
+    const { userId } = await getAuthContext();
+    await enforceUserRateLimit(request, userId);
 
-  await ensureAdmin(cohortId, userId);
+    await ensureAdmin(cohortId, userId);
 
-  const member = await addUserMember({
-    cohortId,
-    userId: data.userId,
-    role: data.role,
-  });
+    const member = await addUserMember({
+      cohortId,
+      userId: data.userId,
+      role: data.role,
+    });
 
-  await updateCohortMemberCount(cohortId);
+    await updateCohortMemberCount(cohortId);
 
-  return NextResponse.json({ data: member }, { status: 201 });
-});
+    return NextResponse.json({ data: member }, { status: 201 });
+  }
+);

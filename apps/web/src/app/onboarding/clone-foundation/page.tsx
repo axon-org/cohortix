@@ -2,7 +2,19 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Rocket, ArrowRight, ArrowLeft, Loader2, Check, User, Briefcase, Zap, Target, MessageSquare, Image as ImageIcon } from 'lucide-react';
+import {
+  Rocket,
+  ArrowRight,
+  ArrowLeft,
+  Loader2,
+  Check,
+  User,
+  Briefcase,
+  Zap,
+  Target,
+  MessageSquare,
+  Image as ImageIcon,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,7 +25,12 @@ const STEPS = [
   { id: 'role', title: 'Role', icon: Briefcase, description: "What's your role?" },
   { id: 'work-style', title: 'Work Style', icon: Zap, description: 'How do you work best?' },
   { id: 'goals', title: 'Goals', icon: Target, description: 'What are your goals?' },
-  { id: 'communication', title: 'Communication', icon: MessageSquare, description: 'How should I communicate?' },
+  {
+    id: 'communication',
+    title: 'Communication',
+    icon: MessageSquare,
+    description: 'How should I communicate?',
+  },
   { id: 'avatar', title: 'Avatar', icon: ImageIcon, description: 'Upload avatar (optional)' },
 ];
 
@@ -60,22 +77,29 @@ export default function CloneFoundationOnboardingPage() {
 
   const isStepValid = () => {
     switch (currentStep) {
-      case 0: return !!formData.firstName;
-      case 1: return !!formData.jobTitle;
-      case 2: return formData.workStyle.length > 0;
-      case 3: return !!formData.goals;
-      case 4: return !!formData.communicationTone;
-      case 5: return true; // Avatar is optional
-      default: return false;
+      case 0:
+        return !!formData.firstName;
+      case 1:
+        return !!formData.jobTitle;
+      case 2:
+        return formData.workStyle.length > 0;
+      case 3:
+        return !!formData.goals;
+      case 4:
+        return !!formData.communicationTone;
+      case 5:
+        return true; // Avatar is optional
+      default:
+        return false;
     }
   };
 
   const toggleWorkStyle = (style: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       workStyle: prev.workStyle.includes(style)
-        ? prev.workStyle.filter(s => s !== style)
-        : [...prev.workStyle, style]
+        ? prev.workStyle.filter((s) => s !== style)
+        : [...prev.workStyle, style],
     }));
   };
 
@@ -104,11 +128,13 @@ export default function CloneFoundationOnboardingPage() {
                 </div>
                 <h1 className="text-lg font-semibold">Clone Foundation</h1>
               </div>
-              <span className="text-sm text-muted-foreground">Step {currentStep + 1} of {STEPS.length}</span>
+              <span className="text-sm text-muted-foreground">
+                Step {currentStep + 1} of {STEPS.length}
+              </span>
             </div>
             <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-primary transition-all duration-300" 
+              <div
+                className="h-full bg-primary transition-all duration-300"
                 style={{ width: `${((currentStep + 1) / STEPS.length) * 100}%` }}
               />
             </div>
@@ -127,20 +153,24 @@ export default function CloneFoundationOnboardingPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="firstName">First Name</Label>
-                      <Input 
-                        id="firstName" 
-                        value={formData.firstName} 
-                        onChange={e => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) =>
+                          setFormData((prev) => ({ ...prev, firstName: e.target.value }))
+                        }
                         placeholder="John"
                         autoFocus
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="lastName">Last Name</Label>
-                      <Input 
-                        id="lastName" 
-                        value={formData.lastName} 
-                        onChange={e => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) =>
+                          setFormData((prev) => ({ ...prev, lastName: e.target.value }))
+                        }
                         placeholder="Doe"
                       />
                     </div>
@@ -151,10 +181,10 @@ export default function CloneFoundationOnboardingPage() {
               {currentStep === 1 && (
                 <div className="space-y-4">
                   <Label htmlFor="jobTitle">Job Title</Label>
-                  <Input 
-                    id="jobTitle" 
-                    value={formData.jobTitle} 
-                    onChange={e => setFormData(prev => ({ ...prev, jobTitle: e.target.value }))}
+                  <Input
+                    id="jobTitle"
+                    value={formData.jobTitle}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, jobTitle: e.target.value }))}
                     placeholder="e.g. Senior Software Engineer"
                     autoFocus
                   />
@@ -163,7 +193,16 @@ export default function CloneFoundationOnboardingPage() {
 
               {currentStep === 2 && (
                 <div className="grid grid-cols-2 gap-3">
-                  {['Async', 'Sync', 'Deep Work', 'Collaborative', 'Technical', 'Creative', 'Data-Driven', 'Fast-Paced'].map(style => (
+                  {[
+                    'Async',
+                    'Sync',
+                    'Deep Work',
+                    'Collaborative',
+                    'Technical',
+                    'Creative',
+                    'Data-Driven',
+                    'Fast-Paced',
+                  ].map((style) => (
                     <button
                       key={style}
                       onClick={() => toggleWorkStyle(style)}
@@ -182,10 +221,10 @@ export default function CloneFoundationOnboardingPage() {
               {currentStep === 3 && (
                 <div className="space-y-4">
                   <Label htmlFor="goals">Your Goals</Label>
-                  <Textarea 
-                    id="goals" 
-                    value={formData.goals} 
-                    onChange={e => setFormData(prev => ({ ...prev, goals: e.target.value }))}
+                  <Textarea
+                    id="goals"
+                    value={formData.goals}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, goals: e.target.value }))}
                     placeholder="What do you want to achieve with your AI clone?"
                     className="h-32"
                     autoFocus
@@ -196,10 +235,12 @@ export default function CloneFoundationOnboardingPage() {
               {currentStep === 4 && (
                 <div className="space-y-4">
                   <Label htmlFor="tone">Communication Tone</Label>
-                  <Textarea 
-                    id="tone" 
-                    value={formData.communicationTone} 
-                    onChange={e => setFormData(prev => ({ ...prev, communicationTone: e.target.value }))}
+                  <Textarea
+                    id="tone"
+                    value={formData.communicationTone}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, communicationTone: e.target.value }))
+                    }
                     placeholder="e.g. Professional yet friendly, direct and concise..."
                     className="h-32"
                     autoFocus

@@ -8,7 +8,10 @@ async function isOnSignIn(page: any): Promise<boolean> {
 }
 
 test.describe('Personal Cohort Provisioning Flow', () => {
-  test('sign-up triggers personal cohort provisioning and onboarding', async ({ page, request }) => {
+  test('sign-up triggers personal cohort provisioning and onboarding', async ({
+    page,
+    request,
+  }) => {
     await page.goto('/sign-up', { waitUntil: 'domcontentloaded' });
 
     if (await isOnSignIn(page)) {

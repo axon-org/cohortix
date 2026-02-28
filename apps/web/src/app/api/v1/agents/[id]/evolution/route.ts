@@ -72,7 +72,10 @@ export const GET = withMiddleware(
     const { id } = await context.params;
     const agentId = validateData(uuidSchema, id);
 
-    const query = validateData(querySchema, Object.fromEntries(request.nextUrl.searchParams.entries()));
+    const query = validateData(
+      querySchema,
+      Object.fromEntries(request.nextUrl.searchParams.entries())
+    );
 
     const { userId, organizationId } = await getAuthContext();
     await enforceUserRateLimit(request, userId);

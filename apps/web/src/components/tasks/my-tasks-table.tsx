@@ -31,17 +31,17 @@ export function MyTasksTable({ tasks, groupBy }: MyTasksTableProps) {
 
   const groupedTasks = useMemo(() => {
     const groups = new Map<string, Task[]>();
-    
+
     tasks.forEach((task) => {
       let groupKey = 'Other';
       if (groupBy === 'status') groupKey = task.status;
       if (groupBy === 'priority') groupKey = task.priority || 'No Priority';
       if (groupBy === 'cohort') groupKey = task.cohort_id || 'Personal';
-      
+
       const current = groups.get(groupKey) || [];
       groups.set(groupKey, [...current, task]);
     });
-    
+
     return Array.from(groups.entries()).map(([key, list]) => ({
       key,
       tasks: list,
@@ -71,13 +71,15 @@ export function MyTasksTable({ tasks, groupBy }: MyTasksTableProps) {
               ) : (
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               )}
-              <span className="font-semibold capitalize text-sm tracking-tight">{group.key.replace(/_/g, ' ')}</span>
+              <span className="font-semibold capitalize text-sm tracking-tight">
+                {group.key.replace(/_/g, ' ')}
+              </span>
               <Badge variant="secondary" className="px-1.5 h-5 text-[10px] bg-muted/50">
                 {group.tasks.length}
               </Badge>
             </div>
           </button>
-          
+
           {expandedGroups.has(group.key) && (
             <div className="divide-y divide-border border-t border-border">
               {group.tasks.length === 0 ? (
@@ -86,12 +88,19 @@ export function MyTasksTable({ tasks, groupBy }: MyTasksTableProps) {
                 </div>
               ) : (
                 group.tasks.map((task) => (
-                  <div key={task.id} className="group grid grid-cols-12 items-center p-4 gap-4 hover:bg-muted/30 transition-colors">
+                  <div
+                    key={task.id}
+                    className="group grid grid-cols-12 items-center p-4 gap-4 hover:bg-muted/30 transition-colors"
+                  >
                     <div className="col-span-12 md:col-span-5 flex items-start gap-3">
                       <div className="mt-1 h-4 w-4 rounded-full border-2 border-muted flex items-center justify-center group-hover:border-primary transition-colors cursor-pointer" />
                       <div className="flex flex-col gap-1">
-                        <Link 
-                          href={task.cohort_id ? `/cohorts/${task.cohort_id}/tasks/${task.id}` : `/my-tasks/${task.id}`}
+                        <Link
+                          href={
+                            task.cohort_id
+                              ? `/cohorts/${task.cohort_id}/tasks/${task.id}`
+                              : `/my-tasks/${task.id}`
+                          }
                           className="font-medium text-sm hover:text-primary transition-colors"
                         >
                           {task.title}
@@ -101,25 +110,39 @@ export function MyTasksTable({ tasks, groupBy }: MyTasksTableProps) {
                           <span>T-{task.id.split('-')[0]}</span>
                           <span>•</span>
                           <Clock className="h-3 w-3" />
-                          <span>Updated {formatDistanceToNow(new Date(task.updated_at || ''))} ago</span>
+                          <span>
+                            Updated {formatDistanceToNow(new Date(task.updated_at || ''))} ago
+                          </span>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="col-span-6 md:col-span-2">
                       <TaskStatusChip status={task.status as any} />
                     </div>
-                    
+
                     <div className="col-span-6 md:col-span-2 flex items-center gap-2">
                       {task.priority && (
-                        <Badge variant="outline" className={cn("text-[10px] uppercase font-bold", priorityColors[task.priority as keyof typeof priorityColors])}>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'text-[10px] uppercase font-bold',
+                            priorityColors[task.priority as keyof typeof priorityColors]
+                          )}
+                        >
                           {task.priority}
                         </Badge>
                       )}
                     </div>
-                    
+
                     <div className="col-span-12 md:col-span-3 flex items-center justify-end gap-2">
-                      <Badge variant="outline" className={cn("text-[10px] uppercase font-bold border-dashed", task.cohort_id ? sourceColors.org : sourceColors.personal)}>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          'text-[10px] uppercase font-bold border-dashed',
+                          task.cohort_id ? sourceColors.org : sourceColors.personal
+                        )}
+                      >
                         {task.cohort_id ? 'Organization' : 'Personal'}
                       </Badge>
                     </div>

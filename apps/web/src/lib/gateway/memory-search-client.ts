@@ -57,10 +57,7 @@ async function callGateway<T>(
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(
-      () => controller.abort(),
-      timeoutMs ?? DEFAULT_TIMEOUT_MS
-    );
+    const timeout = setTimeout(() => controller.abort(), timeoutMs ?? DEFAULT_TIMEOUT_MS);
 
     const response = await fetch(url, {
       method: 'POST',

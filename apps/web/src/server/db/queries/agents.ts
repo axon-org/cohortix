@@ -34,8 +34,14 @@ export async function getAgents(
   scopeId: string,
   filters: AgentFilters = {}
 ) {
-  const { status, search, limit = 20, offset = 0, sortBy = 'created_at', sortOrder = 'desc' } =
-    filters;
+  const {
+    status,
+    search,
+    limit = 20,
+    offset = 0,
+    sortBy = 'created_at',
+    sortOrder = 'desc',
+  } = filters;
 
   const predicates = [eq(agents.scopeType, scopeType), eq(agents.scopeId, scopeId)];
   if (status) predicates.push(eq(agents.status, status));

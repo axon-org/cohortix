@@ -1,12 +1,4 @@
-import {
-  pgTable,
-  uuid,
-  text,
-  timestamp,
-  jsonb,
-  pgEnum,
-  index,
-} from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, jsonb, pgEnum, index } from 'drizzle-orm/pg-core';
 import { agents } from './agents';
 import { cohorts } from './cohorts';
 import { scopeTypeEnum } from './scope-types';
@@ -33,10 +25,7 @@ export const agentEvolutionEvents = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
-    agentCreatedIdx: index('idx_agent_evolution_agent_created').on(
-      table.agentId,
-      table.createdAt
-    ),
+    agentCreatedIdx: index('idx_agent_evolution_agent_created').on(table.agentId, table.createdAt),
     eventTypeIdx: index('idx_agent_evolution_event_type').on(table.eventType),
   })
 );

@@ -45,9 +45,7 @@ export async function resolveMentionedAgents(cohortId: string, commentText: stri
 
   return mentionSlugs
     .map((slug) => agentsBySlug.get(slug))
-    .filter(
-      (agent): agent is (typeof cohortAgents)[number] & { slug: string } => Boolean(agent)
-    )
+    .filter((agent): agent is (typeof cohortAgents)[number] & { slug: string } => Boolean(agent))
     .map((agent) => ({
       agentId: agent.agentId,
       slug: agent.slug,

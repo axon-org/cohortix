@@ -48,7 +48,10 @@ const modelConfigSchema = z.object({
 });
 
 const checkInSchema = z.object({
-  time: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  time: z
+    .string()
+    .regex(/^\d{2}:\d{2}$/)
+    .optional(),
   timezone: z.string().optional(),
 });
 

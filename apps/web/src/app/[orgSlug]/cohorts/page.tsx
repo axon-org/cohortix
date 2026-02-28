@@ -7,11 +7,7 @@ import { Plus } from 'lucide-react';
 import { CohortFormModal } from '@/components/cohorts/cohort-form-modal';
 import { useState } from 'react';
 
-export default function CohortsPage({
-  params,
-}: {
-  params: Promise<{ orgSlug: string }>;
-}) {
+export default function CohortsPage({ params }: { params: Promise<{ orgSlug: string }> }) {
   const { orgSlug } = use(params);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -32,9 +28,9 @@ export default function CohortsPage({
       {/* Cohorts Table - Now using real API data */}
       <CohortsTableClient />
 
-      <CohortFormModal 
-        open={isModalOpen} 
-        onOpenChange={setIsModalOpen} 
+      <CohortFormModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
         orgId={orgSlug} // Assuming orgSlug is used as ID or we have access to orgId
       />
     </div>

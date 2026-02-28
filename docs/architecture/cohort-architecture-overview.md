@@ -1,10 +1,11 @@
 # Cohort Architecture Overview
 
 ## Summary
-Cohortix provides **personal** and **shared** cohorts with strict scope isolation.
-Runtime activity is powered by OpenClaw gateway instances that emit heartbeats
-and run agent sessions. Data access is enforced by **RLS policies** in the
-Postgres layer and validated in the API.
+
+Cohortix provides **personal** and **shared** cohorts with strict scope
+isolation. Runtime activity is powered by OpenClaw gateway instances that emit
+heartbeats and run agent sessions. Data access is enforced by **RLS policies**
+in the Postgres layer and validated in the API.
 
 ## System Components
 

@@ -1,12 +1,4 @@
-import {
-  pgTable,
-  uuid,
-  text,
-  timestamp,
-  jsonb,
-  pgEnum,
-  index,
-} from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, jsonb, pgEnum, index } from 'drizzle-orm/pg-core';
 import { tasks } from './tasks';
 import { agents } from './agents';
 import { cohorts } from './cohorts';

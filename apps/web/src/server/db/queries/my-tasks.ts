@@ -4,19 +4,7 @@
 
 import { db } from '@repo/database/client';
 import { cohortUserMembers, cohorts, tasks } from '@repo/database/schema';
-import {
-  and,
-  asc,
-  count,
-  desc,
-  eq,
-  gte,
-  inArray,
-  lte,
-  or,
-  sql,
-  type SQL,
-} from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, inArray, lte, or, sql, type SQL } from 'drizzle-orm';
 
 export type MyTasksSort = 'due_date' | 'priority' | 'created_at';
 
@@ -63,9 +51,10 @@ export async function getMyTasks(
   const cohortIds = memberRows.map((row) => row.cohortId);
 
   const personalPredicate = and(eq(tasks.scopeType, 'personal'), eq(tasks.scopeId, userId));
-  const basePredicate = cohortIds.length > 0
-    ? or(personalPredicate, inArray(tasks.cohortId, cohortIds))
-    : personalPredicate;
+  const basePredicate =
+    cohortIds.length > 0
+      ? or(personalPredicate, inArray(tasks.cohortId, cohortIds))
+      : personalPredicate;
 
   const predicates: SQL[] = [basePredicate].filter(Boolean) as SQL[];
 

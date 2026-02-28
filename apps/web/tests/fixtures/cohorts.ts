@@ -26,7 +26,12 @@ export const cohortUserMembers = [
 ];
 
 export const cohortAgentMembers = [
-  { id: 'agent-member-1', cohortId: sharedCohort.id, agentId: 'agent-123', role: 'member' as const },
+  {
+    id: 'agent-member-1',
+    cohortId: sharedCohort.id,
+    agentId: 'agent-123',
+    role: 'member' as const,
+  },
 ];
 
 export const heartbeatPayload = {

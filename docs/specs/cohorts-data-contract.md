@@ -1,12 +1,14 @@
 # Cohorts Data Contract (Sprint 1)
 
 ## Overview
+
 Defines server-side data layer outputs for cohort queries. All data is scoped by
 personal/shared access rules and uses Drizzle ORM.
 
 ## Types
 
 ### Cohort
+
 - `id: string`
 - `organizationId?: string | null` (null for personal)
 - `type: "personal" | "shared"`
@@ -25,6 +27,7 @@ personal/shared access rules and uses Drizzle ORM.
 - `engagementPercent: number`
 
 ### CohortUserMember
+
 - `id: string`
 - `cohortId: string`
 - `userId: string`
@@ -36,6 +39,7 @@ personal/shared access rules and uses Drizzle ORM.
 - `avatarUrl?: string | null`
 
 ### CohortAgentMember
+
 - `id: string`
 - `cohortId: string`
 - `agentId: string`
@@ -51,9 +55,11 @@ personal/shared access rules and uses Drizzle ORM.
 ## Query Contracts
 
 ### `getCohorts(orgId?, userId?, filters, pagination)`
+
 Returns paginated cohorts for shared org or personal owner.
 
 Response:
+
 ```
 {
   cohorts: Cohort[],
@@ -64,12 +70,15 @@ Response:
 }
 ```
 
-Filters: `type`, `status`, `hosting`, `runtimeStatus`, `search`, `startDateFrom`, `startDateTo`, `sortBy`, `sortOrder`.
+Filters: `type`, `status`, `hosting`, `runtimeStatus`, `search`,
+`startDateFrom`, `startDateTo`, `sortBy`, `sortOrder`.
 
 ### `getCohortById(id)`
+
 Returns a single Cohort or `null` if not found.
 
 ### `getCohortStats(id)`
+
 ```
 {
   memberCount: number,
@@ -86,10 +95,13 @@ Returns a single Cohort or `null` if not found.
 ```
 
 ### `getCohortUserMembers(cohortId)`
+
 Returns `CohortUserMember[]`.
 
 ### `getCohortAgentMembers(cohortId)`
+
 Returns `CohortAgentMember[]`.
 
 ### `getCohortActivity(cohortId, limit)`
+
 Returns recent entries from `activity_log` for the cohort.

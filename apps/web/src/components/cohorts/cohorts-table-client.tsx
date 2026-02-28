@@ -50,7 +50,7 @@ export function CohortsTableClient() {
   return (
     <div className="space-y-6">
       <Toolbar filter={filter} setFilter={setFilter} search={search} setSearch={setSearch} />
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredData.map((cohort) => (
           <CohortCard key={cohort.id} cohort={cohort} />
@@ -69,21 +69,21 @@ function Toolbar({ filter, setFilter, search, setSearch }: any) {
             key={t}
             onClick={() => setFilter(t)}
             className={cn(
-              "px-4 py-1.5 text-xs font-medium rounded-md transition-all capitalize",
-              filter === t 
-                ? "bg-background text-foreground shadow-sm" 
-                : "text-muted-foreground hover:text-foreground"
+              'px-4 py-1.5 text-xs font-medium rounded-md transition-all capitalize',
+              filter === t
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
             )}
           >
             {t}
           </button>
         ))}
       </div>
-      
+
       <div className="relative flex-1 max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input 
-          placeholder="Search cohorts..." 
+        <Input
+          placeholder="Search cohorts..."
           className="pl-9 bg-secondary/50 border-border"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -103,7 +103,7 @@ const RUNTIME_STATUS_COLORS: Record<string, string> = {
 
 function CohortCard({ cohort }: { cohort: any }) {
   const engagement = parseFloat(cohort.engagementPercent);
-  
+
   return (
     <Link href={`cohorts/${cohort.id}`} className="group">
       <div className="bg-card border border-border rounded-xl p-5 hover:border-primary/50 transition-all hover:shadow-lg h-full flex flex-col">
@@ -131,22 +131,29 @@ function CohortCard({ cohort }: { cohort: any }) {
               </div>
             </div>
           </div>
-          <div className={cn(
-            "w-2.5 h-2.5 rounded-full",
-            RUNTIME_STATUS_COLORS[cohort.runtimeStatus || 'offline']
-          )} title={cohort.runtimeStatus} />
+          <div
+            className={cn(
+              'w-2.5 h-2.5 rounded-full',
+              RUNTIME_STATUS_COLORS[cohort.runtimeStatus || 'offline']
+            )}
+            title={cohort.runtimeStatus}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-auto">
           <div className="space-y-1">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Members</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+              Members
+            </p>
             <div className="flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5 text-muted-foreground" />
               <span className="text-sm font-bold">{cohort.memberCount}</span>
             </div>
           </div>
           <div className="space-y-1">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Engagement</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+              Engagement
+            </p>
             <div className="flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-muted-foreground" />
               <span className="text-sm font-bold">{engagement}%</span>
@@ -156,10 +163,7 @@ function CohortCard({ cohort }: { cohort: any }) {
 
         <div className="mt-4 pt-4 border-t border-border">
           <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-primary" 
-              style={{ width: `${engagement}%` }}
-            />
+            <div className="h-full bg-primary" style={{ width: `${engagement}%` }} />
           </div>
         </div>
       </div>

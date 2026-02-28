@@ -65,9 +65,7 @@ export const GET = withMiddleware(
 
     const cohort = await ensureMember(cohortId, userId);
 
-    const lastHeartbeatAt = cohort.lastHeartbeatAt
-      ? new Date(cohort.lastHeartbeatAt)
-      : null;
+    const lastHeartbeatAt = cohort.lastHeartbeatAt ? new Date(cohort.lastHeartbeatAt) : null;
 
     const computedStatus = evaluateRuntimeStatus(lastHeartbeatAt);
 

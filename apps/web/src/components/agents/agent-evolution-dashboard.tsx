@@ -26,31 +26,52 @@ export function AgentEvolutionDashboard({ agentId, orgSlug }: AgentEvolutionDash
   const [filter, setFilter] = useState('all');
   const { data: evolution, isLoading, error } = useAgentEvolution(agentId, orgSlug);
 
-  const filteredEvents = evolution?.events?.filter((e: any) => 
-    filter === 'all' || e.event_type === filter
-  ) || [];
+  const filteredEvents =
+    evolution?.events?.filter((e: any) => filter === 'all' || e.event_type === filter) || [];
 
   const stats = [
-    { label: 'Total Learnings', value: evolution?.stats?.learningCount || 0, icon: <Sparkles className="text-blue-500 h-4 w-4" /> },
-    { label: 'Corrections', value: evolution?.stats?.correctionCount || 0, icon: <AlertTriangle className="text-amber-500 h-4 w-4" /> },
-    { label: 'Milestones', value: evolution?.stats?.milestoneCount || 0, icon: <Milestone className="text-emerald-500 h-4 w-4" /> },
+    {
+      label: 'Total Learnings',
+      value: evolution?.stats?.learningCount || 0,
+      icon: <Sparkles className="text-blue-500 h-4 w-4" />,
+    },
+    {
+      label: 'Corrections',
+      value: evolution?.stats?.correctionCount || 0,
+      icon: <AlertTriangle className="text-amber-500 h-4 w-4" />,
+    },
+    {
+      label: 'Milestones',
+      value: evolution?.stats?.milestoneCount || 0,
+      icon: <Milestone className="text-emerald-500 h-4 w-4" />,
+    },
   ];
 
-  if (isLoading) return <div className="space-y-4">{[...Array(5)].map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}</div>;
+  if (isLoading)
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <Skeleton key={i} className="h-24 w-full" />
+        ))}
+      </div>
+    );
 
   return (
     <div className="flex flex-col space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
         {stats.map((stat) => (
-          <Card key={stat.label} className="bg-card border-border hover:border-primary/50 transition-colors">
+          <Card
+            key={stat.label}
+            className="bg-card border-border hover:border-primary/50 transition-colors"
+          >
             <CardContent className="p-6 flex items-center justify-between">
               <div className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{stat.label}</span>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  {stat.label}
+                </span>
                 <span className="text-3xl font-bold tracking-tight">{stat.value}</span>
               </div>
-              <div className="p-3 bg-muted rounded-xl">
-                {stat.icon}
-              </div>
+              <div className="p-3 bg-muted rounded-xl">{stat.icon}</div>
             </CardContent>
           </Card>
         ))}
@@ -74,7 +95,12 @@ export function AgentEvolutionDashboard({ agentId, orgSlug }: AgentEvolutionDash
               ))}
             </div>
             {filter !== 'all' && (
-              <Button variant="ghost" size="sm" onClick={() => setFilter('all')} className="h-8 text-[11px] gap-1 px-2 text-muted-foreground">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setFilter('all')}
+                className="h-8 text-[11px] gap-1 px-2 text-muted-foreground"
+              >
                 <FilterX className="h-3 w-3" /> Clear
               </Button>
             )}
@@ -104,7 +130,7 @@ export function AgentEvolutionDashboard({ agentId, orgSlug }: AgentEvolutionDash
               <CorrectionRateChart data={evolution?.chartData || []} />
             </CardContent>
           </Card>
-          
+
           <Card className="bg-card border-border">
             <CardHeader className="p-4 pb-0">
               <CardTitle className="text-sm font-semibold">Growth Milestones</CardTitle>

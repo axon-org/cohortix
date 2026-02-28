@@ -63,7 +63,7 @@ export const GET = withMiddleware(knowledgeRateLimit, async (request: NextReques
     : undefined;
 
   const scopeType = cohort.type === 'personal' ? 'personal' : 'cohort';
-  const scopeId = cohort.type === 'personal' ? cohort.ownerUserId ?? userId : cohort.id;
+  const scopeId = cohort.type === 'personal' ? (cohort.ownerUserId ?? userId) : cohort.id;
 
   const result = await searchKnowledge({
     query: query.q,

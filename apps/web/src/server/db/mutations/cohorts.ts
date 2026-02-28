@@ -87,8 +87,8 @@ export async function createCohort(
   const [cohort] = await db
     .insert(cohorts)
     .values({
-      organizationId: validated.type === 'shared' ? validated.organizationId ?? null : null,
-      ownerUserId: validated.type === 'personal' ? validated.ownerUserId ?? null : null,
+      organizationId: validated.type === 'shared' ? (validated.organizationId ?? null) : null,
+      ownerUserId: validated.type === 'personal' ? (validated.ownerUserId ?? null) : null,
       type: validated.type,
       name: validated.name,
       slug: generateSlug(validated.name, slugSuffix()),

@@ -23,9 +23,7 @@ export const cohortAgentMembers = pgTable(
 
     role: cohortMemberRoleEnum('role').default('member').notNull(),
 
-    engagementScore: numeric('engagement_score', { precision: 5, scale: 2 })
-      .default('0')
-      .notNull(),
+    engagementScore: numeric('engagement_score', { precision: 5, scale: 2 }).default('0').notNull(),
 
     joinedAt: timestamp('joined_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
