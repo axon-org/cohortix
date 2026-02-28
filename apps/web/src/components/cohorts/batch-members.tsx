@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
+import Image from 'next/image';
 import type { CohortMember } from '@/lib/api/client';
 
 interface BatchMembersProps {
@@ -59,9 +60,11 @@ export function BatchMembers({ members }: BatchMembersProps) {
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                       {member.agent_avatar_url ? (
-                        <img
+                        <Image
                           src={member.agent_avatar_url}
                           alt={member.agent_name}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-full"
                         />
                       ) : (

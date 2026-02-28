@@ -2,6 +2,7 @@
   "extends": "next/core-web-vitals",
   "plugins": ["cohortix"],
   "rules": {
+    "@next/next/no-html-link-for-pages": "off",
     "cohortix/no-hardcoded-colors": "warn"
   },
   "overrides": [

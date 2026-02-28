@@ -1,5 +1,6 @@
 import { MoreHorizontal, Activity as ActivityIcon } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import Image from 'next/image';
 
 interface Activity {
   id: string;
@@ -55,7 +56,13 @@ function ActivityItem({ activity }: { activity: Activity }) {
       {/* Avatar */}
       <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 overflow-hidden">
         {actorAvatar ? (
-          <img src={actorAvatar} alt={actorName} className="w-full h-full object-cover" />
+          <Image
+            src={actorAvatar}
+            alt={actorName}
+            width={32}
+            height={32}
+            className="w-full h-full object-cover"
+          />
         ) : (
           <ActivityIcon className="w-5 h-5 text-muted-foreground" />
         )}

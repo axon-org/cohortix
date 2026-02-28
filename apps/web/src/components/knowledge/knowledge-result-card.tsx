@@ -52,13 +52,11 @@ export function KnowledgeResultCard({ result }: KnowledgeResultCardProps) {
             Score: <span className="text-foreground">{relevancePercent}%</span>
           </div>
         </div>
-        <CardTitle className="text-sm font-semibold line-clamp-1 mt-2">
-          {result.source}
-        </CardTitle>
+        <CardTitle className="text-sm font-semibold line-clamp-1 mt-2">{result.source}</CardTitle>
       </CardHeader>
       <CardContent className="p-4 pt-0 flex-1">
         <p className="text-xs text-muted-foreground leading-relaxed line-clamp-4 italic">
-          "{result.snippet}"
+          &ldquo;{result.snippet}&rdquo;
         </p>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex items-center justify-between text-[10px] text-muted-foreground">

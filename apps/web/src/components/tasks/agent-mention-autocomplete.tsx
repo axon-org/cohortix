@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAgents } from '@/hooks/use-agents';
 import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
+import Image from 'next/image';
 import { Bot, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -22,8 +23,8 @@ export function AgentMentionAutocomplete({
 }: AgentMentionAutocompleteProps) {
   const { data: agentsData, isLoading } = useAgents();
   const agents = agentsData?.data || [];
-  
-  const filteredAgents = agents.filter((agent: any) => 
+
+  const filteredAgents = agents.filter((agent: any) =>
     agent.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -38,9 +39,7 @@ export function AgentMentionAutocomplete({
               <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
             </div>
           ) : filteredAgents.length === 0 ? (
-            <div className="p-4 text-xs text-muted-foreground text-center">
-              No agents found
-            </div>
+            <div className="p-4 text-xs text-muted-foreground text-center">No agents found</div>
           ) : (
             <CommandGroup heading="Mention Agent">
               {filteredAgents.map((agent: any) => (
@@ -51,7 +50,13 @@ export function AgentMentionAutocomplete({
                 >
                   <div className="w-6 h-6 rounded bg-secondary flex items-center justify-center">
                     {agent.avatarUrl ? (
-                      <img src={agent.avatarUrl} alt="" className="w-full h-full object-cover rounded" />
+                      <Image
+                        src={agent.avatarUrl}
+                        alt=""
+                        width={24}
+                        height={24}
+                        className="w-full h-full object-cover rounded"
+                      />
                     ) : (
                       <Bot className="w-3.5 h-3.5" />
                     )}
