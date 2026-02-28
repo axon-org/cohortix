@@ -1,3 +1,5 @@
+'use client';
+
 import { AgentsTableClient } from '@/components/agents/agents-table-client';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
