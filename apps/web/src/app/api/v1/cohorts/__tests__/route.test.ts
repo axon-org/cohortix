@@ -21,7 +21,17 @@ vi.mock('@/server/db/queries/cohorts', () => ({
   getCohorts: vi.fn(),
   getCohortById: vi.fn(),
   getCohortStats: vi.fn(),
+  getCohortUserMembers: vi.fn(),
 }));
+
+vi.mock('@/lib/auth-access', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/auth-access')>();
+  return {
+    ...actual,
+    ensureCohortMember: vi.fn(),
+    ensureCohortAdmin: vi.fn(),
+  };
+});
 
 vi.mock('@/server/db/mutations/cohorts', () => ({
   createCohort: vi.fn(),
@@ -32,7 +42,8 @@ vi.mock('@/server/db/mutations/cohorts', () => ({
 
 import { getAuthContext, getAuthContextBasic } from '@/lib/auth-helper';
 import { currentUser } from '@clerk/nextjs/server';
-import { getCohorts, getCohortById, getCohortStats } from '@/server/db/queries/cohorts';
+import { getCohorts, getCohortById, getCohortStats, getCohortUserMembers } from '@/server/db/queries/cohorts';
+import { ensureCohortMember, ensureCohortAdmin } from '@/lib/auth-access';
 import {
   createCohort,
   updateCohort,
@@ -46,6 +57,9 @@ const mockCurrentUser = vi.mocked(currentUser);
 const mockGetCohorts = vi.mocked(getCohorts);
 const mockGetCohortById = vi.mocked(getCohortById);
 const mockGetCohortStats = vi.mocked(getCohortStats);
+const mockGetCohortUserMembers = vi.mocked(getCohortUserMembers);
+const mockEnsureCohortMember = vi.mocked(ensureCohortMember);
+const mockEnsureCohortAdmin = vi.mocked(ensureCohortAdmin);
 const mockCreateCohort = vi.mocked(createCohort);
 const mockUpdateCohort = vi.mocked(updateCohort);
 const mockDeleteCohort = vi.mocked(deleteCohort);
@@ -74,6 +88,8 @@ describe('Cohorts API v1', () => {
       clerkUserId: 'clerk-123',
     });
     mockCurrentUser.mockResolvedValue({ firstName: 'Alex' } as any);
+    mockEnsureCohortMember.mockResolvedValue(sampleCohort as any);
+    mockEnsureCohortAdmin.mockResolvedValue(sampleCohort as any);
   });
 
   it('lists cohorts', async () => {
