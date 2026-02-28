@@ -12,9 +12,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ orgS
     <div className="flex flex-col h-full space-y-6 p-6">
       <div className="flex flex-col space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Knowledge Hub</h1>
-        <p className="text-muted-foreground">
-          Search across 4 layers of memory (Built-in, Mem0, Cognee, QMD).
-        </p>
+        <p className="text-muted-foreground">Search across memory.</p>
       </div>
 
       <Suspense fallback={<KnowledgeSkeleton />}>
