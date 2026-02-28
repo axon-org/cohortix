@@ -13,7 +13,7 @@ import {
   cohorts,
   profiles,
 } from '@repo/database/schema';
-import { and, asc, count, desc, eq, gte, ilike, inArray, lte, or } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, ilike, inArray, lte, ne, or } from 'drizzle-orm';
 import { getAuthContext } from '@/lib/auth-helper';
 
 export type CohortStatus = 'active' | 'paused' | 'at-risk' | 'completed';
@@ -129,10 +129,7 @@ function buildAccessPredicate(organizationId?: string, userId?: string, type?: C
   }
 
   if (organizationId && userId) {
-    return or(
-      eq(cohorts.organizationId, organizationId),
-      eq(cohorts.ownerUserId, userId)
-    );
+    return or(eq(cohorts.organizationId, organizationId), eq(cohorts.ownerUserId, userId));
   }
 
   if (organizationId) return eq(cohorts.organizationId, organizationId);
@@ -173,8 +170,12 @@ export async function getCohorts(
   filtersOrPagination?: CohortFilters | CohortPagination,
   pagination?: CohortPagination
 ) {
-  const { organizationId: orgId, userId, filters, pagination: pageOpts } =
-    normalizeGetCohortsArgs(organizationId, userIdOrFilters, filtersOrPagination, pagination);
+  const {
+    organizationId: orgId,
+    userId,
+    filters,
+    pagination: pageOpts,
+  } = normalizeGetCohortsArgs(organizationId, userIdOrFilters, filtersOrPagination, pagination);
 
   const {
     type,
@@ -193,7 +194,12 @@ export async function getCohorts(
 
   const predicates = [buildAccessPredicate(orgId, userId, type)].filter(Boolean);
 
-  if (status) predicates.push(eq(cohorts.status, status));
+  // If no explicit status filter, exclude archived (completed) cohorts
+  if (status) {
+    predicates.push(eq(cohorts.status, status));
+  } else {
+    predicates.push(ne(cohorts.status, 'completed'));
+  }
   if (hosting) predicates.push(eq(cohorts.hosting, hosting));
   if (runtimeStatus) predicates.push(eq(cohorts.runtimeStatus, runtimeStatus));
   if (search) predicates.push(ilike(cohorts.name, `%${search}%`));
