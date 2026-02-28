@@ -2,25 +2,11 @@
 
 import { use } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAgent, useUpdateAgent, useDeleteAgent } from '@/hooks/use-agents';
+import { useAgent, useDeleteAgent } from '@/hooks/use-agents';
 import { useAgentEvolution, useAgentStats } from '@/hooks/use-agent-detail';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { DeleteDialog } from '@/components/ui/delete-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  ArrowLeft,
-  Pencil,
-  Save,
-  X,
-  Bot,
-  Zap,
-  History,
-  BarChart3,
-  Clock,
-  Check,
-} from 'lucide-react';
-import { useState } from 'react';
+import { ArrowLeft, Bot, Zap, History, BarChart3, Clock, Check } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
@@ -49,10 +35,7 @@ export default function AgentDetailPage({
   const { data: agent, isLoading, error } = useAgent(id);
   const { data: evolutionData } = useAgentEvolution(id);
   const { data: statsData } = useAgentStats(id);
-  const updateMutation = useUpdateAgent();
   const deleteMutation = useDeleteAgent();
-  const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState<Record<string, any>>({});
 
   if (isLoading) return <DetailSkeleton />;
   if (error || !agent) {
@@ -69,21 +52,6 @@ export default function AgentDetailPage({
     );
   }
 
-  const startEditing = () => {
-    setForm({
-      name: agent.name,
-      description: agent.description || '',
-      role: agent.role || '',
-      status: agent.status,
-    });
-    setEditing(true);
-  };
-
-  const handleSave = async () => {
-    await updateMutation.mutateAsync({ id, data: form });
-    setEditing(false);
-  };
-
   const handleDelete = async () => {
     await deleteMutation.mutateAsync(id);
     router.push(`/${orgSlug}/agents`);
@@ -98,30 +66,12 @@ export default function AgentDetailPage({
         >
           <ArrowLeft className="w-4 h-4" /> Agents
         </Link>
-        <div className="flex items-center gap-2">
-          {editing ? (
-            <>
-              <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
-                <X className="w-4 h-4 mr-1" /> Cancel
-              </Button>
-              <Button size="sm" onClick={handleSave} disabled={updateMutation.isPending}>
-                <Save className="w-4 h-4 mr-1" /> {updateMutation.isPending ? 'Saving...' : 'Save'}
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="outline" size="sm" onClick={startEditing}>
-                <Pencil className="w-4 h-4 mr-1" /> Edit
-              </Button>
-              <DeleteDialog
-                title="Delete agent"
-                description={`Are you sure you want to delete "${agent.name}"? This action cannot be undone.`}
-                onConfirm={handleDelete}
-                isDeleting={deleteMutation.isPending}
-              />
-            </>
-          )}
-        </div>
+        <DeleteDialog
+          title="Delete agent"
+          description={`Are you sure you want to delete "${agent.name}"? This action cannot be undone.`}
+          onConfirm={handleDelete}
+          isDeleting={deleteMutation.isPending}
+        />
       </div>
 
       {/* Header Profile Section */}

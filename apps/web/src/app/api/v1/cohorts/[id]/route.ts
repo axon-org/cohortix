@@ -10,7 +10,8 @@ import { NotFoundError } from '@/lib/errors';
 import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
 import { validateRequest, validateData, uuidSchema } from '@/lib/validation';
 import { updateCohortSchema, type UpdateCohortInput } from '@/lib/validations/cohorts';
-import { getCohortById, getCohortStats } from '@/server/db/queries/cohorts';
+import { ensureCohortAdmin, ensureCohortMember } from '@/lib/auth-access';
+import { getCohortStats } from '@/server/db/queries/cohorts';
 import { updateCohort, deleteCohort } from '@/server/db/mutations/cohorts';
 
 const cohortRateLimit = {
@@ -54,8 +55,7 @@ export const GET = withMiddleware(
 
     logger.info('Fetching cohort', { correlationId, userId, cohortId });
 
-    const cohort = await getCohortById(cohortId);
-    if (!cohort) throw new NotFoundError('Cohort', cohortId);
+    const cohort = await ensureCohortMember(cohortId, userId);
 
     const stats = await getCohortStats(cohortId);
 
@@ -81,6 +81,8 @@ export const PATCH = withMiddleware(
 
     const { userId } = await getAuthContext();
     await enforceUserRateLimit(request, userId);
+
+    await ensureCohortAdmin(cohortId, userId);
 
     logger.info('Updating cohort', {
       correlationId,
@@ -111,6 +113,8 @@ export const DELETE = withMiddleware(
 
     const { userId } = await getAuthContext();
     await enforceUserRateLimit(request, userId);
+
+    await ensureCohortAdmin(cohortId, userId);
 
     logger.info('Archiving cohort', { correlationId, userId, cohortId });
 

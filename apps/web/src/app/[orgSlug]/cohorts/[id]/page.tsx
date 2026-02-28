@@ -32,8 +32,8 @@ const STATUS_COLORS: Record<string, string> = {
 
 const RUNTIME_STATUS_COLORS: Record<string, string> = {
   online: 'bg-success',
-  degraded: 'bg-warning',
-  disconnected: 'bg-destructive',
+  error: 'bg-destructive',
+  paused: 'bg-warning',
   offline: 'bg-muted-foreground',
   provisioning: 'bg-primary animate-pulse',
 };

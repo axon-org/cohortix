@@ -5,13 +5,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
-import { ForbiddenError, NotFoundError } from '@/lib/errors';
+import { NotFoundError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
 import { validateRequest, validateData, uuidSchema } from '@/lib/validation';
 import { updateAgentSchema, type UpdateAgentInput } from '@/lib/validations/agents';
-import { getAgentById } from '@/server/db/queries/agents';
-import { getCohortUserMembers } from '@/server/db/queries/cohorts';
+import { ensureAgentAccess } from '@/lib/auth-access';
 import { updateAgent, deleteAgent } from '@/server/db/mutations/agents';
 
 const agentRateLimit = {
@@ -35,30 +34,6 @@ async function enforceUserRateLimit(request: NextRequest, userId: string) {
 
 interface RouteContext {
   params: Promise<{ id: string }>;
-}
-
-async function ensureAgentAccess(agentId: string, userId: string, organizationId: string) {
-  const agent = await getAgentById(agentId);
-  if (!agent) throw new NotFoundError('Agent', agentId);
-
-  if (agent.scopeType === 'personal') {
-    if (agent.ownerUserId !== userId) throw new ForbiddenError('Not allowed');
-    return agent;
-  }
-
-  if (agent.scopeType === 'org') {
-    if (agent.organizationId !== organizationId) throw new ForbiddenError('Not allowed');
-    return agent;
-  }
-
-  if (agent.scopeType === 'cohort') {
-    const members = await getCohortUserMembers(agent.scopeId);
-    const member = members.find((m) => m.userId === userId);
-    if (!member) throw new ForbiddenError('Not a cohort member');
-    return agent;
-  }
-
-  return agent;
 }
 
 // ============================================================================
