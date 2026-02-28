@@ -611,7 +611,7 @@ export interface MyTasksQueryParams {
   cohortId?: string;
   dueFrom?: string;
   dueTo?: string;
-  sort?: 'due_date' | 'priority' | 'created_at';
+  sort?: 'due_date' | 'priority' | 'created_at' | 'updated_at';
   sortOrder?: 'asc' | 'desc';
 }
 

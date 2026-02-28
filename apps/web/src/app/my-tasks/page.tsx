@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { MyTasksTable } from '@/components/tasks/my-tasks-table';
 import { useMyTasks } from '@/hooks/use-my-tasks';
+import type { MyTasksQueryParams } from '@/lib/api/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CheckSquare, Filter, ChevronDown, ArrowUpDown, LayoutGrid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -45,12 +46,14 @@ export default function GlobalMyTasksPage() {
   const [sourceFilter, setSourceFilter] = useState('all');
   const [groupBy, setGroupBy] = useState('status');
 
-  const queryParams = useMemo(() => ({
-    status: statusFilter === 'all' ? undefined : statusFilter,
-    priority: priorityFilter === 'all' ? undefined : priorityFilter,
-    source: sourceFilter === 'all' ? undefined : sourceFilter,
-    groupBy,
-  }), [statusFilter, priorityFilter, sourceFilter, groupBy]);
+  const queryParams = useMemo(
+    () => ({
+      status: statusFilter === 'all' ? undefined : (statusFilter as MyTasksQueryParams['status']),
+      priority:
+        priorityFilter === 'all' ? undefined : (priorityFilter as MyTasksQueryParams['priority']),
+    }),
+    [statusFilter, priorityFilter]
+  );
 
   const { data, isLoading, error } = useMyTasks(queryParams);
 
@@ -82,7 +85,7 @@ export default function GlobalMyTasksPage() {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2">
                 <Filter className="h-4 w-4" />
-                {sources.find(s => s.id === sourceFilter)?.name}
+                {sources.find((s) => s.id === sourceFilter)?.name}
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -101,7 +104,7 @@ export default function GlobalMyTasksPage() {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2">
                 <LayoutGrid className="h-4 w-4" />
-                Group by: {GROUP_BY_OPTIONS.find(g => g.value === groupBy)?.label}
+                Group by: {GROUP_BY_OPTIONS.find((g) => g.value === groupBy)?.label}
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -151,7 +154,12 @@ export default function GlobalMyTasksPage() {
       ) : error ? (
         <div className="p-8 text-center bg-destructive/5 rounded-xl border border-destructive/10">
           <p className="text-destructive font-medium">Failed to load aggregated tasks</p>
-          <Button variant="outline" size="sm" className="mt-4" onClick={() => window.location.reload()}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-4"
+            onClick={() => window.location.reload()}
+          >
             Try Again
           </Button>
         </div>
