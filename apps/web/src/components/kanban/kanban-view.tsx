@@ -67,7 +67,15 @@ export function KanbanView({ initialTasks, viewType = 'operations' }: KanbanView
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button size="sm" variant="primary" className="gap-2">
+          <Button
+            size="sm"
+            variant="primary"
+            className="gap-2"
+            onClick={() => {
+              // TODO: Replace with proper task/operation creation modal
+              alert(`${buttonText} creation coming soon!`);
+            }}
+          >
             <Plus className="w-4 h-4" />
             {buttonText}
           </Button>

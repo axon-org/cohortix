@@ -20,10 +20,14 @@ export type TaskPriority = z.infer<typeof taskPriorityEnum>;
 
 export const myTasksQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
+  limit: z.coerce.number().int().positive().max(100).default(50),
   status: taskStatusEnum.optional(),
   priority: taskPriorityEnum.optional(),
-  sort: z.enum(['due_date', 'priority', 'updated_at']).default('due_date'),
+  cohortId: z.string().uuid().optional(),
+  dueFrom: z.string().optional(),
+  dueTo: z.string().optional(),
+  sort: z.enum(['due_date', 'priority', 'created_at']).default('due_date'),
+  sortOrder: z.enum(['asc', 'desc']).default('asc'),
 });
 
 export type MyTasksQueryParams = z.infer<typeof myTasksQuerySchema>;

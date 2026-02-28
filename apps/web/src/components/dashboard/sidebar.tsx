@@ -18,6 +18,8 @@ import {
   CheckSquare,
   Inbox as InboxIcon,
   Compass,
+  ListTodo,
+  BookOpen,
 } from 'lucide-react';
 import { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
@@ -46,19 +48,23 @@ type NavigationItem =
     };
 
 const getNavigation = (orgSlug: string): NavigationItem[] => [
+  // Execution
+  { type: 'divider', label: 'Execution' },
+  { name: 'My Tasks', href: `/${orgSlug}/my-tasks`, icon: CheckSquare },
+  { name: 'Inbox', href: `/${orgSlug}/inbox`, icon: InboxIcon, badge: 'Soon' },
+  { name: 'Operations', href: `/${orgSlug}/operations`, icon: FolderKanban },
+  { name: 'Tasks', href: `/${orgSlug}/tasks`, icon: ListTodo },
   // Strategy
   { type: 'divider', label: 'Strategy' },
   { name: 'Visions', href: `/${orgSlug}/visions`, icon: Compass },
   { name: 'Missions', href: `/${orgSlug}/missions`, icon: Target },
-  // Execution
-  { type: 'divider', label: 'Execution' },
-  { name: 'Operations', href: `/${orgSlug}/operations`, icon: FolderKanban },
-  { name: 'My Tasks', href: `/${orgSlug}/my-tasks`, icon: CheckSquare },
-  { name: 'Inbox', href: `/${orgSlug}/inbox`, icon: InboxIcon, badge: 'Soon' },
   // Team
   { type: 'divider', label: 'Team' },
   { name: 'Cohorts', href: `/${orgSlug}/cohorts`, icon: Users },
   { name: 'Agents', href: `/${orgSlug}/agents`, icon: Bot },
+  // Knowledge
+  { type: 'divider', label: 'Knowledge' },
+  { name: 'Knowledge Hub', href: `/${orgSlug}/knowledge`, icon: BookOpen },
 ];
 
 const getBottomNavigation = (orgSlug: string): NavigationItem[] => [

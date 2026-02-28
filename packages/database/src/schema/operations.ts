@@ -4,6 +4,8 @@ import { workspaces } from './workspaces';
 import { clients } from './clients';
 import { goals } from './goals';
 import { ownerTypeEnum } from './goals';
+import { cohorts } from './cohorts';
+import { scopeTypeEnum } from './scope-types';
 
 // Note: Table name remains 'projects' in database for backwards compatibility
 // User-facing terminology: "Operation" (bounded initiative with start/end)
@@ -22,6 +24,10 @@ export const operations = pgTable('projects', {
     .references(() => organizations.id, { onDelete: 'cascade' }),
   workspaceId: uuid('workspace_id').references(() => workspaces.id, { onDelete: 'set null' }),
   clientId: uuid('client_id').references(() => clients.id, { onDelete: 'set null' }),
+
+  scopeType: scopeTypeEnum('scope_type').default('personal').notNull(),
+  scopeId: uuid('scope_id').notNull(),
+  cohortId: uuid('cohort_id').references(() => cohorts.id, { onDelete: 'set null' }),
 
   // Polymorphic owner (user or agent)
   ownerType: ownerTypeEnum('owner_type').default('user').notNull(),

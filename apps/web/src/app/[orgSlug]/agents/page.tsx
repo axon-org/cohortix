@@ -1,6 +1,5 @@
 import { AgentsTableClient } from '@/components/agents/agents-table-client';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { PlaceholderButton } from '@/components/ui/placeholder-button';
 
 export default function AgentsPage() {
   return (
@@ -12,10 +11,7 @@ export default function AgentsPage() {
             Manage your AI agents and their capabilities.
           </p>
         </div>
-        <Button variant="primary">
-          <Plus className="w-4 h-4 mr-2" />
-          New Agent
-        </Button>
+        <PlaceholderButton label="New Agent" />
       </div>
       <AgentsTableClient />
     </div>

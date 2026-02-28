@@ -44,7 +44,11 @@ export async function POST(request: NextRequest) {
   try {
     const { organizationId, userId } = await getAuthContext();
     const body = await request.json();
-    const validated = createCohortSchema.parse(body);
+    const validated = createCohortSchema.parse({
+      ...body,
+      createdBy: userId,
+      organizationId,
+    });
     const cohort = await createCohort(organizationId, userId, validated);
     return NextResponse.json(cohort, { status: 201 });
   } catch (error: any) {

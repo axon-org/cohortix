@@ -80,13 +80,19 @@ export interface Cohort {
   slug: string;
   description?: string;
   status: 'active' | 'paused' | 'at-risk' | 'completed';
-  member_count: number;
-  engagement_percent: string;
-  start_date?: string;
-  end_date?: string;
+  type?: 'personal' | 'shared';
+  hosting?: 'managed' | 'self_hosted';
+  runtimeStatus?: 'provisioning' | 'online' | 'offline' | 'error' | 'paused';
+  gatewayUrl?: string | null;
+  memberCount: number;
+  engagementPercent: string;
+  agentCount?: number;
+  activeTasks?: number;
+  startDate?: string | null;
+  endDate?: string | null;
   settings?: Record<string, any>;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CohortListResponse {
@@ -264,15 +270,17 @@ export interface Agent {
   role?: string;
   status: 'active' | 'idle' | 'busy' | 'offline' | 'error';
   capabilities: string[];
-  runtime_type: string;
-  runtime_config: Record<string, any>;
-  total_tasks_completed: number;
-  total_time_worked_ms: number;
-  last_active_at?: string;
-  avatar_url?: string;
+  scopeType: 'personal' | 'cohort' | 'org';
+  scopeId: string;
+  runtimeType: string;
+  runtimeConfig: Record<string, any>;
+  totalTasksCompleted: number;
+  totalTimeWorkedMs: number;
+  lastActiveAt?: string | null;
+  avatarUrl?: string | null;
   settings: Record<string, any>;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AgentListResponse {
@@ -285,7 +293,7 @@ export interface AgentQueryParams {
   limit?: number;
   status?: Agent['status'];
   search?: string;
-  sortBy?: 'name' | 'createdAt' | 'status' | 'totalTasksCompleted';
+  sortBy?: 'name' | 'created_at' | 'status' | 'total_tasks_completed';
   sortOrder?: 'asc' | 'desc';
 }
 
@@ -314,6 +322,50 @@ export interface CreateAgentInput {
 export async function getAgent(id: string): Promise<Agent> {
   const response = await fetchApi<{ data: Agent }>(`/agents/${id}`);
   return response.data;
+}
+
+export type AgentDetail = Agent;
+
+export interface AgentStatsResponse {
+  totalSessions: number;
+  completedCount: number;
+  successRate: number;
+  avgResponseTimeMs: number;
+}
+
+export interface AgentEvolutionEvent {
+  id: string;
+  agentId: string;
+  cohortId?: string | null;
+  scopeType: 'personal' | 'cohort' | 'org';
+  scopeId: string;
+  eventType: 'learning' | 'correction' | 'milestone';
+  summary: string;
+  metadata: Record<string, any>;
+  createdAt: string;
+}
+
+export interface AgentEvolutionResponse {
+  events: AgentEvolutionEvent[];
+}
+
+export async function getAgentDetail(id: string): Promise<AgentDetail> {
+  return getAgent(id);
+}
+
+export async function getAgentStats(id: string): Promise<AgentStatsResponse> {
+  const response = await fetchApi<{ data: AgentStatsResponse }>(`/agents/${id}/stats`);
+  return response.data;
+}
+
+export async function getAgentEvolution(
+  id: string,
+  limit: number = 20
+): Promise<AgentEvolutionResponse> {
+  const response = await fetchApi<{ data: AgentEvolutionEvent[] }>(
+    `/agents/${id}/evolution?limit=${limit}`
+  );
+  return { events: response.data };
 }
 
 export async function createAgent(data: CreateAgentInput): Promise<Agent> {
@@ -530,12 +582,15 @@ export interface Task {
   description?: string;
   status: 'backlog' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
   priority?: 'low' | 'medium' | 'high' | 'urgent';
-  due_date?: string;
-  assignee_id?: string;
-  project_id?: string;
+  due_date?: string | null;
+  assignee_id?: string | null;
+  project_id?: string | null;
   projects?: { id: string; name: string };
   created_at: string;
-  updated_at?: string;
+  updated_at?: string | null;
+  cohort_id?: string | null;
+  cohort_name?: string | null;
+  cohort_type?: 'personal' | 'shared' | null;
 }
 
 export interface MyTasksListResponse {
@@ -553,7 +608,11 @@ export interface MyTasksQueryParams {
   limit?: number;
   status?: Task['status'];
   priority?: Task['priority'];
-  sort?: 'due_date' | 'priority' | 'updated_at';
+  cohortId?: string;
+  dueFrom?: string;
+  dueTo?: string;
+  sort?: 'due_date' | 'priority' | 'created_at' | 'updated_at';
+  sortOrder?: 'asc' | 'desc';
 }
 
 export async function getMyTasks(params?: MyTasksQueryParams): Promise<MyTasksListResponse> {
@@ -562,7 +621,11 @@ export async function getMyTasks(params?: MyTasksQueryParams): Promise<MyTasksLi
   if (params?.limit) searchParams.set('limit', params.limit.toString());
   if (params?.status) searchParams.set('status', params.status);
   if (params?.priority) searchParams.set('priority', params.priority);
+  if (params?.cohortId) searchParams.set('cohortId', params.cohortId);
+  if (params?.dueFrom) searchParams.set('dueFrom', params.dueFrom);
+  if (params?.dueTo) searchParams.set('dueTo', params.dueTo);
   if (params?.sort) searchParams.set('sort', params.sort);
+  if (params?.sortOrder) searchParams.set('sortOrder', params.sortOrder);
   const query = searchParams.toString();
   return fetchApi<MyTasksListResponse>(`/my-tasks${query ? `?${query}` : ''}`);
 }

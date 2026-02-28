@@ -6,10 +6,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
-import { validateRequest, validateData } from '@/lib/validation';
-import { updateCohortSchema, type UpdateCohortInput } from '@/lib/validations/cohort';
-import { uuidSchema } from '@/lib/validation';
+import { NotFoundError } from '@/lib/errors';
+import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
+import { validateRequest, validateData, uuidSchema } from '@/lib/validation';
+import { updateCohortSchema, type UpdateCohortInput } from '@/lib/validations/cohorts';
+import { getCohortById, getCohortStats } from '@/server/db/queries/cohorts';
+import { updateCohort, deleteCohort } from '@/server/db/mutations/cohorts';
+
+const cohortRateLimit = {
+  maxRequests: 30,
+  windowMs: 60 * 1000,
+};
+
+const shouldSkipRateLimit = () =>
+  process.env.NODE_ENV === 'test' ||
+  process.env.E2E_SKIP_AUTH === 'true' ||
+  process.env.BYPASS_AUTH === 'true';
+
+async function enforceUserRateLimit(request: NextRequest, userId: string) {
+  if (shouldSkipRateLimit()) return;
+  const limiter = createRateLimiter({
+    ...cohortRateLimit,
+    keyGenerator: () => `user:${userId}`,
+  });
+  await limiter(request);
+}
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -20,7 +41,7 @@ interface RouteContext {
 // ============================================================================
 
 export const GET = withMiddleware(
-  standardRateLimit,
+  cohortRateLimit,
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
@@ -28,36 +49,17 @@ export const GET = withMiddleware(
     const { id } = await context.params;
     const cohortId = validateData(uuidSchema, id);
 
-    const { supabase, organizationId, userId } = await getAuthContext();
+    const { userId } = await getAuthContext();
+    await enforceUserRateLimit(request, userId);
 
-    logger.info('Fetching cohort', {
-      correlationId,
-      userId,
-      cohortId,
-    });
+    logger.info('Fetching cohort', { correlationId, userId, cohortId });
 
-    const { data: cohort, error } = await supabase
-      .from('cohorts')
-      .select('*')
-      .eq('id', cohortId)
-      .eq('organization_id', organizationId)
-      .single();
+    const cohort = await getCohortById(cohortId);
+    if (!cohort) throw new NotFoundError('Cohort', cohortId);
 
-    if (error || !cohort) {
-      logger.warn('Cohort not found', {
-        correlationId,
-        cohortId,
-        error: error?.message,
-      });
-      return NextResponse.json({ error: 'Cohort not found' }, { status: 404 });
-    }
+    const stats = await getCohortStats(cohortId);
 
-    logger.info('Cohort fetched successfully', {
-      correlationId,
-      cohortId: cohort.id,
-    });
-
-    return NextResponse.json({ data: cohort });
+    return NextResponse.json({ data: cohort, stats });
   }
 );
 
@@ -66,7 +68,7 @@ export const GET = withMiddleware(
 // ============================================================================
 
 export const PATCH = withMiddleware(
-  standardRateLimit,
+  cohortRateLimit,
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
@@ -77,7 +79,8 @@ export const PATCH = withMiddleware(
     const validator = validateRequest(updateCohortSchema, { target: 'body' });
     const data = (await validator(request)) as UpdateCohortInput;
 
-    const { supabase, organizationId, userId } = await getAuthContext();
+    const { userId } = await getAuthContext();
+    await enforceUserRateLimit(request, userId);
 
     logger.info('Updating cohort', {
       correlationId,
@@ -86,58 +89,19 @@ export const PATCH = withMiddleware(
       updates: Object.keys(data),
     });
 
-    const { data: existingCohort, error: fetchError } = await supabase
-      .from('cohorts')
-      .select('id')
-      .eq('id', cohortId)
-      .single();
-
-    if (fetchError || !existingCohort) {
-      return NextResponse.json({ error: 'Cohort not found' }, { status: 404 });
-    }
-
-    const updateData: Record<string, any> = {};
-    if (data.name !== undefined) updateData.name = data.name;
-    if (data.description !== undefined) updateData.description = data.description;
-    if (data.status !== undefined) updateData.status = data.status;
-    if (data.startDate !== undefined) updateData.start_date = data.startDate;
-    if (data.endDate !== undefined) updateData.end_date = data.endDate;
-    if (data.settings !== undefined) updateData.metadata = data.settings;
-
-    const { data: cohort, error } = await supabase
-      .from('cohorts')
-      .update(updateData)
-      .eq('id', cohortId)
-      .select()
-      .single();
-
-    if (error) {
-      logger.error('Failed to update cohort', {
-        correlationId,
-        error: {
-          name: error.message,
-          message: error.message,
-          code: error.code,
-        },
-      });
-      throw error;
-    }
-
-    logger.info('Cohort updated successfully', {
-      correlationId,
-      cohortId: cohort.id,
-    });
+    const cohort = await updateCohort(cohortId, data);
+    if (!cohort) throw new NotFoundError('Cohort', cohortId);
 
     return NextResponse.json({ data: cohort });
   }
 );
 
 // ============================================================================
-// DELETE /api/v1/cohorts/:id - Delete a cohort
+// DELETE /api/v1/cohorts/:id - Archive a cohort
 // ============================================================================
 
 export const DELETE = withMiddleware(
-  standardRateLimit,
+  cohortRateLimit,
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
@@ -145,44 +109,14 @@ export const DELETE = withMiddleware(
     const { id } = await context.params;
     const cohortId = validateData(uuidSchema, id);
 
-    const { supabase, organizationId, userId } = await getAuthContext();
+    const { userId } = await getAuthContext();
+    await enforceUserRateLimit(request, userId);
 
-    logger.info('Deleting cohort', {
-      correlationId,
-      userId,
-      cohortId,
-    });
+    logger.info('Archiving cohort', { correlationId, userId, cohortId });
 
-    const { data: existingCohort, error: fetchError } = await supabase
-      .from('cohorts')
-      .select('id, name')
-      .eq('id', cohortId)
-      .single();
+    const cohort = await deleteCohort(cohortId);
+    if (!cohort) throw new NotFoundError('Cohort', cohortId);
 
-    if (fetchError || !existingCohort) {
-      return NextResponse.json({ error: 'Cohort not found' }, { status: 404 });
-    }
-
-    const { error } = await supabase.from('cohorts').delete().eq('id', cohortId);
-
-    if (error) {
-      logger.error('Failed to delete cohort', {
-        correlationId,
-        error: {
-          name: error.message,
-          message: error.message,
-          code: error.code,
-        },
-      });
-      throw error;
-    }
-
-    logger.info('Cohort deleted successfully', {
-      correlationId,
-      cohortId,
-      cohortName: existingCohort.name,
-    });
-
-    return new NextResponse(null, { status: 204 });
+    return NextResponse.json({ message: 'Cohort archived', cohort });
   }
 );

@@ -6,14 +6,17 @@ import {
   timestamp,
   integer,
   decimal,
+  boolean,
   jsonb,
   pgEnum,
   type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
-import { operations as missions } from './operations';
+import { operations } from './operations';
 import { milestones } from './milestones';
 import { ownerTypeEnum } from './goals';
+import { cohorts } from './cohorts';
+import { scopeTypeEnum } from './scope-types';
 
 // Note: Table name remains 'tasks' in database for backwards compatibility
 // User-facing terminology: "Action" (not "Task")
@@ -33,9 +36,16 @@ export const actions = pgTable('tasks', {
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id, { onDelete: 'cascade' }),
-  projectId: uuid('project_id')
-    .notNull()
-    .references(() => missions.id, { onDelete: 'cascade' }), // References missions table
+  projectId: uuid('project_id').references(() => operations.id, { onDelete: 'set null' }),
+  rhythmId: uuid('rhythm_id'),
+
+  scopeType: scopeTypeEnum('scope_type').default('personal').notNull(),
+  scopeId: uuid('scope_id').notNull(),
+  cohortId: uuid('cohort_id').references(() => cohorts.id, { onDelete: 'set null' }),
+
+  // Recurrence (replaces separate rhythms table)
+  isRecurring: boolean('is_recurring').default(false),
+  recurrence: jsonb('recurrence'),
   parentTaskId: uuid('parent_task_id').references((): AnyPgColumn => actions.id, {
     onDelete: 'cascade',
   }),
@@ -43,7 +53,7 @@ export const actions = pgTable('tasks', {
 
   // Polymorphic assignee (user or agent)
   assigneeType: assigneeTypeEnum('assignee_type').default('unassigned').notNull(),
-  assigneeId: uuid('assignee_id'), // NULL if unassigned
+  assigneeId: uuid('assignee_id'),
 
   // Creator
   createdByType: ownerTypeEnum('created_by_type').notNull(),
@@ -61,6 +71,7 @@ export const actions = pgTable('tasks', {
 
   // Ordering (for Kanban)
   orderIndex: integer('order_index').default(0).notNull(),
+  position: integer('position').default(0).notNull(),
 
   // Estimation
   estimatedHours: decimal('estimated_hours', { precision: 6, scale: 2 }),

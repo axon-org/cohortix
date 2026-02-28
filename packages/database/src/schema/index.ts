@@ -9,9 +9,14 @@ export * from './workspaces';
 export * from './agents';
 export * from './agent-assignments';
 export * from './cohorts'; // Groups of agents
-export * from './cohort-members'; // Agent-to-cohort memberships
+export * from './cohort-member-role';
+export * from './cohort-user-members';
+export * from './cohort-agent-members';
+export * from './task-sessions';
+export * from './agent-evolution-events';
 
 // PPV Hierarchy: Domain → Vision → Mission → Operation → Task
+export * from './scope-types';
 export * from './domains'; // Life pillars (top of PPV pyramid)
 export * from './visions'; // Life aspirations (emotional north stars)
 export * from './goals'; // Missions (measurable goals, DB table: missions)

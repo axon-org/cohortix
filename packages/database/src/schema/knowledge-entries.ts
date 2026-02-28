@@ -15,6 +15,8 @@ import { organizations } from './organizations';
 import { agents } from './agents';
 import { operations as projects } from './operations';
 import { clients } from './clients';
+import { cohorts } from './cohorts';
+import { scopeTypeEnum } from './scope-types';
 
 export const knowledgeSourceTypeEnum = pgEnum('knowledge_source_type', [
   'task',
@@ -47,6 +49,10 @@ export const knowledgeEntries = pgTable(
       .notNull()
       .references(() => organizations.id, { onDelete: 'cascade' }),
 
+    scopeType: scopeTypeEnum('scope_type').default('personal').notNull(),
+    scopeId: uuid('scope_id'),
+    cohortId: uuid('cohort_id').references(() => cohorts.id, { onDelete: 'set null' }),
+
     // Source agent (who learned this)
     agentId: uuid('agent_id').references(() => agents.id, { onDelete: 'set null' }),
 
@@ -69,7 +75,7 @@ export const knowledgeEntries = pgTable(
 
     // Knowledge Scoping (Company → Client → Project hierarchy)
     scopeLevel: knowledgeScopeLevelEnum('scope_level').default('company').notNull(),
-    scopeId: uuid('scope_id'), // Polymorphic: client_id OR project_id depending on scope_level
+    knowledgeScopeId: uuid('knowledge_scope_id'),
 
     // Memory Decay System
     relevanceScore: decimal('relevance_score', { precision: 3, scale: 2 }).default('1.0').notNull(),
@@ -93,7 +99,7 @@ export const knowledgeEntries = pgTable(
     scopeIdx: index('idx_knowledge_scope').on(
       table.organizationId,
       table.scopeLevel,
-      table.scopeId
+      table.knowledgeScopeId
     ),
   })
 );

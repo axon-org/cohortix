@@ -1,82 +1,124 @@
 /**
  * Cohort Mutations Module (COH-B3)
  *
- * Server-side write operations for cohorts.
+ * Server-side write operations for cohorts using Drizzle ORM.
  */
 
-import { z } from 'zod';
-import { getAuthContext } from '@/lib/auth-helper';
+import { db } from '@repo/database/client';
+import { cohortAgentMembers, cohortUserMembers, cohorts } from '@repo/database/schema';
+import { and, eq } from 'drizzle-orm';
+import {
+  addAgentMemberSchema,
+  addUserMemberSchema,
+  createCohortSchema,
+  removeMemberSchema,
+  updateCohortSchema,
+  updateMemberRoleSchema,
+  updateCohortRuntimeSchema,
+  type AddAgentMemberInput,
+  type AddUserMemberInput,
+  type CreateCohortInput,
+  type RemoveMemberInput,
+  type UpdateCohortInput,
+  type UpdateMemberRoleInput,
+  type UpdateCohortRuntimeInput,
+} from '@/lib/validations/cohorts';
+import { generateSlug } from '@/lib/utils/cohort';
 
-// ============================================================================
-// Validation Schemas
-// ============================================================================
+export {
+  createCohortSchema,
+  updateCohortSchema,
+  addUserMemberSchema,
+  addAgentMemberSchema,
+  updateMemberRoleSchema,
+  removeMemberSchema,
+  updateCohortRuntimeSchema,
+};
 
-export const createCohortSchema = z
-  .object({
-    name: z.string().min(1, 'Name is required').max(255),
-    description: z.string().optional(),
-    status: z.enum(['active', 'paused', 'at-risk', 'completed']).default('active'),
-    start_date: z.string().nullable().optional(),
-    end_date: z.string().nullable().optional(),
-    settings: z.record(z.unknown()).optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.start_date && data.end_date) {
-        return new Date(data.end_date) >= new Date(data.start_date);
-      }
-      return true;
-    },
-    { message: 'End date must be after start date', path: ['end_date'] }
-  );
-
-export const updateCohortSchema = z.object({
-  name: z.string().min(1).max(255).optional(),
-  description: z.string().optional(),
-  status: z.enum(['active', 'paused', 'at-risk', 'completed']).optional(),
-  start_date: z.string().nullable().optional(),
-  end_date: z.string().nullable().optional(),
-  settings: z.record(z.unknown()).optional(),
-});
-
-export type CreateCohortInput = z.infer<typeof createCohortSchema>;
-export type UpdateCohortInput = z.infer<typeof updateCohortSchema>;
-
-// ============================================================================
-// Mutations
-// ============================================================================
+const slugSuffix = () => Date.now().toString(36);
 
 /**
- * Create a new cohort
+ * Create a new cohort (personal or shared)
  */
+export async function createCohort(input: CreateCohortInput): Promise<any>;
 export async function createCohort(
   organizationId: string,
-  _createdBy: string,
-  input: CreateCohortInput
+  createdBy: string,
+  input: Record<string, unknown>
+): Promise<any>;
+export async function createCohort(
+  organizationIdOrInput: string | CreateCohortInput,
+  createdBy?: string,
+  legacyInput?: Record<string, unknown>
 ) {
-  const validated = createCohortSchema.parse(input);
-  const { supabase } = await getAuthContext();
+  const normalizedInput: CreateCohortInput =
+    typeof organizationIdOrInput === 'string'
+      ? (() => {
+          const legacy = legacyInput as {
+            name: string;
+            description?: string | null;
+            startDate?: string | null;
+            endDate?: string | null;
+            start_date?: string | null;
+            end_date?: string | null;
+            hosting?: 'managed' | 'self_hosted';
+            runtimeStatus?: 'provisioning' | 'online' | 'offline' | 'error' | 'paused';
+            settings?: Record<string, unknown>;
+          };
 
-  const { data, error } = await supabase
-    .from('cohorts')
-    .insert({
-      organization_id: organizationId,
+          return {
+            name: legacy.name,
+            description: legacy.description,
+            type: 'shared',
+            organizationId: organizationIdOrInput,
+            createdBy: createdBy as string,
+            hosting: legacy.hosting,
+            runtimeStatus: legacy.runtimeStatus,
+            settings: legacy.settings,
+            startDate: legacy.startDate ?? legacy.start_date ?? undefined,
+            endDate: legacy.endDate ?? legacy.end_date ?? undefined,
+          };
+        })()
+      : organizationIdOrInput;
+
+  const validated = createCohortSchema.parse(normalizedInput);
+  const now = new Date();
+
+  const [cohort] = await db
+    .insert(cohorts)
+    .values({
+      organizationId: validated.type === 'shared' ? (validated.organizationId ?? null) : null,
+      ownerUserId: validated.type === 'personal' ? (validated.ownerUserId ?? null) : null,
+      type: validated.type,
       name: validated.name,
-      description: validated.description || null,
-      status: validated.status,
-      start_date: validated.start_date || null,
-      end_date: validated.end_date || null,
-      metadata: validated.settings || {},
+      slug: generateSlug(validated.name, slugSuffix()),
+      description: validated.description ?? null,
+      status: 'active',
+      hosting: validated.hosting,
+      runtimeStatus: validated.runtimeStatus ?? 'provisioning',
+      startDate: validated.startDate ?? null,
+      endDate: validated.endDate ?? null,
+      settings: validated.settings ?? {},
+      createdBy: validated.createdBy,
+      createdAt: now,
+      updatedAt: now,
     })
-    .select()
-    .single();
+    .returning();
 
-  if (error) {
-    console.error('Error creating cohort:', error);
-    throw new Error(`Failed to create cohort: ${error.message}`);
-  }
+  return cohort ?? null;
+}
 
-  return data;
+/**
+ * Provision a personal cohort with default name
+ */
+export async function provisionPersonalCohort(userId: string, firstName: string) {
+  const name = `${firstName}'s Cohort`;
+  return createCohort({
+    name,
+    type: 'personal',
+    ownerUserId: userId,
+    createdBy: userId,
+  });
 }
 
 /**
@@ -84,93 +126,203 @@ export async function createCohort(
  */
 export async function updateCohort(cohortId: string, input: UpdateCohortInput) {
   const validated = updateCohortSchema.parse(input);
-  const { supabase } = await getAuthContext();
 
-  const updateData: Record<string, unknown> = {
-    ...validated,
-    updated_at: new Date().toISOString(),
-  };
+  const [cohort] = await db
+    .update(cohorts)
+    .set({
+      ...validated,
+      updatedAt: new Date(),
+    })
+    .where(eq(cohorts.id, cohortId))
+    .returning();
 
-  if (validated.settings) {
-    updateData.metadata = validated.settings;
-    delete updateData.settings;
-  }
-
-  const { data, error } = await supabase
-    .from('cohorts')
-    .update(updateData)
-    .eq('id', cohortId)
-    .select()
-    .single();
-
-  if (error) {
-    console.error('Error updating cohort:', error);
-    throw new Error(`Failed to update cohort: ${error.message}`);
-  }
-
-  return data;
+  return cohort ?? null;
 }
 
 /**
  * Soft delete (archive) a cohort
  */
 export async function deleteCohort(cohortId: string) {
-  const { supabase } = await getAuthContext();
-
-  const { data, error } = await supabase
-    .from('cohorts')
-    .update({
+  const [cohort] = await db
+    .update(cohorts)
+    .set({
       status: 'completed',
-      updated_at: new Date().toISOString(),
+      updatedAt: new Date(),
     })
-    .eq('id', cohortId)
-    .select()
-    .single();
+    .where(eq(cohorts.id, cohortId))
+    .returning();
 
-  if (error) {
-    console.error('Error archiving cohort:', error);
-    throw new Error(`Failed to archive cohort: ${error.message}`);
+  return cohort ?? null;
+}
+
+/**
+ * Add a user member to a cohort
+ */
+export async function addUserMember(input: AddUserMemberInput) {
+  const validated = addUserMemberSchema.parse(input);
+
+  const [member] = await db
+    .insert(cohortUserMembers)
+    .values({
+      cohortId: validated.cohortId,
+      userId: validated.userId,
+      role: validated.role,
+    })
+    .returning();
+
+  return member ?? null;
+}
+
+/**
+ * Add an agent member to a cohort
+ */
+export async function addAgentMember(input: AddAgentMemberInput) {
+  const validated = addAgentMemberSchema.parse(input);
+
+  const [member] = await db
+    .insert(cohortAgentMembers)
+    .values({
+      cohortId: validated.cohortId,
+      agentId: validated.agentId,
+      role: validated.role,
+    })
+    .returning();
+
+  return member ?? null;
+}
+
+/**
+ * Remove a user or agent member from a cohort
+ */
+export async function removeMember(input: RemoveMemberInput) {
+  const validated = removeMemberSchema.parse(input);
+
+  if (validated.type === 'user') {
+    const [member] = await db
+      .delete(cohortUserMembers)
+      .where(
+        and(
+          eq(cohortUserMembers.cohortId, validated.cohortId),
+          eq(cohortUserMembers.userId, validated.memberId)
+        )
+      )
+      .returning();
+    return member ?? null;
   }
 
-  return data;
+  const [member] = await db
+    .delete(cohortAgentMembers)
+    .where(
+      and(
+        eq(cohortAgentMembers.cohortId, validated.cohortId),
+        eq(cohortAgentMembers.agentId, validated.memberId)
+      )
+    )
+    .returning();
+
+  return member ?? null;
+}
+
+/**
+ * Update a member's role
+ */
+export async function updateMemberRole(input: UpdateMemberRoleInput) {
+  const validated = updateMemberRoleSchema.parse(input);
+
+  if (validated.type === 'user') {
+    const [member] = await db
+      .update(cohortUserMembers)
+      .set({
+        role: validated.role,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(cohortUserMembers.cohortId, validated.cohortId),
+          eq(cohortUserMembers.userId, validated.memberId)
+        )
+      )
+      .returning();
+    return member ?? null;
+  }
+
+  const [member] = await db
+    .update(cohortAgentMembers)
+    .set({
+      role: validated.role,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(cohortAgentMembers.cohortId, validated.cohortId),
+        eq(cohortAgentMembers.agentId, validated.memberId)
+      )
+    )
+    .returning();
+
+  return member ?? null;
+}
+
+/**
+ * Update cohort runtime fields
+ */
+export async function updateCohortRuntime(cohortId: string, input: UpdateCohortRuntimeInput) {
+  const validated = updateCohortRuntimeSchema.parse(input);
+
+  const [cohort] = await db
+    .update(cohorts)
+    .set({
+      ...validated,
+      updatedAt: new Date(),
+    })
+    .where(eq(cohorts.id, cohortId))
+    .returning();
+
+  return cohort ?? null;
 }
 
 /**
  * Compute cohort member count
  */
-export async function updateCohortMemberCount(cohortId: string, _delta: number) {
-  const { supabase } = await getAuthContext();
+export async function updateCohortMemberCount(cohortId: string) {
+  const [userCount, agentCount] = await Promise.all([
+    db
+      .select({ count: cohortUserMembers.id })
+      .from(cohortUserMembers)
+      .where(eq(cohortUserMembers.cohortId, cohortId)),
+    db
+      .select({ count: cohortAgentMembers.id })
+      .from(cohortAgentMembers)
+      .where(eq(cohortAgentMembers.cohortId, cohortId)),
+  ]);
 
-  const { count, error } = await supabase
-    .from('cohort_members')
-    .select('*', { count: 'exact', head: true })
-    .eq('cohort_id', cohortId);
+  const total = (userCount?.length ?? 0) + (agentCount?.length ?? 0);
 
-  if (error) {
-    throw new Error(`Failed to update member count: ${error.message}`);
-  }
+  await db
+    .update(cohorts)
+    .set({ memberCount: total, updatedAt: new Date() })
+    .where(eq(cohorts.id, cohortId));
 
-  return count || 0;
+  return total;
 }
 
 /**
  * Compute cohort engagement percentage
  */
-export async function updateCohortEngagement(cohortId: string, _engagementPercent: number) {
-  const { supabase } = await getAuthContext();
+export async function updateCohortEngagement(cohortId: string) {
+  const agentRows = await db
+    .select({ engagementScore: cohortAgentMembers.engagementScore })
+    .from(cohortAgentMembers)
+    .where(eq(cohortAgentMembers.cohortId, cohortId));
 
-  const { data, error } = await supabase
-    .from('cohort_members')
-    .select('engagement_score')
-    .eq('cohort_id', cohortId);
+  const scores = agentRows.map((row) => Number(row.engagementScore || 0));
+  const avg = scores.length > 0 ? scores.reduce((sum, score) => sum + score, 0) / scores.length : 0;
+  const engagementPercent = Math.round(avg * 100) / 100;
 
-  if (error) {
-    throw new Error(`Failed to update engagement: ${error.message}`);
-  }
+  await db
+    .update(cohorts)
+    .set({ engagementPercent: engagementPercent.toFixed(2), updatedAt: new Date() })
+    .where(eq(cohorts.id, cohortId));
 
-  const scores = (data || []).map((m: any) => parseFloat(m.engagement_score) || 0);
-  if (scores.length === 0) return 0;
-
-  const avg = scores.reduce((sum: number, score: number) => sum + score, 0) / scores.length;
-  return Math.round(avg * 100) / 100;
+  return engagementPercent;
 }

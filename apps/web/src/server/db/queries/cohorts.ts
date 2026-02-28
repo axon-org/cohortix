@@ -1,142 +1,266 @@
 /**
  * Cohort Queries Module (COH-B2)
  *
- * Server-side data fetching for cohorts.
+ * Server-side data fetching for cohorts using Drizzle ORM.
  */
 
+import { db } from '@repo/database/client';
+import {
+  activityLog,
+  agents,
+  cohortAgentMembers,
+  cohortUserMembers,
+  cohorts,
+  profiles,
+} from '@repo/database/schema';
+import { and, asc, count, desc, eq, gte, ilike, inArray, lte, ne, or } from 'drizzle-orm';
 import { getAuthContext } from '@/lib/auth-helper';
 
-type CohortStatus = 'active' | 'paused' | 'at-risk' | 'completed';
+export type CohortStatus = 'active' | 'paused' | 'at-risk' | 'completed';
+export type CohortType = 'personal' | 'shared';
+export type CohortHosting = 'managed' | 'self_hosted';
+export type CohortRuntimeStatus = 'provisioning' | 'online' | 'offline' | 'error' | 'paused';
 
-interface CohortFilters {
+export interface CohortFilters {
+  type?: CohortType;
   status?: CohortStatus;
+  hosting?: CohortHosting;
+  runtimeStatus?: CohortRuntimeStatus;
   search?: string;
   startDateFrom?: string;
   startDateTo?: string;
-  sortBy?: 'name' | 'created_at' | 'engagement_percent' | 'member_count' | 'start_date';
+  sortBy?: 'name' | 'created_at' | 'member_count' | 'engagement_percent' | 'start_date';
   sortOrder?: 'asc' | 'desc';
+}
+
+export interface CohortPagination {
   page?: number;
   pageSize?: number;
 }
 
 type CohortMemberStat = {
-  member_count: number;
-  engagement_percent: number;
+  memberCount: number;
+  engagementPercent: number;
 };
 
-async function getMemberStats(
-  supabase: any,
-  cohortIds: string[]
-): Promise<Record<string, CohortMemberStat>> {
-  if (cohortIds.length === 0) return {};
+type MemberStatsMap = Record<string, CohortMemberStat>;
 
-  const { data: members, error } = await supabase
-    .from('cohort_members')
-    .select('cohort_id, engagement_score')
-    .in('cohort_id', cohortIds);
-
-  if (error) {
-    console.error('Error fetching cohort member stats:', error);
-    return {};
+function normalizeGetCohortsArgs(
+  organizationId?: string,
+  userIdOrFilters?: string | CohortFilters,
+  filtersOrPagination?: CohortFilters | CohortPagination,
+  pagination?: CohortPagination
+) {
+  if (typeof userIdOrFilters === 'object' && userIdOrFilters !== null) {
+    return {
+      organizationId,
+      userId: undefined,
+      filters: userIdOrFilters as CohortFilters,
+      pagination: (filtersOrPagination as CohortPagination) || {},
+    };
   }
 
-  const stats: Record<string, { count: number; totalEngagement: number }> = {};
-  (members || []).forEach((member: any) => {
-    if (!stats[member.cohort_id]) {
-      stats[member.cohort_id] = { count: 0, totalEngagement: 0 };
-    }
-    const entry = stats[member.cohort_id]!;
-    entry.count += 1;
-    entry.totalEngagement += parseFloat(member.engagement_score) || 0;
+  return {
+    organizationId,
+    userId: userIdOrFilters as string | undefined,
+    filters: (filtersOrPagination as CohortFilters) || {},
+    pagination: pagination || {},
+  };
+}
+
+async function getMemberStats(cohortIds: string[]): Promise<MemberStatsMap> {
+  if (cohortIds.length === 0) return {};
+
+  const [userCounts, agentRows] = await Promise.all([
+    db
+      .select({
+        cohortId: cohortUserMembers.cohortId,
+        count: count(),
+      })
+      .from(cohortUserMembers)
+      .where(inArray(cohortUserMembers.cohortId, cohortIds))
+      .groupBy(cohortUserMembers.cohortId),
+    db
+      .select({
+        cohortId: cohortAgentMembers.cohortId,
+        engagementScore: cohortAgentMembers.engagementScore,
+      })
+      .from(cohortAgentMembers)
+      .where(inArray(cohortAgentMembers.cohortId, cohortIds)),
+  ]);
+
+  const stats: MemberStatsMap = {};
+
+  userCounts.forEach((row) => {
+    stats[row.cohortId] = {
+      memberCount: Number(row.count || 0),
+      engagementPercent: 0,
+    };
   });
 
-  return Object.entries(stats).reduce<Record<string, CohortMemberStat>>((acc, [id, value]) => {
-    acc[id] = {
-      member_count: value.count,
-      engagement_percent:
-        value.count > 0 ? Math.round((value.totalEngagement / value.count) * 100) / 100 : 0,
+  const engagementAccumulator: Record<string, { total: number; count: number }> = {};
+  agentRows.forEach((row) => {
+    if (!engagementAccumulator[row.cohortId]) {
+      engagementAccumulator[row.cohortId] = { total: 0, count: 0 };
+    }
+    engagementAccumulator[row.cohortId]!.total += Number(row.engagementScore || 0);
+    engagementAccumulator[row.cohortId]!.count += 1;
+  });
+
+  Object.entries(engagementAccumulator).forEach(([cohortId, value]) => {
+    const base = stats[cohortId] ?? { memberCount: 0, engagementPercent: 0 };
+    const avg = value.count > 0 ? value.total / value.count : 0;
+    stats[cohortId] = {
+      memberCount: base.memberCount + value.count,
+      engagementPercent: Math.round(avg * 100) / 100,
     };
-    return acc;
-  }, {});
+  });
+
+  return stats;
+}
+
+function buildAccessPredicate(organizationId?: string, userId?: string, type?: CohortType) {
+  if (type === 'personal') {
+    return userId ? eq(cohorts.ownerUserId, userId) : undefined;
+  }
+
+  if (type === 'shared') {
+    return organizationId ? eq(cohorts.organizationId, organizationId) : undefined;
+  }
+
+  if (organizationId && userId) {
+    return or(eq(cohorts.organizationId, organizationId), eq(cohorts.ownerUserId, userId));
+  }
+
+  if (organizationId) return eq(cohorts.organizationId, organizationId);
+  if (userId) return eq(cohorts.ownerUserId, userId);
+
+  return undefined;
 }
 
 /**
  * List cohorts with pagination, filtering, and sorting
  */
-export async function getCohorts(organizationId: string, filters: CohortFilters = {}) {
-  const { supabase } = await getAuthContext();
+export async function getCohorts(
+  organizationId: string,
+  filters?: CohortFilters,
+  pagination?: CohortPagination
+): Promise<{
+  cohorts: Array<Record<string, unknown>>;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}>;
+export async function getCohorts(
+  organizationId?: string,
+  userId?: string,
+  filters?: CohortFilters,
+  pagination?: CohortPagination
+): Promise<{
+  cohorts: Array<Record<string, unknown>>;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}>;
+export async function getCohorts(
+  organizationId?: string,
+  userIdOrFilters?: string | CohortFilters,
+  filtersOrPagination?: CohortFilters | CohortPagination,
+  pagination?: CohortPagination
+) {
   const {
+    organizationId: orgId,
+    userId,
+    filters,
+    pagination: pageOpts,
+  } = normalizeGetCohortsArgs(organizationId, userIdOrFilters, filtersOrPagination, pagination);
+
+  const {
+    type,
     status,
+    hosting,
+    runtimeStatus,
     search,
     startDateFrom,
     startDateTo,
     sortBy = 'created_at',
     sortOrder = 'desc',
-    page = 1,
-    pageSize = 20,
   } = filters;
 
-  const needsComputedSort = ['member_count', 'engagement_percent'].includes(sortBy);
+  const page = pageOpts.page ?? 1;
+  const pageSize = pageOpts.pageSize ?? 20;
 
-  let query = supabase
-    .from('cohorts')
-    .select('*', { count: 'exact' })
-    .eq('organization_id', organizationId);
+  const predicates = [buildAccessPredicate(orgId, userId, type)].filter(Boolean);
 
+  // If no explicit status filter, exclude archived (completed) cohorts
   if (status) {
-    query = query.eq('status', status);
+    predicates.push(eq(cohorts.status, status));
+  } else {
+    predicates.push(ne(cohorts.status, 'completed'));
+  }
+  if (hosting) predicates.push(eq(cohorts.hosting, hosting));
+  if (runtimeStatus) predicates.push(eq(cohorts.runtimeStatus, runtimeStatus));
+  if (search) predicates.push(ilike(cohorts.name, `%${search}%`));
+  if (startDateFrom) predicates.push(gte(cohorts.startDate, startDateFrom));
+  if (startDateTo) predicates.push(lte(cohorts.startDate, startDateTo));
+
+  const whereClause = predicates.length > 0 ? and(...predicates) : undefined;
+
+  const totalQuery = db.select({ total: count() }).from(cohorts);
+  if (whereClause) {
+    totalQuery.where(whereClause);
+  }
+  const totalRow = (await totalQuery)[0];
+  const total = totalRow?.total ?? 0;
+
+  const orderBy =
+    sortBy === 'name'
+      ? sortOrder === 'asc'
+        ? asc(cohorts.name)
+        : desc(cohorts.name)
+      : sortBy === 'start_date'
+        ? sortOrder === 'asc'
+          ? asc(cohorts.startDate)
+          : desc(cohorts.startDate)
+        : sortBy === 'member_count'
+          ? sortOrder === 'asc'
+            ? asc(cohorts.memberCount)
+            : desc(cohorts.memberCount)
+          : sortBy === 'engagement_percent'
+            ? sortOrder === 'asc'
+              ? asc(cohorts.engagementPercent)
+              : desc(cohorts.engagementPercent)
+            : sortOrder === 'asc'
+              ? asc(cohorts.createdAt)
+              : desc(cohorts.createdAt);
+
+  const cohortsQuery = db.select().from(cohorts);
+  if (whereClause) {
+    cohortsQuery.where(whereClause);
   }
 
-  if (search) {
-    query = query.ilike('name', `%${search}%`);
-  }
+  const cohortRows = await cohortsQuery
+    .orderBy(orderBy)
+    .limit(pageSize)
+    .offset((page - 1) * pageSize);
 
-  if (startDateFrom) {
-    query = query.gte('start_date', startDateFrom);
-  }
+  const cohortIds = cohortRows.map((cohort) => cohort.id);
+  const statsMap = await getMemberStats(cohortIds);
 
-  if (startDateTo) {
-    query = query.lte('start_date', startDateTo);
-  }
-
-  if (!needsComputedSort) {
-    query = query
-      .order(sortBy, { ascending: sortOrder === 'asc' })
-      .range((page - 1) * pageSize, page * pageSize - 1);
-  }
-
-  const { data, count, error } = await query;
-
-  if (error) {
-    console.error('Error fetching cohorts:', error);
-    throw new Error(`Failed to fetch cohorts: ${error.message}`);
-  }
-
-  const cohorts = data || [];
-  const cohortIds = cohorts.map((cohort: any) => cohort.id);
-  const statsMap = await getMemberStats(supabase, cohortIds);
-
-  const enriched = cohorts.map((cohort: any) => ({
+  const enriched = cohortRows.map((cohort) => ({
     ...cohort,
-    member_count: statsMap[cohort.id]?.member_count || 0,
-    engagement_percent: statsMap[cohort.id]?.engagement_percent || 0,
+    memberCount: statsMap[cohort.id]?.memberCount ?? 0,
+    engagementPercent: statsMap[cohort.id]?.engagementPercent ?? 0,
   }));
 
-  const sorted = needsComputedSort
-    ? enriched.sort((a: any, b: any) => {
-        const direction = sortOrder === 'asc' ? 1 : -1;
-        return (a[sortBy] - b[sortBy]) * direction;
-      })
-    : enriched;
-
-  const paged = needsComputedSort ? sorted.slice((page - 1) * pageSize, page * pageSize) : sorted;
-
   return {
-    cohorts: paged,
-    total: count || 0,
+    cohorts: enriched,
+    total: Number(total || 0),
     page,
     pageSize,
-    totalPages: Math.ceil((count || 0) / pageSize),
+    totalPages: Math.ceil(Number(total || 0) / pageSize),
   };
 }
 
@@ -144,88 +268,146 @@ export async function getCohorts(organizationId: string, filters: CohortFilters 
  * Get a single cohort by ID with related data
  */
 export async function getCohortById(cohortId: string) {
-  const { supabase, organizationId } = await getAuthContext();
+  const { organizationId, userId } = await getAuthContext();
+  const accessPredicate = buildAccessPredicate(organizationId, userId);
 
-  const { data, error } = await supabase
-    .from('cohorts')
-    .select('*')
-    .eq('id', cohortId)
-    .eq('organization_id', organizationId)
-    .single();
+  const cohortQuery = db.select().from(cohorts);
+  cohortQuery.where(
+    accessPredicate ? and(eq(cohorts.id, cohortId), accessPredicate) : eq(cohorts.id, cohortId)
+  );
 
-  if (error) {
-    if (error.code === 'PGRST116') return null;
-    console.error('Error fetching cohort:', error);
-    throw new Error(`Failed to fetch cohort: ${error.message}`);
-  }
+  const [cohort] = await cohortQuery;
 
-  if (!data) return null;
+  if (!cohort) return null;
 
-  const statsMap = await getMemberStats(supabase, [data.id]);
+  const statsMap = await getMemberStats([cohort.id]);
+
   return {
-    ...data,
-    member_count: statsMap[data.id]?.member_count || 0,
-    engagement_percent: statsMap[data.id]?.engagement_percent || 0,
+    ...cohort,
+    memberCount: statsMap[cohort.id]?.memberCount ?? 0,
+    engagementPercent: statsMap[cohort.id]?.engagementPercent ?? 0,
   };
+}
+
+export async function getPersonalCohortByOwner(userId: string) {
+  const [cohort] = await db
+    .select()
+    .from(cohorts)
+    .where(and(eq(cohorts.ownerUserId, userId), eq(cohorts.type, 'personal')))
+    .limit(1);
+
+  return cohort ?? null;
 }
 
 /**
  * Get cohort statistics: engagement metrics, member breakdown, activity
  */
 export async function getCohortStats(cohortId: string) {
-  const { supabase, organizationId } = await getAuthContext();
+  const cohort = await getCohortById(cohortId);
 
-  const { data: cohort, error } = await supabase
-    .from('cohorts')
-    .select('*')
-    .eq('id', cohortId)
-    .eq('organization_id', organizationId)
-    .single();
+  if (!cohort) return null;
 
-  if (error || !cohort) {
-    return null;
-  }
+  const [activityCount] = await db
+    .select({ count: count() })
+    .from(activityLog)
+    .where(and(eq(activityLog.entityId, cohortId), eq(activityLog.entityType, 'cohort')));
 
-  const statsMap = await getMemberStats(supabase, [cohort.id]);
-  const memberStats = statsMap[cohort.id] || { member_count: 0, engagement_percent: 0 };
+  const [latestActivity] = await db
+    .select({ createdAt: activityLog.createdAt })
+    .from(activityLog)
+    .where(and(eq(activityLog.entityId, cohortId), eq(activityLog.entityType, 'cohort')))
+    .orderBy(desc(activityLog.createdAt))
+    .limit(1);
 
-  const startDate = cohort.start_date ? new Date(cohort.start_date) : new Date(cohort.created_at);
-  const endDate = cohort.end_date ? new Date(cohort.end_date) : new Date();
+  const startDate = cohort.startDate ? new Date(cohort.startDate) : new Date(cohort.createdAt);
+  const endDate = cohort.endDate ? new Date(cohort.endDate) : new Date();
   const daysActive = Math.max(
     1,
     Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
   );
 
   return {
-    memberCount: memberStats.member_count,
-    engagementPercent: memberStats.engagement_percent,
+    memberCount: cohort.memberCount,
+    engagementPercent: cohort.engagementPercent,
     daysActive,
     status: cohort.status,
-    startDate: cohort.start_date,
-    endDate: cohort.end_date,
+    startDate: cohort.startDate,
+    endDate: cohort.endDate,
+    activitySummary: {
+      count: Number(activityCount?.count || 0),
+      lastActivityAt: latestActivity?.createdAt ?? null,
+    },
   };
+}
+
+/**
+ * Get cohort user members with roles
+ */
+export async function getCohortUserMembers(cohortId: string) {
+  const rows = await db
+    .select({
+      id: cohortUserMembers.id,
+      cohortId: cohortUserMembers.cohortId,
+      userId: cohortUserMembers.userId,
+      role: cohortUserMembers.role,
+      joinedAt: cohortUserMembers.joinedAt,
+      updatedAt: cohortUserMembers.updatedAt,
+      name: profiles.name,
+      email: profiles.email,
+      avatarUrl: profiles.avatarUrl,
+    })
+    .from(cohortUserMembers)
+    .leftJoin(profiles, eq(cohortUserMembers.userId, profiles.id))
+    .where(eq(cohortUserMembers.cohortId, cohortId))
+    .orderBy(desc(cohortUserMembers.joinedAt));
+
+  return rows;
+}
+
+/**
+ * Get cohort agent members with engagement scores
+ */
+export async function getCohortAgentMembers(cohortId: string) {
+  const rows = await db
+    .select({
+      id: cohortAgentMembers.id,
+      cohortId: cohortAgentMembers.cohortId,
+      agentId: cohortAgentMembers.agentId,
+      role: cohortAgentMembers.role,
+      engagementScore: cohortAgentMembers.engagementScore,
+      joinedAt: cohortAgentMembers.joinedAt,
+      updatedAt: cohortAgentMembers.updatedAt,
+      name: agents.name,
+      slug: agents.slug,
+      avatarUrl: agents.avatarUrl,
+      status: agents.status,
+    })
+    .from(cohortAgentMembers)
+    .leftJoin(agents, eq(cohortAgentMembers.agentId, agents.id))
+    .where(eq(cohortAgentMembers.cohortId, cohortId))
+    .orderBy(desc(cohortAgentMembers.engagementScore));
+
+  return rows;
 }
 
 /**
  * Get cohort activity timeline
  */
 export async function getCohortActivity(cohortId: string, limit = 20) {
-  const { supabase, organizationId } = await getAuthContext();
+  const { organizationId } = await getAuthContext();
 
-  const { data, error } = await supabase
-    .from('activity_log')
-    .select('*')
-    .eq('organization_id', organizationId)
-    .eq('entity_id', cohortId)
-    .order('created_at', { ascending: false })
+  return db
+    .select()
+    .from(activityLog)
+    .where(
+      and(
+        eq(activityLog.organizationId, organizationId),
+        eq(activityLog.entityId, cohortId),
+        eq(activityLog.entityType, 'cohort')
+      )
+    )
+    .orderBy(desc(activityLog.createdAt))
     .limit(limit);
-
-  if (error) {
-    console.error('Error fetching cohort activity:', error);
-    return [];
-  }
-
-  return data || [];
 }
 
 /**
@@ -235,30 +417,40 @@ export async function getCohortEngagementTimeline(
   cohortId: string,
   daysBack: number = 30
 ): Promise<Array<{ date: string; interaction_count: number }>> {
-  const { supabase } = await getAuthContext();
-
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - daysBack);
 
-  const { data, error } = await supabase
-    .from('cohort_members')
-    .select('joined_at')
-    .eq('cohort_id', cohortId)
-    .gte('joined_at', startDate.toISOString())
-    .lte('joined_at', endDate.toISOString());
-
-  if (error) {
-    console.error('Error fetching engagement timeline:', error);
-  }
+  const [userRows, agentRows] = await Promise.all([
+    db
+      .select({ joinedAt: cohortUserMembers.joinedAt })
+      .from(cohortUserMembers)
+      .where(
+        and(
+          eq(cohortUserMembers.cohortId, cohortId),
+          gte(cohortUserMembers.joinedAt, startDate),
+          lte(cohortUserMembers.joinedAt, endDate)
+        )
+      ),
+    db
+      .select({ joinedAt: cohortAgentMembers.joinedAt })
+      .from(cohortAgentMembers)
+      .where(
+        and(
+          eq(cohortAgentMembers.cohortId, cohortId),
+          gte(cohortAgentMembers.joinedAt, startDate),
+          lte(cohortAgentMembers.joinedAt, endDate)
+        )
+      ),
+  ]);
 
   const timelineMap = new Map<string, number>();
-  (data || []).forEach((row: any) => {
-    const date = new Date(row.joined_at).toISOString().split('T')[0]!;
+  [...userRows, ...agentRows].forEach((row) => {
+    const date = new Date(row.joinedAt).toISOString().split('T')[0]!;
     timelineMap.set(date, (timelineMap.get(date) || 0) + 1);
   });
 
-  const timeline = [] as Array<{ date: string; interaction_count: number }>;
+  const timeline: Array<{ date: string; interaction_count: number }> = [];
   for (let i = 0; i < daysBack; i++) {
     const date = new Date();
     date.setDate(date.getDate() - (daysBack - i - 1));

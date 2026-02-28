@@ -1,0 +1,418 @@
+openapi: 3.0.3
+info:
+  title: Cohorts API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /cohorts:
+    get:
+      summary: List cohorts
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [personal, shared]
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, paused, at-risk, completed]
+        - in: query
+          name: hosting
+          schema:
+            type: string
+            enum: [managed, self_hosted]
+        - in: query
+          name: runtimeStatus
+          schema:
+            type: string
+            enum: [provisioning, online, offline, error, paused]
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Cohort list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cohort'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    post:
+      summary: Create a shared cohort
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCohortRequest'
+      responses:
+        '201':
+          description: Cohort created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cohort'
+  /cohorts/personal/provision:
+    post:
+      summary: Provision a personal cohort
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+      responses:
+        '201':
+          description: Personal cohort created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cohort'
+  /cohorts/{id}:
+    get:
+      summary: Get a cohort by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Cohort
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cohort'
+                  stats:
+                    $ref: '#/components/schemas/CohortStats'
+    patch:
+      summary: Update a cohort
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCohortRequest'
+      responses:
+        '200':
+          description: Cohort updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cohort'
+    delete:
+      summary: Archive a cohort
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Cohort archived
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  cohort:
+                    $ref: '#/components/schemas/Cohort'
+  /cohorts/{id}/start:
+    post:
+      summary: Start cohort runtime
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Runtime started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cohort'
+  /cohorts/{id}/stop:
+    post:
+      summary: Stop cohort runtime
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Runtime stopped
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cohort'
+  /cohorts/{id}/heartbeat:
+    post:
+      summary: Record runtime heartbeat
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: Authorization
+          required: false
+          schema:
+            type: string
+          description: Bearer connection token (gateway)
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardwareInfo:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Heartbeat accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Cohort'
+  /cohorts/{id}/connection-token:
+    post:
+      summary: Generate connection token
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Connection token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      expiresIn:
+                        type: integer
+  /cohorts/{id}/runtime-status:
+    get:
+      summary: Get runtime status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Runtime status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      runtimeStatus:
+                        type: string
+                      lastHeartbeatAt:
+                        type: string
+                        format: date-time
+                      hosting:
+                        type: string
+components:
+  schemas:
+    Cohort:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+        type:
+          type: string
+        hosting:
+          type: string
+        runtimeStatus:
+          type: string
+        startDate:
+          type: string
+          format: date
+          nullable: true
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        memberCount:
+          type: integer
+        engagementPercent:
+          type: number
+    CohortStats:
+      type: object
+      properties:
+        memberCount:
+          type: integer
+        engagementPercent:
+          type: number
+        daysActive:
+          type: integer
+        status:
+          type: string
+        startDate:
+          type: string
+          format: date
+          nullable: true
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        activitySummary:
+          type: object
+          properties:
+            count:
+              type: integer
+            lastActivityAt:
+              type: string
+              format: date-time
+              nullable: true
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+    CreateCohortRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        hosting:
+          type: string
+          enum: [managed, self_hosted]
+        startDate:
+          type: string
+          format: date
+          nullable: true
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        settings:
+          type: object
+    UpdateCohortRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, paused, at-risk, completed]
+        hosting:
+          type: string
+          enum: [managed, self_hosted]
+        runtimeStatus:
+          type: string
+          enum: [provisioning, online, offline, error, paused]
+        startDate:
+          type: string
+          format: date
+          nullable: true
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        settings:
+          type: object

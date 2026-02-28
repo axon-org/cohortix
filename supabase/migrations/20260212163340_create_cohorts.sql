@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS cohorts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id uuid NOT NULL,
   name text NOT NULL,
+  slug varchar(100) NOT NULL DEFAULT '',
   description text,
   status text NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'at-risk', 'completed')),
   start_date timestamptz,
