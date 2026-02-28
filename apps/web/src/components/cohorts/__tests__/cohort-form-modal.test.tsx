@@ -29,9 +29,7 @@ describe('CohortFormModal', () => {
   it('submits create flow with required fields', async () => {
     const onOpenChange = vi.fn();
 
-    render(
-      <CohortFormModal open onOpenChange={onOpenChange} orgId="org-123" />
-    );
+    render(<CohortFormModal open onOpenChange={onOpenChange} orgId="org-123" />);
 
     fireEvent.change(screen.getByLabelText('Cohort Name'), {
       target: { value: 'Q1 Engineering' },
@@ -41,7 +39,7 @@ describe('CohortFormModal', () => {
     expect(mockCreateCohort).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'Q1 Engineering',
-        organizationId: 'org-123',
+        organizationId: '00000000-0000-0000-0000-000000000001',
         type: 'shared',
       })
     );
@@ -57,7 +55,7 @@ describe('CohortFormModal', () => {
         onOpenChange={onOpenChange}
         orgId="org-123"
         cohort={{
-          id: 'cohort-1',
+          id: '00000000-0000-0000-0000-000000000002',
           name: 'Original Name',
           description: 'Initial',
           hosting: 'managed',
@@ -72,7 +70,7 @@ describe('CohortFormModal', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
 
     expect(mockUpdateCohort).toHaveBeenCalledWith({
-      id: 'cohort-1',
+      id: '00000000-0000-0000-0000-000000000002',
       data: expect.objectContaining({
         name: 'Updated Name',
       }),

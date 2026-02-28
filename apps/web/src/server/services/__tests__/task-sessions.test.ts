@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const mockDb = {
+const mockDb = vi.hoisted(() => ({
   insert: vi.fn(),
   update: vi.fn(),
   select: vi.fn(),
-};
+}));
 
 vi.mock('@repo/database/client', () => ({
   db: mockDb,
@@ -29,25 +29,25 @@ describe('task sessions service', () => {
   });
 
   it('createTaskSession inserts session', async () => {
-    const session = { id: 'session-1' };
+    const session = { id: '00000000-0000-0000-0000-000000000007' };
     mockDb.insert.mockReturnValue(makeQueryMock([session]));
 
     const result = await createTaskSession({
-      taskId: 'task-1',
-      agentId: 'agent-1',
+      taskId: '00000000-0000-0000-0000-000000000016',
+      agentId: '00000000-0000-0000-0000-000000000010',
       cohortId: null,
       scopeType: 'personal',
-      scopeId: 'user-1',
+      scopeId: '00000000-0000-0000-0000-000000000004',
     });
 
-    expect(result?.id).toBe('session-1');
+    expect(result?.id).toBe('00000000-0000-0000-0000-000000000007');
   });
 
   it('closeTaskSession updates session', async () => {
-    const session = { id: 'session-1', status: 'completed' };
+    const session = { id: '00000000-0000-0000-0000-000000000007', status: 'completed' };
     mockDb.update.mockReturnValue(makeQueryMock([session]));
 
-    const result = await closeTaskSession('session-1', 'completed');
+    const result = await closeTaskSession('00000000-0000-0000-0000-000000000007', 'completed');
 
     expect(result?.status).toBe('completed');
   });

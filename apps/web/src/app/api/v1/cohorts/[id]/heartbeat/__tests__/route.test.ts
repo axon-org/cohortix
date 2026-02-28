@@ -26,11 +26,7 @@ const mockGetCohortUserMembers = vi.mocked(getCohortUserMembers);
 const mockUpdateCohortRuntime = vi.mocked(updateCohortRuntime);
 
 const base64url = (input: string | Buffer) =>
-  Buffer.from(input)
-    .toString('base64')
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_');
+  Buffer.from(input).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 
 const signJwt = (payload: Record<string, unknown>, secret: string) => {
   const header = { alg: 'HS256', typ: 'JWT' };
@@ -47,22 +43,27 @@ describe('Cohort heartbeat API', () => {
     vi.stubEnv('COHORT_CONNECTION_TOKEN_SECRET', 'test-secret');
     mockGetAuthContext.mockResolvedValue({
       supabase: {} as any,
-      organizationId: 'org-123',
-      userId: 'user-123',
+      organizationId: '00000000-0000-0000-0000-000000000001',
+      userId: '00000000-0000-0000-0000-000000000004',
     });
     mockGetCohortById.mockResolvedValue({
-      id: 'cohort-123',
+      id: '00000000-0000-0000-0000-000000000002',
       type: 'shared',
       ownerUserId: null,
     } as any);
-    mockGetCohortUserMembers.mockResolvedValue([{ userId: 'user-123' }] as any);
-    mockUpdateCohortRuntime.mockResolvedValue({ id: 'cohort-123', runtimeStatus: 'online' } as any);
+    mockGetCohortUserMembers.mockResolvedValue([
+      { userId: '00000000-0000-0000-0000-000000000004' },
+    ] as any);
+    mockUpdateCohortRuntime.mockResolvedValue({
+      id: '00000000-0000-0000-0000-000000000002',
+      runtimeStatus: 'online',
+    } as any);
   });
 
   it('records heartbeat with connection token', async () => {
     const token = signJwt(
       {
-        cohortId: 'cohort-123',
+        cohortId: '00000000-0000-0000-0000-000000000002',
         type: 'cohort_connection',
         exp: Math.floor(Date.now() / 1000) + 60,
       },
@@ -80,7 +81,7 @@ describe('Cohort heartbeat API', () => {
     });
 
     const response = await heartbeatHandler(request, {
-      params: Promise.resolve({ id: 'cohort-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000002' }),
     });
 
     expect(response.status).toBe(200);
@@ -97,7 +98,7 @@ describe('Cohort heartbeat API', () => {
     });
 
     const response = await heartbeatHandler(request, {
-      params: Promise.resolve({ id: 'cohort-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000002' }),
     });
 
     expect(response.status).toBe(401);
@@ -110,7 +111,7 @@ describe('Cohort heartbeat API', () => {
     });
 
     const response = await heartbeatHandler(request, {
-      params: Promise.resolve({ id: 'cohort-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000002' }),
     });
 
     expect(response.status).toBe(200);

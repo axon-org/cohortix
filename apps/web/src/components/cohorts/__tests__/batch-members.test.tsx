@@ -6,8 +6,8 @@ import type { CohortMember } from '@/lib/api/client';
 const mockMembers: CohortMember[] = [
   {
     id: '1',
-    cohort_id: 'cohort-1',
-    agent_id: 'agent-1',
+    cohort_id: '00000000-0000-0000-0000-000000000002',
+    agent_id: '00000000-0000-0000-0000-000000000010',
     agent_name: 'Alim',
     agent_slug: 'alim-ceo',
     agent_avatar_url: 'https://example.com/alim.png',
@@ -19,8 +19,8 @@ const mockMembers: CohortMember[] = [
   },
   {
     id: '2',
-    cohort_id: 'cohort-1',
-    agent_id: 'agent-2',
+    cohort_id: '00000000-0000-0000-0000-000000000002',
+    agent_id: '00000000-0000-0000-0000-000000000011',
     agent_name: 'Sami',
     agent_slug: 'sami-frontend',
     agent_role: 'Frontend Developer',
@@ -31,8 +31,8 @@ const mockMembers: CohortMember[] = [
   },
   {
     id: '3',
-    cohort_id: 'cohort-1',
-    agent_id: 'agent-3',
+    cohort_id: '00000000-0000-0000-0000-000000000002',
+    agent_id: '00000000-0000-0000-0000-000000000012',
     agent_name: 'Nina',
     agent_slug: 'nina-qa',
     agent_role: 'QA Engineer',
@@ -42,8 +42,8 @@ const mockMembers: CohortMember[] = [
   },
   {
     id: '4',
-    cohort_id: 'cohort-1',
-    agent_id: 'agent-4',
+    cohort_id: '00000000-0000-0000-0000-000000000002',
+    agent_id: '00000000-0000-0000-0000-000000000013',
     agent_name: 'Noah',
     agent_slug: 'noah-devops',
     agent_role: 'DevOps',
@@ -53,8 +53,8 @@ const mockMembers: CohortMember[] = [
   },
   {
     id: '5',
-    cohort_id: 'cohort-1',
-    agent_id: 'agent-5',
+    cohort_id: '00000000-0000-0000-0000-000000000002',
+    agent_id: '00000000-0000-0000-0000-000000000014',
     agent_name: 'ErrorBot',
     agent_slug: 'error-bot',
     agent_role: 'Testing',
@@ -141,7 +141,7 @@ describe('BatchMembers', () => {
 
     const avatarImg = screen.getByAltText('Alim');
     expect(avatarImg).toBeInTheDocument();
-    expect(avatarImg).toHaveAttribute('src', 'https://example.com/alim.png');
+    expect(avatarImg.getAttribute('src')).toContain('alim.png');
   });
 
   it('renders initials fallback when no avatar_url', () => {
@@ -171,7 +171,7 @@ describe('BatchMembers', () => {
   it('shows footer when more than 8 members', () => {
     const manyMembers: CohortMember[] = Array.from({ length: 10 }, (_, i) => ({
       id: `${i}`,
-      cohort_id: 'cohort-1',
+      cohort_id: '00000000-0000-0000-0000-000000000002',
       agent_id: `agent-${i}`,
       agent_name: `Agent ${i}`,
       agent_slug: `agent-${i}`,

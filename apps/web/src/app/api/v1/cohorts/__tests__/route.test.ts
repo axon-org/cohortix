@@ -53,12 +53,12 @@ const mockProvisionPersonal = vi.mocked(provisionPersonalCohort);
 
 const baseAuth = {
   supabase: {} as any,
-  organizationId: 'org-123',
-  userId: 'user-123',
+  organizationId: '00000000-0000-0000-0000-000000000001',
+  userId: '00000000-0000-0000-0000-000000000004',
 };
 
 const sampleCohort = {
-  id: 'cohort-123',
+  id: '00000000-0000-0000-0000-000000000002',
   name: 'Spring Cohort',
   status: 'active',
   type: 'shared',
@@ -70,7 +70,7 @@ describe('Cohorts API v1', () => {
     mockGetAuthContext.mockResolvedValue(baseAuth);
     mockGetAuthContextBasic.mockResolvedValue({
       supabase: {} as any,
-      userId: 'user-123',
+      userId: '00000000-0000-0000-0000-000000000004',
       clerkUserId: 'clerk-123',
     });
     mockCurrentUser.mockResolvedValue({ firstName: 'Alex' } as any);
@@ -112,11 +112,13 @@ describe('Cohorts API v1', () => {
     mockGetCohortStats.mockResolvedValue({ memberCount: 1 } as any);
 
     const request = new NextRequest('https://example.com/api/v1/cohorts/cohort-123');
-    const response = await getCohortHandler(request, { params: Promise.resolve({ id: 'cohort-123' }) });
+    const response = await getCohortHandler(request, {
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000002' }),
+    });
 
     expect(response.status).toBe(200);
     const payload = await response.json();
-    expect(payload.data.id).toBe('cohort-123');
+    expect(payload.data.id).toBe('00000000-0000-0000-0000-000000000002');
   });
 
   it('updates cohort', async () => {
@@ -127,7 +129,7 @@ describe('Cohorts API v1', () => {
       body: JSON.stringify({ name: 'Updated' }),
     });
     const response = await patchCohortHandler(request, {
-      params: Promise.resolve({ id: 'cohort-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000002' }),
     });
 
     expect(response.status).toBe(200);
@@ -142,7 +144,7 @@ describe('Cohorts API v1', () => {
       method: 'DELETE',
     });
     const response = await deleteCohortHandler(request, {
-      params: Promise.resolve({ id: 'cohort-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000002' }),
     });
 
     expect(response.status).toBe(200);
@@ -160,6 +162,9 @@ describe('Cohorts API v1', () => {
 
     const response = await provisionPersonalHandler(request);
     expect(response.status).toBe(201);
-    expect(mockProvisionPersonal).toHaveBeenCalledWith('user-123', 'Alex');
+    expect(mockProvisionPersonal).toHaveBeenCalledWith(
+      '00000000-0000-0000-0000-000000000004',
+      'Alex'
+    );
   });
 });

@@ -24,7 +24,7 @@ vi.mock('@/hooks/use-cohorts', () => ({
 }));
 
 const cohortFixture = {
-  id: 'cohort-123',
+  id: '00000000-0000-0000-0000-000000000002',
   name: 'Growth Cohort',
   status: 'active',
   runtimeStatus: 'online',
@@ -54,9 +54,9 @@ describe('CohortDetailPage', () => {
       data: {
         members: [
           {
-            id: 'member-1',
-            cohort_id: 'cohort-123',
-            agent_id: 'agent-1',
+            id: '00000000-0000-0000-0000-000000000005',
+            cohort_id: '00000000-0000-0000-0000-000000000002',
+            agent_id: '00000000-0000-0000-0000-000000000010',
             agent_name: 'Atlas',
             agent_slug: '@atlas',
             agent_status: 'active',
@@ -72,7 +72,12 @@ describe('CohortDetailPage', () => {
   it('renders cohort dashboard details', async () => {
     render(
       <Suspense fallback={null}>
-        <CohortDetailPage params={Promise.resolve({ orgSlug: 'test-org', id: 'cohort-123' })} />
+        <CohortDetailPage
+          params={Promise.resolve({
+            orgSlug: 'test-org',
+            id: '00000000-0000-0000-0000-000000000002',
+          })}
+        />
       </Suspense>
     );
 
@@ -87,7 +92,12 @@ describe('CohortDetailPage', () => {
   it('allows editing and saving updates', async () => {
     render(
       <Suspense fallback={null}>
-        <CohortDetailPage params={Promise.resolve({ orgSlug: 'test-org', id: 'cohort-123' })} />
+        <CohortDetailPage
+          params={Promise.resolve({
+            orgSlug: 'test-org',
+            id: '00000000-0000-0000-0000-000000000002',
+          })}
+        />
       </Suspense>
     );
 
@@ -99,7 +109,7 @@ describe('CohortDetailPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(mockUpdateCohort).toHaveBeenCalledWith({
-      id: 'cohort-123',
+      id: '00000000-0000-0000-0000-000000000002',
       data: expect.objectContaining({
         name: 'Updated Cohort',
       }),

@@ -13,9 +13,9 @@ const makeQueryMock = <T>(result: T) => {
   return query;
 };
 
-const mockDb = {
+const mockDb = vi.hoisted(() => ({
   select: vi.fn(),
-};
+}));
 
 vi.mock('@repo/database/client', () => ({
   db: mockDb,

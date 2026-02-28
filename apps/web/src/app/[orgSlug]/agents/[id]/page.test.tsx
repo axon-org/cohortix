@@ -25,7 +25,7 @@ vi.mock('@/hooks/use-agent-detail', () => ({
 }));
 
 const agentFixture = {
-  id: 'agent-123',
+  id: '00000000-0000-0000-0000-000000000006',
   name: 'Clone',
   status: 'active',
   scopeType: 'personal',
@@ -70,7 +70,12 @@ describe('AgentDetailPage', () => {
   it('renders agent profile details', async () => {
     render(
       <Suspense fallback={null}>
-        <AgentDetailPage params={Promise.resolve({ orgSlug: 'test-org', id: 'agent-123' })} />
+        <AgentDetailPage
+          params={Promise.resolve({
+            orgSlug: 'test-org',
+            id: '00000000-0000-0000-0000-000000000006',
+          })}
+        />
       </Suspense>
     );
 
@@ -84,7 +89,12 @@ describe('AgentDetailPage', () => {
   it('allows editing and saving updates', async () => {
     render(
       <Suspense fallback={null}>
-        <AgentDetailPage params={Promise.resolve({ orgSlug: 'test-org', id: 'agent-123' })} />
+        <AgentDetailPage
+          params={Promise.resolve({
+            orgSlug: 'test-org',
+            id: '00000000-0000-0000-0000-000000000006',
+          })}
+        />
       </Suspense>
     );
 
@@ -96,7 +106,7 @@ describe('AgentDetailPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(mockUpdateAgent).toHaveBeenCalledWith({
-      id: 'agent-123',
+      id: '00000000-0000-0000-0000-000000000006',
       data: expect.objectContaining({
         name: 'Clone Prime',
       }),

@@ -14,12 +14,12 @@ const makeQueryMock = <T>(result: T) => {
   return query;
 };
 
-const mockDb = {
+const mockDb = vi.hoisted(() => ({
   select: vi.fn(),
   insert: vi.fn(),
   update: vi.fn(),
   delete: vi.fn(),
-};
+}));
 
 vi.mock('@repo/database/client', () => ({
   db: mockDb,
@@ -27,8 +27,8 @@ vi.mock('@repo/database/client', () => ({
 
 vi.mock('@/lib/auth-helper', () => ({
   getAuthContext: vi.fn().mockResolvedValue({
-    organizationId: 'org-1',
-    userId: 'user-1',
+    organizationId: '00000000-0000-0000-0000-000000000001',
+    userId: '00000000-0000-0000-0000-000000000004',
   }),
 }));
 
@@ -41,7 +41,7 @@ describe('Cohort Queries', () => {
 
   it('getCohorts returns enriched cohort list', async () => {
     const cohortRow = {
-      id: 'cohort-1',
+      id: '00000000-0000-0000-0000-000000000002',
       name: 'Alpha',
       createdAt: new Date(),
       memberCount: 0,
@@ -51,10 +51,18 @@ describe('Cohort Queries', () => {
     mockDb.select
       .mockReturnValueOnce(makeQueryMock([{ total: 1 }]))
       .mockReturnValueOnce(makeQueryMock([cohortRow]))
-      .mockReturnValueOnce(makeQueryMock([{ cohortId: 'cohort-1', count: 1 }]))
-      .mockReturnValueOnce(makeQueryMock([{ cohortId: 'cohort-1', engagementScore: 0.75 }]));
+      .mockReturnValueOnce(
+        makeQueryMock([{ cohortId: '00000000-0000-0000-0000-000000000002', count: 1 }])
+      )
+      .mockReturnValueOnce(
+        makeQueryMock([{ cohortId: '00000000-0000-0000-0000-000000000002', engagementScore: 0.75 }])
+      );
 
-    const result = await getCohorts('org-1', 'user-1', {});
+    const result = await getCohorts(
+      '00000000-0000-0000-0000-000000000001',
+      '00000000-0000-0000-0000-000000000004',
+      {}
+    );
 
     expect(result.total).toBe(1);
     expect(result.cohorts).toHaveLength(1);
@@ -66,9 +74,9 @@ describe('Cohort Queries', () => {
     mockDb.select.mockReturnValueOnce(
       makeQueryMock([
         {
-          id: 'member-1',
-          cohortId: 'cohort-1',
-          userId: 'user-1',
+          id: '00000000-0000-0000-0000-000000000005',
+          cohortId: '00000000-0000-0000-0000-000000000002',
+          userId: '00000000-0000-0000-0000-000000000004',
           role: 'owner',
           joinedAt: new Date(),
           updatedAt: new Date(),
@@ -79,7 +87,7 @@ describe('Cohort Queries', () => {
       ])
     );
 
-    const members = await getCohortUserMembers('cohort-1');
+    const members = await getCohortUserMembers('00000000-0000-0000-0000-000000000002');
 
     expect(members).toHaveLength(1);
     expect(members[0]!.role).toBe('owner');
@@ -90,9 +98,9 @@ describe('Cohort Queries', () => {
     mockDb.select.mockReturnValueOnce(
       makeQueryMock([
         {
-          id: 'member-1',
-          cohortId: 'cohort-1',
-          agentId: 'agent-1',
+          id: '00000000-0000-0000-0000-000000000005',
+          cohortId: '00000000-0000-0000-0000-000000000002',
+          agentId: '00000000-0000-0000-0000-000000000006',
           role: 'member',
           engagementScore: 0.9,
           joinedAt: new Date(),
@@ -105,10 +113,10 @@ describe('Cohort Queries', () => {
       ])
     );
 
-    const members = await getCohortAgentMembers('cohort-1');
+    const members = await getCohortAgentMembers('00000000-0000-0000-0000-000000000002');
 
     expect(members).toHaveLength(1);
-    expect(members[0]!.agentId).toBe('agent-1');
+    expect(members[0]!.agentId).toBe('00000000-0000-0000-0000-000000000006');
     expect(members[0]!.engagementScore).toBe(0.9);
   });
 });

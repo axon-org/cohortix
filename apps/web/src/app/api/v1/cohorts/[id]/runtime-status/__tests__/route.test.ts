@@ -27,26 +27,26 @@ describe('Cohort runtime status API', () => {
     vi.stubEnv('NODE_ENV', 'test');
     mockGetAuthContext.mockResolvedValue({
       supabase: {} as any,
-      organizationId: 'org-123',
-      userId: 'user-123',
+      organizationId: '00000000-0000-0000-0000-000000000001',
+      userId: '00000000-0000-0000-0000-000000000004',
     });
     mockGetCohortById.mockResolvedValue({
-      id: 'cohort-123',
+      id: '00000000-0000-0000-0000-000000000002',
       type: 'shared',
       ownerUserId: null,
       runtimeStatus: 'online',
       lastHeartbeatAt: new Date().toISOString(),
       hosting: 'managed',
     } as any);
-    mockGetCohortUserMembers.mockResolvedValue([{ userId: 'user-123' }] as any);
+    mockGetCohortUserMembers.mockResolvedValue([
+      { userId: '00000000-0000-0000-0000-000000000004' },
+    ] as any);
   });
 
   it('returns runtime status', async () => {
-    const request = new NextRequest(
-      'https://example.com/api/v1/cohorts/cohort-123/runtime-status'
-    );
+    const request = new NextRequest('https://example.com/api/v1/cohorts/cohort-123/runtime-status');
     const response = await runtimeStatusHandler(request, {
-      params: Promise.resolve({ id: 'cohort-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000002' }),
     });
 
     expect(response.status).toBe(200);

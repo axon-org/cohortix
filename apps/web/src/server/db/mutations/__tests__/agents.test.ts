@@ -11,10 +11,10 @@ const makeMutationMock = <T>(result: T) => {
   return query;
 };
 
-const mockDb = {
+const mockDb = vi.hoisted(() => ({
   insert: vi.fn(),
   update: vi.fn(),
-};
+}));
 
 vi.mock('@repo/database/client', () => ({
   db: mockDb,
@@ -34,54 +34,58 @@ describe('Agent Mutations', () => {
   });
 
   it('createAgent inserts an agent', async () => {
-    const agentRow = { id: 'agent-1', name: 'Agent' };
+    const agentRow = { id: '00000000-0000-0000-0000-000000000010', name: 'Agent' };
     mockDb.insert.mockReturnValueOnce(makeMutationMock([agentRow]));
 
     const result = await createAgent({
       name: 'Agent',
       scopeType: 'personal',
-      scopeId: 'user-1',
+      scopeId: '00000000-0000-0000-0000-000000000004',
     });
 
-    expect(result?.id).toBe('agent-1');
+    expect(result?.id).toBe('00000000-0000-0000-0000-000000000010');
   });
 
   it('createCloneAgent provisions a clone agent', async () => {
-    const agentRow = { id: 'agent-2', name: 'Clone' };
+    const agentRow = { id: '00000000-0000-0000-0000-000000000011', name: 'Clone' };
     mockDb.insert.mockReturnValueOnce(makeMutationMock([agentRow]));
 
-    const result = await createCloneAgent('user-1', 'cohort-1', { key: 'value' });
+    const result = await createCloneAgent(
+      '00000000-0000-0000-0000-000000000004',
+      '00000000-0000-0000-0000-000000000002',
+      { key: 'value' }
+    );
     expect(result?.name).toBe('Clone');
   });
 
   it('updateAgent updates an agent', async () => {
-    const agentRow = { id: 'agent-1', name: 'Updated' };
+    const agentRow = { id: '00000000-0000-0000-0000-000000000010', name: 'Updated' };
     mockDb.update.mockReturnValueOnce(makeMutationMock([agentRow]));
 
-    const result = await updateAgent('agent-1', { name: 'Updated' });
+    const result = await updateAgent('00000000-0000-0000-0000-000000000010', { name: 'Updated' });
     expect(result?.name).toBe('Updated');
   });
 
   it('deleteAgent soft deletes an agent', async () => {
-    const agentRow = { id: 'agent-1', status: 'offline' };
+    const agentRow = { id: '00000000-0000-0000-0000-000000000010', status: 'offline' };
     mockDb.update.mockReturnValueOnce(makeMutationMock([agentRow]));
 
-    const result = await deleteAgent('agent-1');
+    const result = await deleteAgent('00000000-0000-0000-0000-000000000010');
     expect(result?.status).toBe('offline');
   });
 
   it('recordEvolutionEvent inserts event', async () => {
-    const eventRow = { id: 'event-1', eventType: 'learning' };
+    const eventRow = { id: '00000000-0000-0000-0000-000000000017', eventType: 'learning' };
     mockDb.insert.mockReturnValueOnce(makeMutationMock([eventRow]));
 
     const result = await recordEvolutionEvent({
-      agentId: 'agent-1',
+      agentId: '00000000-0000-0000-0000-000000000010',
       type: 'learning',
       summary: 'Learned something',
       scopeType: 'personal',
-      scopeId: 'user-1',
+      scopeId: '00000000-0000-0000-0000-000000000004',
     });
 
-    expect(result?.id).toBe('event-1');
+    expect(result?.id).toBe('00000000-0000-0000-0000-000000000017');
   });
 });

@@ -18,8 +18,18 @@ describe('AgentMentionAutocomplete', () => {
     mockUseAgents.mockReturnValue({
       data: {
         data: [
-          { id: 'agent-1', name: 'Clone', role: 'Founder', avatarUrl: null },
-          { id: 'agent-2', name: 'Atlas', role: 'Ops', avatarUrl: null },
+          {
+            id: '00000000-0000-0000-0000-000000000010',
+            name: 'Clone',
+            role: 'Founder',
+            avatarUrl: null,
+          },
+          {
+            id: '00000000-0000-0000-0000-000000000011',
+            name: 'Atlas',
+            role: 'Ops',
+            avatarUrl: null,
+          },
         ],
       },
       isLoading: false,
@@ -44,7 +54,7 @@ describe('AgentMentionAutocomplete', () => {
 
     fireEvent.click(screen.getByText('Clone'));
     expect(onSelect).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'agent-1', name: 'Clone' })
+      expect.objectContaining({ id: '00000000-0000-0000-0000-000000000010', name: 'Clone' })
     );
   });
 });

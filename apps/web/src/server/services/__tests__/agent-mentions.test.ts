@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const mockDb = {
+const mockDb = vi.hoisted(() => ({
   update: vi.fn(),
-};
+}));
 
 vi.mock('@repo/database/client', () => ({
   db: mockDb,
@@ -10,13 +10,13 @@ vi.mock('@repo/database/client', () => ({
 
 vi.mock('@/server/db/queries/cohorts', () => ({
   getCohortAgentMembers: vi.fn().mockResolvedValue([
-    { agentId: 'agent-1', slug: 'clone', name: 'Clone' },
-    { agentId: 'agent-2', slug: 'researcher', name: 'Researcher' },
+    { agentId: '00000000-0000-0000-0000-000000000010', slug: 'clone', name: 'Clone' },
+    { agentId: '00000000-0000-0000-0000-000000000011', slug: 'researcher', name: 'Researcher' },
   ]),
 }));
 
 vi.mock('@/server/services/task-sessions', () => ({
-  createTaskSession: vi.fn().mockResolvedValue({ id: 'session-1' }),
+  createTaskSession: vi.fn().mockResolvedValue({ id: '00000000-0000-0000-0000-000000000007' }),
 }));
 
 import { parseAgentMentions, handleCommentMentions } from '../agent-mentions';
@@ -41,15 +41,15 @@ describe('agent mention service', () => {
     mockDb.update.mockReturnValue(makeUpdateMock());
 
     const result = await handleCommentMentions({
-      commentId: 'comment-1',
+      commentId: '00000000-0000-0000-0000-000000000015',
       commentText: 'Ping @clone',
-      taskId: 'task-1',
-      cohortId: 'cohort-1',
+      taskId: '00000000-0000-0000-0000-000000000016',
+      cohortId: '00000000-0000-0000-0000-000000000002',
       scopeType: 'cohort',
-      scopeId: 'cohort-1',
+      scopeId: '00000000-0000-0000-0000-000000000002',
     });
 
-    expect(result.mentionedAgentIds).toEqual(['agent-1']);
+    expect(result.mentionedAgentIds).toEqual(['00000000-0000-0000-0000-000000000010']);
     expect(result.sessions).toHaveLength(1);
   });
 });

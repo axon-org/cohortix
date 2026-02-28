@@ -43,47 +43,53 @@ describe('Agent profile API', () => {
     vi.stubEnv('NODE_ENV', 'test');
     mockGetAuthContext.mockResolvedValue({
       supabase: {} as any,
-      organizationId: 'org-123',
-      userId: 'user-123',
+      organizationId: '00000000-0000-0000-0000-000000000001',
+      userId: '00000000-0000-0000-0000-000000000004',
     });
     mockGetAgentById.mockResolvedValue({
-      id: 'agent-123',
+      id: '00000000-0000-0000-0000-000000000006',
       scopeType: 'org',
-      organizationId: 'org-123',
+      organizationId: '00000000-0000-0000-0000-000000000001',
     } as any);
   });
 
   it('gets agent profile', async () => {
     const request = new NextRequest('https://example.com/api/v1/agents/agent-123');
     const response = await getAgentHandler(request, {
-      params: Promise.resolve({ id: 'agent-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000006' }),
     });
 
     expect(response.status).toBe(200);
   });
 
   it('updates agent', async () => {
-    mockUpdateAgent.mockResolvedValue({ id: 'agent-123', name: 'Updated' } as any);
+    mockUpdateAgent.mockResolvedValue({
+      id: '00000000-0000-0000-0000-000000000006',
+      name: 'Updated',
+    } as any);
 
     const request = new NextRequest('https://example.com/api/v1/agents/agent-123', {
       method: 'PATCH',
       body: JSON.stringify({ name: 'Updated' }),
     });
     const response = await patchAgentHandler(request, {
-      params: Promise.resolve({ id: 'agent-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000006' }),
     });
 
     expect(response.status).toBe(200);
   });
 
   it('deletes agent', async () => {
-    mockDeleteAgent.mockResolvedValue({ id: 'agent-123', status: 'offline' } as any);
+    mockDeleteAgent.mockResolvedValue({
+      id: '00000000-0000-0000-0000-000000000006',
+      status: 'offline',
+    } as any);
 
     const request = new NextRequest('https://example.com/api/v1/agents/agent-123', {
       method: 'DELETE',
     });
     const response = await deleteAgentHandler(request, {
-      params: Promise.resolve({ id: 'agent-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000006' }),
     });
 
     expect(response.status).toBe(200);
@@ -94,7 +100,7 @@ describe('Agent profile API', () => {
 
     const request = new NextRequest('https://example.com/api/v1/agents/agent-123/stats');
     const response = await statsHandler(request, {
-      params: Promise.resolve({ id: 'agent-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000006' }),
     });
 
     expect(response.status).toBe(200);
@@ -105,7 +111,7 @@ describe('Agent profile API', () => {
 
     const request = new NextRequest('https://example.com/api/v1/agents/agent-123/evolution');
     const response = await evolutionHandler(request, {
-      params: Promise.resolve({ id: 'agent-123' }),
+      params: Promise.resolve({ id: '00000000-0000-0000-0000-000000000006' }),
     });
 
     expect(response.status).toBe(200);
