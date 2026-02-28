@@ -4,15 +4,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
-import { ForbiddenError, NotFoundError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
 import { validateData, uuidSchema } from '@/lib/validation';
-import {
-  getCohortAgentMembers,
-  getCohortById,
-  getCohortUserMembers,
-} from '@/server/db/queries/cohorts';
+import { ensureCohortMember } from '@/lib/auth-access';
+import { getCohortAgentMembers, getCohortUserMembers } from '@/server/db/queries/cohorts';
 
 const cohortRateLimit = {
   maxRequests: 30,
@@ -35,22 +31,6 @@ async function enforceUserRateLimit(request: NextRequest, userId: string) {
 
 interface RouteContext {
   params: Promise<{ id: string }>;
-}
-
-async function ensureCohortMember(cohortId: string, userId: string) {
-  const cohort = await getCohortById(cohortId);
-  if (!cohort) throw new NotFoundError('Cohort', cohortId);
-
-  if (cohort.type === 'personal') {
-    if (cohort.ownerUserId !== userId) throw new ForbiddenError('Not allowed');
-    return cohort;
-  }
-
-  const members = await getCohortUserMembers(cohortId);
-  const member = members.find((m) => m.userId === userId);
-  if (!member) throw new ForbiddenError('Not a cohort member');
-
-  return cohort;
 }
 
 export const GET = withMiddleware(

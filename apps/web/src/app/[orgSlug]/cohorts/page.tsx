@@ -28,11 +28,7 @@ export default function CohortsPage({ params }: { params: Promise<{ orgSlug: str
       {/* Cohorts Table - Now using real API data */}
       <CohortsTableClient />
 
-      <CohortFormModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        orgId={orgSlug} // Assuming orgSlug is used as ID or we have access to orgId
-      />
+      <CohortFormModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
   );
 }
