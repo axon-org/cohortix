@@ -23,13 +23,13 @@ interface KPIData {
   };
 }
 
-type CohortMemberRow = {
+type CohortAgentMemberRow = {
   cohort_id: string;
   engagement_score: string | number | null;
   joined_at: string;
 };
 
-function computeEngagementStats(cohortIds: string[], members: CohortMemberRow[]) {
+function computeEngagementStats(cohortIds: string[], members: CohortAgentMemberRow[]) {
   const stats = new Map<string, { count: number; total: number }>();
   cohortIds.forEach((id) => stats.set(id, { count: 0, total: 0 }));
 
@@ -81,7 +81,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   }
 
   const { data: members, error: membersError } = await supabase
-    .from('cohort_members')
+    .from('cohort_agent_members')
     .select('cohort_id, engagement_score, joined_at')
     .in(
       'cohort_id',
@@ -89,7 +89,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     );
 
   if (membersError) {
-    logger.error('Failed to fetch cohort members for KPIs', {
+    logger.error('Failed to fetch cohort agent members for KPIs', {
       correlationId,
       error: membersError,
     });
@@ -102,7 +102,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
 
   const { avgEngagement } = computeEngagementStats(
     (cohorts || []).map((cohort: any) => cohort.id),
-    (members || []) as CohortMemberRow[]
+    (members || []) as CohortAgentMemberRow[]
   );
 
   const thirtyDaysAgo = new Date();
