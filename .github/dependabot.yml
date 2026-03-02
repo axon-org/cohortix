@@ -1,20 +1,4 @@
 version: 2
 # Disabled during active feature development.
-# Re-enable by uncommenting the updates block when ready for a dependency cycle.
-# updates:
-#   - package-ecosystem: "npm"
-#     directory: "/"
-#     schedule:
-#       interval: "weekly"
-#       day: "monday"
-#       time: "09:00"
-#       timezone: "UTC"
-#     open-pull-requests-limit: 5
-#     target-branch: "dev"
-#     assignees:
-#       - "ahmadashfq"
-#     groups:
-#       minor-and-patch:
-#         update-types:
-#           - "minor"
-#           - "patch"
+# Re-enable by adding npm ecosystem config when ready for a dependency cycle.
+updates: []
