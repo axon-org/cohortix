@@ -1,9 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm turbo build --filter @cohortix/web",
   "installCommand": "pnpm install --frozen-lockfile",
-  "outputDirectory": "apps/web/.next",
-  "framework": "nextjs",
+  "builds": [
+    {
+      "src": "apps/web/next.config.ts",
+      "use": "@vercel/next"
+    }
+  ],
   "git": {
     "deploymentEnabled": true
   },
