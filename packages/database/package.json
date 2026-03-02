@@ -22,8 +22,8 @@
     "@supabase/ssr": "^0.5.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19",
-    "drizzle-kit": "^0.21.4",
-    "typescript": "^5.5.0"
+    "@types/node": "20.19.35",
+    "drizzle-kit": "0.21.4",
+    "typescript": "5.9.3"
   }
 }
