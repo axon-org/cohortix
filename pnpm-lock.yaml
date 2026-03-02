@@ -133,8 +133,8 @@ importers:
         specifier: ^0.30.0
         version: 0.30.10(@types/react@18.3.28)(postgres@3.4.8)(react@19.2.4)
       lucide-react:
-        specifier: ^0.344.0
-        version: 0.344.0(react@19.2.4)
+        specifier: ^0.475.0
+        version: 0.475.0(react@19.2.4)
       next:
         specifier: ^15.1.0
         version: 15.5.12(@babel/core@7.29.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -305,8 +305,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.1
       lucide-react:
-        specifier: ^0.344.0
-        version: 0.344.0(react@19.2.4)
+        specifier: ^0.475.0
+        version: 0.475.0(react@19.2.4)
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -3725,10 +3725,10 @@ packages:
   lru-queue@0.1.0:
     resolution: {integrity: sha512-BpdYkt9EvGl8OfWHDQPISVpcl5xZthb+XPsbELj5AQXxIC8IriDZIQYjBJPEm5rS420sjZ0TLEzRcq5KdBhYrQ==}
 
-  lucide-react@0.344.0:
-    resolution: {integrity: sha512-6YyBnn91GB45VuVT96bYCOKElbJzUHqp65vX8cDcu55MQL9T969v4dhGClpljamuI/+KMO9P6w9Acq1CVQGvIQ==}
+  lucide-react@0.475.0:
+    resolution: {integrity: sha512-NJzvVu1HwFVeZ+Gwq2q00KygM1aBhy/ZrhY9FsAgJtpB+E4R7uxRk9M2iKvHa6/vNxZydIB59htha4c2vvwvVg==}
     peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
@@ -8483,7 +8483,7 @@ snapshots:
     dependencies:
       es5-ext: 0.10.64
 
-  lucide-react@0.344.0(react@19.2.4):
+  lucide-react@0.475.0(react@19.2.4):
     dependencies:
       react: 19.2.4
 
