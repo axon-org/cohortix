@@ -1,4 +1,0 @@
-version: 2
-# Disabled during active feature development.
-# Re-enable by adding npm ecosystem config when ready for a dependency cycle.
-updates: []
