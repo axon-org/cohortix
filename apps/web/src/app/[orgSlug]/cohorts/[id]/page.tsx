@@ -55,6 +55,45 @@ export default function CohortDetailPage({
   const [form, setForm] = useState<Record<string, any>>({});
 
   if (isLoading) return <DetailSkeleton />;
+
+  // Handle 403 Forbidden error with access denied message
+  const errorStatus = (error as any)?.response?.status || (error as any)?.status;
+  if (errorStatus === 403) {
+    return (
+      <div className="text-center py-20">
+        <div className="mb-4">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-destructive/10 flex items-center justify-center">
+            <svg
+              className="w-8 h-8 text-destructive"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-foreground mb-2">Access Denied</h2>
+          <p className="text-muted-foreground max-w-sm mx-auto">
+            You don&apos;t have permission to view this cohort. Contact the cohort owner if you
+            believe this is a mistake.
+          </p>
+        </div>
+        <Link
+          href={`/${orgSlug}/cohorts`}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Cohorts
+        </Link>
+      </div>
+    );
+  }
+
   if (error || !cohort) {
     return (
       <div className="text-center py-20">

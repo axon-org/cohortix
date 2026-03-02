@@ -54,7 +54,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          # cache: 'pnpm'  # Disabled: self-hosted runner has local pnpm store
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -96,7 +96,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          # cache: 'pnpm'  # Disabled: self-hosted runner has local pnpm store
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -149,7 +149,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          # cache: 'pnpm'  # Disabled: self-hosted runner has local pnpm store
 
       - name: Setup Turborepo remote cache
         uses: actions/cache@v4
@@ -165,7 +165,9 @@ jobs:
           path: |
             apps/*/.next/cache
             packages/*/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          key:
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js',
+            '**/*.jsx', '**/*.ts', '**/*.tsx') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-nextjs-
@@ -222,7 +224,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          # cache: 'pnpm'  # Disabled: self-hosted runner has local pnpm store
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -290,7 +292,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          # cache: 'pnpm'  # Disabled: self-hosted runner has local pnpm store
 
       - name: Run pnpm audit
         run: pnpm audit --audit-level=moderate || true
