@@ -155,3 +155,7 @@ BEGIN
   END IF;
 END;
 $$;
+
+-- Grant and RLS fixes (added by policy guard compliance)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.missions TO authenticated;
+GRANT ALL ON public.missions TO service_role;

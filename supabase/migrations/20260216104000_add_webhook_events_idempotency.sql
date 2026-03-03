@@ -16,3 +16,8 @@ CREATE TABLE IF NOT EXISTS webhook_events (
 
 CREATE INDEX IF NOT EXISTS idx_webhook_events_status ON webhook_events(status);
 CREATE INDEX IF NOT EXISTS idx_webhook_events_received_at ON webhook_events(received_at DESC);
+
+-- Grant and RLS fixes (added by policy guard compliance)
+ALTER TABLE webhook_events ENABLE ROW LEVEL SECURITY;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.webhook_events TO authenticated;
+GRANT ALL ON public.webhook_events TO service_role;

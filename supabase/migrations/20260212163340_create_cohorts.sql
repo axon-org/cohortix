@@ -87,3 +87,9 @@ CREATE TRIGGER update_cohort_members_updated_at
   BEFORE UPDATE ON cohort_members
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
+
+-- Grant and RLS fixes (added by policy guard compliance)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.cohorts TO authenticated;
+GRANT ALL ON public.cohorts TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.cohort_members TO authenticated;
+GRANT ALL ON public.cohort_members TO service_role;

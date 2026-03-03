@@ -113,3 +113,13 @@ CREATE POLICY rhythms_service_role_all ON rhythms FOR ALL USING (is_service_role
 -- ============================================================================
 -- End of missing baseline tables
 -- ============================================================================
+
+-- Grant and RLS fixes (added by policy guard compliance)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.clients TO authenticated;
+GRANT ALL ON public.clients TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.knowledge_entries TO authenticated;
+GRANT ALL ON public.knowledge_entries TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.workspaces TO authenticated;
+GRANT ALL ON public.workspaces TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.rhythms TO authenticated;
+GRANT ALL ON public.rhythms TO service_role;
