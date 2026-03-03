@@ -99,7 +99,7 @@ export async function getDashboardKPIs(organizationId: string) {
   return {
     activeMissions: activeMissions || 0,
     actionsInProgress: actionsInProgress || 0,
-    activeCohorts: activeCohorts || 0,
+    activeCohortsCount: activeCohorts || 0,
     activeAgents: activeAgents || 0,
     completionRate,
   };
