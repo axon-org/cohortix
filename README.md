@@ -74,3 +74,4 @@ pnpm dev                             # localhost:3000
 ---
 
 _Built with ❤️ for everyday people_
+
