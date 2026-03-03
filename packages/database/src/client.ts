@@ -35,7 +35,11 @@ export const db = new Proxy({} as ReturnType<typeof drizzle>, {
       const queryClient = postgres(getConnectionString(), poolConfig);
       _db = drizzle(queryClient, { schema });
     }
-    return Reflect.get(_db, prop, receiver);
+    const value = Reflect.get(_db, prop, _db);
+    if (typeof value === 'function') {
+      return value.bind(_db);
+    }
+    return value;
   },
 });
 
@@ -47,6 +51,10 @@ export const migrationDb = new Proxy({} as ReturnType<typeof drizzle>, {
       const migrationClient = postgres(directUrl, { max: 1 });
       _migrationDb = drizzle(migrationClient, { schema });
     }
-    return Reflect.get(_migrationDb, prop, receiver);
+    const value = Reflect.get(_migrationDb, prop, _migrationDb);
+    if (typeof value === 'function') {
+      return value.bind(_migrationDb);
+    }
+    return value;
   },
 });
