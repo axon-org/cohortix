@@ -37,7 +37,7 @@ jobs:
 
   lint-and-typecheck:
     name: Lint & Type Check
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout code
@@ -54,7 +54,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: 'pnpm'  # Disabled: self-hosted runner has local pnpm store
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -81,7 +81,7 @@ jobs:
 
   unit-test:
     name: Unit Tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout code
@@ -96,7 +96,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: 'pnpm'  # Disabled: self-hosted runner has local pnpm store
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -133,7 +133,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [lint-and-typecheck, unit-test]
     steps:
@@ -149,7 +149,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: 'pnpm'  # Disabled: self-hosted runner has local pnpm store
+          cache: 'pnpm'
 
       - name: Setup Turborepo remote cache
         uses: actions/cache@v4
@@ -207,7 +207,7 @@ jobs:
 
   full-test-suite:
     name: Full Test Suite
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     if: github.event_name == 'pull_request'
     needs: [lint-and-typecheck, unit-test]
@@ -224,7 +224,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: 'pnpm'  # Disabled: self-hosted runner has local pnpm store
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -275,7 +275,7 @@ jobs:
 
   dependency-audit:
     name: Dependency Audit
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     if: github.event_name == 'pull_request' || github.event_name == 'schedule'
     needs: [lint-and-typecheck, unit-test]
@@ -292,7 +292,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: 'pnpm'  # Disabled: self-hosted runner has local pnpm store
+          cache: 'pnpm'
 
       - name: Run pnpm audit
         run: pnpm audit --audit-level=moderate || true
@@ -302,7 +302,7 @@ jobs:
 
   snyk-scan:
     name: Snyk Security Scan
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
@@ -340,7 +340,7 @@ jobs:
 
   ci-success:
     name: CI Success
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: always()
     needs:
       - lint-and-typecheck
