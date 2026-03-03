@@ -29,5 +29,10 @@ CREATE INDEX IF NOT EXISTS idx_task_sessions_cohort ON task_sessions(cohort_id);
 CREATE INDEX IF NOT EXISTS idx_task_sessions_status ON task_sessions(status);
 CREATE INDEX IF NOT EXISTS idx_task_sessions_scope ON task_sessions(scope_type, scope_id);
 
+-- RLS + grants
+ALTER TABLE task_sessions ENABLE ROW LEVEL SECURITY;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.task_sessions TO authenticated;
+GRANT ALL ON public.task_sessions TO service_role;
+
 -- Notify PostgREST to reload schema cache
 NOTIFY pgrst, 'reload schema';
