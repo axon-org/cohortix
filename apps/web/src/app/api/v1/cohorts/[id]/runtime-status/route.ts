@@ -4,12 +4,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
-import { ForbiddenError, NotFoundError } from '@/lib/errors';
+import { ensureCohortMember } from '@/lib/auth-access';
 import { logger } from '@/lib/logger';
 import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
 import { validateData, uuidSchema } from '@/lib/validation';
 import { evaluateRuntimeStatus } from '@/lib/runtime/heartbeat';
-import { getCohortById, getCohortUserMembers } from '@/server/db/queries/cohorts';
 import { updateCohortRuntime } from '@/server/db/mutations/cohorts';
 
 const cohortRateLimit = {
@@ -35,22 +34,6 @@ interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
-async function ensureMember(cohortId: string, userId: string) {
-  const cohort = await getCohortById(cohortId);
-  if (!cohort) throw new NotFoundError('Cohort', cohortId);
-
-  if (cohort.type === 'personal') {
-    if (cohort.ownerUserId !== userId) throw new ForbiddenError('Not allowed');
-    return cohort;
-  }
-
-  const members = await getCohortUserMembers(cohortId);
-  const member = members.find((m) => m.userId === userId);
-  if (!member) throw new ForbiddenError('Not a cohort member');
-
-  return cohort;
-}
-
 export const GET = withMiddleware(
   cohortRateLimit,
   async (request: NextRequest, context: RouteContext) => {
@@ -63,7 +46,7 @@ export const GET = withMiddleware(
     const { userId } = await getAuthContext();
     await enforceUserRateLimit(request, userId);
 
-    const cohort = await ensureMember(cohortId, userId);
+    const cohort = await ensureCohortMember(cohortId, userId);
 
     const lastHeartbeatAt = cohort.lastHeartbeatAt ? new Date(cohort.lastHeartbeatAt) : null;
 

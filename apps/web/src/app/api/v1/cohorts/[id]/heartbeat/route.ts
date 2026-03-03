@@ -5,17 +5,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getAuthContext } from '@/lib/auth-helper';
-import {
-  ForbiddenError,
-  NotFoundError,
-  UnauthorizedError,
-  InternalServerError,
-} from '@/lib/errors';
+import { UnauthorizedError, InternalServerError, ForbiddenError } from '@/lib/errors';
+import { ensureCohortMember } from '@/lib/auth-access';
 import { logger } from '@/lib/logger';
 import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
 import { validateRequest, validateData, uuidSchema } from '@/lib/validation';
 import { createHeartbeatUpdate } from '@/lib/runtime/heartbeat';
-import { getCohortById, getCohortUserMembers } from '@/server/db/queries/cohorts';
+import { getCohortById } from '@/server/db/queries/cohorts';
 import { updateCohortRuntime } from '@/server/db/mutations/cohorts';
 import crypto from 'crypto';
 
@@ -92,22 +88,6 @@ function getConnectionToken(request: NextRequest) {
   return token.trim();
 }
 
-async function ensureMember(cohortId: string, userId: string) {
-  const cohort = await getCohortById(cohortId);
-  if (!cohort) throw new NotFoundError('Cohort', cohortId);
-
-  if (cohort.type === 'personal') {
-    if (cohort.ownerUserId !== userId) throw new ForbiddenError('Not allowed');
-    return cohort;
-  }
-
-  const members = await getCohortUserMembers(cohortId);
-  const member = members.find((m) => m.userId === userId);
-  if (!member) throw new ForbiddenError('Not a cohort member');
-
-  return cohort;
-}
-
 export const POST = withMiddleware(
   cohortRateLimit,
   async (request: NextRequest, context: RouteContext) => {
@@ -142,7 +122,7 @@ export const POST = withMiddleware(
     } else {
       const { userId } = await getAuthContext();
       await enforceUserRateLimit(request, userId);
-      await ensureMember(cohortId, userId);
+      await ensureCohortMember(cohortId, userId);
     }
 
     const heartbeatUpdate = createHeartbeatUpdate();
