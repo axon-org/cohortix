@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { AgentEvolutionDashboard } from '@/components/agents/agent-evolution-dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getAgentEvolution } from '@/server/db/queries/agents';
 
 export const metadata = {
   title: 'Agent Evolution | Cohortix',

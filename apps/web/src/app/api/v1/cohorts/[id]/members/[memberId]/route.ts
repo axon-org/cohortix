@@ -5,11 +5,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getAuthContext } from '@/lib/auth-helper';
-import { ForbiddenError, NotFoundError } from '@/lib/errors';
+import { ensureCohortAdmin } from '@/lib/auth-access';
 import { logger } from '@/lib/logger';
 import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
 import { validateData, uuidSchema } from '@/lib/validation';
-import { getCohortById, getCohortUserMembers } from '@/server/db/queries/cohorts';
 import {
   removeMember,
   updateCohortEngagement,
@@ -43,24 +42,6 @@ interface RouteContext {
   params: Promise<{ id: string; memberId: string }>;
 }
 
-async function ensureAdmin(cohortId: string, userId: string) {
-  const cohort = await getCohortById(cohortId);
-  if (!cohort) throw new NotFoundError('Cohort', cohortId);
-
-  if (cohort.type === 'personal') {
-    if (cohort.ownerUserId !== userId) throw new ForbiddenError('Not allowed');
-    return cohort;
-  }
-
-  const members = await getCohortUserMembers(cohortId);
-  const member = members.find((m) => m.userId === userId);
-  if (!member || !['owner', 'admin'].includes(member.role)) {
-    throw new ForbiddenError('Only cohort owners/admins can modify membership');
-  }
-
-  return cohort;
-}
-
 export const DELETE = withMiddleware(
   cohortRateLimit,
   async (request: NextRequest, context: RouteContext) => {
@@ -79,7 +60,7 @@ export const DELETE = withMiddleware(
     const { userId } = await getAuthContext();
     await enforceUserRateLimit(request, userId);
 
-    await ensureAdmin(cohortId, userId);
+    await ensureCohortAdmin(cohortId, userId);
 
     const member = await removeMember({
       cohortId,
