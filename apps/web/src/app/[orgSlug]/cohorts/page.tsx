@@ -1,14 +1,12 @@
 'use client';
 
-import { use } from 'react';
 import { CohortsTableClient } from '@/components/cohorts/cohorts-table-client';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { CohortFormModal } from '@/components/cohorts/cohort-form-modal';
 import { useState } from 'react';
 
-export default function CohortsPage({ params }: { params: Promise<{ orgSlug: string }> }) {
-  const { orgSlug } = use(params);
+export default function CohortsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (

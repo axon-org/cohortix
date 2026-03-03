@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
+import { withMiddleware } from '@/lib/rate-limit';
 import { validateRequest } from '@/lib/validation';
 import { db } from '@repo/database/client';
 import { insights, agents } from '@repo/database/schema';
@@ -17,20 +17,6 @@ const insightsRateLimit = {
   maxRequests: 30,
   windowMs: 60 * 1000,
 };
-
-const shouldSkipRateLimit = () =>
-  process.env.NODE_ENV === 'test' ||
-  process.env.E2E_SKIP_AUTH === 'true' ||
-  process.env.BYPASS_AUTH === 'true';
-
-async function enforceUserRateLimit(request: NextRequest, userId: string) {
-  if (shouldSkipRateLimit()) return;
-  const limiter = createRateLimiter({
-    ...insightsRateLimit,
-    keyGenerator: () => `user:${userId}`,
-  });
-  await limiter(request);
-}
 
 const createInsightSchema = z.object({
   title: z.string().min(1).max(500).trim(),
@@ -48,7 +34,6 @@ export const GET = withMiddleware(insightsRateLimit, async (request: NextRequest
   logger.setContext({ correlationId });
 
   const { organizationId, userId } = await getAuthContext();
-  await enforceUserRateLimit(request, userId);
 
   logger.info('Fetching insights', { correlationId, userId, organizationId });
 
@@ -128,7 +113,6 @@ export const POST = withMiddleware(insightsRateLimit, async (request: NextReques
   const data = await validator(request);
 
   const { organizationId, userId } = await getAuthContext();
-  await enforceUserRateLimit(request, userId);
 
   logger.info('Creating insight', {
     correlationId,

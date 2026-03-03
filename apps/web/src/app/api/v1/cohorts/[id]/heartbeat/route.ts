@@ -12,7 +12,7 @@ import {
   InternalServerError,
 } from '@/lib/errors';
 import { logger } from '@/lib/logger';
-import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
+import { withMiddleware } from '@/lib/rate-limit';
 import { validateRequest, validateData, uuidSchema } from '@/lib/validation';
 import { createHeartbeatUpdate } from '@/lib/runtime/heartbeat';
 import { getCohortById, getCohortUserMembers } from '@/server/db/queries/cohorts';
@@ -23,20 +23,6 @@ const cohortRateLimit = {
   maxRequests: 30,
   windowMs: 60 * 1000,
 };
-
-const shouldSkipRateLimit = () =>
-  process.env.NODE_ENV === 'test' ||
-  process.env.E2E_SKIP_AUTH === 'true' ||
-  process.env.BYPASS_AUTH === 'true';
-
-async function enforceUserRateLimit(request: NextRequest, userId: string) {
-  if (shouldSkipRateLimit()) return;
-  const limiter = createRateLimiter({
-    ...cohortRateLimit,
-    keyGenerator: () => `user:${userId}`,
-  });
-  await limiter(request);
-}
 
 const heartbeatSchema = z.object({
   hardwareInfo: z.record(z.any()).optional(),
@@ -69,9 +55,9 @@ function verifyJwt(token: string, secret: string): ConnectionTokenPayload | null
   const expected = crypto.createHmac('sha256', secret).update(data).digest('base64');
   const expectedNormalized = expected.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 
-  if (signature.length !== expectedNormalized.length) return null;
   const sigBuffer = Buffer.from(signature);
   const expectedBuffer = Buffer.from(expectedNormalized);
+  if (sigBuffer.length !== expectedBuffer.length) return null;
   if (!crypto.timingSafeEqual(sigBuffer, expectedBuffer)) return null;
 
   try {
@@ -141,7 +127,6 @@ export const POST = withMiddleware(
       }
     } else {
       const { userId } = await getAuthContext();
-      await enforceUserRateLimit(request, userId);
       await ensureMember(cohortId, userId);
     }
 

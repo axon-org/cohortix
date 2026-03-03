@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
 import { NotFoundError } from '@/lib/errors';
-import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
+import { withMiddleware } from '@/lib/rate-limit';
 import { validateRequest, validateData, uuidSchema } from '@/lib/validation';
 import { updateCohortSchema, type UpdateCohortInput } from '@/lib/validations/cohorts';
 import { ensureCohortAdmin, ensureCohortMember } from '@/lib/auth-access';
@@ -18,20 +18,6 @@ const cohortRateLimit = {
   maxRequests: 30,
   windowMs: 60 * 1000,
 };
-
-const shouldSkipRateLimit = () =>
-  process.env.NODE_ENV === 'test' ||
-  process.env.E2E_SKIP_AUTH === 'true' ||
-  process.env.BYPASS_AUTH === 'true';
-
-async function enforceUserRateLimit(request: NextRequest, userId: string) {
-  if (shouldSkipRateLimit()) return;
-  const limiter = createRateLimiter({
-    ...cohortRateLimit,
-    keyGenerator: () => `user:${userId}`,
-  });
-  await limiter(request);
-}
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -51,7 +37,6 @@ export const GET = withMiddleware(
     const cohortId = validateData(uuidSchema, id);
 
     const { userId } = await getAuthContext();
-    await enforceUserRateLimit(request, userId);
 
     logger.info('Fetching cohort', { correlationId, userId, cohortId });
 
@@ -80,7 +65,6 @@ export const PATCH = withMiddleware(
     const data = (await validator(request)) as UpdateCohortInput;
 
     const { userId } = await getAuthContext();
-    await enforceUserRateLimit(request, userId);
 
     await ensureCohortAdmin(cohortId, userId);
 
@@ -112,7 +96,6 @@ export const DELETE = withMiddleware(
     const cohortId = validateData(uuidSchema, id);
 
     const { userId } = await getAuthContext();
-    await enforceUserRateLimit(request, userId);
 
     await ensureCohortAdmin(cohortId, userId);
 

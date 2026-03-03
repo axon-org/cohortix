@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { getAuthContext } from '@/lib/auth-helper';
 import { ForbiddenError, NotFoundError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
-import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
+import { withMiddleware } from '@/lib/rate-limit';
 import { validateRequest, validateData } from '@/lib/validation';
 import { agentScopeTypeEnum, agentStatusEnum, createAgentSchema } from '@/lib/validations/agents';
 import { getAgents } from '@/server/db/queries/agents';
@@ -19,20 +19,6 @@ const agentRateLimit = {
   maxRequests: 30,
   windowMs: 60 * 1000,
 };
-
-const shouldSkipRateLimit = () =>
-  process.env.NODE_ENV === 'test' ||
-  process.env.E2E_SKIP_AUTH === 'true' ||
-  process.env.BYPASS_AUTH === 'true';
-
-async function enforceUserRateLimit(request: NextRequest, userId: string) {
-  if (shouldSkipRateLimit()) return;
-  const limiter = createRateLimiter({
-    ...agentRateLimit,
-    keyGenerator: () => `user:${userId}`,
-  });
-  await limiter(request);
-}
 
 const agentQuerySchema = z.object({
   scopeType: agentScopeTypeEnum.optional(),
@@ -101,7 +87,6 @@ export const GET = withMiddleware(agentRateLimit, async (request: NextRequest) =
   const query = validateData(agentQuerySchema, searchParams);
 
   const { organizationId, userId } = await getAuthContext();
-  await enforceUserRateLimit(request, userId);
 
   const resolved = await resolveScope(query.scopeType, query.scopeId, organizationId, userId);
 
@@ -129,7 +114,6 @@ export const POST = withMiddleware(agentRateLimit, async (request: NextRequest) 
   const data = await validator(request);
 
   const { organizationId, userId } = await getAuthContext();
-  await enforceUserRateLimit(request, userId);
 
   const resolved = await resolveScope(data.scopeType, data.scopeId, organizationId, userId);
 

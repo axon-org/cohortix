@@ -10,7 +10,6 @@ import { ArrowLeft, Bot, Zap, History, BarChart3, Clock, Check } from 'lucide-re
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
-const STATUS_OPTIONS = ['active', 'idle', 'busy', 'offline', 'error'] as const;
 const STATUS_COLORS: Record<string, string> = {
   active: 'bg-success',
   idle: 'bg-warning',

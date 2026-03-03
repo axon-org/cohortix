@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getAuthContext } from '@/lib/auth-helper';
 import { logger } from '@/lib/logger';
-import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
+import { withMiddleware } from '@/lib/rate-limit';
 import { validateRequest, validateData } from '@/lib/validation';
 import {
   cohortHostingEnum,
@@ -22,20 +22,6 @@ const cohortRateLimit = {
   maxRequests: 30,
   windowMs: 60 * 1000,
 };
-
-const shouldSkipRateLimit = () =>
-  process.env.NODE_ENV === 'test' ||
-  process.env.E2E_SKIP_AUTH === 'true' ||
-  process.env.BYPASS_AUTH === 'true';
-
-async function enforceUserRateLimit(request: NextRequest, userId: string) {
-  if (shouldSkipRateLimit()) return;
-  const limiter = createRateLimiter({
-    ...cohortRateLimit,
-    keyGenerator: () => `user:${userId}`,
-  });
-  await limiter(request);
-}
 
 const cohortQuerySchema = z.object({
   type: cohortTypeEnum.optional(),
@@ -88,7 +74,6 @@ export const GET = withMiddleware(cohortRateLimit, async (request: NextRequest) 
   const query = validateData(cohortQuerySchema, searchParams);
 
   const { organizationId, userId } = await getAuthContext();
-  await enforceUserRateLimit(request, userId);
 
   logger.info('Fetching cohorts', { correlationId, userId, organizationId, query });
 
@@ -132,7 +117,6 @@ export const POST = withMiddleware(cohortRateLimit, async (request: NextRequest)
   const data = await validator(request);
 
   const { organizationId, userId } = await getAuthContext();
-  await enforceUserRateLimit(request, userId);
 
   logger.info('Creating cohort', {
     correlationId,

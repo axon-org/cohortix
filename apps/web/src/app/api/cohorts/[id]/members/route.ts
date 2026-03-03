@@ -37,9 +37,10 @@ export async function GET(_request: NextRequest, context: RouteContext) {
       );
     }
 
-    // Check user membership for shared cohorts
+    // Check user membership for shared cohorts and fetch members
+    let userMembers;
     if (cohort.type === 'shared') {
-      const userMembers = await getCohortUserMembers(id);
+      userMembers = await getCohortUserMembers(id);
       const isMember = userMembers.some((m) => m.userId === userId);
       if (!isMember) {
         return NextResponse.json(
@@ -64,11 +65,16 @@ export async function GET(_request: NextRequest, context: RouteContext) {
       );
     }
 
-    // Fetch both user and agent members using new table structure
-    const [userMembers, agentMembers] = await Promise.all([
-      getCohortUserMembers(id),
-      getCohortAgentMembers(id),
+    // Fetch agent members and user members if not already fetched
+    const agentMembersPromise = getCohortAgentMembers(id);
+    const userMembersPromise = userMembers
+      ? Promise.resolve(userMembers)
+      : getCohortUserMembers(id);
+    const [finalUserMembers, agentMembers] = await Promise.all([
+      userMembersPromise,
+      agentMembersPromise,
     ]);
+    userMembers = finalUserMembers;
 
     // Transform to legacy response format
     const members = [
