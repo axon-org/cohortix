@@ -58,3 +58,7 @@ CREATE POLICY agents_service_role_all ON agents
 -- ============================================================================
 -- End of agents baseline
 -- ============================================================================
+
+-- Grant and RLS fixes (added by policy guard compliance)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.agents TO authenticated;
+GRANT ALL ON public.agents TO service_role;

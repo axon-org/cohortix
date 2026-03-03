@@ -84,3 +84,11 @@ DROP TABLE IF EXISTS cohort_members;
 
 -- Notify PostgREST to reload schema cache
 NOTIFY pgrst, 'reload schema';
+
+-- Grant and RLS fixes (added by policy guard compliance)
+ALTER TABLE cohort_user_members ENABLE ROW LEVEL SECURITY;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.cohort_user_members TO authenticated;
+GRANT ALL ON public.cohort_user_members TO service_role;
+ALTER TABLE cohort_agent_members ENABLE ROW LEVEL SECURITY;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.cohort_agent_members TO authenticated;
+GRANT ALL ON public.cohort_agent_members TO service_role;

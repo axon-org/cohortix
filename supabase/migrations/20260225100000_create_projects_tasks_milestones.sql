@@ -332,3 +332,11 @@ END $$;
 -- 5. Notify PostgREST to reload schema cache
 -- ============================================================================
 NOTIFY pgrst, 'reload schema';
+
+-- Grant and RLS fixes (added by policy guard compliance)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.projects TO authenticated;
+GRANT ALL ON public.projects TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.milestones TO authenticated;
+GRANT ALL ON public.milestones TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.tasks TO authenticated;
+GRANT ALL ON public.tasks TO service_role;

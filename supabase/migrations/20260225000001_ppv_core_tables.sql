@@ -308,3 +308,7 @@ COMMENT ON COLUMN missions.priority IS 'Mission priority: low, medium, high, urg
 COMMENT ON COLUMN missions.start_date IS 'When work on this mission begins';
 COMMENT ON COLUMN missions.success_criteria IS 'JSON array of success criteria strings';
 COMMENT ON COLUMN missions.key_results IS 'JSON array of measurable key results';
+
+-- Grant and RLS fixes (added by policy guard compliance)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.domains TO authenticated;
+GRANT ALL ON public.domains TO service_role;
