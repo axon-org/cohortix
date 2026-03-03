@@ -5,13 +5,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getCohortActivity } from '@/server/db/queries/cohorts';
 import { getAuthContext } from '@/lib/auth-helper';
-import { getCohortById } from '@/server/db/queries/cohorts';
+
+export const dynamic = 'force-dynamic';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(request: NextRequest, context: RouteContext) {
+  const { getCohortActivity, getCohortById } = await import('@/server/db/queries/cohorts');
   const { organizationId } = await getAuthContext();
 
   const { id } = await context.params;

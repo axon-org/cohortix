@@ -26,5 +26,10 @@ CREATE INDEX IF NOT EXISTS idx_agent_evolution_agent_created
 CREATE INDEX IF NOT EXISTS idx_agent_evolution_event_type
   ON agent_evolution_events(event_type);
 
+-- RLS + grants
+ALTER TABLE agent_evolution_events ENABLE ROW LEVEL SECURITY;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.agent_evolution_events TO authenticated;
+GRANT ALL ON public.agent_evolution_events TO service_role;
+
 -- Notify PostgREST to reload schema cache
 NOTIFY pgrst, 'reload schema';
