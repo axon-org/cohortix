@@ -1,5 +1,7 @@
 import { pgTable, uuid, varchar, text, timestamp, customType, index } from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
+import { cohorts } from './cohorts';
+import { scopeTypeEnum } from './scope-types';
 
 // Custom type for pgvector
 const vector = customType<{ data: number[] }>({
@@ -15,6 +17,11 @@ export const insights = pgTable(
     organizationId: uuid('organization_id')
       .notNull()
       .references(() => organizations.id, { onDelete: 'cascade' }),
+
+    scopeType: scopeTypeEnum('scope_type').default('personal').notNull(),
+    scopeId: uuid('scope_id').notNull(),
+    cohortId: uuid('cohort_id').references(() => cohorts.id, { onDelete: 'set null' }),
+
     title: varchar('title', { length: 500 }).notNull(),
     content: text('content').notNull(),
     sourceType: varchar('source_type', { length: 50 }),

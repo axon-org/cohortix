@@ -156,3 +156,13 @@ $$ LANGUAGE plpgsql STABLE;
 -- ============================================================================
 -- End of initial schema baseline
 -- ============================================================================
+
+-- Grant and RLS fixes (added by policy guard compliance)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.organizations TO authenticated;
+GRANT ALL ON public.organizations TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.profiles TO authenticated;
+GRANT ALL ON public.profiles TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.organization_memberships TO authenticated;
+GRANT ALL ON public.organization_memberships TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.visions TO authenticated;
+GRANT ALL ON public.visions TO service_role;

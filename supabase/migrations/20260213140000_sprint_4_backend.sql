@@ -86,3 +86,11 @@ CREATE INDEX IF NOT EXISTS idx_insights_embedding ON insights USING ivfflat (emb
 ALTER TABLE comments    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE insights    ENABLE ROW LEVEL SECURITY;
+
+-- Grant and RLS fixes (added by policy guard compliance)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.comments TO authenticated;
+GRANT ALL ON public.comments TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.activity_log TO authenticated;
+GRANT ALL ON public.activity_log TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.insights TO authenticated;
+GRANT ALL ON public.insights TO service_role;

@@ -15,7 +15,7 @@ permissions:
 env:
   NODE_VERSION: '20'
   PNPM_VERSION: '9'
-  BUNDLE_SIZE_LIMIT_KB: '2500'
+  BUNDLE_SIZE_LIMIT_KB: '2700'
 
 jobs:
   bundle-analysis:

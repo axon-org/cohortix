@@ -1,6 +1,18 @@
-import { pgTable, uuid, text, timestamp, varchar, jsonb, index } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  uuid,
+  text,
+  timestamp,
+  varchar,
+  index,
+  pgEnum,
+  type AnyPgColumn,
+} from 'drizzle-orm/pg-core';
 import { organizations } from './organizations';
-import { users } from './users';
+import { cohorts } from './cohorts';
+import { scopeTypeEnum } from './scope-types';
+
+export const commentAuthorTypeEnum = pgEnum('comment_author_type', ['user', 'agent']);
 
 export const comments = pgTable(
   'comments',
@@ -9,11 +21,19 @@ export const comments = pgTable(
     organizationId: uuid('organization_id')
       .notNull()
       .references(() => organizations.id, { onDelete: 'cascade' }),
+
+    scopeType: scopeTypeEnum('scope_type').default('personal').notNull(),
+    scopeId: uuid('scope_id').notNull(),
+    cohortId: uuid('cohort_id').references(() => cohorts.id, { onDelete: 'set null' }),
+
     entityType: varchar('entity_type', { length: 50 }).notNull(), // 'task', 'operation', 'mission'
     entityId: uuid('entity_id').notNull(),
-    authorId: uuid('author_id')
-      .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
+    authorType: commentAuthorTypeEnum('author_type').default('user').notNull(),
+    authorId: uuid('author_id').notNull(),
+    mentionedAgentIds: uuid('mentioned_agent_ids').array().notNull().default([]),
+    threadRootId: uuid('thread_root_id').references((): AnyPgColumn => comments.id, {
+      onDelete: 'set null',
+    }),
     content: text('content').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),

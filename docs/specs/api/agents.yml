@@ -1,0 +1,302 @@
+openapi: 3.0.3
+info:
+  title: Agents API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /agents:
+    get:
+      summary: List agents
+      parameters:
+        - in: query
+          name: scopeType
+          schema:
+            type: string
+            enum: [personal, cohort, org]
+        - in: query
+          name: scopeId
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, idle, busy, offline, error]
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Agents list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Agent'
+    post:
+      summary: Create an agent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAgentRequest'
+      responses:
+        '201':
+          description: Agent created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Agent'
+  /agents/{id}:
+    get:
+      summary: Get agent profile
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Agent profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Agent'
+    patch:
+      summary: Update an agent
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAgentRequest'
+      responses:
+        '200':
+          description: Agent updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Agent'
+    delete:
+      summary: Soft delete an agent
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Agent deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Agent'
+  /agents/{id}/evolution:
+    get:
+      summary: Get agent evolution events
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Evolution events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EvolutionEvent'
+  /agents/{id}/stats:
+    get:
+      summary: Get agent stats
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Agent stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/AgentStats'
+components:
+  schemas:
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        status:
+          type: string
+        scopeType:
+          type: string
+        scopeId:
+          type: string
+        organizationId:
+          type: string
+          nullable: true
+        ownerUserId:
+          type: string
+          nullable: true
+    CreateAgentRequest:
+      type: object
+      required:
+        - name
+        - scopeType
+        - scopeId
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, idle, busy, offline, error]
+        capabilities:
+          type: array
+          items:
+            type: string
+        scopeType:
+          type: string
+          enum: [personal, cohort, org]
+        scopeId:
+          type: string
+          format: uuid
+        defaultCohortId:
+          type: string
+          format: uuid
+          nullable: true
+        runtimeType:
+          type: string
+        runtimeConfig:
+          type: object
+        settings:
+          type: object
+    UpdateAgentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, idle, busy, offline, error]
+        capabilities:
+          type: array
+          items:
+            type: string
+        defaultCohortId:
+          type: string
+          format: uuid
+          nullable: true
+        runtimeType:
+          type: string
+        runtimeConfig:
+          type: object
+        settings:
+          type: object
+    EvolutionEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        agentId:
+          type: string
+          format: uuid
+        eventType:
+          type: string
+        summary:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    AgentStats:
+      type: object
+      properties:
+        totalSessions:
+          type: integer
+        completedCount:
+          type: integer
+        successRate:
+          type: integer
+        avgResponseTimeMs:
+          type: integer

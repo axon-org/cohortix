@@ -26,6 +26,16 @@ export const cohortStatusEnum = pgEnum('cohort_status', [
   'completed',
 ]);
 
+export const cohortTypeEnum = pgEnum('cohort_type', ['personal', 'shared']);
+export const cohortHostingEnum = pgEnum('cohort_hosting', ['managed', 'self_hosted']);
+export const cohortRuntimeStatusEnum = pgEnum('cohort_runtime_status', [
+  'provisioning',
+  'online',
+  'offline',
+  'error',
+  'paused',
+]);
+
 /**
  * Cohorts Table
  *
@@ -37,15 +47,27 @@ export const cohorts = pgTable('cohorts', {
   id: uuid('id').primaryKey().defaultRandom(),
 
   // Multi-tenancy
-  organizationId: uuid('organization_id')
-    .notNull()
-    .references(() => organizations.id, { onDelete: 'cascade' }),
+  organizationId: uuid('organization_id').references(() => organizations.id, {
+    onDelete: 'cascade',
+  }),
+
+  // Personal/shared ownership
+  type: cohortTypeEnum('type').default('shared').notNull(),
+  ownerUserId: uuid('owner_user_id'),
 
   // Core fields
   name: varchar('name', { length: 255 }).notNull(),
   slug: varchar('slug', { length: 100 }).notNull(),
   description: text('description'),
   status: cohortStatusEnum('status').default('active').notNull(),
+
+  // Runtime/hosting
+  hosting: cohortHostingEnum('hosting').default('managed').notNull(),
+  runtimeStatus: cohortRuntimeStatusEnum('runtime_status').default('provisioning').notNull(),
+  gatewayUrl: text('gateway_url'),
+  authTokenHash: text('auth_token_hash'),
+  hardwareInfo: jsonb('hardware_info').default({}).notNull(),
+  lastHeartbeatAt: timestamp('last_heartbeat_at', { withTimezone: true }),
 
   // Metrics (computed/cached values)
   // These are updated periodically or on member changes

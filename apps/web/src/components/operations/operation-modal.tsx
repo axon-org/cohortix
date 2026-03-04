@@ -118,7 +118,7 @@ export function OperationModal({ open, onOpenChange, operation }: OperationModal
         status: formData.status as 'planning' | 'active' | 'on_hold' | 'completed' | 'archived',
         startDate: formData.startDate || undefined,
         targetDate: formData.targetDate || undefined,
-        missionId: formData.missionId || undefined,
+        missionId: formData.missionId === 'none' ? undefined : formData.missionId || undefined,
       };
 
       if (isEditing) {
@@ -208,7 +208,7 @@ export function OperationModal({ open, onOpenChange, operation }: OperationModal
                 <SelectValue placeholder="Select a mission..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No mission</SelectItem>
+                <SelectItem value="none">No mission</SelectItem>
                 {missionsData?.data?.map((mission) => (
                   <SelectItem key={mission.id} value={mission.id}>
                     {mission.name}

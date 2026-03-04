@@ -122,3 +122,7 @@ END $$;
 -- ===========================================================================
 
 NOTIFY pgrst, 'reload schema';
+
+-- Grant and RLS fixes (added by policy guard compliance)
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.domains TO authenticated;
+GRANT ALL ON public.domains TO service_role;

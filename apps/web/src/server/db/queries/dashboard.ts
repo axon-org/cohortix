@@ -60,6 +60,8 @@ export async function getDashboardKPIs(organizationId: string) {
     { count: actionsInProgress },
     { count: completedActions },
     { count: totalActions },
+    { count: activeCohorts },
+    { count: activeAgents },
   ] = await Promise.all([
     supabase
       .from('missions')
@@ -80,6 +82,15 @@ export async function getDashboardKPIs(organizationId: string) {
       .from('tasks')
       .select('*', { count: 'exact', head: true })
       .eq('organization_id', organizationId),
+    supabase
+      .from('cohorts')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', organizationId)
+      .eq('status', 'active'),
+    supabase
+      .from('agents')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', organizationId),
   ]);
 
   const completionRate =
@@ -88,7 +99,8 @@ export async function getDashboardKPIs(organizationId: string) {
   return {
     activeMissions: activeMissions || 0,
     actionsInProgress: actionsInProgress || 0,
-    activeAgents: 0, // Stubbed until OpenClaw integration
+    activeCohorts: activeCohorts || 0,
+    activeAgents: activeAgents || 0,
     completionRate,
   };
 }

@@ -2,16 +2,6 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
 
-// Database connection for server-side operations (pooled URL)
-const connectionString = process.env.DATABASE_URL!;
-
-if (!connectionString) {
-  throw new Error('DATABASE_URL environment variable is not set');
-}
-
-// Direct connection for migrations/DDL (avoid pooler)
-const directConnectionString = process.env.DIRECT_URL ?? connectionString;
-
 /**
  * Connection Pool Configuration (Codex §2.2.3)
  *
@@ -25,10 +15,38 @@ const poolConfig = {
   max_lifetime: 60 * 30, // Close connections after 30 min (default: unlimited)
 };
 
-// For query purposes
-const queryClient = postgres(connectionString, poolConfig);
-export const db = drizzle(queryClient, { schema });
+// Lazy singletons — only connect when first accessed at runtime.
+// This prevents build-time crashes in CI where DATABASE_URL is not set.
+let _db: ReturnType<typeof drizzle> | null = null;
+let _migrationDb: ReturnType<typeof drizzle> | null = null;
 
-// For migrations (single connection to avoid conflicts)
-const migrationClient = postgres(directConnectionString, { max: 1 });
-export const migrationDb = drizzle(migrationClient, { schema });
+function getConnectionString(): string {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
+  return url;
+}
+
+/** Database client for query operations (pooled connection) */
+export const db = new Proxy({} as ReturnType<typeof drizzle>, {
+  get(_target, prop, receiver) {
+    if (!_db) {
+      const queryClient = postgres(getConnectionString(), poolConfig);
+      _db = drizzle(queryClient, { schema });
+    }
+    return Reflect.get(_db, prop, receiver);
+  },
+});
+
+/** Database client for migrations (single direct connection) */
+export const migrationDb = new Proxy({} as ReturnType<typeof drizzle>, {
+  get(_target, prop, receiver) {
+    if (!_migrationDb) {
+      const directUrl = process.env.DIRECT_URL ?? getConnectionString();
+      const migrationClient = postgres(directUrl, { max: 1 });
+      _migrationDb = drizzle(migrationClient, { schema });
+    }
+    return Reflect.get(_migrationDb, prop, receiver);
+  },
+});

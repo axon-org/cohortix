@@ -5,12 +5,32 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthContext } from '@/lib/auth-helper';
-import { logger } from '@/lib/logger';
 import { NotFoundError } from '@/lib/errors';
-import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
-import { validateRequest, validateData } from '@/lib/validation';
-import { updateAgentSchema, type UpdateAgentInput } from '@/lib/validations/agent';
-import { uuidSchema } from '@/lib/validation';
+import { logger } from '@/lib/logger';
+import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
+import { validateRequest, validateData, uuidSchema } from '@/lib/validation';
+import { updateAgentSchema, type UpdateAgentInput } from '@/lib/validations/agents';
+import { ensureAgentAccess } from '@/lib/auth-access';
+import { updateAgent, deleteAgent } from '@/server/db/mutations/agents';
+
+const agentRateLimit = {
+  maxRequests: 30,
+  windowMs: 60 * 1000,
+};
+
+const shouldSkipRateLimit = () =>
+  process.env.NODE_ENV === 'test' ||
+  process.env.E2E_SKIP_AUTH === 'true' ||
+  process.env.BYPASS_AUTH === 'true';
+
+async function enforceUserRateLimit(request: NextRequest, userId: string) {
+  if (shouldSkipRateLimit()) return;
+  const limiter = createRateLimiter({
+    ...agentRateLimit,
+    keyGenerator: () => `user:${userId}`,
+  });
+  await limiter(request);
+}
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -21,7 +41,7 @@ interface RouteContext {
 // ============================================================================
 
 export const GET = withMiddleware(
-  standardRateLimit,
+  agentRateLimit,
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
@@ -29,16 +49,10 @@ export const GET = withMiddleware(
     const { id } = await context.params;
     const agentId = validateData(uuidSchema, id);
 
-    const { supabase, organizationId } = await getAuthContext();
+    const { userId, organizationId } = await getAuthContext();
+    await enforceUserRateLimit(request, userId);
 
-    const { data: agent, error } = await supabase
-      .from('agents')
-      .select('*')
-      .eq('id', agentId)
-      .eq('organization_id', organizationId)
-      .single();
-
-    if (error || !agent) throw new NotFoundError('Agent', agentId);
+    const agent = await ensureAgentAccess(agentId, userId, organizationId);
 
     return NextResponse.json({ data: agent });
   }
@@ -49,7 +63,7 @@ export const GET = withMiddleware(
 // ============================================================================
 
 export const PATCH = withMiddleware(
-  standardRateLimit,
+  agentRateLimit,
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
@@ -60,42 +74,14 @@ export const PATCH = withMiddleware(
     const validator = validateRequest(updateAgentSchema, { target: 'body' });
     const data = (await validator(request)) as UpdateAgentInput;
 
-    const { supabase, organizationId } = await getAuthContext();
+    const { userId, organizationId } = await getAuthContext();
+    await enforceUserRateLimit(request, userId);
 
-    const { data: existing } = await supabase
-      .from('agents')
-      .select('id')
-      .eq('id', agentId)
-      .eq('organization_id', organizationId)
-      .single();
-    if (!existing) throw new NotFoundError('Agent', agentId);
+    await ensureAgentAccess(agentId, userId, organizationId);
 
-    const updateData: Record<string, any> = {};
-    if (data.name !== undefined) updateData.name = data.name;
-    if (data.description !== undefined) updateData.description = data.description;
-    if (data.role !== undefined) updateData.role = data.role;
-    if (data.status !== undefined) updateData.status = data.status;
-    if (data.capabilities !== undefined) updateData.capabilities = data.capabilities;
-    if (data.runtimeType !== undefined) updateData.runtime_type = data.runtimeType;
-    if (data.runtimeConfig !== undefined) updateData.runtime_config = data.runtimeConfig;
-    if (data.settings !== undefined) updateData.settings = data.settings;
+    const agent = await updateAgent(agentId, data);
+    if (!agent) throw new NotFoundError('Agent', agentId);
 
-    const { data: agent, error } = await supabase
-      .from('agents')
-      .update(updateData)
-      .eq('id', agentId)
-      .select()
-      .single();
-
-    if (error) {
-      logger.error('Failed to update agent', {
-        correlationId,
-        error: { message: error.message, code: error.code },
-      });
-      throw error;
-    }
-
-    logger.info('Agent updated', { correlationId, agentId });
     return NextResponse.json({ data: agent });
   }
 );
@@ -105,7 +91,7 @@ export const PATCH = withMiddleware(
 // ============================================================================
 
 export const DELETE = withMiddleware(
-  standardRateLimit,
+  agentRateLimit,
   async (request: NextRequest, context: RouteContext) => {
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
@@ -113,26 +99,14 @@ export const DELETE = withMiddleware(
     const { id } = await context.params;
     const agentId = validateData(uuidSchema, id);
 
-    const { supabase, organizationId } = await getAuthContext();
+    const { userId, organizationId } = await getAuthContext();
+    await enforceUserRateLimit(request, userId);
 
-    const { data: existing } = await supabase
-      .from('agents')
-      .select('id, name')
-      .eq('id', agentId)
-      .eq('organization_id', organizationId)
-      .single();
-    if (!existing) throw new NotFoundError('Agent', agentId);
+    await ensureAgentAccess(agentId, userId, organizationId);
 
-    const { error } = await supabase.from('agents').delete().eq('id', agentId);
-    if (error) {
-      logger.error('Failed to delete agent', {
-        correlationId,
-        error: { message: error.message, code: error.code },
-      });
-      throw error;
-    }
+    const agent = await deleteAgent(agentId);
+    if (!agent) throw new NotFoundError('Agent', agentId);
 
-    logger.info('Agent deleted', { correlationId, agentId, agentName: existing.name });
-    return new NextResponse(null, { status: 204 });
+    return NextResponse.json({ data: agent });
   }
 );

@@ -1,6 +1,5 @@
 import { MissionsTableClient } from '@/components/missions/missions-table-client';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { PlaceholderButton } from '@/components/ui/placeholder-button';
 
 export default function MissionsPage() {
   return (
@@ -12,10 +11,7 @@ export default function MissionsPage() {
             Track and manage your projects from planning to completion.
           </p>
         </div>
-        <Button variant="primary">
-          <Plus className="w-4 h-4 mr-2" />
-          New Mission
-        </Button>
+        <PlaceholderButton label="New Mission" />
       </div>
       <MissionsTableClient />
     </div>

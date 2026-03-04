@@ -4,135 +4,142 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getAuthContext } from '@/lib/auth-helper';
+import { ForbiddenError, NotFoundError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
-import { ValidationError } from '@/lib/errors';
-import { withMiddleware, standardRateLimit } from '@/lib/rate-limit';
+import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
 import { validateRequest, validateData } from '@/lib/validation';
-import {
-  createAgentSchema,
-  agentQuerySchema,
-  type CreateAgentInput,
-  type AgentQueryParams,
-} from '@/lib/validations/agent';
-import { generateSlug } from '@/lib/utils/cohort';
+import { agentScopeTypeEnum, agentStatusEnum, createAgentSchema } from '@/lib/validations/agents';
+import { getAgents } from '@/server/db/queries/agents';
+import { getCohortById, getCohortUserMembers } from '@/server/db/queries/cohorts';
+import { createAgent } from '@/server/db/mutations/agents';
+
+const agentRateLimit = {
+  maxRequests: 30,
+  windowMs: 60 * 1000,
+};
+
+const shouldSkipRateLimit = () =>
+  process.env.NODE_ENV === 'test' ||
+  process.env.E2E_SKIP_AUTH === 'true' ||
+  process.env.BYPASS_AUTH === 'true';
+
+async function enforceUserRateLimit(request: NextRequest, userId: string) {
+  if (shouldSkipRateLimit()) return;
+  const limiter = createRateLimiter({
+    ...agentRateLimit,
+    keyGenerator: () => `user:${userId}`,
+  });
+  await limiter(request);
+}
+
+const agentQuerySchema = z.object({
+  scopeType: agentScopeTypeEnum.optional(),
+  scopeId: z.string().uuid().optional(),
+  status: agentStatusEnum.optional(),
+  search: z.string().trim().optional(),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
+  sortBy: z.enum(['name', 'created_at', 'status', 'total_tasks_completed']).default('created_at'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+const createAgentRequestSchema = createAgentSchema
+  .omit({
+    organizationId: true,
+    ownerUserId: true,
+  })
+  .extend({
+    scopeType: agentScopeTypeEnum.optional(),
+    scopeId: z.string().uuid().optional(),
+  });
+
+async function resolveScope(
+  scopeType: 'personal' | 'cohort' | 'org' | undefined,
+  scopeId: string | undefined,
+  organizationId: string,
+  userId: string
+) {
+  const resolvedScopeType = scopeType ?? 'org';
+
+  if (resolvedScopeType === 'personal') {
+    if (scopeId && scopeId !== userId) throw new ForbiddenError('Invalid personal scope');
+    return { scopeType: 'personal' as const, scopeId: userId, ownerUserId: userId };
+  }
+
+  if (resolvedScopeType === 'org') {
+    if (scopeId && scopeId !== organizationId) throw new ForbiddenError('Invalid org scope');
+    return { scopeType: 'org' as const, scopeId: organizationId, organizationId };
+  }
+
+  if (!scopeId) throw new ForbiddenError('Cohort scope requires scopeId');
+
+  const cohort = await getCohortById(scopeId);
+  if (!cohort) throw new NotFoundError('Cohort', scopeId);
+
+  const members = await getCohortUserMembers(scopeId);
+  const member = members.find((m) => m.userId === userId);
+  if (!member) throw new ForbiddenError('Not a cohort member');
+
+  return {
+    scopeType: 'cohort' as const,
+    scopeId,
+    organizationId: cohort.organizationId ?? organizationId,
+  };
+}
 
 // ============================================================================
-// GET /api/v1/agents - List agents with pagination and filtering
+// GET /api/v1/agents - List agents
 // ============================================================================
 
-export const GET = withMiddleware(standardRateLimit, async (request: NextRequest) => {
+export const GET = withMiddleware(agentRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId();
   logger.setContext({ correlationId });
 
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries());
-  const query = validateData(agentQuerySchema, searchParams) as AgentQueryParams;
+  const query = validateData(agentQuerySchema, searchParams);
 
-  const { supabase, organizationId, userId } = await getAuthContext();
+  const { organizationId, userId } = await getAuthContext();
+  await enforceUserRateLimit(request, userId);
 
-  logger.info('Fetching agents', { correlationId, userId, organizationId, query });
+  const resolved = await resolveScope(query.scopeType, query.scopeId, organizationId, userId);
 
-  let queryBuilder = supabase
-    .from('agents')
-    .select('*', { count: 'exact' })
-    .eq('organization_id', organizationId);
-
-  if (query.status) queryBuilder = queryBuilder.eq('status', query.status);
-  if (query.search) {
-    queryBuilder = queryBuilder.or(
-      `name.ilike.%${query.search}%,description.ilike.%${query.search}%,role.ilike.%${query.search}%`
-    );
-  }
-
-  const orderColumn =
-    query.sortBy === 'totalTasksCompleted'
-      ? 'total_tasks_completed'
-      : query.sortBy === 'createdAt'
-        ? 'created_at'
-        : query.sortBy;
-  queryBuilder = queryBuilder.order(orderColumn, { ascending: query.sortOrder === 'asc' });
-
-  const start = (query.page - 1) * query.limit;
-  queryBuilder = queryBuilder.range(start, start + query.limit - 1);
-
-  const { data: agents, error, count } = await queryBuilder;
-
-  if (error) {
-    logger.error('Failed to fetch agents', {
-      correlationId,
-      error: { message: error.message, code: error.code },
-    });
-    throw error;
-  }
-
-  return NextResponse.json({
-    data: agents || [],
-    meta: {
-      page: query.page,
-      limit: query.limit,
-      total: count || 0,
-      totalPages: count ? Math.ceil(count / query.limit) : 0,
-    },
+  const agents = await getAgents(resolved.scopeType, resolved.scopeId, {
+    status: query.status,
+    search: query.search,
+    limit: query.limit,
+    offset: query.offset,
+    sortBy: query.sortBy,
+    sortOrder: query.sortOrder,
   });
+
+  return NextResponse.json({ data: agents });
 });
 
 // ============================================================================
 // POST /api/v1/agents - Create a new agent
 // ============================================================================
 
-export const POST = withMiddleware(standardRateLimit, async (request: NextRequest) => {
+export const POST = withMiddleware(agentRateLimit, async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId();
   logger.setContext({ correlationId });
 
-  const validator = validateRequest(createAgentSchema, { target: 'body' });
-  const data = (await validator(request)) as CreateAgentInput;
+  const validator = validateRequest(createAgentRequestSchema, { target: 'body' });
+  const data = await validator(request);
 
-  const { supabase, organizationId, userId } = await getAuthContext();
-  const baseSlug = generateSlug(data.name);
-  const timestamp = Date.now().toString().slice(-6);
-  const slug = `${baseSlug}-${timestamp}`;
+  const { organizationId, userId } = await getAuthContext();
+  await enforceUserRateLimit(request, userId);
 
-  const { data: existing } = await supabase
-    .from('agents')
-    .select('id')
-    .eq('organization_id', organizationId)
-    .eq('slug', slug)
-    .single();
+  const resolved = await resolveScope(data.scopeType, data.scopeId, organizationId, userId);
 
-  if (existing) {
-    throw new ValidationError('An agent with this name already exists', {
-      name: ['Name must be unique within your organization'],
-    });
-  }
-
-  logger.info('Creating agent', { correlationId, userId, organizationId, agentName: data.name });
-
-  const { data: agent, error } = await supabase
-    .from('agents')
-    .insert({
-      organization_id: organizationId,
-      name: data.name,
-      slug,
-      description: data.description || null,
-      role: data.role || null,
-      status: data.status,
-      capabilities: data.capabilities || [],
-      runtime_type: data.runtimeType || 'clawdbot',
-      runtime_config: data.runtimeConfig || {},
-      settings: data.settings || {},
-    })
-    .select()
-    .single();
-
-  if (error) {
-    logger.error('Failed to create agent', {
-      correlationId,
-      error: { message: error.message, code: error.code },
-    });
-    throw error;
-  }
-
-  logger.info('Agent created successfully', { correlationId, agentId: agent.id });
+  const agent = await createAgent({
+    ...data,
+    scopeType: resolved.scopeType,
+    scopeId: resolved.scopeId,
+    organizationId: resolved.organizationId ?? null,
+    ownerUserId: resolved.ownerUserId ?? null,
+  });
 
   return NextResponse.json({ data: agent }, { status: 201 });
 });

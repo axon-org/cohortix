@@ -15,6 +15,8 @@ import { organizations } from './organizations';
 import { operations } from './operations'; // Operations (bounded initiatives)
 import { milestones } from './milestones';
 import { ownerTypeEnum } from './goals';
+import { cohorts } from './cohorts';
+import { scopeTypeEnum } from './scope-types';
 
 // Note: Table name remains 'tasks' in database for backwards compatibility
 // User-facing terminology: "Task" (atomic unit of work)
@@ -36,6 +38,10 @@ export const tasks = pgTable('tasks', {
     .references(() => organizations.id, { onDelete: 'cascade' }),
   projectId: uuid('project_id').references(() => operations.id, { onDelete: 'set null' }), // References operations (projects table in DB) - optional for rhythm tasks
   rhythmId: uuid('rhythm_id'), // Legacy — rhythms replaced by task recurrence
+
+  scopeType: scopeTypeEnum('scope_type').default('personal').notNull(),
+  scopeId: uuid('scope_id').notNull(),
+  cohortId: uuid('cohort_id').references(() => cohorts.id, { onDelete: 'set null' }),
 
   // Recurrence (replaces separate rhythms table)
   isRecurring: boolean('is_recurring').default(false),

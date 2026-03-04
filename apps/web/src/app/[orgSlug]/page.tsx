@@ -70,7 +70,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ orgS
         <QuickStatCard
           icon={<Users className="w-4 h-4" />}
           label="Cohorts"
-          count={dashboardData.kpis.activeMissions}
+          count={dashboardData.kpis.activeCohorts}
           href={`/${orgSlug}/cohorts`}
         />
         <QuickStatCard

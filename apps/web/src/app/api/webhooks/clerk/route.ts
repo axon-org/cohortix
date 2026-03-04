@@ -16,7 +16,12 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import type { WebhookEvent } from '@clerk/nextjs/server';
-import { generateOrgSlug } from '@/lib/utils';
+import { provisionPersonalCohort } from '@/server/db/mutations/cohorts';
+import { getPersonalCohortByOwner } from '@/server/db/queries/cohorts';
+import {
+  ensureDefaultSharedCohort,
+  syncOrganizationFromClerk,
+} from '@/server/services/organization';
 
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 
@@ -174,7 +179,57 @@ export async function POST(req: Request) {
     }
 
     switch (eventType) {
-      case 'user.created':
+      case 'user.created': {
+        const { id, email_addresses, first_name, last_name, image_url } = evt.data;
+        const primaryEmail = email_addresses.find(
+          (e) => e.id === evt.data.primary_email_address_id
+        );
+
+        const { error } = await supabase.from('profiles').upsert(
+          {
+            clerk_user_id: id,
+            email: primaryEmail?.email_address || '',
+            first_name: first_name || null,
+            last_name: last_name || null,
+            avatar_url: image_url || null,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'clerk_user_id' }
+        );
+
+        if (error) throw error;
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, settings')
+          .eq('clerk_user_id', id)
+          .single();
+
+        if (profile?.id) {
+          const existing = await getPersonalCohortByOwner(profile.id);
+          const cohortId =
+            existing?.id ||
+            (await provisionPersonalCohort(profile.id, first_name || 'Personal'))?.id;
+
+          if (cohortId) {
+            const settings = (profile.settings ?? {}) as Record<string, unknown>;
+            if (settings.defaultCohortId !== cohortId) {
+              await supabase
+                .from('profiles')
+                .update({
+                  settings: {
+                    ...settings,
+                    defaultCohortId: cohortId,
+                  },
+                  updated_at: new Date().toISOString(),
+                })
+                .eq('id', profile.id);
+            }
+          }
+        }
+        break;
+      }
+
       case 'user.updated': {
         const { id, email_addresses, first_name, last_name, image_url } = evt.data;
         const primaryEmail = email_addresses.find(
@@ -212,20 +267,12 @@ export async function POST(req: Request) {
       case 'organization.created': {
         const { id, name, slug, image_url } = evt.data;
 
-        const orgSlug = slug || generateOrgSlug(name, id);
-
-        const { error } = await supabase.from('organizations').upsert(
-          {
-            clerk_org_id: id,
-            name,
-            slug: orgSlug,
-            logo_url: image_url || null,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'clerk_org_id' }
-        );
-
-        if (error) throw error;
+        await syncOrganizationFromClerk(supabase, {
+          id,
+          name,
+          slug,
+          imageUrl: image_url || null,
+        });
         break;
       }
 
@@ -240,7 +287,7 @@ export async function POST(req: Request) {
 
         const { data: org } = await supabase
           .from('organizations')
-          .select('id')
+          .select('id, name')
           .eq('clerk_org_id', organization.id)
           .single();
 
@@ -248,17 +295,23 @@ export async function POST(req: Request) {
           throw new Error('User or organization not found in Supabase');
         }
 
+        const role = evt.data.role === 'org:admin' ? 'admin' : 'member';
+
         const { error } = await supabase.from('organization_memberships').upsert(
           {
             user_id: user.id,
             organization_id: org.id,
-            role: evt.data.role === 'org:admin' ? 'admin' : 'member',
+            role,
             updated_at: new Date().toISOString(),
           },
           { onConflict: 'user_id,organization_id' }
         );
 
         if (error) throw error;
+
+        if (role === 'admin') {
+          await ensureDefaultSharedCohort(supabase, org.id, user.id, org.name);
+        }
         break;
       }
 
