@@ -86,11 +86,12 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     );
 
     let avgEngagement = 0;
-    if (membersAtDate.length > 0) {
-      const totalEngagement = membersAtDate.reduce((sum: number, member: any) => {
+    const agentMembersAtDate = membersAtDate.filter((member: any) => member.engagement_score > 0);
+    if (agentMembersAtDate.length > 0) {
+      const totalEngagement = agentMembersAtDate.reduce((sum: number, member: any) => {
         return sum + (parseFloat(member.engagement_score) || 0);
       }, 0);
-      avgEngagement = totalEngagement / membersAtDate.length;
+      avgEngagement = totalEngagement / agentMembersAtDate.length;
     }
 
     dataPoints.push({
