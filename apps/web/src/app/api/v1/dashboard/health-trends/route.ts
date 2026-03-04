@@ -66,18 +66,37 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
 
   const cohortIds = (cohorts || []).map((cohort: any) => cohort.id);
 
-  const { data: members, error: membersError } = await supabase
-    .from('cohort_members')
-    .select('cohort_id, engagement_score, joined_at')
-    .in('cohort_id', cohortIds);
+  const [
+    { data: userMembers, error: userMembersError },
+    { data: agentMembers, error: agentMembersError },
+  ] = await Promise.all([
+    supabase.from('cohort_user_members').select('cohort_id, joined_at').in('cohort_id', cohortIds),
+    supabase
+      .from('cohort_agent_members')
+      .select('cohort_id, engagement_score, joined_at')
+      .in('cohort_id', cohortIds),
+  ]);
 
-  if (membersError) {
+  if (userMembersError || agentMembersError) {
     logger.error('Failed to fetch cohort members for health trends', {
       correlationId,
-      error: membersError,
+      error: userMembersError || agentMembersError,
     });
-    throw membersError;
+    throw userMembersError || agentMembersError;
   }
+
+  const members = [
+    ...(userMembers || []).map((member: any) => ({
+      cohort_id: member.cohort_id,
+      joined_at: member.joined_at,
+      engagement_score: 0,
+    })),
+    ...(agentMembers || []).map((member: any) => ({
+      cohort_id: member.cohort_id,
+      joined_at: member.joined_at,
+      engagement_score: member.engagement_score,
+    })),
+  ];
 
   const dataPoints: DataPoint[] = [];
   const intervalMs =

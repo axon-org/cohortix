@@ -143,24 +143,18 @@ export async function getActiveAlerts(organizationId: string) {
     .is('assignee_id', null)
     .limit(5);
 
-  // Get overdue actions (past target date)
+  // Get overdue actions (past due date)
   const today = new Date().toISOString().split('T')[0];
   const { data: overdueActions } = await supabase
     .from('tasks')
-    .select('id, title, target_date')
+    .select('id, title, due_date')
     .eq('organization_id', organizationId)
     .in('status', ['todo', 'in_progress'])
-    .not('target_date', 'is', null)
-    .lt('target_date', today)
+    .not('due_date', 'is', null)
+    .lt('due_date', today)
     .limit(5);
 
-  // Get blocked actions
-  const { data: blockedActions } = await supabase
-    .from('tasks')
-    .select('id, title, blocked_reason')
-    .eq('organization_id', organizationId)
-    .eq('status', 'blocked')
-    .limit(5);
+  // TODO: Re-enable blocked actions once task_status includes 'blocked' and blocked_reason column exists.
 
   type Alert = {
     type: 'warning' | 'error' | 'info';
@@ -190,22 +184,10 @@ export async function getActiveAlerts(organizationId: string) {
     alerts.push({
       type: 'error' as const,
       title: 'Overdue actions',
-      message: `${overdueActions.length} actions are past their target date`,
+      message: `${overdueActions.length} actions are past their due date`,
       action: {
         label: 'Review',
         href: '/actions?filter=overdue',
-      },
-    });
-  }
-
-  if (blockedActions && blockedActions.length > 0) {
-    alerts.push({
-      type: 'info' as const,
-      title: 'Blocked actions',
-      message: `${blockedActions.length} actions are blocked and need attention`,
-      action: {
-        label: 'Unblock',
-        href: '/actions?filter=blocked',
       },
     });
   }

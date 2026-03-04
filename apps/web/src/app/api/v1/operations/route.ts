@@ -110,7 +110,7 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
       owner_id: userId,
       start_date: data.startDate || null,
       target_date: data.targetDate || null,
-      goal_id: data.missionId || null, // DB column still named 'goal_id'
+      mission_id: data.missionId || null,
       color: data.color || null,
       icon: data.icon || null,
       settings: data.settings || {},

@@ -53,7 +53,7 @@ export function OperationsTableClient() {
     name: operation.name,
     status: operation.status,
     missionName:
-      (operation as any).missions?.title ||
+      (operation as any).missions?.name ||
       (operation.missionId ? missionLookup.get(operation.missionId) : undefined),
     ownerName: operation.ownerId ? agentLookup.get(operation.ownerId) : 'Unassigned',
     startDate: operation.startDate,
