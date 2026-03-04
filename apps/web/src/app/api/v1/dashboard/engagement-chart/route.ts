@@ -34,15 +34,37 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   }
 
   const cohortIds = (cohorts || []).map((cohort: any) => cohort.id);
-  const { data: members, error: membersError } = await supabase
-    .from('cohort_members')
-    .select('cohort_id, engagement_score, joined_at')
-    .in('cohort_id', cohortIds);
+  const [
+    { data: userMembers, error: userMembersError },
+    { data: agentMembers, error: agentMembersError },
+  ] = await Promise.all([
+    supabase.from('cohort_user_members').select('cohort_id, joined_at').in('cohort_id', cohortIds),
+    supabase
+      .from('cohort_agent_members')
+      .select('cohort_id, engagement_score, joined_at')
+      .in('cohort_id', cohortIds),
+  ]);
 
-  if (membersError) {
-    logger.error('Failed to fetch engagement members data', { correlationId, error: membersError });
-    throw membersError;
+  if (userMembersError || agentMembersError) {
+    logger.error('Failed to fetch engagement members data', {
+      correlationId,
+      error: userMembersError || agentMembersError,
+    });
+    throw userMembersError || agentMembersError;
   }
+
+  const members = [
+    ...(userMembers || []).map((member: any) => ({
+      cohort_id: member.cohort_id,
+      joined_at: member.joined_at,
+      engagement_score: 0,
+    })),
+    ...(agentMembers || []).map((member: any) => ({
+      cohort_id: member.cohort_id,
+      joined_at: member.joined_at,
+      engagement_score: member.engagement_score,
+    })),
+  ];
 
   const now = new Date();
   const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
@@ -64,11 +86,12 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
     );
 
     let avgEngagement = 0;
-    if (membersAtDate.length > 0) {
-      const totalEngagement = membersAtDate.reduce((sum: number, member: any) => {
+    const agentMembersAtDate = membersAtDate.filter((member: any) => member.engagement_score > 0);
+    if (agentMembersAtDate.length > 0) {
+      const totalEngagement = agentMembersAtDate.reduce((sum: number, member: any) => {
         return sum + (parseFloat(member.engagement_score) || 0);
       }, 0);
-      avgEngagement = totalEngagement / membersAtDate.length;
+      avgEngagement = totalEngagement / agentMembersAtDate.length;
     }
 
     dataPoints.push({

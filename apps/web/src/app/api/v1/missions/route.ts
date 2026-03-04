@@ -39,7 +39,7 @@ export const GET = withMiddleware(standardRateLimit, async (request: NextRequest
   if (query.status) queryBuilder = queryBuilder.eq('status', query.status);
   if (query.search) {
     queryBuilder = queryBuilder.or(
-      `title.ilike.%${query.search}%,description.ilike.%${query.search}%`
+      `name.ilike.%${query.search}%,description.ilike.%${query.search}%`
     );
   }
 
@@ -99,7 +99,7 @@ export const POST = withMiddleware(standardRateLimit, async (request: NextReques
     .from('missions')
     .insert({
       organization_id: organizationId,
-      title: data.name,
+      name: data.name,
       description: data.description || null,
       status: data.status || 'active',
       owner_type: 'user',

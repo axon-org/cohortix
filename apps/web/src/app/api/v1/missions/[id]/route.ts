@@ -72,7 +72,7 @@ export const PATCH = withMiddleware(
     if (!existing) throw new NotFoundError('Mission', missionId);
 
     const updateData: Record<string, any> = {};
-    if (data.name !== undefined) updateData.title = data.name;
+    if (data.name !== undefined) updateData.name = data.name;
     if (data.description !== undefined) updateData.description = data.description;
     if (data.status !== undefined) updateData.status = data.status;
     if (data.targetDate !== undefined) updateData.target_date = data.targetDate;
@@ -116,7 +116,7 @@ export const DELETE = withMiddleware(
 
     const { data: existing } = await supabase
       .from('missions')
-      .select('id, title')
+      .select('id, name')
       .eq('id', missionId)
       .eq('organization_id', organizationId)
       .single();
@@ -131,7 +131,7 @@ export const DELETE = withMiddleware(
       throw error;
     }
 
-    logger.info('Mission deleted', { correlationId, missionId, missionTitle: existing.title });
+    logger.info('Mission deleted', { correlationId, missionId, missionTitle: existing.name });
     return new NextResponse(null, { status: 204 });
   }
 );

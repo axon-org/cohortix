@@ -37,22 +37,33 @@ function slugify(text: string): string {
 export async function getCohortMembers(cohortId: string): Promise<CohortMember[]> {
   const { supabase } = await getAuthContext();
 
-  const { data, error } = await supabase
-    .from('cohort_members')
-    .select('id, cohort_id, user_id, agent_id, engagement_score, joined_at')
-    .eq('cohort_id', cohortId)
-    .order('engagement_score', { ascending: false });
+  const [{ data: userMembers, error: userError }, { data: agentMembers, error: agentError }] =
+    await Promise.all([
+      supabase
+        .from('cohort_user_members')
+        .select('id, cohort_id, user_id, role, joined_at')
+        .eq('cohort_id', cohortId),
+      supabase
+        .from('cohort_agent_members')
+        .select('id, cohort_id, agent_id, role, engagement_score, joined_at')
+        .eq('cohort_id', cohortId),
+    ]);
 
-  if (error) {
-    console.error('Error fetching cohort members:', error);
-    throw new Error(`Failed to fetch cohort members: ${error.message}`);
+  if (userError || agentError) {
+    const errorMessage = userError?.message || agentError?.message || 'Unknown error';
+    console.error('Error fetching cohort members:', { userError, agentError });
+    throw new Error(`Failed to fetch cohort members: ${errorMessage}`);
   }
 
-  const members = data || [];
-  const userIds = members
+  const members = [
+    ...(userMembers || []).map((row: any) => ({ ...row, memberType: 'user' as const })),
+    ...(agentMembers || []).map((row: any) => ({ ...row, memberType: 'agent' as const })),
+  ];
+
+  const userIds = (userMembers || [])
     .map((row: any) => row.user_id)
     .filter((id: string | null) => Boolean(id)) as string[];
-  const agentIds = members
+  const agentIds = (agentMembers || [])
     .map((row: any) => row.agent_id)
     .filter((id: string | null) => Boolean(id)) as string[];
 
@@ -89,8 +100,9 @@ export async function getCohortMembers(cohortId: string): Promise<CohortMember[]
   }
 
   return members.map((row: any) => {
-    const profile = row.user_id ? profilesMap.get(row.user_id) : null;
-    const agent = row.agent_id ? agentsMap.get(row.agent_id) : null;
+    const isUser = row.memberType === 'user';
+    const profile = isUser ? profilesMap.get(row.user_id) : null;
+    const agent = !isUser ? agentsMap.get(row.agent_id) : null;
     const displayName = agent?.name || profile?.name || profile?.email || 'Unknown Agent';
     const slug = agent?.slug || slugify(displayName);
 
@@ -101,7 +113,7 @@ export async function getCohortMembers(cohortId: string): Promise<CohortMember[]
       agent_name: displayName,
       agent_slug: slug,
       agent_avatar_url: agent?.avatar_url || profile?.avatar_url || null,
-      agent_role: agent?.role || null,
+      agent_role: row.role || agent?.role || null,
       agent_status: (agent?.status as AgentStatus) || 'active',
       engagement_score: parseFloat(row.engagement_score) || 0,
       joined_at: row.joined_at,
@@ -116,17 +128,24 @@ export async function getCohortMembers(cohortId: string): Promise<CohortMember[]
 export async function getCohortMemberCount(cohortId: string): Promise<number> {
   const { supabase } = await getAuthContext();
 
-  const { count, error } = await supabase
-    .from('cohort_members')
-    .select('*', { count: 'exact', head: true })
-    .eq('cohort_id', cohortId);
+  const [{ count: userCount, error: userError }, { count: agentCount, error: agentError }] =
+    await Promise.all([
+      supabase
+        .from('cohort_user_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('cohort_id', cohortId),
+      supabase
+        .from('cohort_agent_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('cohort_id', cohortId),
+    ]);
 
-  if (error) {
-    console.error('Error counting cohort members:', error);
+  if (userError || agentError) {
+    console.error('Error counting cohort members:', { userError, agentError });
     return 0;
   }
 
-  return count || 0;
+  return (userCount || 0) + (agentCount || 0);
 }
 
 /**
@@ -136,7 +155,7 @@ export async function getCohortAvgEngagement(cohortId: string): Promise<number> 
   const { supabase } = await getAuthContext();
 
   const { data, error } = await supabase
-    .from('cohort_members')
+    .from('cohort_agent_members')
     .select('engagement_score')
     .eq('cohort_id', cohortId);
 

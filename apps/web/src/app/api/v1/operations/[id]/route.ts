@@ -79,7 +79,7 @@ export const PATCH = withMiddleware(
     if (data.status !== undefined) updateData.status = data.status;
     if (data.startDate !== undefined) updateData.start_date = data.startDate;
     if (data.targetDate !== undefined) updateData.target_date = data.targetDate;
-    if (data.missionId !== undefined) updateData.goal_id = data.missionId; // DB column still named 'goal_id'
+    if (data.missionId !== undefined) updateData.mission_id = data.missionId;
     if (data.color !== undefined) updateData.color = data.color;
     if (data.icon !== undefined) updateData.icon = data.icon;
     if (data.settings !== undefined) updateData.settings = data.settings;
