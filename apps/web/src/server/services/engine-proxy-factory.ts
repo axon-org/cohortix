@@ -59,8 +59,8 @@ export async function getEngineProxy(cohortId: string): Promise<EngineProxyServi
   // 4. Merge connection config with defaults
   const connectionConfig = (cohort.connectionConfig || {}) as Record<string, unknown>;
   const options: EngineProxyOptions = {
-    timeoutMs: Number(connectionConfig.timeoutMs) || DEFAULT_OPTIONS.timeoutMs,
-    maxRetries: Number(connectionConfig.maxRetries) || DEFAULT_OPTIONS.maxRetries,
+    timeoutMs: Number(connectionConfig.timeoutMs) ?? DEFAULT_OPTIONS.timeoutMs,
+    maxRetries: Number(connectionConfig.maxRetries) ?? DEFAULT_OPTIONS.maxRetries,
   };
 
   // 5. Create and return service instance

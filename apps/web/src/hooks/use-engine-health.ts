@@ -22,7 +22,8 @@ export function useEngineHealth(cohortId: string) {
       if (!res.ok) {
         throw new Error('Failed to fetch engine health');
       }
-      return res.json() as Promise<EngineHealthResponse>;
+      const json = await res.json();
+      return json.data as EngineHealthResponse;
     },
     refetchInterval: 60_000, // 60s when window focused
     refetchIntervalInBackground: false, // Stop when tab not visible

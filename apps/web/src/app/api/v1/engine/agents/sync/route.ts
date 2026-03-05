@@ -23,6 +23,10 @@ interface SyncResponse {
   externalId?: string;
 }
 
+function escapeShellArg(arg: string): string {
+  return `'${arg.replace(/'/g, "'\\''")}'`;
+}
+
 export const POST = withErrorHandler(async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId();
   logger.setContext({ correlationId });
@@ -78,7 +82,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         const result = await proxy.invokeTool({
           tool: 'exec',
           args: {
-            command: `openclaw agents add ${externalId} --non-interactive --workspace ~/.openclaw/workspace-${externalId} --model ${agent.runtimeConfig?.model || 'openclaw'}`,
+            command: `openclaw agents add ${escapeShellArg(externalId)} --non-interactive --workspace ~/.openclaw/workspace-${escapeShellArg(externalId)} --model ${escapeShellArg(agent.runtimeConfig?.model || 'openclaw')}`,
           },
         });
 
@@ -101,7 +105,7 @@ I am ${agent.name} — ${agent.role || 'an AI agent'}.
 ${agent.role || 'Supporting tasks and goals.'}
 
 ## Capabilities
-${(agent.capabilities as string[] || []).map((c) => `- ${c}`).join('\n')}
+${((agent.capabilities as string[]) || []).map((c) => `- ${c}`).join('\n')}
 
 ## Description
 ${agent.description || ''}
@@ -167,7 +171,7 @@ I am ${agent.name} — ${agent.role || 'an AI agent'}.
 ${agent.role || 'Supporting tasks and goals.'}
 
 ## Capabilities
-${(agent.capabilities as string[] || []).map((c) => `- ${c}`).join('\n')}
+${((agent.capabilities as string[]) || []).map((c) => `- ${c}`).join('\n')}
 
 ## Description
 ${agent.description || ''}
@@ -217,7 +221,7 @@ ${agent.description || ''}
         await proxy.invokeTool({
           tool: 'exec',
           args: {
-            command: `openclaw agents remove ${agent.externalId} --non-interactive`,
+            command: `openclaw agents remove ${escapeShellArg(agent.externalId)} --non-interactive`,
           },
         });
       } catch {
