@@ -175,6 +175,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   await updateCohortRuntime(data.cohortId, {
     gatewayUrl,
     authTokenEncrypted: encryptedToken,
+    gatewayVersion: health.gatewayVersion,
     runtimeStatus: 'online',
     lastHeartbeatAt: new Date(),
     hardwareInfo: {

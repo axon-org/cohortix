@@ -120,6 +120,7 @@ export const updateCohortRuntimeSchema = z.object({
   runtimeStatus: cohortRuntimeStatusEnum.optional(),
   gatewayUrl: z.string().optional().nullable(),
   authTokenEncrypted: z.string().optional().nullable(),
+  gatewayVersion: z.string().optional().nullable(),
   hardwareInfo: z.record(z.any()).optional(),
   lastHeartbeatAt: z.coerce.date().optional().nullable(),
 });

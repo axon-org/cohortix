@@ -11,7 +11,7 @@ import { logger } from '@/lib/logger';
 import { withErrorHandler, NotFoundError } from '@/lib/errors';
 import { validateRequest } from '@/lib/validation';
 import { syncAgentSchema } from '@/lib/validations/engine';
-import { ensureCohortMember } from '@/lib/auth-access';
+import { ensureCohortMember, ensureAgentAccess } from '@/lib/auth-access';
 import { getAgentById } from '@/server/db/queries/agents';
 import { updateCohort } from '@/server/db/mutations/cohorts';
 import { getEngineProxy } from '@/server/services/engine-proxy-factory';
@@ -31,7 +31,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId();
   logger.setContext({ correlationId });
 
-  const { userId } = await getAuthContext();
+  const { userId, organizationId } = await getAuthContext();
 
   // Validate request body
   const validator = validateRequest(syncAgentSchema, { target: 'body' });
@@ -60,24 +60,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     );
   }
 
-  // Verify agent exists
-  const agent = await getAgentById(data.agentId);
-  if (!agent) {
-    throw new NotFoundError('Agent', data.agentId);
-  }
-
-  // Verify agent belongs to this cohort
-  if (agent.scopeType === 'cohort' && agent.scopeId !== data.cohortId) {
-    return NextResponse.json(
-      {
-        type: 'https://cohortix.com/errors/forbidden',
-        title: 'Forbidden',
-        status: 403,
-        detail: 'Agent does not belong to this cohort',
-      },
-      { status: 403 }
-    );
-  }
+  // Verify agent exists and user has access to it
+  const agent = await ensureAgentAccess(data.agentId, userId, organizationId);
 
   const proxy = await getEngineProxy(data.cohortId);
 
