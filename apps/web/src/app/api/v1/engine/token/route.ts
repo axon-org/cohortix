@@ -12,8 +12,7 @@ import { withErrorHandler } from '@/lib/errors';
 import { validateRequest } from '@/lib/validation';
 import { rotateTokenSchema } from '@/lib/validations/engine';
 import { encrypt } from '@/lib/encryption';
-import { NotFoundError } from '@/lib/errors';
-import { getCohortById } from '@/server/db/queries/cohorts';
+import { ensureCohortMember } from '@/lib/auth-access';
 import { updateCohortRuntime } from '@/server/db/mutations/cohorts';
 import { EngineProxyService } from '@/server/services/engine-proxy';
 import { insertEngineEvent } from '@/server/db/mutations/engine-events';
@@ -40,11 +39,8 @@ export const PUT = withErrorHandler(async (request: NextRequest) => {
     cohortId: data.cohortId,
   });
 
-  // Verify cohort exists and has connection
-  const cohort = await getCohortById(data.cohortId);
-  if (!cohort) {
-    throw new NotFoundError('Cohort', data.cohortId);
-  }
+  // Verify cohort exists and user has access
+  const cohort = await ensureCohortMember(data.cohortId, userId);
 
   if (!cohort.gatewayUrl) {
     return NextResponse.json(

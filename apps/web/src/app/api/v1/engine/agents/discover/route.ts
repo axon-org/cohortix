@@ -11,7 +11,8 @@ import { logger } from '@/lib/logger';
 import { withErrorHandler, NotFoundError } from '@/lib/errors';
 import { validateRequest } from '@/lib/validation';
 import { discoverAgentsSchema } from '@/lib/validations/engine';
-import { getCohortById, getCohortAgentMembers } from '@/server/db/queries/cohorts';
+import { ensureCohortMember } from '@/lib/auth-access';
+import { getCohortAgentMembers } from '@/server/db/queries/cohorts';
 import { getEngineProxy } from '@/server/services/engine-proxy-factory';
 
 interface GatewayAgent {
@@ -42,11 +43,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     cohortId: data.cohortId,
   });
 
-  // Verify cohort exists and is connected
-  const cohort = await getCohortById(data.cohortId);
-  if (!cohort) {
-    throw new NotFoundError('Cohort', data.cohortId);
-  }
+  // Verify cohort exists and user has access
+  const cohort = await ensureCohortMember(data.cohortId, userId);
 
   if (!cohort.gatewayUrl || !cohort.authTokenEncrypted) {
     return NextResponse.json(

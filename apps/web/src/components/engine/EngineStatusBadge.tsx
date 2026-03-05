@@ -60,6 +60,12 @@ export function EngineStatusBadge({ cohortId, className }: EngineStatusBadgeProp
       textColor: 'text-blue-700 dark:text-blue-400',
       borderColor: 'border-blue-200 dark:border-blue-800',
     },
+    not_connected: {
+      label: 'Not Connected',
+      color: 'bg-amber-500',
+      textColor: 'text-amber-700 dark:text-amber-400',
+      borderColor: 'border-amber-200 dark:border-amber-800',
+    },
   };
 
   const config = statusConfig[health.status] || statusConfig.offline;

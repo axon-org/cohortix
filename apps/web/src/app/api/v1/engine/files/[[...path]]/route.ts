@@ -11,7 +11,7 @@ import { logger } from '@/lib/logger';
 import { withErrorHandler, NotFoundError } from '@/lib/errors';
 import { validateData } from '@/lib/validation';
 import { readFileSchema, writeFileSchema } from '@/lib/validations/engine';
-import { getCohortById } from '@/server/db/queries/cohorts';
+import { ensureCohortMember } from '@/lib/auth-access';
 import { getAgentById } from '@/server/db/queries/agents';
 import { getEngineProxy, EngineNotConnectedError } from '@/server/services/engine-proxy-factory';
 import { EngineProxyErrorClass } from '@/server/services/engine-proxy';
@@ -34,7 +34,7 @@ export const GET = withErrorHandler(
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
 
-    await getAuthContext();
+    const { userId } = await getAuthContext();
 
     // Get path from params
     const { path: pathSegments } = await params;
@@ -51,11 +51,8 @@ export const GET = withErrorHandler(
       path: filePath,
     });
 
-    // Verify cohort exists and is connected
-    const cohort = await getCohortById(query.cohortId);
-    if (!cohort) {
-      throw new NotFoundError('Cohort', query.cohortId);
-    }
+    // Verify cohort exists and user has access
+    await ensureCohortMember(query.cohortId, userId);
 
     // Verify agent exists
     const agent = await getAgentById(query.agentId);
@@ -111,7 +108,7 @@ export const PUT = withErrorHandler(
     const correlationId = logger.generateCorrelationId();
     logger.setContext({ correlationId });
 
-    await getAuthContext();
+    const { userId } = await getAuthContext();
 
     // Get path from params
     const { path: pathSegments } = await params;
@@ -143,11 +140,8 @@ export const PUT = withErrorHandler(
       contentLength: validatedBody.content.length,
     });
 
-    // Verify cohort exists and is connected
-    const cohort = await getCohortById(validatedBody.cohortId);
-    if (!cohort) {
-      throw new NotFoundError('Cohort', validatedBody.cohortId);
-    }
+    // Verify cohort exists and user has access
+    await ensureCohortMember(validatedBody.cohortId, userId);
 
     // Verify agent exists
     const agent = await getAgentById(validatedBody.agentId);

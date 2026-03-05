@@ -12,7 +12,7 @@ import { withErrorHandler } from '@/lib/errors';
 import { validateRequest, validateData } from '@/lib/validation';
 import { connectEngineSchema } from '@/lib/validations/engine';
 import { encrypt } from '@/lib/encryption';
-import { getCohortById } from '@/server/db/queries/cohorts';
+import { ensureCohortMember } from '@/lib/auth-access';
 import { updateCohort, updateCohortRuntime } from '@/server/db/mutations/cohorts';
 import {
   EngineProxyService,
@@ -62,10 +62,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   });
 
   // Verify cohort exists and user has access
-  const cohort = await getCohortById(data.cohortId);
-  if (!cohort) {
-    throw new NotFoundError('Cohort', data.cohortId);
-  }
+  const cohort = await ensureCohortMember(data.cohortId, userId);
 
   // Normalize gateway URL
   let gatewayUrl = data.gatewayUrl.trim();

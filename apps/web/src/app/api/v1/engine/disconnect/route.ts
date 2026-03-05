@@ -11,8 +11,7 @@ import { logger } from '@/lib/logger';
 import { withErrorHandler } from '@/lib/errors';
 import { validateRequest } from '@/lib/validation';
 import { disconnectEngineSchema } from '@/lib/validations/engine';
-import { NotFoundError } from '@/lib/errors';
-import { getCohortById } from '@/server/db/queries/cohorts';
+import { ensureCohortMember } from '@/lib/auth-access';
 import { updateCohortRuntime } from '@/server/db/mutations/cohorts';
 import { expireQueuedTasksByCohort } from '@/server/db/mutations/task-queue';
 import { insertEngineEvent } from '@/server/db/mutations/engine-events';
@@ -38,11 +37,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     cohortId: data.cohortId,
   });
 
-  // Verify cohort exists
-  const cohort = await getCohortById(data.cohortId);
-  if (!cohort) {
-    throw new NotFoundError('Cohort', data.cohortId);
-  }
+  // Verify cohort exists and user has access
+  await ensureCohortMember(data.cohortId, userId);
 
   // Expire all queued tasks
   const expiredTasks = await expireQueuedTasksByCohort(data.cohortId);
@@ -52,7 +48,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     gatewayUrl: null,
     authTokenEncrypted: null,
     runtimeStatus: 'offline',
-    lastHeartbeatAt: undefined,
+    lastHeartbeatAt: null,
   });
 
   // Log disconnection event

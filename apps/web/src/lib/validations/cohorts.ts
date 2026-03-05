@@ -121,7 +121,7 @@ export const updateCohortRuntimeSchema = z.object({
   gatewayUrl: z.string().optional().nullable(),
   authTokenEncrypted: z.string().optional().nullable(),
   hardwareInfo: z.record(z.any()).optional(),
-  lastHeartbeatAt: z.coerce.date().optional(),
+  lastHeartbeatAt: z.coerce.date().optional().nullable(),
 });
 
 export type UpdateCohortRuntimeInput = z.input<typeof updateCohortRuntimeSchema>;

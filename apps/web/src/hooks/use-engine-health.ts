@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-export type EngineStatus = 'online' | 'offline' | 'error' | 'provisioning';
+export type EngineStatus = 'online' | 'offline' | 'error' | 'provisioning' | 'not_connected';
 
 export interface EngineHealthResponse {
   status: EngineStatus;

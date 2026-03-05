@@ -11,8 +11,7 @@ import { logger } from '@/lib/logger';
 import { withErrorHandler, ValidationError } from '@/lib/errors';
 import { validateData } from '@/lib/validation';
 import { healthCheckQuerySchema } from '@/lib/validations/engine';
-import { NotFoundError } from '@/lib/errors';
-import { getCohortById } from '@/server/db/queries/cohorts';
+import { ensureCohortMember } from '@/lib/auth-access';
 import { getEngineProxy, hasEngineConnection } from '@/server/services/engine-proxy-factory';
 import { classifyError } from '@/server/services/engine-proxy';
 
@@ -32,7 +31,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   const correlationId = logger.generateCorrelationId();
   logger.setContext({ correlationId });
 
-  await getAuthContext();
+  const { userId } = await getAuthContext();
 
   // Parse query params
   const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries());
@@ -43,6 +42,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     cohortId: query.cohortId,
   });
 
+  // Verify cohort exists and user has access
+  const cohort = await ensureCohortMember(query.cohortId, userId);
+
   // Check if cohort has connection
   const hasConnection = await hasEngineConnection(query.cohortId);
   if (!hasConnection) {
@@ -52,12 +54,6 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       gatewayVersion: '',
     };
     return NextResponse.json({ data: response }, { status: 200 });
-  }
-
-  // Get cohort for metadata
-  const cohort = await getCohortById(query.cohortId);
-  if (!cohort) {
-    throw new NotFoundError('Cohort', query.cohortId);
   }
 
   try {

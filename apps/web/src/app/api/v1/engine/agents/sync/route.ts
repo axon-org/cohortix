@@ -11,7 +11,7 @@ import { logger } from '@/lib/logger';
 import { withErrorHandler, NotFoundError } from '@/lib/errors';
 import { validateRequest } from '@/lib/validation';
 import { syncAgentSchema } from '@/lib/validations/engine';
-import { getCohortById } from '@/server/db/queries/cohorts';
+import { ensureCohortMember } from '@/lib/auth-access';
 import { getAgentById } from '@/server/db/queries/agents';
 import { updateCohort } from '@/server/db/mutations/cohorts';
 import { getEngineProxy } from '@/server/services/engine-proxy-factory';
@@ -45,11 +45,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     action: data.action,
   });
 
-  // Verify cohort exists and is connected
-  const cohort = await getCohortById(data.cohortId);
-  if (!cohort) {
-    throw new NotFoundError('Cohort', data.cohortId);
-  }
+  // Verify cohort exists and user has access
+  const cohort = await ensureCohortMember(data.cohortId, userId);
 
   if (!cohort.gatewayUrl || !cohort.authTokenEncrypted) {
     return NextResponse.json(
