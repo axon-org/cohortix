@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, afterEach, afterAll, vi } from 'vitest';
 import {
   EngineProxyService,
   classifyError,
@@ -11,7 +11,18 @@ import {
 
 // Mock fetch globally
 const mockFetch = vi.fn();
-global.fetch = mockFetch as any;
+vi.stubGlobal('fetch', mockFetch);
+
+// Suppress unhandled rejections from retry timeouts in tests
+const originalListeners = process.listeners('unhandledRejection');
+beforeAll(() => {
+  process.removeAllListeners('unhandledRejection');
+  process.on('unhandledRejection', () => {});
+});
+afterAll(() => {
+  process.removeAllListeners('unhandledRejection');
+  originalListeners.forEach((listener) => process.on('unhandledRejection', listener));
+});
 
 // Mock logger
 vi.mock('@/lib/logger', () => ({
@@ -34,7 +45,11 @@ describe('EngineProxyService', () => {
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    mockFetch.mockClear();
+  });
+
+  afterAll(() => {
+    vi.unstubAllGlobals();
   });
 
   describe('classifyError', () => {
@@ -345,6 +360,14 @@ describe('EngineProxyService', () => {
   });
 
   describe('healthCheck', () => {
+    // Use zero retries to avoid dangling promises from retry setTimeout
+    let healthService: EngineProxyService;
+    beforeEach(() => {
+      healthService = new EngineProxyService('https://gateway.example.com', 'test-token-123', {
+        timeoutMs: 5000,
+        maxRetries: 0,
+      });
+    });
     it('should return online status with version', async () => {
       mockFetch
         .mockResolvedValueOnce(
@@ -360,7 +383,7 @@ describe('EngineProxyService', () => {
           })
         );
 
-      const result = await service.healthCheck();
+      const result = await healthService.healthCheck();
 
       expect(result.reachable).toBe(true);
       expect(result.runtimeStatus).toBe('online');
@@ -384,7 +407,7 @@ describe('EngineProxyService', () => {
           })
         );
 
-      const result = await service.healthCheck();
+      const result = await healthService.healthCheck();
 
       expect(result.runtimeStatus).toBe('error');
       expect(result.error?.type).toBe('version_mismatch');
@@ -394,7 +417,7 @@ describe('EngineProxyService', () => {
     it('should handle unreachable gateway', async () => {
       mockFetch.mockRejectedValueOnce(new TypeError('Failed to fetch'));
 
-      const result = await service.healthCheck();
+      const result = await healthService.healthCheck();
 
       expect(result.reachable).toBe(false);
       expect(result.runtimeStatus).toBe('offline');
@@ -404,7 +427,7 @@ describe('EngineProxyService', () => {
     it('should handle auth failure', async () => {
       mockFetch.mockResolvedValueOnce(new Response(null, { status: 401 }));
 
-      const result = await service.healthCheck();
+      const result = await healthService.healthCheck();
 
       expect(result.reachable).toBe(false);
       expect(result.runtimeStatus).toBe('error');
@@ -415,7 +438,7 @@ describe('EngineProxyService', () => {
       // HTTP failure (500) should result in unreachable
       mockFetch.mockResolvedValueOnce(new Response(null, { status: 500 }));
 
-      const result = await service.healthCheck();
+      const result = await healthService.healthCheck();
 
       expect(result.reachable).toBe(false);
       expect(result.runtimeStatus).toBe('offline');
