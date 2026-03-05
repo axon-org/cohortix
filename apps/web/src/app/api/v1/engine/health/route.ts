@@ -14,9 +14,7 @@ import { healthCheckQuerySchema } from '@/lib/validations/engine';
 import { ensureCohortMember } from '@/lib/auth-access';
 import { getEngineProxy, hasEngineConnection } from '@/server/services/engine-proxy-factory';
 import { classifyError } from '@/server/services/engine-proxy';
-import { db } from '@repo/database/client';
-import { engineEvents } from '@repo/database/schema';
-import { eq, and, sql, desc } from 'drizzle-orm';
+import { countConsecutiveFailures } from '@/server/db/mutations/engine-events';
 
 interface HealthResponse {
   status: 'online' | 'offline' | 'error' | 'not_connected';
@@ -28,39 +26,6 @@ interface HealthResponse {
     type: string;
     message: string;
   };
-}
-
-/**
- * Helper: Count consecutive health check failures since last recovery
- */
-async function getConsecutiveFailures(cohortId: string): Promise<number> {
-  // Get the most recent recovery event
-  const [lastRecovery] = await db
-    .select({
-      createdAt: engineEvents.createdAt,
-    })
-    .from(engineEvents)
-    .where(
-      and(eq(engineEvents.cohortId, cohortId), eq(engineEvents.eventType, 'health_check_recovered'))
-    )
-    .orderBy(desc(engineEvents.createdAt))
-    .limit(1);
-
-  // Count failures since last recovery (or all failures if no recovery)
-  const [result] = await db
-    .select({
-      count: sql<number>`count(*)::int`,
-    })
-    .from(engineEvents)
-    .where(
-      and(
-        eq(engineEvents.cohortId, cohortId),
-        eq(engineEvents.eventType, 'health_check_failed'),
-        lastRecovery ? sql`${engineEvents.createdAt} > ${lastRecovery.createdAt}` : sql`true`
-      )
-    );
-
-  return result?.count ?? 0;
 }
 
 export const GET = withErrorHandler(async (request: NextRequest) => {
@@ -97,7 +62,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     const health = await proxy.healthCheck();
 
     // Get consecutive failures count
-    const consecutiveFailures = await getConsecutiveFailures(query.cohortId);
+    const consecutiveFailures = await countConsecutiveFailures(query.cohortId);
 
     const response: HealthResponse = {
       status: health.runtimeStatus,
@@ -124,7 +89,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     });
 
     // Get consecutive failures count
-    const consecutiveFailures = await getConsecutiveFailures(query.cohortId);
+    const consecutiveFailures = await countConsecutiveFailures(query.cohortId);
 
     const response: HealthResponse = {
       status: errorType === 'auth_failed' ? 'error' : 'offline',

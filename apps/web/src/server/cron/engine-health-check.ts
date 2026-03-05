@@ -11,8 +11,9 @@ import { getEngineProxy } from '../services/engine-proxy-factory';
 import { classifyError } from '../services/engine-proxy';
 import { drainTaskQueue } from '../services/task-execution';
 import { db } from '@repo/database/client';
-import { cohorts, engineEvents } from '@repo/database/schema';
-import { eq, isNotNull, and, sql, desc } from 'drizzle-orm';
+import { cohorts } from '@repo/database/schema';
+import { eq, isNotNull } from 'drizzle-orm';
+import { insertEngineEvent, countConsecutiveFailures } from '../db/mutations/engine-events';
 
 // ============================================================================
 // Health Check Engine
@@ -77,9 +78,13 @@ async function checkEngineHealth(
         })
         .where(eq(cohorts.id, cohortId));
 
-      await insertEngineEvent(cohortId, 'health_check_recovered', {
-        latencyMs: health.latencyMs,
-        previousStatus: currentStatus,
+      await insertEngineEvent({
+        cohortId,
+        eventType: 'health_check_recovered',
+        metadata: {
+          latencyMs: health.latencyMs,
+          previousStatus: currentStatus,
+        },
       });
 
       // Drain task queue
@@ -111,8 +116,12 @@ async function checkEngineHealth(
         })
         .where(eq(cohorts.id, cohortId));
 
-      await insertEngineEvent(cohortId, 'auth_failed', {
-        error: String(error),
+      await insertEngineEvent({
+        cohortId,
+        eventType: 'auth_failed',
+        metadata: {
+          error: String(error),
+        },
       });
     } else {
       // Track consecutive failures for other errors
@@ -130,8 +139,12 @@ async function handleUnreachableEngine(
   errorType?: string
 ): Promise<void> {
   // Insert failure event
-  await insertEngineEvent(cohortId, 'health_check_failed', {
-    errorType,
+  await insertEngineEvent({
+    cohortId,
+    eventType: 'health_check_failed',
+    metadata: {
+      errorType,
+    },
   });
 
   // Count consecutive failures since last recovery
@@ -173,62 +186,4 @@ async function getCohortsWithEngine() {
     })
     .from(cohorts)
     .where(isNotNull(cohorts.gatewayUrl));
-}
-
-/**
- * Insert an engine event
- */
-async function insertEngineEvent(
-  cohortId: string,
-  eventType:
-    | 'connected'
-    | 'disconnected'
-    | 'health_check_failed'
-    | 'health_check_recovered'
-    | 'auth_failed'
-    | 'token_rotated'
-    | 'agent_synced'
-    | 'clone_synced'
-    | 'queue_drained'
-    | 'version_checked',
-  metadata: Record<string, unknown> = {}
-) {
-  await db.insert(engineEvents).values({
-    cohortId,
-    eventType,
-    metadata,
-  });
-}
-
-/**
- * Count consecutive failures since last recovery
- */
-async function countConsecutiveFailures(cohortId: string): Promise<number> {
-  // Get the most recent recovery event
-  const [lastRecovery] = await db
-    .select({
-      createdAt: engineEvents.createdAt,
-    })
-    .from(engineEvents)
-    .where(
-      and(eq(engineEvents.cohortId, cohortId), eq(engineEvents.eventType, 'health_check_recovered'))
-    )
-    .orderBy(desc(engineEvents.createdAt))
-    .limit(1);
-
-  // Count failures since last recovery (or all failures if no recovery)
-  const [result] = await db
-    .select({
-      count: sql<number>`count(*)::int`,
-    })
-    .from(engineEvents)
-    .where(
-      and(
-        eq(engineEvents.cohortId, cohortId),
-        eq(engineEvents.eventType, 'health_check_failed'),
-        lastRecovery ? sql`${engineEvents.createdAt} > ${lastRecovery.createdAt}` : sql`true`
-      )
-    );
-
-  return result?.count ?? 0;
 }

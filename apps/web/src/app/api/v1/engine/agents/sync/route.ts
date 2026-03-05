@@ -73,10 +73,11 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       try {
         // Try to provision agent via exec
         // Note: This may fail if exec is denied by tool policy
+        const workspacePath = `~/.openclaw/workspace-${externalId}`;
         const result = await proxy.invokeTool({
           tool: 'exec',
           args: {
-            command: `openclaw agents add ${escapeShellArg(externalId)} --non-interactive --workspace ~/.openclaw/workspace-${escapeShellArg(externalId)} --model ${escapeShellArg((agent.runtimeConfig as Record<string, string>)?.model || 'openclaw')}`,
+            command: `openclaw agents add ${escapeShellArg(externalId)} --non-interactive --workspace ${escapeShellArg(workspacePath)} --model ${escapeShellArg((agent.runtimeConfig as Record<string, string>)?.model || 'openclaw')}`,
           },
         });
 
