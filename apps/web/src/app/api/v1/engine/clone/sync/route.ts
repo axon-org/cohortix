@@ -12,7 +12,7 @@ import { withErrorHandler, NotFoundError } from '@/lib/errors';
 import { validateRequest } from '@/lib/validation';
 import { syncCloneSchema } from '@/lib/validations/engine';
 import { getCohortById } from '@/server/db/queries/cohorts';
-import { getCohortAgentMembers } from '@/server/db/queries/cohorts';
+import { getAgents } from '@/server/db/queries/agents';
 import { getEngineProxy } from '@/server/services/engine-proxy-factory';
 import { insertEngineEvent } from '@/server/db/mutations/engine-events';
 import { db } from '@repo/database/client';
@@ -125,16 +125,13 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     );
   }
 
-  // Get the clone agent (agent with externalId = user's agent)
-  const memberRows = await getCohortAgentMembers(data.cohortId);
-  const cloneMember = memberRows.find(
-    (a: { externalId?: string | null }) => a.externalId?.startsWith('user-')
+  // Get the clone agent (agent with externalId starting with 'user-')
+  const cohortAgents = await getAgents('cohort', data.cohortId);
+  const cloneAgent = cohortAgents.find(
+    (a) => a.externalId?.startsWith('user-')
   );
 
-  let externalId: string | undefined;
-  if (cloneMember && 'externalId' in cloneMember) {
-    externalId = cloneMember.externalId ?? undefined;
-  }
+  const externalId = cloneAgent?.externalId ?? undefined;
 
   if (!externalId) {
     return NextResponse.json(

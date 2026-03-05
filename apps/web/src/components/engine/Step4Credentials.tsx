@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { WizardData } from "./types";
+import type { WizardData } from "./types";
 import { useState } from "react";
 import { Eye, EyeOff, Terminal, Clipboard } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

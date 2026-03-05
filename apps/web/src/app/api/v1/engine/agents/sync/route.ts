@@ -82,7 +82,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         const result = await proxy.invokeTool({
           tool: 'exec',
           args: {
-            command: `openclaw agents add ${escapeShellArg(externalId)} --non-interactive --workspace ~/.openclaw/workspace-${escapeShellArg(externalId)} --model ${escapeShellArg(agent.runtimeConfig?.model || 'openclaw')}`,
+            command: `openclaw agents add ${escapeShellArg(externalId)} --non-interactive --workspace ~/.openclaw/workspace-${escapeShellArg(externalId)} --model ${escapeShellArg((agent.runtimeConfig as Record<string, string>)?.model || 'openclaw')}`,
           },
         });
 

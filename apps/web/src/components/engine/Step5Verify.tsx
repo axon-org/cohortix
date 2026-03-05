@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { WizardData } from './types';
+import type { WizardData } from './types';
 import { useState, useEffect } from 'react';
 import { Check, X, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';

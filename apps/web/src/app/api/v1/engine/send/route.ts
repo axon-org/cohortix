@@ -90,6 +90,10 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     gatewaySessionId: sessionKey,
   });
 
+  if (!session) {
+    throw new Error('Failed to create task session');
+  }
+
   // Check if engine is connected and online
   const hasConnection = await hasEngineConnection(data.cohortId);
   const isOnline = hasConnection && cohort.runtimeStatus === 'online';
