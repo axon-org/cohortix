@@ -11,7 +11,7 @@ import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
 import { validateData, uuidSchema } from '@/lib/validation';
 import { getCohortById, getCohortUserMembers } from '@/server/db/queries/cohorts';
 import { updateCohortRuntime } from '@/server/db/mutations/cohorts';
-import { encrypt } from '@/server/lib/encryption';
+import { encrypt } from '@/lib/encryption';
 
 const cohortRateLimit = {
   maxRequests: 30,
