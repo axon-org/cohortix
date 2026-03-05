@@ -54,15 +54,14 @@ export async function insertTaskQueue(input: CreateTaskQueueInput) {
 /**
  * Update a task queue entry
  */
-export async function updateTaskQueue(
-  queueId: string,
-  input: UpdateTaskQueueInput
-) {
+export async function updateTaskQueue(queueId: string, input: UpdateTaskQueueInput) {
   const [entry] = await db
     .update(taskQueue)
     .set({
       ...input,
-      processedAt: input.processedAt ?? (input.status === 'completed' || input.status === 'failed' ? new Date() : null),
+      processedAt:
+        input.processedAt ??
+        (input.status === 'completed' || input.status === 'failed' ? new Date() : null),
     })
     .where(eq(taskQueue.id, queueId))
     .returning();
@@ -81,10 +80,7 @@ export async function expireQueuedTasksByCohort(cohortId: string) {
       processedAt: new Date(),
     })
     .where(
-      and(
-        eq(taskQueue.cohortId, cohortId),
-        inArray(taskQueue.status, ['queued', 'processing'])
-      )
+      and(eq(taskQueue.cohortId, cohortId), inArray(taskQueue.status, ['queued', 'processing']))
     )
     .returning();
 
@@ -94,10 +90,7 @@ export async function expireQueuedTasksByCohort(cohortId: string) {
 /**
  * Mark a task as failed after max attempts
  */
-export async function markTaskFailed(
-  queueId: string,
-  error: Record<string, unknown>
-) {
+export async function markTaskFailed(queueId: string, error: Record<string, unknown>) {
   const [entry] = await db
     .update(taskQueue)
     .set({

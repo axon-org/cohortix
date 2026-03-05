@@ -13,10 +13,7 @@ import { eq, and, asc, desc, inArray, gte, lte, sql } from 'drizzle-orm';
  * Get task queue entry by ID
  */
 export async function getTaskQueueById(queueId: string) {
-  const [entry] = await db
-    .select()
-    .from(taskQueue)
-    .where(eq(taskQueue.id, queueId));
+  const [entry] = await db.select().from(taskQueue).where(eq(taskQueue.id, queueId));
 
   return entry ?? null;
 }
@@ -31,12 +28,7 @@ export async function getQueuedTasksByCohort(
   return db
     .select()
     .from(taskQueue)
-    .where(
-      and(
-        eq(taskQueue.cohortId, cohortId),
-        inArray(taskQueue.status, statuses)
-      )
-    )
+    .where(and(eq(taskQueue.cohortId, cohortId), inArray(taskQueue.status, statuses)))
     .orderBy(asc(taskQueue.queuedAt));
 }
 
@@ -75,24 +67,22 @@ export async function getTaskQueueStats(cohortId: string) {
     .from(taskQueue)
     .where(eq(taskQueue.cohortId, cohortId));
 
-  return stats ?? {
-    total: 0,
-    queued: 0,
-    processing: 0,
-    completed: 0,
-    failed: 0,
-    expired: 0,
-  };
+  return (
+    stats ?? {
+      total: 0,
+      queued: 0,
+      processing: 0,
+      completed: 0,
+      failed: 0,
+      expired: 0,
+    }
+  );
 }
 
 /**
  * Get recent task queue entries for a cohort
  */
-export async function getRecentTaskQueue(
-  cohortId: string,
-  limit: number = 50,
-  offset: number = 0
-) {
+export async function getRecentTaskQueue(cohortId: string, limit: number = 50, offset: number = 0) {
   return db
     .select()
     .from(taskQueue)

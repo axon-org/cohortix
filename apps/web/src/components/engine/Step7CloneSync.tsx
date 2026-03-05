@@ -1,21 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, FileText } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Button } from '@/components/ui/button';
+import { Loader2, RefreshCw, FileText } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
-export function Step7CloneSync({ 
-  cohortId, 
-  onNext 
-}: { 
-  cohortId: string;
-  onNext: () => void; 
-}) {
+export function Step7CloneSync({ cohortId, onNext }: { cohortId: string; onNext: () => void }) {
   const [status, setStatus] = useState<'idle' | 'syncing' | 'done'>('idle');
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     const sync = async () => {
       setStatus('syncing');
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 2000));
       setStatus('done');
       timeoutId = setTimeout(onNext, 1000);
     };
@@ -35,11 +29,12 @@ export function Step7CloneSync({
           )}
         </div>
       </div>
-      
+
       <div className="text-center space-y-2">
         <h3 className="text-lg font-medium">Syncing Clone Foundation</h3>
         <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-          We&apos;re writing your values, voice, and expertise to the agent&apos;s workspace files (SOUL.md).
+          We&apos;re writing your values, voice, and expertise to the agent&apos;s workspace files
+          (SOUL.md).
         </p>
       </div>
 

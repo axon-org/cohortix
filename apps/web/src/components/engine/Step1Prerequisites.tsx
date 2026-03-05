@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, ExternalLink } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle2, ExternalLink } from 'lucide-react';
 
 export function Step1Prerequisites({ onNext }: { onNext: () => void }) {
   return (
@@ -13,12 +13,12 @@ export function Step1Prerequisites({ onNext }: { onNext: () => void }) {
           <div>
             <h3 className="font-semibold text-lg">OpenClaw CLI Installed</h3>
             <p className="text-muted-foreground text-sm">
-              You need the OpenClaw CLI installed on your machine or server.
-              Version 2026.1.29 or higher is required.
+              You need the OpenClaw CLI installed on your machine or server. Version 2026.1.29 or
+              higher is required.
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-start gap-4">
           <div className="bg-primary/10 p-2 rounded-full">
             <CheckCircle2 className="h-6 w-6 text-primary" />
@@ -26,8 +26,9 @@ export function Step1Prerequisites({ onNext }: { onNext: () => void }) {
           <div>
             <h3 className="font-semibold text-lg">Engine Running</h3>
             <p className="text-muted-foreground text-sm">
-              The OpenClaw gateway service must be running.
-              Run <code className="bg-muted px-1 py-0.5 rounded text-xs">openclaw gateway status</code> to check.
+              The OpenClaw gateway service must be running. Run{' '}
+              <code className="bg-muted px-1 py-0.5 rounded text-xs">openclaw gateway status</code>{' '}
+              to check.
             </p>
           </div>
         </div>
@@ -44,9 +45,7 @@ export function Step1Prerequisites({ onNext }: { onNext: () => void }) {
       </div>
 
       <div className="flex justify-end pt-4">
-        <Button onClick={onNext}>
-          I have OpenClaw ready
-        </Button>
+        <Button onClick={onNext}>I have OpenClaw ready</Button>
       </div>
     </div>
   );

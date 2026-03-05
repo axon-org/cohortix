@@ -63,7 +63,9 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   // Get already imported agents
   const existingAgents = await getCohortAgentMembers(data.cohortId);
   const existingExternalIds = new Set(
-    (existingAgents as Array<{ externalId?: string | null }>).map((a) => a.externalId).filter((id): id is string => typeof id === 'string')
+    (existingAgents as Array<{ externalId?: string | null }>)
+      .map((a) => a.externalId)
+      .filter((id): id is string => typeof id === 'string')
   );
 
   // Discover agents on gateway

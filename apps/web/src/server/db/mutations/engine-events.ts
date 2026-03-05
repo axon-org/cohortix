@@ -11,7 +11,17 @@ import { eq, and, gte, desc, sql } from 'drizzle-orm';
 
 export interface CreateEngineEventInput {
   cohortId: string;
-  eventType: 'connected' | 'disconnected' | 'health_check_failed' | 'health_check_recovered' | 'auth_failed' | 'token_rotated' | 'agent_synced' | 'clone_synced' | 'queue_drained' | 'version_checked';
+  eventType:
+    | 'connected'
+    | 'disconnected'
+    | 'health_check_failed'
+    | 'health_check_recovered'
+    | 'auth_failed'
+    | 'token_rotated'
+    | 'agent_synced'
+    | 'clone_synced'
+    | 'queue_drained'
+    | 'version_checked';
   metadata?: Record<string, unknown>;
 }
 
@@ -79,12 +89,7 @@ export async function getMostRecentEventByType(
   const [event] = await db
     .select()
     .from(engineEvents)
-    .where(
-      and(
-        eq(engineEvents.cohortId, cohortId),
-        eq(engineEvents.eventType, eventType)
-      )
-    )
+    .where(and(eq(engineEvents.cohortId, cohortId), eq(engineEvents.eventType, eventType)))
     .orderBy(desc(engineEvents.createdAt))
     .limit(1);
 

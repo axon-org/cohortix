@@ -64,7 +64,10 @@ ${clone.aspirations || ''}
 /**
  * Generate IDENTITY.md content from Clone Foundation
  */
-function generateIdentityMd(clone: { displayName: string; communicationStyle?: string | null }): string {
+function generateIdentityMd(clone: {
+  displayName: string;
+  communicationStyle?: string | null;
+}): string {
   return `# IDENTITY.md
 
 - **Name:** ${clone.displayName}
@@ -108,10 +111,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   }
 
   // Get clone foundation for the user
-  const [clone] = await db
-    .select()
-    .from(cloneFoundation)
-    .where(eq(cloneFoundation.userId, userId));
+  const [clone] = await db.select().from(cloneFoundation).where(eq(cloneFoundation.userId, userId));
 
   if (!clone) {
     return NextResponse.json(
@@ -127,9 +127,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
 
   // Get the clone agent (agent with externalId starting with 'user-')
   const cohortAgents = await getAgents('cohort', data.cohortId);
-  const cloneAgent = cohortAgents.find(
-    (a) => a.externalId?.startsWith('user-')
-  );
+  const cloneAgent = cohortAgents.find((a) => a.externalId?.startsWith('user-'));
 
   const externalId = cloneAgent?.externalId ?? undefined;
 
@@ -139,7 +137,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         type: 'https://cohortix.com/errors/clone-agent-not-found',
         title: 'Clone Agent Not Found',
         status: 422,
-        detail: 'No clone agent found in cohort with an external ID. Please provision the clone agent first.',
+        detail:
+          'No clone agent found in cohort with an external ID. Please provision the clone agent first.',
       },
       { status: 422 }
     );

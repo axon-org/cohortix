@@ -133,7 +133,8 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     });
 
     // Update runtime status to error/offline
-    const newStatus = error instanceof Error && error.message.includes('auth') ? 'error' : 'offline';
+    const newStatus =
+      error instanceof Error && error.message.includes('auth') ? 'error' : 'offline';
     await updateCohortRuntime(data.cohortId, {
       runtimeStatus: newStatus,
     });

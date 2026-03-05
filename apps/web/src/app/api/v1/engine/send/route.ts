@@ -180,6 +180,10 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         sessionKey,
       });
 
+      if (!queueEntry) {
+        throw new Error('Failed to queue task for retry');
+      }
+
       const response: QueuedResponse = {
         status: 'queued',
         queueId: queueEntry.id,

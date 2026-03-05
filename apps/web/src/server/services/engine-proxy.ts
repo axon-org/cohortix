@@ -209,18 +209,15 @@ export class EngineProxyService {
     logger.info('Sending prompt to agent', { agentId, sessionKey, hasStream: stream });
 
     try {
-      const response = await this.fetchWithRetry(
-        '/v1/responses',
-        {
-          method: 'POST',
-          headers: this.buildHeaders({ agentId, sessionKey }),
-          body: JSON.stringify({
-            model: 'openclaw',
-            input,
-            stream: stream ?? false,
-          }),
-        }
-      );
+      const response = await this.fetchWithRetry('/v1/responses', {
+        method: 'POST',
+        headers: this.buildHeaders({ agentId, sessionKey }),
+        body: JSON.stringify({
+          model: 'openclaw',
+          input,
+          stream: stream ?? false,
+        }),
+      });
 
       if (!response.ok) {
         const errorType = classifyError(response);
@@ -281,14 +278,11 @@ export class EngineProxyService {
         body.sessionKey = sessionKey;
       }
 
-      const response = await this.fetchWithRetry(
-        '/tools/invoke',
-        {
-          method: 'POST',
-          headers: this.buildHeaders(), // No agent headers for /tools/invoke
-          body: JSON.stringify(body),
-        }
-      );
+      const response = await this.fetchWithRetry('/tools/invoke', {
+        method: 'POST',
+        headers: this.buildHeaders(), // No agent headers for /tools/invoke
+        body: JSON.stringify(body),
+      });
 
       if (!response.ok) {
         const errorType = classifyError(response);

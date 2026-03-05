@@ -1,22 +1,22 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { WizardData } from "./types";
-import { useState } from "react";
-import { Eye, EyeOff, Terminal, Clipboard } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type { WizardData } from './types';
+import { useState } from 'react';
+import { Eye, EyeOff, Terminal, Clipboard } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { cn } from '@/lib/utils';
 
-export function Step4Credentials({ 
-  data, 
-  updateData, 
-  onNext, 
-  onBack 
-}: { 
-  data: WizardData; 
-  updateData: (d: Partial<WizardData>) => void; 
-  onNext: () => void; 
-  onBack: () => void; 
+export function Step4Credentials({
+  data,
+  updateData,
+  onNext,
+  onBack,
+}: {
+  data: WizardData;
+  updateData: (d: Partial<WizardData>) => void;
+  onNext: () => void;
+  onBack: () => void;
 }) {
   const [showToken, setShowToken] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +40,7 @@ export function Step4Credentials({
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="gatewayUrl">Gateway URL</Label>
-          <Input 
+          <Input
             id="gatewayUrl"
             placeholder="https://your-funnel-name.ts.net"
             value={data.gatewayUrl}
@@ -55,9 +55,9 @@ export function Step4Credentials({
         <div className="space-y-2">
           <Label htmlFor="authToken">Auth Token</Label>
           <div className="relative">
-            <Input 
+            <Input
               id="authToken"
-              type={showToken ? "text" : "password"}
+              type={showToken ? 'text' : 'password'}
               placeholder="oc_..."
               value={data.authToken}
               onChange={(e) => updateData({ authToken: e.target.value })}
@@ -73,17 +73,18 @@ export function Step4Credentials({
             </button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Run <code className="bg-muted px-1 rounded">openclaw auth token --show</code> to get your token.
+            Run <code className="bg-muted px-1 rounded">openclaw auth token --show</code> to get
+            your token.
           </p>
         </div>
 
-        {error && (
-          <p className="text-sm text-destructive font-medium">{error}</p>
-        )}
+        {error && <p className="text-sm text-destructive font-medium">{error}</p>}
       </div>
 
       <div className="flex justify-between pt-4">
-        <Button variant="outline" type="button" onClick={onBack}>Back</Button>
+        <Button variant="outline" type="button" onClick={onBack}>
+          Back
+        </Button>
         <Button type="submit">Verify Connection</Button>
       </div>
     </form>
