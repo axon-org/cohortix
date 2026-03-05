@@ -748,7 +748,11 @@ export async function getEngineFile(
   path: string
 ): Promise<EngineFileResponse> {
   const query = new URLSearchParams({ cohortId, agentId }).toString();
-  return fetchApi<EngineFileResponse>(`/engine/files/${encodeURIComponent(path)}?${query}`);
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+  const response = await fetchApi<{ data: EngineFileResponse }>(
+    `/engine/files/${encodedPath}?${query}`
+  );
+  return response.data;
 }
 
 export async function updateEngineFile(
@@ -757,7 +761,8 @@ export async function updateEngineFile(
   path: string,
   content: string
 ): Promise<void> {
-  await fetchApi(`/engine/files/${encodeURIComponent(path)}`, {
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+  await fetchApi(`/engine/files/${encodedPath}`, {
     method: 'PUT',
     body: JSON.stringify({ cohortId, agentId, content }),
   });

@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
 import { getEngineProxy } from './engine-proxy-factory';
 import { getAgentById } from '../db/queries/agents';
 import { getCohortById } from '../db/queries/cohorts';
-import { createTaskSession, updateTaskSession } from '../db/mutations/task-sessions';
+import { createTaskSession, updateTaskSession } from './task-sessions';
 import { insertTaskQueue, updateTaskQueue } from '../db/mutations/task-queue';
 import { getQueuedTasksByCohort, getPendingTasks } from '../db/queries/task-queue';
 import { classifyError, type EngineErrorType } from './engine-proxy';

@@ -55,14 +55,17 @@ export async function insertTaskQueue(input: CreateTaskQueueInput) {
  * Update a task queue entry
  */
 export async function updateTaskQueue(queueId: string, input: UpdateTaskQueueInput) {
+  const updates: Record<string, unknown> = { ...input };
+
+  if ('processedAt' in input) {
+    updates.processedAt = input.processedAt;
+  } else if (input.status === 'completed' || input.status === 'failed') {
+    updates.processedAt = new Date();
+  }
+
   const [entry] = await db
     .update(taskQueue)
-    .set({
-      ...input,
-      processedAt:
-        input.processedAt ??
-        (input.status === 'completed' || input.status === 'failed' ? new Date() : null),
-    })
+    .set(updates)
     .where(eq(taskQueue.id, queueId))
     .returning();
 
