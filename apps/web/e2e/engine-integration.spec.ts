@@ -271,6 +271,46 @@ test.describe('Engine Integration E2E Tests', () => {
       });
     });
 
+    // Mock comments GET endpoint
+    await page.route('**/api/v1/comments**', (route) => {
+      const method = route.request().method();
+      if (method === 'GET') {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            data: [],
+          }),
+        });
+      }
+      // Let POST through to next handler
+      return route.fallback();
+    });
+
+    // Mock comments POST endpoint
+    await page.route('**/api/v1/comments', (route) => {
+      const method = route.request().method();
+      if (method === 'POST') {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            data: {
+              id: 'comment-new',
+              content: 'Urgent task @Clone',
+              entity_type: 'task',
+              entity_id: 'task-1',
+              author_id: 'user-1',
+              author_name: 'Test User',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          }),
+        });
+      }
+      return route.continue();
+    });
+
     await page.goto('/test-org/tasks/task-1', { waitUntil: 'domcontentloaded' });
 
     if (await isOnSignIn(page)) {
