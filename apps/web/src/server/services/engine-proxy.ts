@@ -68,6 +68,10 @@ export interface AgentResponse {
 // ============================================================================
 
 export function classifyError(error: unknown): EngineErrorType {
+  if (error instanceof EngineProxyErrorClass) {
+    return error.type;
+  }
+
   if (error instanceof Response) {
     if (error.status === 401 || error.status === 403) return 'auth_failed';
     if (error.status === 404) return 'endpoint_disabled';

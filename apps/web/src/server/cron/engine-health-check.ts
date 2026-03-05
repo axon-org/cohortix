@@ -12,7 +12,7 @@ import { classifyError } from '../services/engine-proxy';
 import { drainTaskQueue } from '../services/task-execution';
 import { db } from '@repo/database/client';
 import { cohorts, engineEvents } from '@repo/database/schema';
-import { eq, isNotNull, and, sql } from 'drizzle-orm';
+import { eq, isNotNull, and, sql, desc } from 'drizzle-orm';
 
 // ============================================================================
 // Health Check Engine
@@ -134,19 +134,19 @@ async function handleUnreachableEngine(
     errorType,
   });
 
-  // Count recent failures (last 15 minutes = 3 check cycles)
-  const recentFailures = await countRecentEngineEvents(cohortId, 'health_check_failed', 15);
+  // Count consecutive failures since last recovery
+  const consecutiveFailures = await countConsecutiveFailures(cohortId);
 
   logger.info('[Health Check] Consecutive failures', {
     cohortId,
-    recentFailures,
+    consecutiveFailures,
   });
 
   // Set offline after 3 consecutive failures
-  if (recentFailures >= 3 && currentStatus !== 'offline') {
+  if (consecutiveFailures >= 3 && currentStatus !== 'offline') {
     logger.warn('[Health Check] Setting engine offline', {
       cohortId,
-      recentFailures,
+      consecutiveFailures,
     });
 
     await db
@@ -201,15 +201,22 @@ async function insertEngineEvent(
 }
 
 /**
- * Count recent engine events of a specific type
+ * Count consecutive failures since last recovery
  */
-async function countRecentEngineEvents(
-  cohortId: string,
-  eventType: string,
-  minutesAgo: number
-): Promise<number> {
-  const threshold = new Date(Date.now() - minutesAgo * 60 * 1000);
+async function countConsecutiveFailures(cohortId: string): Promise<number> {
+  // Get the most recent recovery event
+  const [lastRecovery] = await db
+    .select({
+      createdAt: engineEvents.createdAt,
+    })
+    .from(engineEvents)
+    .where(
+      and(eq(engineEvents.cohortId, cohortId), eq(engineEvents.eventType, 'health_check_recovered'))
+    )
+    .orderBy(desc(engineEvents.createdAt))
+    .limit(1);
 
+  // Count failures since last recovery (or all failures if no recovery)
   const [result] = await db
     .select({
       count: sql<number>`count(*)::int`,
@@ -218,8 +225,8 @@ async function countRecentEngineEvents(
     .where(
       and(
         eq(engineEvents.cohortId, cohortId),
-        eq(engineEvents.eventType, eventType as any),
-        sql`${engineEvents.createdAt} >= ${threshold}`
+        eq(engineEvents.eventType, 'health_check_failed'),
+        lastRecovery ? sql`${engineEvents.createdAt} > ${lastRecovery.createdAt}` : sql`true`
       )
     );
 
