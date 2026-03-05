@@ -38,5 +38,10 @@ export * from './time-entries';
 // Knowledge Base
 export * from './knowledge-entries';
 
+// Engine Integration (SDD-003)
+export * from './task-queue';
+export * from './engine-events';
+export * from './clone-foundation';
+
 // System
 export * from './audit-logs';

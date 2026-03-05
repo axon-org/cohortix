@@ -10,8 +10,10 @@ export const evolutionEventTypeEnum = z.enum(['learning', 'correction', 'milesto
 
 export const createAgentSchema = z.object({
   name: z.string().min(2).max(255).trim(),
+  externalId: z.string().max(255).optional().nullable(),
   description: z.string().max(10000).optional().nullable(),
   role: z.string().max(255).optional().nullable(),
+  avatarUrl: z.string().url().optional().nullable(),
   status: agentStatusEnum.default('idle'),
   capabilities: z.array(z.string()).default([]),
   scopeType: agentScopeTypeEnum.default('personal'),

@@ -733,3 +733,37 @@ export async function createInsight(data: {
   });
   return response.data;
 }
+
+// ============================================================================
+// Engine API (Workspace Files)
+// ============================================================================
+
+export interface EngineFileResponse {
+  content: string;
+}
+
+export async function getEngineFile(
+  cohortId: string,
+  agentId: string,
+  path: string
+): Promise<EngineFileResponse> {
+  const query = new URLSearchParams({ cohortId, agentId }).toString();
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+  const response = await fetchApi<{ data: EngineFileResponse }>(
+    `/engine/files/${encodedPath}?${query}`
+  );
+  return response.data;
+}
+
+export async function updateEngineFile(
+  cohortId: string,
+  agentId: string,
+  path: string,
+  content: string
+): Promise<void> {
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+  await fetchApi(`/engine/files/${encodedPath}`, {
+    method: 'PUT',
+    body: JSON.stringify({ cohortId, agentId, content }),
+  });
+}
