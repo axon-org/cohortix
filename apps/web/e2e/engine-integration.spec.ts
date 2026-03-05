@@ -119,7 +119,7 @@ test.describe('Engine Integration E2E Tests', () => {
         });
       }
       // Let POST through to next handler
-      return route.continue();
+      return route.fallback();
     });
 
     // Mock comments POST endpoint
@@ -333,7 +333,7 @@ test.describe('Engine Integration E2E Tests', () => {
           }),
         });
       }
-      return route.continue();
+      return route.fallback();
     });
 
     // Mock file write endpoint (PUT)
@@ -362,7 +362,7 @@ test.describe('Engine Integration E2E Tests', () => {
           }),
         });
       }
-      return route.continue();
+      return route.fallback();
     });
 
     // Mock agents endpoint
@@ -397,7 +397,7 @@ test.describe('Engine Integration E2E Tests', () => {
 
     if ((await fileEditor.count()) > 0) {
       // Verify original content is loaded
-      await expect(fileEditor).toContainText('I am Clone, the founder agent.', {
+      await expect(fileEditor).toHaveValue(/I am Clone, the founder agent\./, {
         timeout: 3000,
       });
 
