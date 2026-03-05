@@ -44,7 +44,7 @@ export function WorkspaceFileEditor({ cohortId, agentId, filePath }: WorkspaceFi
   // Handle save success effect
   React.useEffect(() => {
     if (!isSaved) return;
-    
+
     const timer = setTimeout(() => setIsSaved(false), 3000);
     return () => clearTimeout(timer);
   }, [isSaved]);
