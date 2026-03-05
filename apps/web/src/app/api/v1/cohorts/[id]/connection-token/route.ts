@@ -11,6 +11,7 @@ import { createRateLimiter, withMiddleware } from '@/lib/rate-limit';
 import { validateData, uuidSchema } from '@/lib/validation';
 import { getCohortById, getCohortUserMembers } from '@/server/db/queries/cohorts';
 import { updateCohortRuntime } from '@/server/db/mutations/cohorts';
+import { encrypt } from '@/server/lib/encryption';
 
 const cohortRateLimit = {
   maxRequests: 30,
@@ -101,10 +102,10 @@ export const POST = withMiddleware(
     };
 
     const token = signJwt(payload, secret);
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const tokenEncrypted = encrypt(token);
 
     await updateCohortRuntime(cohortId, {
-      authTokenEncrypted: tokenHash,
+      authTokenEncrypted: tokenEncrypted,
     });
 
     return NextResponse.json({
