@@ -51,7 +51,14 @@ export function decrypt(ciphertext: string): string {
   const tag = Buffer.from(tagB64!, 'base64');
   const encrypted = Buffer.from(encryptedB64!, 'base64');
 
-  const decipher = createDecipheriv('aes-256-gcm', key, iv);
+  // Validate auth tag length (must be 16 bytes for AES-256-GCM)
+  if (tag.length !== 16) {
+    throw new BadRequestError(
+      `Invalid authentication tag length: expected 16 bytes, got ${tag.length}`
+    );
+  }
+
+  const decipher = createDecipheriv('aes-256-gcm', key, iv, { authTagLength: 16 });
   decipher.setAuthTag(tag);
 
   const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
