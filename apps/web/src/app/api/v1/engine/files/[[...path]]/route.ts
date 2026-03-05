@@ -60,6 +60,19 @@ export const GET = withErrorHandler(
       throw new NotFoundError('Agent', query.agentId);
     }
 
+    // Verify agent belongs to this cohort
+    if (agent.scopeType === 'cohort' && agent.scopeId !== query.cohortId) {
+      return NextResponse.json(
+        {
+          type: 'https://cohortix.com/errors/forbidden',
+          title: 'Forbidden',
+          status: 403,
+          detail: 'Agent does not belong to this cohort',
+        },
+        { status: 403 }
+      );
+    }
+
     if (!agent.externalId) {
       return NextResponse.json(
         {
@@ -147,6 +160,19 @@ export const PUT = withErrorHandler(
     const agent = await getAgentById(validatedBody.agentId);
     if (!agent) {
       throw new NotFoundError('Agent', validatedBody.agentId);
+    }
+
+    // Verify agent belongs to this cohort
+    if (agent.scopeType === 'cohort' && agent.scopeId !== validatedBody.cohortId) {
+      return NextResponse.json(
+        {
+          type: 'https://cohortix.com/errors/forbidden',
+          title: 'Forbidden',
+          status: 403,
+          detail: 'Agent does not belong to this cohort',
+        },
+        { status: 403 }
+      );
     }
 
     if (!agent.externalId) {

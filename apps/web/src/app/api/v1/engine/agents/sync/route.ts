@@ -66,6 +66,19 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     throw new NotFoundError('Agent', data.agentId);
   }
 
+  // Verify agent belongs to this cohort
+  if (agent.scopeType === 'cohort' && agent.scopeId !== data.cohortId) {
+    return NextResponse.json(
+      {
+        type: 'https://cohortix.com/errors/forbidden',
+        title: 'Forbidden',
+        status: 403,
+        detail: 'Agent does not belong to this cohort',
+      },
+      { status: 403 }
+    );
+  }
+
   const proxy = await getEngineProxy(data.cohortId);
 
   switch (data.action) {
