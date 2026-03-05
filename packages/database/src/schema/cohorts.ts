@@ -65,7 +65,9 @@ export const cohorts = pgTable('cohorts', {
   hosting: cohortHostingEnum('hosting').default('managed').notNull(),
   runtimeStatus: cohortRuntimeStatusEnum('runtime_status').default('provisioning').notNull(),
   gatewayUrl: text('gateway_url'),
-  authTokenHash: text('auth_token_hash'),
+  authTokenEncrypted: text('auth_token_encrypted'),
+  connectionConfig: jsonb('connection_config').default({}).notNull(),
+  gatewayVersion: varchar('gateway_version', { length: 50 }),
   hardwareInfo: jsonb('hardware_info').default({}).notNull(),
   lastHeartbeatAt: timestamp('last_heartbeat_at', { withTimezone: true }),
 

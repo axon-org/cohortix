@@ -104,7 +104,7 @@ export const POST = withMiddleware(
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
     await updateCohortRuntime(cohortId, {
-      authTokenHash: tokenHash,
+      authTokenEncrypted: tokenHash,
     });
 
     return NextResponse.json({
