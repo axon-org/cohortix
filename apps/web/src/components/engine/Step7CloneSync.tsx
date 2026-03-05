@@ -39,7 +39,7 @@ export function Step7CloneSync({
       <div className="text-center space-y-2">
         <h3 className="text-lg font-medium">Syncing Clone Foundation</h3>
         <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-          We're writing your values, voice, and expertise to the agent's workspace files (SOUL.md).
+          We&apos;re writing your values, voice, and expertise to the agent&apos;s workspace files (SOUL.md).
         </p>
       </div>
 
