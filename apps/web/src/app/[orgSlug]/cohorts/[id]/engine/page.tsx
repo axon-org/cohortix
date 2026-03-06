@@ -1,17 +1,14 @@
-'use client';
-
-import { use } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { EngineSetupWizard } from '@/components/engine/EngineSetupWizard';
 import { isFeatureEnabled, FEATURE_FLAGS } from '@/lib/feature-flags';
 
-export default function EngineSettingsPage({
+export default async function EngineSettingsPage({
   params,
 }: {
   params: Promise<{ orgSlug: string; id: string }>;
 }) {
-  const { orgSlug, id } = use(params);
+  const { orgSlug, id } = await params;
 
   if (!isFeatureEnabled(FEATURE_FLAGS.ENGINE_BYOH_CONNECTION)) {
     return (
