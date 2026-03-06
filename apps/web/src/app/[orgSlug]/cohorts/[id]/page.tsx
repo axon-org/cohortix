@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DeleteDialog } from '@/components/ui/delete-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Pencil, Save, X } from 'lucide-react';
+import { ArrowLeft, Pencil, Save, Server, X } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -153,6 +153,11 @@ export default function CohortDetailPage({
             </>
           ) : (
             <>
+              <Link href={`/${orgSlug}/cohorts/${id}/engine`}>
+                <Button variant="outline" size="sm">
+                  <Server className="w-4 h-4 mr-1" /> Engine
+                </Button>
+              </Link>
               <Button variant="outline" size="sm" onClick={startEditing}>
                 <Pencil className="w-4 h-4 mr-1" /> Edit
               </Button>
