@@ -84,7 +84,7 @@ CREATE INDEX idx_engine_events_type ON engine_events(event_type);
 
 CREATE TABLE clone_foundation (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   display_name varchar(255) NOT NULL,
   "values" jsonb NOT NULL DEFAULT '[]',
   decision_making text,
