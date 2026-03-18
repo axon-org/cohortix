@@ -48,19 +48,16 @@ export async function POST(request: NextRequest) {
     if (!agent) {
       return NextResponse.json({ error: 'Recipient agent not found' }, { status: 404 })
     }
-    if (!agent.session_key) {
-      return NextResponse.json(
-        { error: 'Recipient agent has no session key configured' },
-        { status: 400 }
-      )
-    }
+    // Derive OpenClaw session key from agent name if not explicitly configured.
+    // Convention: agent:<name>:main is the direct-messaging session for each agent.
+    const sessionKey = agent.session_key || `agent:${agent.name}:main`
 
     await runOpenClaw(
       [
         'gateway',
         'sessions_send',
         '--session',
-        agent.session_key,
+        sessionKey,
         '--message',
         `Message from ${from}: ${message}`
       ],

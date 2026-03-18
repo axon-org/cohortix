@@ -248,8 +248,8 @@ export async function syncLocalAgents(): Promise<{ ok: boolean; message: string 
     let removed = 0
 
     const insertStmt = db.prepare(`
-      INSERT INTO agents (name, role, soul_content, status, source, content_hash, workspace_path, config, created_at, updated_at)
-      VALUES (?, ?, ?, 'offline', 'local', ?, ?, ?, ?, ?)
+      INSERT INTO agents (name, role, soul_content, status, source, content_hash, workspace_path, config, session_key, created_at, updated_at)
+      VALUES (?, ?, ?, 'offline', 'local', ?, ?, ?, ?, ?, ?)
     `)
     const updateStmt = db.prepare(`
       UPDATE agents SET role = ?, soul_content = ?, content_hash = ?, workspace_path = ?, config = ?, updated_at = ?
@@ -266,7 +266,7 @@ export async function syncLocalAgents(): Promise<{ ok: boolean; message: string 
         const configJson = disk.configContent ? disk.configContent : null
 
         if (!existing) {
-          insertStmt.run(name, disk.role, disk.soulContent, disk.contentHash, disk.dir, configJson, now, now)
+          insertStmt.run(name, disk.role, disk.soulContent, disk.contentHash, disk.dir, configJson, `agent:${name}:main`, now, now)
           created++
         } else if (existing.content_hash !== disk.contentHash) {
           updateStmt.run(disk.role, disk.soulContent, disk.contentHash, disk.dir, configJson, now, existing.id)
