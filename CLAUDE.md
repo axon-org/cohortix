@@ -1,80 +1,55 @@
-# Mission Control
+<!--
+This file provides guidelines for AI coding agents working on the Cohortix project.
+-->
 
-Open-source dashboard for AI agent orchestration. Manage agent fleets, track tasks, monitor costs, and orchestrate workflows.
+# Cohortix — Agent command center for everyday people
 
-**Stack**: Next.js 16, React 19, TypeScript 5, SQLite (better-sqlite3), Tailwind CSS 3, Zustand, pnpm
+## Tech Stack
+- Next.js 16 (App Router)
+- SQLite (better-sqlite3)
+- React 19
+- TypeScript
+- Tailwind CSS
+- pnpm
+- Zod
+- Zustand
 
-## Prerequisites
+## Key Commands
+- `pnpm dev`       – start development server
+- `pnpm build`     – build production assets
+- `pnpm test`      – run unit tests
+- `pnpm typecheck` – run TypeScript type checks
+- `pnpm lint`      – run linting
 
-- Node.js >= 22 (LTS recommended; 24.x also supported)
-- pnpm (`corepack enable` to auto-install)
+## Project Structure
+This is a single Next.js application (not a monorepo):
 
-## Setup
+- `src/app`         – App Router pages, API routes, layouts
+- `src/components`  – React UI components
+- `src/lib`         – Business logic, utilities, data access
 
-```bash
-pnpm install
-pnpm build
-```
+## Coding Conventions
+- Follow existing code patterns throughout the codebase
+- Enable TypeScript **strict** mode for all modules
+- Use Tailwind CSS for styling
+- Use Zod for runtime data validation and schema definitions
 
-Secrets (AUTH_SECRET, API_KEY) auto-generate on first run if not set.
-Visit `http://localhost:3000/setup` to create an admin account, or set `AUTH_USER`/`AUTH_PASS` in `.env` for headless/CI seeding.
+## Testing
+- Unit tests: Vitest
+- End-to-end tests: Playwright
 
-## Run
+## Database
+- SQLite via better-sqlite3
+- Migrations and schema defined in:
+  - `src/lib/schema.sql`
+  - `src/lib/migrations.ts`
 
-```bash
-pnpm dev              # development (localhost:3000)
-pnpm start            # production
-node .next/standalone/server.js   # standalone mode (after build)
-```
+## i18n
+- Internationalization with **next-intl**
+- Message files in `messages/*.json` (supports 10 languages)
 
-## Docker
+## Important
+This project was forked from **Mission Control** (builderz-labs). The upstream remote remains configured for pulling future updates.
 
-```bash
-docker compose up                 # zero-config
-bash install.sh --docker          # full guided setup
-```
-
-Production hardening: `docker compose -f docker-compose.yml -f docker-compose.hardened.yml up -d`
-
-## Tests
-
-```bash
-pnpm test             # unit tests (vitest)
-pnpm test:e2e         # end-to-end (playwright)
-pnpm typecheck        # tsc --noEmit
-pnpm lint             # eslint
-pnpm test:all         # lint + typecheck + test + build + e2e
-```
-
-## Key Directories
-
-```
-src/app/          Next.js pages + API routes (App Router)
-src/components/   UI panels and shared components
-src/lib/          Core logic, database, utilities
-.data/            SQLite database + runtime state (gitignored)
-scripts/          Install, deploy, diagnostics scripts
-docs/             Documentation and guides
-```
-
-Path alias: `@/*` maps to `./src/*`
-
-## Data Directory
-
-Set `MISSION_CONTROL_DATA_DIR` env var to change the data location (defaults to `.data/`).
-Database path: `MISSION_CONTROL_DB_PATH` (defaults to `.data/mission-control.db`).
-
-## Conventions
-
-- **Commits**: Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`)
-- **No AI attribution**: Never add `Co-Authored-By` or similar trailers to commits
-- **Package manager**: pnpm only (no npm/yarn)
-- **Icons**: No icon libraries -- use raw text/emoji in components
-- **Standalone output**: `next.config.js` sets `output: 'standalone'`
-
-## Common Pitfalls
-
-- **Standalone mode**: Use `node .next/standalone/server.js`, not `pnpm start` (which requires full `node_modules`)
-- **better-sqlite3**: Native addon -- needs rebuild when switching Node versions (`pnpm rebuild better-sqlite3`)
-- **AUTH_PASS with `#`**: Quote it (`AUTH_PASS="my#pass"`) or use `AUTH_PASS_B64` (base64-encoded)
-- **Gateway optional**: Set `NEXT_PUBLIC_GATEWAY_OPTIONAL=true` for standalone deployments without gateway connectivity
+## Terminology
+See `docs/guides/TERMINOLOGY.md` for Cohortix-specific naming conventions (PPV hierarchy).
