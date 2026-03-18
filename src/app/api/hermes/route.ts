@@ -9,7 +9,7 @@ import { getHermesMemory } from '@/lib/hermes-memory'
 import { logger } from '@/lib/logger'
 
 const HERMES_HOME = join(config.homeDir, '.hermes')
-const HOOK_DIR = join(HERMES_HOME, 'hooks', 'mission-control')
+const HOOK_DIR = join(HERMES_HOME, 'hooks', 'cohortix')
 
 export async function GET(request: NextRequest) {
   const auth = requireRole(request, 'viewer')
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       // Write handler.py
       writeFileSync(join(HOOK_DIR, 'handler.py'), HANDLER_PY, 'utf8')
 
-      logger.info('Installed Mission Control hook for Hermes Agent')
+      logger.info('Installed Cohortix hook for Hermes Agent')
       return NextResponse.json({ success: true, message: 'Hook installed', hookDir: HOOK_DIR })
     }
 
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         rmSync(HOOK_DIR, { recursive: true, force: true })
       }
 
-      logger.info('Uninstalled Mission Control hook for Hermes Agent')
+      logger.info('Uninstalled Cohortix hook for Hermes Agent')
       return NextResponse.json({ success: true, message: 'Hook uninstalled' })
     }
 
@@ -84,8 +84,8 @@ export async function POST(request: NextRequest) {
 // Hook file contents
 // ---------------------------------------------------------------------------
 
-const HOOK_YAML = `name: mission-control
-description: Reports agent telemetry to Mission Control
+const HOOK_YAML = `name: cohortix
+description: Reports agent telemetry to Cohortix
 version: "1.0"
 events:
   - agent:start
@@ -94,11 +94,11 @@ events:
 `
 
 const HANDLER_PY = `"""
-Mission Control hook for Hermes Agent.
+Cohortix hook for Hermes Agent.
 Reports session telemetry to the MC /api/sessions endpoint.
 
 Configuration (via ~/.hermes/.env or environment):
-  MC_URL      - Mission Control base URL (default: http://localhost:3000)
+  MC_URL      - Cohortix base URL (default: http://localhost:3000)
   MC_API_KEY  - API key for authentication (optional)
 """
 
@@ -106,7 +106,7 @@ import os
 import logging
 from datetime import datetime, timezone
 
-logger = logging.getLogger("hooks.mission-control")
+logger = logging.getLogger("hooks.cohortix")
 
 MC_URL = os.environ.get("MC_URL", "http://localhost:3000")
 MC_API_KEY = os.environ.get("MC_API_KEY", "")

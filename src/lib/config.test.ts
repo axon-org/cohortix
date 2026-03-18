@@ -56,24 +56,24 @@ describe('config data paths', () => {
 
   it('derives db and token paths from MISSION_CONTROL_DATA_DIR', async () => {
     const config = await loadConfigWithEnv({
-      MISSION_CONTROL_DATA_DIR: '/tmp/mission-control-data',
+      MISSION_CONTROL_DATA_DIR: '/tmp/cohortix-data',
       MISSION_CONTROL_DB_PATH: undefined,
       MISSION_CONTROL_TOKENS_PATH: undefined,
     })
 
-    expect(config.dataDir).toBe('/tmp/mission-control-data')
-    expect(config.dbPath).toBe('/tmp/mission-control-data/mission-control.db')
-    expect(config.tokensPath).toBe('/tmp/mission-control-data/mission-control-tokens.json')
+    expect(config.dataDir).toBe('/tmp/cohortix-data')
+    expect(config.dbPath).toBe('/tmp/cohortix-data/cohortix.db')
+    expect(config.tokensPath).toBe('/tmp/cohortix-data/cohortix-tokens.json')
   })
 
   it('respects explicit db and token path overrides', async () => {
     const config = await loadConfigWithEnv({
-      MISSION_CONTROL_DATA_DIR: '/tmp/mission-control-data',
+      MISSION_CONTROL_DATA_DIR: '/tmp/cohortix-data',
       MISSION_CONTROL_DB_PATH: '/tmp/custom.db',
       MISSION_CONTROL_TOKENS_PATH: '/tmp/custom-tokens.json',
     })
 
-    expect(config.dataDir).toBe('/tmp/mission-control-data')
+    expect(config.dataDir).toBe('/tmp/cohortix-data')
     expect(config.dbPath).toBe('/tmp/custom.db')
     expect(config.tokensPath).toBe('/tmp/custom-tokens.json')
   })
@@ -88,8 +88,8 @@ describe('config data paths', () => {
     })
 
     expect(config.dataDir).toMatch(/^\/tmp\/build-scratch\/worker-\d+$/)
-    expect(config.dbPath).toMatch(/^\/tmp\/build-scratch\/worker-\d+\/mission-control\.db$/)
-    expect(config.tokensPath).toMatch(/^\/tmp\/build-scratch\/worker-\d+\/mission-control-tokens\.json$/)
+    expect(config.dbPath).toMatch(/^\/tmp\/build-scratch\/worker-\d+\/cohortix\.db$/)
+    expect(config.tokensPath).toMatch(/^\/tmp\/build-scratch\/worker-\d+\/cohortix-tokens\.json$/)
   })
 
   it('prefers build-specific db and token overrides during next build', async () => {
@@ -102,7 +102,7 @@ describe('config data paths', () => {
       MISSION_CONTROL_BUILD_TOKENS_PATH: '/tmp/build-tokens.json',
     })
 
-    const expectedBuildRoot = path.join(os.tmpdir(), 'mission-control-build')
+    const expectedBuildRoot = path.join(os.tmpdir(), 'cohortix-build')
     expect(config.dataDir).toMatch(new RegExp(`^${expectedBuildRoot.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/worker-\\d+$`))
     expect(config.dbPath).toBe('/tmp/build.db')
     expect(config.tokensPath).toBe('/tmp/build-tokens.json')

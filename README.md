@@ -1,6 +1,6 @@
 <div align="center">
 
-# Mission Control
+# Cohortix
 
 **The open-source dashboard for AI agent orchestration.**
 
@@ -12,17 +12,17 @@ Manage agent fleets, track tasks, monitor costs, and orchestrate workflows — a
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://typescriptlang.org/)
 [![SQLite](https://img.shields.io/badge/SQLite-WAL-003B57?logo=sqlite&logoColor=white)](https://sqlite.org/)
 
-![Mission Control Dashboard](docs/mission-control-overview.png)
+![Cohortix Dashboard](docs/cohortix-overview.png)
 
 </div>
 
 ---
 
-> **Alpha Software** — Mission Control is under active development. APIs, database schemas, and configuration formats may change between releases. Review the [known limitations](#known-limitations) and [security considerations](#security-considerations) before deploying to production.
+> **Alpha Software** — Cohortix is under active development. APIs, database schemas, and configuration formats may change between releases. Review the [known limitations](#known-limitations) and [security considerations](#security-considerations) before deploying to production.
 
-## Why Mission Control?
+## Why Cohortix?
 
-Running AI agents at scale means juggling sessions, tasks, costs, and reliability across multiple models and channels. Mission Control gives you:
+Running AI agents at scale means juggling sessions, tasks, costs, and reliability across multiple models and channels. Cohortix gives you:
 
 - **32 panels** — Tasks, agents, skills, logs, tokens, memory, security, cron, alerts, webhooks, pipelines, and more
 - **Real-time everything** — WebSocket + SSE push updates, smart polling that pauses when you're away
@@ -39,8 +39,8 @@ Running AI agents at scale means juggling sessions, tasks, costs, and reliabilit
 ### One-Command Install (Docker)
 
 ```bash
-git clone https://github.com/builderz-labs/mission-control.git
-cd mission-control
+git clone https://github.com/builderz-labs/cohortix.git
+cd cohortix
 bash install.sh --docker
 ```
 
@@ -49,8 +49,8 @@ The installer auto-generates secure credentials, starts the container, and runs 
 ### One-Command Install (Local)
 
 ```bash
-git clone https://github.com/builderz-labs/mission-control.git
-cd mission-control
+git clone https://github.com/builderz-labs/cohortix.git
+cd cohortix
 bash install.sh --local
 ```
 
@@ -59,8 +59,8 @@ Requires Node.js 22.x (LTS, recommended) or 24.x, and pnpm (auto-installed via c
 ### One-Command Install (Windows PowerShell)
 
 ```powershell
-git clone https://github.com/builderz-labs/mission-control.git
-cd mission-control
+git clone https://github.com/builderz-labs/cohortix.git
+cd cohortix
 .\install.ps1 -Mode local
 ```
 
@@ -75,11 +75,11 @@ Additional options: `-Port 8080`, `-SkipOpenClaw`. Requires Node.js 22+ and pnpm
 ### Manual Setup
 
 > **Requires [pnpm](https://pnpm.io/installation)** and **Node.js 22.x (LTS, recommended) or 24.x**.
-> Mission Control is validated on Node 22 (primary CI/LTS) and supports Node 24 for local dev and deploys. Use `nvm use 22` (or `nvm use 24`) before installing or starting the app.
+> Cohortix is validated on Node 22 (primary CI/LTS) and supports Node 24 for local dev and deploys. Use `nvm use 22` (or `nvm use 24`) before installing or starting the app.
 
 ```bash
-git clone https://github.com/builderz-labs/mission-control.git
-cd mission-control
+git clone https://github.com/builderz-labs/cohortix.git
+cd cohortix
 nvm use 22            # or: nvm use 24
 pnpm install
 pnpm dev                # http://localhost:3000/setup
@@ -91,11 +91,11 @@ For CI/automation, set `AUTH_USER` and `AUTH_PASS` env vars to seed the admin fr
 
 ## Gateway Optional Mode (Standalone Deployment)
 
-Mission Control can run in standalone mode without a gateway connection. This is useful when:
+Cohortix can run in standalone mode without a gateway connection. This is useful when:
 
 - Deploying on a VPS with firewall rules blocking non-standard WebSocket ports (18789/18790)
 - Testing UI/core workflows without a running gateway
-- Running Mission Control primarily for project/task operations
+- Running Cohortix primarily for project/task operations
 
 Enable with:
 
@@ -194,7 +194,7 @@ bash scripts/security-audit.sh
 ### Agent Management
 Monitor agent status, configure models, view heartbeats, and manage the full agent lifecycle from registration to retirement. Agent detail modal with compact overview, inline model selector, and editable sub-agent configuration.
 
-![Mission Control Agents Panel](docs/mission-control-agents.png)
+![Cohortix Agents Panel](docs/cohortix-agents.png)
 
 ### Task Board
 Kanban board with six columns (inbox → assigned → in progress → review → quality review → done), drag-and-drop, priority levels, assignments, threaded comments, and inline sub-agent spawning.
@@ -212,13 +212,13 @@ Scheduled tasks for database backups, stale record cleanup, agent heartbeat moni
 Create recurring tasks with natural language like "every morning at 9am" or "every 2 hours". The built-in schedule parser (zero dependencies) converts expressions to cron and stores them in task metadata. A template-clone pattern keeps the original task as a template and spawns dated child tasks (e.g., "Daily Report - Mar 07") on schedule. Each spawned task gets its own Aegis quality gate.
 
 ### Direct CLI Integration
-Connect Claude Code, Codex, or any CLI tool directly to Mission Control without requiring a gateway. Register connections, send heartbeats with inline token reporting, and auto-register agents.
+Connect Claude Code, Codex, or any CLI tool directly to Cohortix without requiring a gateway. Register connections, send heartbeats with inline token reporting, and auto-register agents.
 
 ### Claude Code Session Tracking
 Automatically discovers and tracks local Claude Code sessions by scanning `~/.claude/projects/`. Extracts token usage, model info, message counts, cost estimates, and active status from JSONL transcripts. Scans every 60 seconds via the background scheduler.
 
 ### Claude Code Task Bridge
-Read-only integration that surfaces Claude Code team tasks and team configs on the Mission Control dashboard. Scans `~/.claude/tasks/<team>/<N>.json` for structured task data (subject, status, owner, blockers) and `~/.claude/teams/<name>/config.json` for team metadata (members, lead agent, model assignments). Visible in both the Task Board (collapsible section) and Cron Management (teams overview) panels.
+Read-only integration that surfaces Claude Code team tasks and team configs on the Cohortix dashboard. Scans `~/.claude/tasks/<team>/<N>.json` for structured task data (subject, status, owner, blockers) and `~/.claude/teams/<name>/config.json` for team metadata (members, lead agent, model assignments). Visible in both the Task Board (collapsible section) and Cron Management (teams overview) panels.
 
 ### GitHub Issues Sync
 Inbound sync from GitHub repositories with label and assignee mapping. Synced issues appear on the task board alongside agent-created tasks.
@@ -238,7 +238,7 @@ Session-threaded inter-agent communication via the comms API (`a2a:*`, `coord:*`
 ### Memory Knowledge Graph
 Explore agent knowledge through the Memory Browser, filesystem-backed memory tree, and interactive relationship graph for sessions, memory chunks, and linked knowledge files.
 
-![Mission Control Memory Graph](docs/mission-control-memory-graph.png)
+![Cohortix Memory Graph](docs/cohortix-memory-graph.png)
 
 ### Onboarding Wizard
 Guided first-run setup wizard that walks new users through five steps: Welcome (system capabilities detection), Credentials (verify AUTH_PASS and API_KEY strength), Agent Setup (gateway connection or local Claude Code discovery), Security Scan (automated configuration audit with pass/fail checks), and Get Started (quick links to key panels). Automatically appears on first login and can be re-launched from Settings. Progress is persisted per-user so you can resume where you left off.
@@ -272,7 +272,7 @@ Built-in adapter layer for multi-agent registration across frameworks. Supported
 ## Architecture
 
 ```
-mission-control/
+cohortix/
 ├── src/
 │   ├── proxy.ts               # Auth gate + CSRF + network access control
 │   ├── app/
@@ -603,7 +603,7 @@ To add a new workspace/client instance, use the `/api/super/tenants` endpoint or
 
 ### Projects and Ticket Prefixes
 
-Mission Control supports multi-project task organization per workspace:
+Cohortix supports multi-project task organization per workspace:
 
 - Create/manage projects via Task Board → `Projects`.
 - Each project has its own ticket prefix and counter.
@@ -612,7 +612,7 @@ Mission Control supports multi-project task organization per workspace:
 
 ### Memory Scope Clarification
 
-- **Agent profile → Memory tab**: per-agent working memory stored in Mission Control DB (`working_memory`).
+- **Agent profile → Memory tab**: per-agent working memory stored in Cohortix DB (`working_memory`).
 - **Memory Browser page**: workspace/local filesystem memory tree under `OPENCLAW_MEMORY_DIR`.
 
 ## Deployment
@@ -686,39 +686,39 @@ Trend alerts in the `trends.alerts` response are derived from current-vs-previou
 
 ## Roadmap
 
-See [open issues](https://github.com/builderz-labs/mission-control/issues) for planned work and the [v2.0.0 release notes](docs/releases/2.0.0.md) for the latest major release summary.
+See [open issues](https://github.com/builderz-labs/cohortix/issues) for planned work and the [v2.0.0 release notes](docs/releases/2.0.0.md) for the latest major release summary.
 
 **Completed:**
 
-- [x] Dockerfile and docker-compose.yml ([#34](https://github.com/builderz-labs/mission-control/issues/34))
-- [x] Implement session control actions — monitor/pause/terminate are stub buttons ([#35](https://github.com/builderz-labs/mission-control/issues/35))
-- [x] Dynamic model catalog — replace hardcoded pricing across 3 files ([#36](https://github.com/builderz-labs/mission-control/issues/36))
-- [x] API-wide rate limiting ([#37](https://github.com/builderz-labs/mission-control/issues/37))
-- [x] React error boundaries around panels ([#38](https://github.com/builderz-labs/mission-control/issues/38))
-- [x] Structured logging with pino ([#39](https://github.com/builderz-labs/mission-control/issues/39))
-- [x] Accessibility improvements — WCAG 2.1 AA ([#40](https://github.com/builderz-labs/mission-control/issues/40))
-- [x] HSTS header for TLS deployments ([#41](https://github.com/builderz-labs/mission-control/issues/41))
-- [x] Input validation with zod schemas ([#42](https://github.com/builderz-labs/mission-control/issues/42))
-- [x] Export endpoint row limits ([#43](https://github.com/builderz-labs/mission-control/issues/43))
+- [x] Dockerfile and docker-compose.yml ([#34](https://github.com/builderz-labs/cohortix/issues/34))
+- [x] Implement session control actions — monitor/pause/terminate are stub buttons ([#35](https://github.com/builderz-labs/cohortix/issues/35))
+- [x] Dynamic model catalog — replace hardcoded pricing across 3 files ([#36](https://github.com/builderz-labs/cohortix/issues/36))
+- [x] API-wide rate limiting ([#37](https://github.com/builderz-labs/cohortix/issues/37))
+- [x] React error boundaries around panels ([#38](https://github.com/builderz-labs/cohortix/issues/38))
+- [x] Structured logging with pino ([#39](https://github.com/builderz-labs/cohortix/issues/39))
+- [x] Accessibility improvements — WCAG 2.1 AA ([#40](https://github.com/builderz-labs/cohortix/issues/40))
+- [x] HSTS header for TLS deployments ([#41](https://github.com/builderz-labs/cohortix/issues/41))
+- [x] Input validation with zod schemas ([#42](https://github.com/builderz-labs/cohortix/issues/42))
+- [x] Export endpoint row limits ([#43](https://github.com/builderz-labs/cohortix/issues/43))
 - [x] Fill in Vitest unit test stubs with real assertions
 
-- [x] Direct CLI integration — connect tools like Codex, Claude Code, or custom CLIs directly without requiring a gateway ([#61](https://github.com/builderz-labs/mission-control/pull/61))
-- [x] OpenAPI 3.1 documentation with Scalar UI ([#60](https://github.com/builderz-labs/mission-control/pull/60))
-- [x] GitHub Issues sync — inbound sync with label/assignee mapping ([#63](https://github.com/builderz-labs/mission-control/pull/63))
+- [x] Direct CLI integration — connect tools like Codex, Claude Code, or custom CLIs directly without requiring a gateway ([#61](https://github.com/builderz-labs/cohortix/pull/61))
+- [x] OpenAPI 3.1 documentation with Scalar UI ([#60](https://github.com/builderz-labs/cohortix/pull/60))
+- [x] GitHub Issues sync — inbound sync with label/assignee mapping ([#63](https://github.com/builderz-labs/cohortix/pull/63))
 
 - [x] Webhook retry with exponential backoff and circuit breaker
 - [x] Webhook signature verification (HMAC-SHA256 with constant-time comparison)
 - [x] Local Claude Code session tracking — auto-discover sessions from `~/.claude/projects/`
 - [x] Rate limiter IP extraction hardening with trusted proxy support
-- [x] Ed25519 device identity for WebSocket challenge-response handshake ([#85](https://github.com/builderz-labs/mission-control/pull/85))
-- [x] Agent SOUL workspace sync — bidirectional sync between `soul.md` files and database ([#95](https://github.com/builderz-labs/mission-control/pull/95))
-- [x] Update available banner with GitHub release check ([#94](https://github.com/builderz-labs/mission-control/pull/94))
-- [x] Side panel navigation synced with URL routes ([#87](https://github.com/builderz-labs/mission-control/pull/87))
-- [x] Task board SSE wiring, priority enum, and auto-advance ([#89](https://github.com/builderz-labs/mission-control/pull/89))
+- [x] Ed25519 device identity for WebSocket challenge-response handshake ([#85](https://github.com/builderz-labs/cohortix/pull/85))
+- [x] Agent SOUL workspace sync — bidirectional sync between `soul.md` files and database ([#95](https://github.com/builderz-labs/cohortix/pull/95))
+- [x] Update available banner with GitHub release check ([#94](https://github.com/builderz-labs/cohortix/pull/94))
+- [x] Side panel navigation synced with URL routes ([#87](https://github.com/builderz-labs/cohortix/pull/87))
+- [x] Task board SSE wiring, priority enum, and auto-advance ([#89](https://github.com/builderz-labs/cohortix/pull/89))
 
 **Up next:**
 
-- [x] Workspace isolation for multi-team usage ([#75](https://github.com/builderz-labs/mission-control/issues/75))
+- [x] Workspace isolation for multi-team usage ([#75](https://github.com/builderz-labs/cohortix/issues/75))
 - [x] Framework adapter layer — multi-agent registration across OpenClaw, CrewAI, LangGraph, AutoGen, Claude SDK, and generic
 - [x] Self-update mechanism — admin-only one-click update with audit logging
 - [x] Multi-project task organization with per-project ticket prefixes
@@ -752,11 +752,11 @@ If you find this project useful, consider supporting my open-source work.
 `BYLu8XD8hGDUtdRBWpGWu5HKoiPrWqCxYFSh4oxXuvPg`
 
 <p align="center">
-  <a href="https://star-history.com/#builderz-labs/mission-control&Date">
-    <img src="https://api.star-history.com/svg?repos=builderz-labs/mission-control&type=Date" alt="Star History" width="400">
+  <a href="https://star-history.com/#builderz-labs/cohortix&Date">
+    <img src="https://api.star-history.com/svg?repos=builderz-labs/cohortix&type=Date" alt="Star History" width="400">
   </a>
 </p>
 
 ## License
 
-[MIT](LICENSE) © 2026 [Builderz Labs](https://github.com/builderz-labs/mission-control)
+[MIT](LICENSE) © 2026 [Builderz Labs](https://github.com/builderz-labs/cohortix)

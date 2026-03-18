@@ -77,13 +77,13 @@ What `deploy:standalone` does:
 ## Production (Docker)
 
 ```bash
-docker build -t mission-control .
+docker build -t cohortix .
 docker run -p 3000:3000 \
-  -v mission-control-data:/app/.data \
+  -v cohortix-data:/app/.data \
   -e AUTH_USER=admin \
   -e AUTH_PASS=your-secure-password \
   -e API_KEY=your-api-key \
-  mission-control
+  cohortix
 ```
 
 The Docker image:
@@ -156,7 +156,7 @@ Ensure only one instance is running against the same `.data/` directory. SQLite 
 
 ### "Gateway error: origin not allowed"
 
-Your gateway is rejecting the Mission Control browser origin. Add the Control UI origin
+Your gateway is rejecting the Cohortix browser origin. Add the Control UI origin
 to your gateway config allowlist, for example:
 
 ```json
@@ -169,12 +169,12 @@ to your gateway config allowlist, for example:
 }
 ```
 
-Then restart the gateway and reconnect from Mission Control.
+Then restart the gateway and reconnect from Cohortix.
 
 ### "Gateway error: device identity required"
 
 Device identity signing uses WebCrypto and requires a secure browser context.
-Open Mission Control over HTTPS (or localhost), then reconnect.
+Open Cohortix over HTTPS (or localhost), then reconnect.
 
 ### "Gateway shows offline on VPS deployment"
 
@@ -186,7 +186,7 @@ Quick option:
 NEXT_PUBLIC_GATEWAY_OPTIONAL=true
 ```
 
-This runs Mission Control in standalone mode (core features available, live gateway streams unavailable).
+This runs Cohortix in standalone mode (core features available, live gateway streams unavailable).
 
 Production option: reverse-proxy gateway WebSocket over 443.
 

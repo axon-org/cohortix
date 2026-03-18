@@ -149,8 +149,8 @@ migrate_runtime_data_dir() {
 
   mkdir -p "$target_data_dir"
 
-  local source_db="$SOURCE_DATA_DIR/mission-control.db"
-  local target_db="$target_data_dir/mission-control.db"
+  local source_db="$SOURCE_DATA_DIR/cohortix.db"
+  local target_db="$target_data_dir/cohortix.db"
 
   if [[ -s "$target_db" || ! -s "$source_db" ]]; then
     return
@@ -163,16 +163,16 @@ migrate_runtime_data_dir() {
     sqlite3 "$source_db" ".backup '$target_db_tmp'"
     mv "$target_db_tmp" "$target_db"
 
-    if [[ -f "$SOURCE_DATA_DIR/mission-control-tokens.json" ]]; then
-      cp "$SOURCE_DATA_DIR/mission-control-tokens.json" "$target_data_dir/mission-control-tokens.json"
+    if [[ -f "$SOURCE_DATA_DIR/cohortix-tokens.json" ]]; then
+      cp "$SOURCE_DATA_DIR/cohortix-tokens.json" "$target_data_dir/cohortix-tokens.json"
     fi
     if [[ -d "$SOURCE_DATA_DIR/backups" ]]; then
       rsync -a "$SOURCE_DATA_DIR/backups"/ "$target_data_dir/backups"/
     fi
   else
     rsync -a \
-      --exclude 'mission-control.db-shm' \
-      --exclude 'mission-control.db-wal' \
+      --exclude 'cohortix.db-shm' \
+      --exclude 'cohortix.db-wal' \
       --exclude '*.db-shm' \
       --exclude '*.db-wal' \
       "$SOURCE_DATA_DIR"/ "$target_data_dir"/
@@ -199,8 +199,8 @@ echo "==> rebuilding standalone bundle"
 rm -rf .next
 mkdir -p "$BUILD_DATA_DIR"
 MISSION_CONTROL_DATA_DIR="$BUILD_DATA_DIR" \
-MISSION_CONTROL_DB_PATH="$BUILD_DATA_DIR/mission-control.db" \
-MISSION_CONTROL_TOKENS_PATH="$BUILD_DATA_DIR/mission-control-tokens.json" \
+MISSION_CONTROL_DB_PATH="$BUILD_DATA_DIR/cohortix.db" \
+MISSION_CONTROL_TOKENS_PATH="$BUILD_DATA_DIR/cohortix-tokens.json" \
 pnpm build
 
 echo "==> starting standalone server"

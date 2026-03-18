@@ -13,20 +13,20 @@ const defaultDataDir = path.join(process.cwd(), '.data')
 const configuredDataDir = process.env.MISSION_CONTROL_DATA_DIR || defaultDataDir
 const buildScratchRoot =
   process.env.MISSION_CONTROL_BUILD_DATA_DIR ||
-  path.join(os.tmpdir(), 'mission-control-build')
+  path.join(os.tmpdir(), 'cohortix-build')
 const resolvedDataDir = isBuildPhase
   ? path.join(buildScratchRoot, `worker-${process.pid}`)
   : configuredDataDir
 const resolvedDbPath = isBuildPhase
   ? (process.env.MISSION_CONTROL_BUILD_DB_PATH ||
-      path.join(resolvedDataDir, 'mission-control.db'))
+      path.join(resolvedDataDir, 'cohortix.db'))
   : (process.env.MISSION_CONTROL_DB_PATH ||
-      path.join(resolvedDataDir, 'mission-control.db'))
+      path.join(resolvedDataDir, 'cohortix.db'))
 const resolvedTokensPath = isBuildPhase
   ? (process.env.MISSION_CONTROL_BUILD_TOKENS_PATH ||
-      path.join(resolvedDataDir, 'mission-control-tokens.json'))
+      path.join(resolvedDataDir, 'cohortix-tokens.json'))
   : (process.env.MISSION_CONTROL_TOKENS_PATH ||
-      path.join(resolvedDataDir, 'mission-control-tokens.json'))
+      path.join(resolvedDataDir, 'cohortix-tokens.json'))
 const defaultOpenClawStateDir = path.join(os.homedir(), '.openclaw')
 const explicitOpenClawConfigPath =
   process.env.OPENCLAW_CONFIG_PATH ||

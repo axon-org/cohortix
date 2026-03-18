@@ -6,9 +6,9 @@ This document explains how to capture and update the README screenshots so they 
 
 | File | Section | Description |
 |------|---------|-------------|
-| `docs/mission-control-overview.png` | Dashboard Overview | Main dashboard view |
-| `docs/mission-control-agents.png` | Agents Panel | Active agents list |
-| `docs/mission-control-memory-graph.png` | Memory Graph | Agent memory graph |
+| `docs/cohortix-overview.png` | Dashboard Overview | Main dashboard view |
+| `docs/cohortix-agents.png` | Agents Panel | Active agents list |
+| `docs/cohortix-memory-graph.png` | Memory Graph | Agent memory graph |
 
 ## When to Refresh
 
@@ -23,7 +23,7 @@ Screenshots should be updated when:
 
 ### Prerequisites
 
-- Mission Control running locally (`pnpm dev` or Docker)
+- Cohortix running locally (`pnpm dev` or Docker)
 - Browser with at least 1440×900 viewport recommended
 
 ### Steps
@@ -46,9 +46,9 @@ Screenshots should be updated when:
 
    | Screenshot | URL | Notes |
    |-----------|-----|-------|
-   | `mission-control-overview.png` | `/` | Main dashboard, full page |
-   | `mission-control-agents.png` | `/agents` | Agents panel open |
-   | `mission-control-memory-graph.png` | `/memory` | Memory graph with nodes |
+   | `cohortix-overview.png` | `/` | Main dashboard, full page |
+   | `cohortix-agents.png` | `/agents` | Agents panel open |
+   | `cohortix-memory-graph.png` | `/memory` | Memory graph with nodes |
 
 4. **Crop and optimise** to reduce file size:
 
@@ -65,7 +65,7 @@ Screenshots should be updated when:
 5. **Replace the files** under `docs/` and commit:
 
    ```bash
-   cp ~/Downloads/dashboard.png docs/mission-control-overview.png
+   cp ~/Downloads/dashboard.png docs/cohortix-overview.png
    git add docs/
    git commit -m "docs: refresh README screenshots"
    ```

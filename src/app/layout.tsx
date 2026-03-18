@@ -39,7 +39,7 @@ function resolveMetadataBase(): URL {
   }
 
   // Prevent localhost fallback in production metadata when env is unset.
-  return new URL('https://mission-control.local')
+  return new URL('https://cohortix.local')
 }
 
 const metadataBase = resolveMetadataBase()
@@ -52,7 +52,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Mission Control',
+  title: 'Cohortix',
   description: 'OpenClaw Agent Orchestration Dashboard',
   metadataBase,
   icons: {
@@ -64,20 +64,20 @@ export const metadata: Metadata = {
     shortcut: ['/icon.png'],
   },
   openGraph: {
-    title: 'Mission Control',
+    title: 'Cohortix',
     description: 'OpenClaw Agent Orchestration Dashboard',
-    images: [{ url: '/brand/mc-logo-512.png', width: 512, height: 512, alt: 'Mission Control logo' }],
+    images: [{ url: '/brand/mc-logo-512.png', width: 512, height: 512, alt: 'Cohortix logo' }],
   },
   twitter: {
     card: 'summary',
-    title: 'Mission Control',
+    title: 'Cohortix',
     description: 'OpenClaw Agent Orchestration Dashboard',
     images: ['/brand/mc-logo-512.png'],
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Mission Control',
+    title: 'Cohortix',
   },
 }
 

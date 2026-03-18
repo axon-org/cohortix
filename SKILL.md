@@ -1,11 +1,11 @@
 ---
-name: mission-control
-description: "Interact with Mission Control — AI agent orchestration dashboard. Use when registering agents, managing tasks, syncing skills, or querying agent/task status via MC APIs."
+name: cohortix
+description: "Interact with Cohortix — AI agent orchestration dashboard. Use when registering agents, managing tasks, syncing skills, or querying agent/task status via MC APIs."
 ---
 
-# Mission Control Agent Skill
+# Cohortix Agent Skill
 
-Mission Control (MC) is an AI agent orchestration dashboard with real-time SSE/WebSocket, a skill registry, framework adapters, and RBAC. This skill teaches agents how to interact with MC APIs programmatically.
+Cohortix (MC) is an AI agent orchestration dashboard with real-time SSE/WebSocket, a skill registry, framework adapters, and RBAC. This skill teaches agents how to interact with MC APIs programmatically.
 
 ## Quick Start
 
@@ -263,7 +263,7 @@ All adapters implement the same `FrameworkAdapter` interface — choose the one 
 | `API_KEY` | — | API key for agent/script authentication |
 | `OPENCLAW_GATEWAY_HOST` | `127.0.0.1` | Gateway host address |
 | `OPENCLAW_GATEWAY_PORT` | `18789` | Gateway port |
-| `MISSION_CONTROL_DB_PATH` | `.data/mission-control.db` | SQLite database path |
+| `MISSION_CONTROL_DB_PATH` | `.data/cohortix.db` | SQLite database path |
 | `OPENCLAW_STATE_DIR` | `~/.openclaw` | OpenClaw state directory |
 | `OPENCLAW_CONFIG_PATH` | `<state-dir>/openclaw.json` | Gateway config file path |
 | `MC_CLAUDE_HOME` | `~/.claude` | Claude home directory |

@@ -170,7 +170,7 @@ export function CronManagementPanel() {
         name: task.name || task.id || 'scheduler-task',
         schedule: 'system-managed automation',
         command: `Built-in local automation (${task.id || 'unknown'})`,
-        agentId: 'mission-control-local',
+        agentId: 'cohortix-local',
         delivery: 'local',
         enabled: task.running ? true : !!task.enabled,
         lastRun: typeof task.lastRun === 'number' ? task.lastRun : undefined,
@@ -298,7 +298,7 @@ export function CronManagementPanel() {
   }
 
   const loadJobLogs = async (job: CronJob) => {
-    const isLocalAutomation = (job.delivery === 'local' && job.agentId === 'mission-control-local')
+    const isLocalAutomation = (job.delivery === 'local' && job.agentId === 'cohortix-local')
     if (isLocalAutomation) {
       const logs: Array<{ timestamp: number; message: string; level: string }> = []
       if (job.lastRun) {
@@ -368,7 +368,7 @@ export function CronManagementPanel() {
   }
 
   const triggerJob = async (job: CronJob, mode: 'force' | 'due' = 'force') => {
-    const isLocalAutomation = (job.delivery === 'local' && job.agentId === 'mission-control-local')
+    const isLocalAutomation = (job.delivery === 'local' && job.agentId === 'cohortix-local')
     setRunDropdownJobId(null)
     try {
       if (isLocalAutomation) {
@@ -1042,7 +1042,7 @@ export function CronManagementPanel() {
                 </thead>
                 <tbody className="divide-y divide-border/50">
                   {filteredJobs.map((job, index) => {
-                    const isLocalAutomation = job.delivery === 'local' && job.agentId === 'mission-control-local'
+                    const isLocalAutomation = job.delivery === 'local' && job.agentId === 'cohortix-local'
                     const isSelected = selectedJob?.name === job.name
                     return (
                       <tr
@@ -1211,7 +1211,7 @@ export function CronManagementPanel() {
                       <span className="text-muted-foreground">{t('delivery')}</span>
                       <span className="text-foreground text-xs">{selectedJob.delivery || 'gateway'}</span>
                     </div>
-                    {selectedJob.delivery === 'local' && selectedJob.agentId === 'mission-control-local' && (
+                    {selectedJob.delivery === 'local' && selectedJob.agentId === 'cohortix-local' && (
                       <div className="grid grid-cols-[100px_1fr] gap-1 text-sm">
                         <span className="text-muted-foreground">{t('source')}</span>
                         <span className="text-foreground text-xs">{t('localSchedulerAutomation')}</span>
@@ -1266,7 +1266,7 @@ export function CronManagementPanel() {
                   </Button>
                   <Button
                     onClick={() => toggleJob(selectedJob)}
-                    disabled={selectedJob.delivery === 'local' && selectedJob.agentId === 'mission-control-local'}
+                    disabled={selectedJob.delivery === 'local' && selectedJob.agentId === 'cohortix-local'}
                     size="sm"
                     className={selectedJob.enabled
                       ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border-yellow-500/30'
@@ -1276,7 +1276,7 @@ export function CronManagementPanel() {
                   </Button>
                   <Button
                     onClick={() => cloneJob(selectedJob)}
-                    disabled={selectedJob.delivery === 'local' && selectedJob.agentId === 'mission-control-local'}
+                    disabled={selectedJob.delivery === 'local' && selectedJob.agentId === 'cohortix-local'}
                     size="sm"
                     variant="outline"
                   >
@@ -1291,7 +1291,7 @@ export function CronManagementPanel() {
                   </Button>
                   <Button
                     onClick={() => removeJob(selectedJob)}
-                    disabled={selectedJob.delivery === 'local' && selectedJob.agentId === 'mission-control-local'}
+                    disabled={selectedJob.delivery === 'local' && selectedJob.agentId === 'cohortix-local'}
                     variant="destructive"
                     size="sm"
                   >

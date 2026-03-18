@@ -12,7 +12,7 @@ set -e
 
 # Configuration
 MISSION_CONTROL_URL="${MISSION_CONTROL_URL:-http://localhost:3000}"
-LOG_DIR="${LOG_DIR:-$HOME/.mission-control/logs}"
+LOG_DIR="${LOG_DIR:-$HOME/.cohortix/logs}"
 LOG_FILE="$LOG_DIR/agent-heartbeat-$(date +%Y-%m-%d).log"
 MAX_CONCURRENT=3  # Max agents to check concurrently
 OPENCLAW_CMD="${OPENCLAW_CMD:-openclaw}"

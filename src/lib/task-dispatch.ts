@@ -94,7 +94,7 @@ function buildTaskPrompt(task: DispatchableTask, rejectionFeedback?: string | nu
     : `TASK-${task.id}`
 
   const lines = [
-    'You have been assigned a task in Mission Control.',
+    'You have been assigned a task in Cohortix.',
     '',
     `**[${ticket}] ${task.title}**`,
     `Priority: ${task.priority}`,
@@ -185,7 +185,7 @@ function buildReviewPrompt(task: ReviewableTask): string {
     : `TASK-${task.id}`
 
   const lines = [
-    'You are Aegis, the quality reviewer for Mission Control.',
+    'You are Aegis, the quality reviewer for Cohortix.',
     'Review the following completed task and its resolution.',
     '',
     `**[${ticket}] ${task.title}**`,

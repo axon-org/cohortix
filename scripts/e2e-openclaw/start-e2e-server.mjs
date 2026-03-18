@@ -55,7 +55,7 @@ const baseEnv = {
   MISSION_CONTROL_TEST_MODE: process.env.MISSION_CONTROL_TEST_MODE || '1',
   MC_DISABLE_RATE_LIMIT: '1',
   MISSION_CONTROL_DATA_DIR: dataDir,
-  MISSION_CONTROL_DB_PATH: path.join(dataDir, 'mission-control.db'),
+  MISSION_CONTROL_DB_PATH: path.join(dataDir, 'cohortix.db'),
   OPENCLAW_STATE_DIR: runtimeRoot,
   OPENCLAW_CONFIG_PATH: path.join(runtimeRoot, 'openclaw.json'),
   OPENCLAW_GATEWAY_HOST: gatewayHost,

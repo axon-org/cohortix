@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Mission Control are documented in this file.
+All notable changes to Cohortix are documented in this file.
 
 <!-- Maintainer note: add entries under [Unreleased] as PRs merge; bump to a version when releasing. -->
 
@@ -49,7 +49,7 @@ All notable changes to Mission Control are documented in this file.
 ### Fixed
 - Agent and workspace deletion now removes OpenClaw config state correctly and refreshes the UI consistently
 - Security scan autofix no longer breaks host access or E2E runtime env state after applying fixes
-- Mission Control builds now isolate build-time SQLite state from runtime SQLite state, eliminating `SQLITE_BUSY` build contention
+- Cohortix builds now isolate build-time SQLite state from runtime SQLite state, eliminating `SQLITE_BUSY` build contention
 - Standalone deploy/runtime handling now preserves data directories, static assets, and restart detection more reliably
 - OpenClaw config compatibility issues around malformed `model.primary` payloads, stale keys, and doctor warning classification
 - Local Hermes transcript loading, gateway chat/channel RPC fallbacks, and memory panel regressions from the refactor cycle
@@ -59,8 +59,8 @@ All notable changes to Mission Control are documented in this file.
 ### Changed
 - Project version advanced to `2.0.0`
 - Node runtime policy standardized on `22.x` across local development, CI, Docker, and standalone deployment
-- README, landing-page handoff, and release documentation refreshed to match the current Mission Control interface and feature set
-- This release captures 189 commits on top of `main` and marks the major refactor branch as the new baseline for Mission Control
+- README, landing-page handoff, and release documentation refreshed to match the current Cohortix interface and feature set
+- This release captures 189 commits on top of `main` and marks the major refactor branch as the new baseline for Cohortix
 - Navigation, loading, branding, and onboarding flows were redesigned to match the broader v2 operator experience
 
 ### Contributors

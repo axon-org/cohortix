@@ -1,13 +1,13 @@
-# Contributing to Mission Control
+# Contributing to Cohortix
 
-Thank you for your interest in contributing to Mission Control.
+Thank you for your interest in contributing to Cohortix.
 
 ## Getting Started
 
 ```bash
 # Clone the repo
-git clone https://github.com/builderz-labs/mission-control.git
-cd mission-control
+git clone https://github.com/builderz-labs/cohortix.git
+cd cohortix
 
 # Install dependencies
 pnpm install

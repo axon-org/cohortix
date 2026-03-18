@@ -92,7 +92,7 @@ Domain (life/business area)
 
 | Concept           | Cohortix Term       | Definition                  | ❌ Don't Use                    |
 | ----------------- | ------------------- | --------------------------- | ------------------------------- |
-| Main dashboard    | **Mission Control** | Where you manage everything | Dashboard, Admin panel, Console |
+| Main dashboard    | **Cohortix** | Where you manage everything | Dashboard, Admin panel, Console |
 | Agent detail page | **Agent Profile**   | Individual Agent's page     | Agent page, Bot settings        |
 | Mission history   | **Mission Log**     | Record of past Missions     | History, Logs, Activity         |
 | Settings          | **Preferences**     | Your personal settings      | Settings, Configuration         |
@@ -186,7 +186,7 @@ From abstract → concrete:
 │  ENTITY MAPPING:                                         │
 │  Agent        →  Agent                                   │
 │  Agents       →  Cohort                                 │
-│  Dashboard    →  Mission Control                        │
+│  Dashboard    →  Cohortix                        │
 │  Workspace    →  Base                                   │
 │                                                          │
 │  ACTIONS:                                                │
