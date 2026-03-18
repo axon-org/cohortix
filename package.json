@@ -1,7 +1,7 @@
 {
-  "name": "mission-control",
-  "version": "2.0.0",
-  "description": "OpenClaw Mission Control — open-source agent orchestration dashboard",
+  "name": "cohortix",
+  "version": "0.1.0",
+  "description": "Cohortix — Agent command center for everyday people",
   "scripts": {
     "verify:node": "node scripts/check-node-version.mjs",
     "dev": "pnpm run verify:node && next dev --hostname 127.0.0.1 --port ${PORT:-3000}",
@@ -71,7 +71,7 @@
     "node": ">=22"
   },
   "keywords": [
-    "openclaw",
+    "cohortix",
     "agent",
     "orchestration",
     "dashboard",
@@ -81,7 +81,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/builderz-labs/mission-control.git"
+    "url": "https://github.com/ahmadashfq/cohortix.git"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
