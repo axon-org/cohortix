@@ -6,6 +6,9 @@ All notable changes to Cohortix are documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Auto-derive OpenClaw session keys from agent name (`agent:<name>:main`) — messaging works out of the box without manual DB configuration
+
 ### Fixed
 - SQLite `SQLITE_BUSY` contention — added `busy_timeout` pragma and guarded build-phase eager DB initialisation (#337)
 - Skill registry path traversal and SSRF — extended `SECURITY_RULES` with directory traversal patterns and private-IP/metadata URL detection (#338, #336)
