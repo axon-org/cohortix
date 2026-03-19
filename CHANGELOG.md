@@ -10,6 +10,7 @@ All notable changes to Cohortix are documented in this file.
 - Auto-derive OpenClaw session keys from agent name (`agent:<name>:main`) — messaging works out of the box without manual DB configuration
 
 ### Fixed
+- Chat panel `gateway_send_failed` — gateway wrapper now recovers valid JSON from non-zero exits caused by stderr warnings; catch block recognizes `started`/`ok`/`in_flight` statuses; session key derivation fallback (`agent:<name>:main`) applied in chat route (#101)
 - SQLite `SQLITE_BUSY` contention — added `busy_timeout` pragma and guarded build-phase eager DB initialisation (#337)
 - Skill registry path traversal and SSRF — extended `SECURITY_RULES` with directory traversal patterns and private-IP/metadata URL detection (#338, #336)
 

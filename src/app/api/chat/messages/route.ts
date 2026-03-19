@@ -465,6 +465,12 @@ export async function POST(request: NextRequest) {
         // Prefer configured openclawId when present, fallback to normalized name
         let openclawAgentId: string | null = coordinatorResolution.openclawAgentId
 
+        // Fallback: derive session key from agent name (agent:<name>:main)
+        // This mirrors the convention used by the agent message route.
+        if (!sessionKey && openclawAgentId) {
+          sessionKey = `agent:${openclawAgentId}:main`
+        }
+
         if (!sessionKey && !openclawAgentId) {
           forwardInfo.reason = 'no_active_session'
 
@@ -540,7 +546,13 @@ export async function POST(request: NextRequest) {
             // Treat accepted runs as successful delivery.
             const maybeStdout = String((err as any)?.stdout || '')
             const acceptedPayload = parseGatewayJson(maybeStdout)
-            if (maybeStdout.includes('"status": "accepted"') || maybeStdout.includes('"status":"accepted"')) {
+            const recoveredStatus = String(acceptedPayload?.status || '').toLowerCase()
+            if (
+              recoveredStatus === 'accepted' ||
+              recoveredStatus === 'started' ||
+              recoveredStatus === 'ok' ||
+              recoveredStatus === 'in_flight'
+            ) {
               forwardInfo.delivered = true
               forwardInfo.session = sessionKey || openclawAgentId || undefined
               if (typeof acceptedPayload?.runId === 'string' && acceptedPayload.runId) {
