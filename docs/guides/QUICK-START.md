@@ -3,7 +3,7 @@
 ## Local Development
 
 ```bash
-git clone https://github.com/ahmadashfq/cohortix.git
+git clone https://github.com/axon-org/cohortix.git
 cd cohortix
 pnpm install
 pnpm dev
@@ -14,7 +14,7 @@ Open http://localhost:3000/setup in your browser to create your admin account.
 ## Docker
 
 ```bash
-git clone https://github.com/ahmadashfq/cohortix.git
+git clone https://github.com/axon-org/cohortix.git
 cd cohortix
 docker compose up -d
 ```

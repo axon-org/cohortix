@@ -81,7 +81,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ahmadashfq/cohortix.git"
+    "url": "https://github.com/axon-org/cohortix.git"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
