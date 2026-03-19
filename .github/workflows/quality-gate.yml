@@ -27,6 +27,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
+      - name: Configure git identity for tests
+        run: |
+          git config --global user.email "ci@cohortix.dev"
+          git config --global user.name "Cohortix CI"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
