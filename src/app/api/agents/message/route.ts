@@ -54,14 +54,16 @@ export async function POST(request: NextRequest) {
 
     await runOpenClaw(
       [
-        'gateway',
-        'sessions_send',
-        '--session',
+        'agent',
+        '--agent',
+        to,
+        '--session-id',
         sessionKey,
         '--message',
-        `Message from ${from}: ${message}`
+        `Message from ${from}: ${message}`,
+        '--json',
       ],
-      { timeoutMs: 10000 }
+      { timeoutMs: 15000 }
     )
 
     db_helpers.createNotification(
