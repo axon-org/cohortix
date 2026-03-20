@@ -93,3 +93,36 @@ export const fonts = {
   sans: 'var(--font-sans)',
   mono: 'var(--font-mono)',
 } as const
+
+
+// ---------------------------------------------------------------------------
+// Brand-light palette
+// ---------------------------------------------------------------------------
+export const brandLightPalette = {
+  background: { h: 40, s: 30, l: 97 },
+  card: { h: 40, s: 25, l: 93 },
+  primary: { h: 248, s: 50, l: 52 },
+  secondary: { h: 240, s: 8, l: 95 },
+  muted: { h: 240, s: 5, l: 52 },
+  border: { h: 240, s: 8, l: 88 },
+  ring: { h: 248, s: 65, l: 64 },
+} as const satisfies Record<string, HSL>
+
+export const brandLightAccents = {
+  indigo: { h: 248, s: 50, l: 52 },
+  amber: { h: 38, s: 85, l: 50 },
+  green: { h: 148, s: 50, l: 42 },
+  red: { h: 4, s: 75, l: 52 },
+  blue: { h: 220, s: 65, l: 55 },
+} as const satisfies Record<string, HSL>
+
+export const themePalettes = {
+  'brand-light': brandLightPalette,
+  void: voidPalette,
+} as const
+
+export type ThemePaletteId = keyof typeof themePalettes
+
+export function getThemePalette(theme: string) {
+  return themePalettes[theme as ThemePaletteId] ?? themePalettes.void
+}
