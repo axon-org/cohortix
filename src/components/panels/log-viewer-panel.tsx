@@ -171,9 +171,9 @@ export function LogViewerPanel() {
 
   const getLogLevelColor = (level: string) => {
     switch (level.toLowerCase()) {
-      case 'error': return 'text-red-400'
-      case 'warn': return 'text-yellow-400'
-      case 'info': return 'text-blue-400'
+      case 'error': return 'text-status-error-fg'
+      case 'warn': return 'text-status-warning-fg'
+      case 'info': return 'text-status-info-fg'
       case 'debug': return 'text-muted-foreground'
       default: return 'text-foreground'
     }
@@ -181,10 +181,10 @@ export function LogViewerPanel() {
 
   const getLogLevelBg = (level: string) => {
     switch (level.toLowerCase()) {
-      case 'error': return 'bg-red-500/10 border-red-500/20'
-      case 'warn': return 'bg-yellow-500/10 border-yellow-500/20'
-      case 'info': return 'bg-blue-500/10 border-blue-500/20'
-      case 'debug': return 'bg-gray-500/10 border-gray-500/20'
+      case 'error': return 'bg-status-error-bg border-status-error-border'
+      case 'warn': return 'bg-status-warning-bg border-status-warning-border'
+      case 'info': return 'bg-status-info-bg/10 border-status-info-border'
+      case 'debug': return 'bg-muted border-border'
       default: return 'bg-secondary border-border'
     }
   }
@@ -302,7 +302,7 @@ export function LogViewerPanel() {
             </Button>
             <Button
               onClick={handleScrollToBottom}
-              className="bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30"
+              className="bg-status-info-bg/20 text-status-info-fg border border-status-info-border hover:bg-status-info-bg/30"
             >
               {t('bottom')}
             </Button>
@@ -313,14 +313,14 @@ export function LogViewerPanel() {
             <Button
               onClick={handleExportText}
               disabled={filteredLogs.length === 0}
-              className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 disabled:opacity-40"
+              className="bg-status-success-bg text-status-success-fg border border-status-success-border hover:bg-status-success-bg disabled:opacity-40"
             >
               {t('exportLog')}
             </Button>
             <Button
               onClick={handleExportJson}
               disabled={filteredLogs.length === 0}
-              className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 disabled:opacity-40"
+              className="bg-status-success-bg text-status-success-fg border border-status-success-border hover:bg-status-success-bg disabled:opacity-40"
             >
               {t('exportJson')}
             </Button>
@@ -339,7 +339,7 @@ export function LogViewerPanel() {
         <div className="flex items-center gap-3">
           <span>{t('showing', { filtered: filteredLogs.length, total: logs.length })}</span>
           {isBufferFull && (
-            <span className="px-2 py-0.5 rounded text-xs bg-yellow-500/15 text-yellow-400 border border-yellow-500/25">
+            <span className="px-2 py-0.5 rounded text-xs bg-status-warning-solid/15 text-status-warning-fg border border-status-warning-border">
               {t('bufferFull', { max: MAX_LOG_BUFFER })}
             </span>
           )}

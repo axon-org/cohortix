@@ -50,15 +50,15 @@ const activityIcons: Record<string, string> = {
 }
 
 const activityColors: Record<string, string> = {
-  task_created: 'text-green-400',
-  task_updated: 'text-blue-400',
-  task_deleted: 'text-red-400',
-  comment_added: 'text-purple-400',
-  agent_created: 'text-cyan-400',
-  agent_status_change: 'text-yellow-400',
-  standup_generated: 'text-orange-400',
-  mention: 'text-pink-400',
-  assignment: 'text-indigo-400',
+  task_created: 'text-status-success-fg',
+  task_updated: 'text-status-info-fg',
+  task_deleted: 'text-status-error-fg',
+  comment_added: 'text-primary',
+  agent_created: 'text-primary',
+  agent_status_change: 'text-status-warning-fg',
+  standup_generated: 'text-status-warning-fg',
+  mention: 'text-status-error-fg',
+  assignment: 'text-status-info-fg',
 }
 
 function formatRelativeTime(timestamp: number) {
@@ -144,7 +144,7 @@ function ActivityRow({ activity }: { activity: Activity }) {
                       <span className="text-muted-foreground">{t('entityAgent')}</span>
                       <span className="text-foreground ml-1">{activity.entity.name}</span>
                       {activity.entity.status && (
-                        <span className="ml-2 px-1.5 py-0.5 bg-green-500/10 text-green-400 rounded text-[10px]">
+                        <span className="ml-2 px-1.5 py-0.5 bg-status-success-bg text-status-success-fg rounded text-[10px]">
                           {activity.entity.status}
                         </span>
                       )}
@@ -182,9 +182,9 @@ function TimelineRow({ activity }: { activity: Activity }) {
       <span
         className={`absolute -left-[5px] top-3 w-2 h-2 rounded-full bg-card border-2 ${
           activity.type === 'agent_status_change'
-            ? 'border-yellow-400'
+            ? 'border-status-warning-border'
             : activity.type.startsWith('task')
-              ? 'border-blue-400'
+              ? 'border-status-info-border'
               : 'border-muted-foreground'
         }`}
       />
@@ -316,7 +316,7 @@ export function ActivityFeedPanel() {
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-bold text-foreground">{t('title')}</h2>
           <div
-            className={`w-2.5 h-2.5 rounded-full ${autoRefresh ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground/30'}`}
+            className={`w-2.5 h-2.5 rounded-full ${autoRefresh ? 'bg-status-success-solid animate-pulse' : 'bg-muted-foreground/30'}`}
           />
         </div>
         <div className="flex gap-2">
@@ -364,11 +364,11 @@ export function ActivityFeedPanel() {
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
                       a.status === 'busy'
-                        ? 'bg-green-500'
+                        ? 'bg-status-success-solid'
                         : a.status === 'idle'
-                          ? 'bg-yellow-500'
+                          ? 'bg-status-warning-solid'
                           : a.status === 'error'
-                            ? 'bg-red-500'
+                            ? 'bg-status-error-solid'
                             : 'bg-muted-foreground/30'
                     }`}
                   />
@@ -414,13 +414,13 @@ export function ActivityFeedPanel() {
 
       {/* Error */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 m-4 rounded-lg text-sm flex items-center justify-between">
+        <div className="bg-status-error-bg border border-status-error-border text-status-error-fg p-3 m-4 rounded-lg text-sm flex items-center justify-between">
           <span>{error}</span>
           <Button
             onClick={() => setError(null)}
             variant="ghost"
             size="icon-sm"
-            className="text-red-400/60 hover:text-red-400 ml-2"
+            className="text-status-error-fg/60 hover:text-status-error-fg ml-2"
           >
             x
           </Button>
@@ -477,11 +477,11 @@ export function ActivityFeedPanel() {
                       <span
                         className={`font-medium ${
                           selectedAgentData.status === 'busy'
-                            ? 'text-green-400'
+                            ? 'text-status-success-fg'
                             : selectedAgentData.status === 'idle'
-                              ? 'text-yellow-400'
+                              ? 'text-status-warning-fg'
                               : selectedAgentData.status === 'error'
-                                ? 'text-red-400'
+                                ? 'text-status-error-fg'
                                 : 'text-muted-foreground'
                         }`}
                       >
@@ -536,7 +536,7 @@ export function ActivityFeedPanel() {
                       <div key={s.id} className="text-xs space-y-0.5">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className={`w-1.5 h-1.5 rounded-full ${s.active ? 'bg-green-500' : 'bg-muted-foreground/30'}`}
+                            className={`w-1.5 h-1.5 rounded-full ${s.active ? 'bg-status-success-solid' : 'bg-muted-foreground/30'}`}
                           />
                           <span className="font-mono-tight text-foreground truncate">{s.kind}</span>
                         </div>

@@ -21,10 +21,10 @@ export function ConnectionStatus({
   const isGatewayOptional = process.env.NEXT_PUBLIC_GATEWAY_OPTIONAL === 'true'
 
   const getStatusColor = () => {
-    if (isConnected) return 'bg-green-500 animate-pulse'
-    if (connection.reconnectAttempts > 0) return 'bg-yellow-500'
-    if (isGatewayOptional && !isConnected) return 'bg-blue-500'
-    return 'bg-red-500'
+    if (isConnected) return 'bg-status-success-solid animate-pulse'
+    if (connection.reconnectAttempts > 0) return 'bg-status-warning-solid'
+    if (isGatewayOptional && !isConnected) return 'bg-status-info-solid'
+    return 'bg-status-error-solid'
   }
 
   const getStatusText = () => {
@@ -69,7 +69,7 @@ export function ConnectionStatus({
             variant="outline"
             size="xs"
             onClick={onDisconnect}
-            className="bg-gray-500/20 text-gray-400 border-gray-500/30 hover:bg-gray-500/30"
+            className="bg-muted text-muted-foreground border-border hover:bg-muted/80"
             title="Cancel reconnection attempts"
           >
             Cancel
@@ -89,7 +89,7 @@ export function ConnectionStatus({
                 variant="outline"
                 size="xs"
                 onClick={onReconnect}
-                className="bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30"
+                className="bg-status-info-bg text-status-info-fg border-status-info-border hover:bg-status-info-bg/80"
                 title="Reconnect with fresh session"
               >
                 Reconnect

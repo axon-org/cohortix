@@ -578,7 +578,7 @@ function SessionConversationView({
               sizeClassName="w-5 h-5"
             />
           )}
-          <span className={`rounded-full px-2 py-0.5 text-[10px] ${session.active ? 'bg-green-500/20 text-green-300' : 'bg-muted text-muted-foreground'}`}>
+          <span className={`rounded-full px-2 py-0.5 text-[10px] ${session.active ? 'bg-status-success-bg text-status-success-fg' : 'bg-muted text-muted-foreground'}`}>
             {session.active ? 'active' : 'idle'}
           </span>
           <span className="font-mono-tight">{getSessionKindLabel(session.sessionKind)}</span>
@@ -627,7 +627,7 @@ function SessionConversationView({
                 {prefBusy ? 'Saving...' : 'Save'}
               </Button>
             </div>
-            {prefError && <div className="mt-2 text-xs text-red-400">{prefError}</div>}
+            {prefError && <div className="mt-2 text-xs text-status-error-fg">{prefError}</div>}
           </details>
         )}
       </div>
@@ -643,7 +643,7 @@ function SessionConversationView({
           </div>
         )}
         {!loading && error && (
-          <div className="px-4 text-xs text-red-400">{error}</div>
+          <div className="px-4 text-xs text-status-error-fg">{error}</div>
         )}
         {!loading && !error && messages.length === 0 && (
           <div className="px-4 text-xs text-muted-foreground">
@@ -666,7 +666,7 @@ function SessionConversationView({
       {/* Continue session input */}
       <div className="border-t border-border/50 px-4 py-2">
         <div className="flex items-center gap-2">
-          <span className={`font-mono-tight text-xs ${isGatewaySession ? 'text-cyan-400/60' : 'text-green-400/60'}`}>{isGatewaySession ? '>' : '$'}</span>
+          <span className={`font-mono-tight text-xs ${isGatewaySession ? 'text-primary/60' : 'text-status-success-fg/60'}`}>{isGatewaySession ? '>' : '$'}</span>
           <input
             value={continuePrompt}
             onChange={(e) => setContinuePrompt(e.target.value)}
@@ -689,7 +689,7 @@ function SessionConversationView({
             {continueBusy ? '...' : 'Send'}
           </Button>
         </div>
-        {continueError && <div className="mt-1 text-xs text-red-400">{continueError}</div>}
+        {continueError && <div className="mt-1 text-xs text-status-error-fg">{continueError}</div>}
         {lastReply && (
           <div className="mt-2 border-l-2 border-primary/30 pl-3">
             <div className="font-mono-tight text-xs leading-relaxed text-foreground whitespace-pre-wrap">{lastReply}</div>
@@ -724,9 +724,9 @@ function ChatIndicators({ notifications }: { notifications: Array<{ id: number; 
             key={toast.id}
             className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-[11px] animate-in fade-in slide-in-from-bottom-1 ${
               isCompaction
-                ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
+                ? 'bg-status-info-bg text-status-info-fg border border-status-info-border'
                 : isFallback
-                ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
+                ? 'bg-status-warning-bg text-status-warning-fg border border-status-warning-border'
                 : 'bg-surface-1 text-muted-foreground border border-border/30'
             }`}
           >
@@ -741,9 +741,9 @@ function ChatIndicators({ notifications }: { notifications: Array<{ id: number; 
 
 function AgentAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' }) {
   const colors: Record<string, string> = {
-    coordinator: 'bg-purple-500/20 text-purple-400',
-    aegis: 'bg-red-500/20 text-red-400',
-    research: 'bg-green-500/20 text-green-400',
+    coordinator: 'bg-primary/20 text-primary',
+    aegis: 'bg-status-error-bg text-status-error-fg',
+    research: 'bg-status-success-bg text-status-success-fg',
     ops: 'bg-orange-500/20 text-orange-400',
     reviewer: 'bg-teal-500/20 text-teal-400',
     content: 'bg-indigo-500/20 text-indigo-400',

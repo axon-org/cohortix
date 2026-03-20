@@ -19,14 +19,14 @@ const SESSION_KIND_META: Record<SessionKind, {
   'codex-cli': {
     label: 'Codex CLI',
     shortLabel: 'CX',
-    pillClassName: 'bg-amber-500/15 text-amber-400/80',
+    pillClassName: 'bg-status-warning-bg text-status-warning-fg/80',
     imageSrc: '/brand/codex-logo.png',
     imageAlt: 'Codex logo',
   },
   hermes: {
     label: 'Hermes Agent',
     shortLabel: 'HM',
-    pillClassName: 'bg-cyan-500/15 text-cyan-300/80',
+    pillClassName: 'bg-primary/15 text-primary/80',
     imageSrc: '/brand/hermes-logo.png',
     imageAlt: 'Hermes logo',
   },

@@ -109,9 +109,9 @@ export function SessionDetailsPanel() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-400'
-      case 'warning': return 'text-yellow-400'
-      case 'critical': return 'text-red-400'
+      case 'active': return 'text-status-success-fg'
+      case 'warning': return 'text-status-warning-fg'
+      case 'critical': return 'text-status-error-fg'
       case 'idle': return 'text-muted-foreground'
       default: return 'text-muted-foreground'
     }
@@ -354,13 +354,13 @@ export function SessionDetailsPanel() {
                         {session.flags.map((flag: string, index: number) => (
                           <span
                             key={index}
-                            className="px-2 py-1 text-xs bg-blue-500/20 text-blue-400 rounded"
+                            className="px-2 py-1 text-xs bg-status-info-bg/20 text-status-info-fg rounded"
                           >
                             {flag}
                           </span>
                         ))}
                         <div className={`w-3 h-3 rounded-full ${
-                          session.active ? 'bg-green-500' : 'bg-gray-500'
+                          session.active ? 'bg-status-success-solid' : 'bg-muted'
                         }`}></div>
                       </div>
                     </div>
@@ -378,8 +378,8 @@ export function SessionDetailsPanel() {
                         <div className="w-full bg-secondary rounded-full h-2 mt-1">
                           <div
                             className={`h-2 rounded-full transition-all ${
-                              tokenUsage.percentage > 95 ? 'bg-red-500' :
-                              tokenUsage.percentage > 80 ? 'bg-yellow-500' : 'bg-green-500'
+                              tokenUsage.percentage > 95 ? 'bg-status-error-solid' :
+                              tokenUsage.percentage > 80 ? 'bg-status-warning-solid' : 'bg-status-success-solid'
                             }`}
                             style={{ width: `${Math.min(tokenUsage.percentage, 100)}%` }}
                           ></div>
@@ -540,7 +540,7 @@ export function SessionDetailsPanel() {
                         <div className="flex space-x-2">
                           <Button
                             size="xs"
-                            className="bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30"
+                            className="bg-status-info-bg/20 text-status-info-fg border border-status-info-border hover:bg-status-info-bg/30"
                             disabled={controllingSession !== null}
                             onClick={async (e) => {
                               e.stopPropagation()
@@ -566,7 +566,7 @@ export function SessionDetailsPanel() {
                           </Button>
                           <Button
                             size="xs"
-                            className="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 hover:bg-yellow-500/30"
+                            className="bg-status-warning-bg text-status-warning-fg border border-status-warning-border hover:bg-status-warning-solid/30"
                             disabled={controllingSession !== null}
                             onClick={async (e) => {
                               e.stopPropagation()
@@ -621,7 +621,7 @@ export function SessionDetailsPanel() {
                           {/* Delete Button */}
                           {confirmingDelete === session.key ? (
                             <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                              <span className="text-xs text-red-400">{t('deleteConfirm')}</span>
+                              <span className="text-xs text-status-error-fg">{t('deleteConfirm')}</span>
                               <Button
                                 size="xs"
                                 variant="destructive"
@@ -641,7 +641,7 @@ export function SessionDetailsPanel() {
                           ) : (
                             <Button
                               size="xs"
-                              className="bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 ml-auto"
+                              className="bg-status-error-bg text-status-error-fg border border-status-error-border hover:bg-status-error-bg ml-auto"
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setConfirmingDelete(session.key)
@@ -672,7 +672,7 @@ export function SessionDetailsPanel() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">{t('active')}:</span>
-                <span className="font-medium text-green-400">
+                <span className="font-medium text-status-success-fg">
                   {sessions.filter(s => s.active).length}
                 </span>
               </div>
@@ -727,8 +727,8 @@ export function SessionDetailsPanel() {
 
           {/* High Token Usage Alert */}
           {sessions.some(s => parseTokenUsage(s.tokens).percentage > 80) && (
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-              <h3 className="font-medium text-yellow-400 mb-2">{t('highTokenUsage')}</h3>
+            <div className="bg-status-warning-bg border border-status-warning-border rounded-lg p-4">
+              <h3 className="font-medium text-status-warning-fg mb-2">{t('highTokenUsage')}</h3>
               <div className="text-sm text-muted-foreground">
                 {t('highTokenUsageDesc', { count: sessions.filter(s => parseTokenUsage(s.tokens).percentage > 80).length })}
               </div>

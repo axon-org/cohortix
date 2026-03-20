@@ -55,11 +55,11 @@ export function OpenClawUpdateBanner() {
 
   return (
     <div className="mx-4 mt-3 mb-0">
-      <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-sm">
-        <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0" />
-        <p className="flex-1 text-xs text-cyan-300">
+      <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-primary/10 border border-primary/20 text-sm">
+        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+        <p className="flex-1 text-xs text-primary/80">
           {state === 'updating' && (
-            <span className="font-medium text-amber-300">{t('updatingOpenClaw')}</span>
+            <span className="font-medium text-status-warning-fg">{t('updatingOpenClaw')}</span>
           )}
           {state === 'success' && (
             <span className="font-medium text-emerald-300">
@@ -67,11 +67,11 @@ export function OpenClawUpdateBanner() {
             </span>
           )}
           {state === 'error' && (
-            <span className="font-medium text-red-300">{errorMsg}</span>
+            <span className="font-medium text-status-error-fg">{errorMsg}</span>
           )}
           {state === 'idle' && (
             <>
-              <span className="font-medium text-cyan-200">
+              <span className="font-medium text-primary/70">
                 {t('openclawUpdateAvailable', { version: openclawUpdate.latest })}
               </span>
               {' ('}{t('installed', { version: openclawUpdate.installed })}{')'}
@@ -82,21 +82,21 @@ export function OpenClawUpdateBanner() {
           <>
             <button
               onClick={handleUpdate}
-              className="shrink-0 text-2xs font-medium text-cyan-900 bg-cyan-500 hover:bg-cyan-400 px-2.5 py-1 rounded transition-colors"
+              className="shrink-0 text-2xs font-medium text-primary-foreground bg-primary hover:bg-primary/80 px-2.5 py-1 rounded transition-colors"
             >
               {tc('updateNow')}
             </button>
             {openclawUpdate.releaseNotes && (
               <button
                 onClick={() => setShowChangelog(v => !v)}
-                className="shrink-0 text-2xs font-medium text-cyan-400 hover:text-cyan-300 px-2 py-1 rounded border border-cyan-500/20 hover:border-cyan-500/40 transition-colors"
+                className="shrink-0 text-2xs font-medium text-primary hover:text-primary/80 px-2 py-1 rounded border border-primary/20 hover:border-primary/40 transition-colors"
               >
                 {t('changelog')} {showChangelog ? '▴' : '▾'}
               </button>
             )}
             <button
               onClick={handleCopy}
-              className="shrink-0 text-2xs font-medium text-cyan-400 hover:text-cyan-300 px-2 py-1 rounded border border-cyan-500/20 hover:border-cyan-500/40 transition-colors"
+              className="shrink-0 text-2xs font-medium text-primary hover:text-primary/80 px-2 py-1 rounded border border-primary/20 hover:border-primary/40 transition-colors"
             >
               {copied ? t('copied') : t('copyCommand')}
             </button>
@@ -104,7 +104,7 @@ export function OpenClawUpdateBanner() {
               href={openclawUpdate.releaseUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 text-2xs font-medium text-cyan-400 hover:text-cyan-300 px-2 py-1 rounded border border-cyan-500/20 hover:border-cyan-500/40 transition-colors"
+              className="shrink-0 text-2xs font-medium text-primary hover:text-primary/80 px-2 py-1 rounded border border-primary/20 hover:border-primary/40 transition-colors"
             >
               {tc('viewRelease')}
             </a>
@@ -112,7 +112,7 @@ export function OpenClawUpdateBanner() {
               variant="ghost"
               size="icon-xs"
               onClick={() => dismissOpenclawUpdate(openclawUpdate.latest)}
-              className="shrink-0 text-cyan-400/60 hover:text-cyan-300 hover:bg-transparent"
+              className="shrink-0 text-primary/60 hover:text-primary/80 hover:bg-transparent"
               title={tc('dismiss')}
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -122,14 +122,14 @@ export function OpenClawUpdateBanner() {
           </>
         )}
         {busy && (
-          <svg className="w-4 h-4 animate-spin text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none">
+          <svg className="w-4 h-4 animate-spin text-status-warning-fg shrink-0" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z" />
           </svg>
         )}
       </div>
       {showChangelog && openclawUpdate.releaseNotes && (
-        <div className="mt-1 px-4 py-3 rounded-lg bg-cyan-500/5 border border-cyan-500/10 text-xs text-cyan-300/80 whitespace-pre-wrap max-h-64 overflow-y-auto">
+        <div className="mt-1 px-4 py-3 rounded-lg bg-primary/5 border border-primary/10 text-xs text-primary/80 whitespace-pre-wrap max-h-64 overflow-y-auto">
           {openclawUpdate.releaseNotes}
         </div>
       )}

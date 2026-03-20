@@ -10,10 +10,10 @@ interface PostureInfo {
 }
 
 const postureBadge: Record<string, { label: string; className: string }> = {
-  hardened: { label: 'Hardened', className: 'bg-green-500/15 text-green-400' },
-  secure: { label: 'Secure', className: 'bg-green-500/10 text-green-300' },
-  'needs-attention': { label: 'Needs Attention', className: 'bg-yellow-500/15 text-yellow-400' },
-  'at-risk': { label: 'At Risk', className: 'bg-red-500/15 text-red-400' },
+  hardened: { label: 'Hardened', className: 'bg-status-success-bg text-status-success-fg' },
+  secure: { label: 'Secure', className: 'bg-status-success-bg text-status-success-fg' },
+  'needs-attention': { label: 'Needs Attention', className: 'bg-status-warning-bg text-status-warning-fg' },
+  'at-risk': { label: 'At Risk', className: 'bg-status-error-bg text-status-error-fg' },
 }
 
 export function SecurityAuditWidget({ data }: { data: DashboardData }) {

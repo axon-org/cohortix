@@ -493,7 +493,7 @@ export function GatewayConfigPanel() {
         <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-card/30">
           <div className="flex items-center gap-2">
             {hasChanges ? (
-              <span className="text-xs font-medium text-amber-400">
+              <span className="text-xs font-medium text-status-warning-fg">
                 {mode === 'json' ? t('unsavedChanges') : t('unsavedChangesCount', { count: diff.length })}
               </span>
             ) : (
@@ -531,7 +531,7 @@ export function GatewayConfigPanel() {
         {/* Feedback */}
         {feedback && (
           <div className={`mx-4 mt-2 rounded-lg p-2.5 text-xs font-medium ${
-            feedback.ok ? 'bg-green-500/10 text-green-400' : 'bg-destructive/10 text-destructive'
+            feedback.ok ? 'bg-status-success-bg text-status-success-fg' : 'bg-destructive/10 text-destructive'
           }`}>
             {feedback.text}
           </div>
@@ -539,17 +539,17 @@ export function GatewayConfigPanel() {
 
         {/* Diff summary */}
         {hasChanges && mode === 'form' && diff.length > 0 && (
-          <details className="mx-4 mt-2 border border-amber-500/20 rounded-lg">
-            <summary className="px-3 py-1.5 text-xs text-amber-400 cursor-pointer hover:bg-amber-500/5">
+          <details className="mx-4 mt-2 border border-status-warning-border rounded-lg">
+            <summary className="px-3 py-1.5 text-xs text-status-warning-fg cursor-pointer hover:bg-status-warning-bg">
               {t('viewPendingChanges', { count: diff.length })}
             </summary>
-            <div className="px-3 py-2 space-y-1 border-t border-amber-500/10">
+            <div className="px-3 py-2 space-y-1 border-t border-status-warning-border">
               {diff.map((d, i) => (
                 <div key={i} className="flex items-center gap-2 text-2xs">
                   <span className="font-mono text-muted-foreground">{d.path}</span>
-                  <span className="text-red-400 truncate max-w-24">{truncateValue(d.from)}</span>
+                  <span className="text-status-error-fg truncate max-w-24">{truncateValue(d.from)}</span>
                   <span className="text-muted-foreground">-&gt;</span>
-                  <span className="text-green-400 truncate max-w-24">{truncateValue(d.to)}</span>
+                  <span className="text-status-success-fg truncate max-w-24">{truncateValue(d.to)}</span>
                 </div>
               ))}
             </div>
@@ -994,7 +994,7 @@ function ArrayField({ label, help, items, itemSchema, path, onPatch }: {
               <Button
                 variant="ghost"
                 size="xs"
-                className="text-red-400 hover:text-red-300 shrink-0"
+                className="text-status-error-fg hover:text-status-error-fg shrink-0"
                 onClick={() => {
                   const next = [...items]
                   next.splice(idx, 1)

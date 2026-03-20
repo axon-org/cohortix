@@ -6,20 +6,20 @@ import { ChatMessage } from '@/store'
 import { detectTextDirection } from '@/lib/chat-utils'
 
 const AGENT_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  coordinator: { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/20' },
-  aegis: { bg: 'bg-red-500/10', text: 'text-red-400', border: 'border-red-500/20' },
-  research: { bg: 'bg-green-500/10', text: 'text-green-400', border: 'border-green-500/20' },
+  coordinator: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
+  aegis: { bg: 'bg-status-error-bg', text: 'text-status-error-fg', border: 'border-status-error-border' },
+  research: { bg: 'bg-status-success-bg', text: 'text-status-success-fg', border: 'border-status-success-border' },
   design: { bg: 'bg-pink-500/10', text: 'text-pink-400', border: 'border-pink-500/20' },
-  quant: { bg: 'bg-yellow-500/10', text: 'text-yellow-400', border: 'border-yellow-500/20' },
+  quant: { bg: 'bg-status-warning-bg', text: 'text-status-warning-fg', border: 'border-status-warning-border' },
   ops: { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20' },
   reviewer: { bg: 'bg-teal-500/10', text: 'text-teal-400', border: 'border-teal-500/20' },
   content: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/20' },
-  seo: { bg: 'bg-cyan-500/10', text: 'text-cyan-400', border: 'border-cyan-500/20' },
+  seo: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
   security: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
-  ai: { bg: 'bg-violet-500/10', text: 'text-violet-400', border: 'border-violet-500/20' },
+  ai: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
   'frontend-dev': { bg: 'bg-sky-500/10', text: 'text-sky-400', border: 'border-sky-500/20' },
   'backend-dev': { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
-  'solana-dev': { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
+  'solana-dev': { bg: 'bg-status-warning-bg', text: 'text-status-warning-fg', border: 'border-status-warning-border' },
   system: { bg: 'bg-muted/50', text: 'text-muted-foreground', border: 'border-border' },
   human: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
 }
@@ -49,7 +49,7 @@ function renderContent(text: string) {
     if (part.startsWith('```') && part.endsWith('```')) {
       const code = part.slice(3, -3).replace(/^\w+\n/, '') // strip language hint
       return (
-        <pre key={i} className="bg-black/30 rounded-md px-3 py-2 my-1 text-xs font-mono overflow-x-auto whitespace-pre-wrap">
+        <pre key={i} className="bg-background/30 rounded-md px-3 py-2 my-1 text-xs font-mono overflow-x-auto whitespace-pre-wrap">
           {code}
         </pre>
       )
@@ -57,7 +57,7 @@ function renderContent(text: string) {
     // Inline code
     if (part.startsWith('`') && part.endsWith('`')) {
       return (
-        <code key={i} className="bg-black/20 rounded px-1 py-0.5 text-xs font-mono">
+        <code key={i} className="bg-background/20 rounded px-1 py-0.5 text-xs font-mono">
           {part.slice(1, -1)}
         </code>
       )
@@ -99,10 +99,10 @@ function ToolCallBubble({ message }: { message: ChatMessage }) {
 
   const statusIcon = toolStatus === 'running' ? '...' : toolStatus === 'error' ? 'x' : '>'
   const statusColor = toolStatus === 'running'
-    ? 'text-yellow-400'
+    ? 'text-status-warning-fg'
     : toolStatus === 'error'
-    ? 'text-red-400'
-    : 'text-green-400'
+    ? 'text-status-error-fg'
+    : 'text-status-success-fg'
 
   return (
     <div className="flex gap-2 mt-2">
@@ -119,7 +119,7 @@ function ToolCallBubble({ message }: { message: ChatMessage }) {
             <span className="text-foreground font-semibold">{toolName}</span>
           </span>
           {toolStatus === 'running' && (
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-status-warning-solid animate-pulse" />
           )}
           {durationMs != null && toolStatus !== 'running' && (
             <span className="text-[10px] text-muted-foreground/50">{durationMs}ms</span>
@@ -137,7 +137,7 @@ function ToolCallBubble({ message }: { message: ChatMessage }) {
             {toolArgs != null && (
               <div>
                 <div className="text-[10px] text-muted-foreground/60 uppercase tracking-wider mb-0.5">Args</div>
-                <pre className="bg-black/20 rounded-md px-2 py-1.5 text-[11px] font-mono text-muted-foreground overflow-x-auto max-h-32 whitespace-pre-wrap">
+                <pre className="bg-background/20 rounded-md px-2 py-1.5 text-[11px] font-mono text-muted-foreground overflow-x-auto max-h-32 whitespace-pre-wrap">
                   {typeof toolArgs === 'string' ? toolArgs : JSON.stringify(toolArgs, null, 2)}
                 </pre>
               </div>
@@ -146,7 +146,7 @@ function ToolCallBubble({ message }: { message: ChatMessage }) {
               <div>
                 <div className="text-[10px] text-muted-foreground/60 uppercase tracking-wider mb-0.5">Output</div>
                 <pre className={`rounded-md px-2 py-1.5 text-[11px] font-mono overflow-x-auto max-h-48 whitespace-pre-wrap ${
-                  toolStatus === 'error' ? 'bg-red-500/10 text-red-300' : 'bg-black/20 text-muted-foreground'
+                  toolStatus === 'error' ? 'bg-status-error-bg text-status-error-fg' : 'bg-background/20 text-muted-foreground'
                 }`}>
                   {typeof toolOutput === 'string' ? toolOutput : JSON.stringify(toolOutput, null, 2)}
                 </pre>
@@ -179,7 +179,7 @@ export function MessageBubble({ message, isHuman, isGrouped }: MessageBubbleProp
   if (isHandoff) {
     return (
       <div className="flex justify-center my-3">
-        <div className="flex items-center gap-2 text-[11px] text-amber-400/80 bg-amber-500/5 px-3 py-1.5 rounded-full border border-amber-500/20">
+        <div className="flex items-center gap-2 text-[11px] text-status-warning-fg/80 bg-status-warning-bg px-3 py-1.5 rounded-full border border-status-warning-border">
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
             <path d="M5 3l6 5-6 5" />
           </svg>
@@ -249,7 +249,7 @@ export function MessageBubble({ message, isHuman, isGrouped }: MessageBubbleProp
                     className="max-w-[200px] max-h-[160px] rounded-md object-cover border border-border/30"
                   />
                 ) : (
-                  <div key={idx} className="flex items-center gap-1.5 bg-black/20 rounded-md px-2 py-1 text-xs text-muted-foreground">
+                  <div key={idx} className="flex items-center gap-1.5 bg-background/20 rounded-md px-2 py-1 text-xs text-muted-foreground">
                     <span className="font-medium">{att.name}</span>
                     <span className="text-[10px] text-muted-foreground/50">{att.size < 1024 ? `${att.size} B` : att.size < 1024 * 1024 ? `${(att.size / 1024).toFixed(1)} KB` : `${(att.size / (1024 * 1024)).toFixed(1)} MB`}</span>
                   </div>

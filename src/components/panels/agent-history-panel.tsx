@@ -29,15 +29,15 @@ interface SessionInfo {
 }
 
 const typeColors: Record<string, string> = {
-  agent_status_change: 'text-yellow-400',
-  task_created: 'text-green-400',
-  task_updated: 'text-blue-400',
-  task_deleted: 'text-red-400',
-  comment_added: 'text-purple-400',
-  agent_created: 'text-cyan-400',
-  standup_generated: 'text-orange-400',
-  mention: 'text-pink-400',
-  assignment: 'text-indigo-400',
+  agent_status_change: 'text-status-warning-fg',
+  task_created: 'text-status-success-fg',
+  task_updated: 'text-status-info-fg',
+  task_deleted: 'text-status-error-fg',
+  comment_added: 'text-primary',
+  agent_created: 'text-primary',
+  standup_generated: 'text-status-warning-fg',
+  mention: 'text-status-error-fg',
+  assignment: 'text-status-info-fg',
 }
 
 const typeIcons: Record<string, string> = {
@@ -154,9 +154,9 @@ export function AgentHistoryPanel() {
             className="flex items-center gap-1.5"
           >
             <span className={`w-1.5 h-1.5 rounded-full ${
-              a.status === 'busy' ? 'bg-green-500' :
-              a.status === 'idle' ? 'bg-yellow-500' :
-              a.status === 'error' ? 'bg-red-500' :
+              a.status === 'busy' ? 'bg-status-success-solid' :
+              a.status === 'idle' ? 'bg-status-warning-solid' :
+              a.status === 'error' ? 'bg-status-error-solid' :
               'bg-muted-foreground/30'
             }`} />
             {a.name}
@@ -186,9 +186,9 @@ export function AgentHistoryPanel() {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">{t('status')}</span>
                     <span className={`font-medium ${
-                      selectedAgentData.status === 'busy' ? 'text-green-400' :
-                      selectedAgentData.status === 'idle' ? 'text-yellow-400' :
-                      selectedAgentData.status === 'error' ? 'text-red-400' :
+                      selectedAgentData.status === 'busy' ? 'text-status-success-fg' :
+                      selectedAgentData.status === 'idle' ? 'text-status-warning-fg' :
+                      selectedAgentData.status === 'error' ? 'text-status-error-fg' :
                       'text-muted-foreground'
                     }`}>{selectedAgentData.status}</span>
                   </div>
@@ -235,7 +235,7 @@ export function AgentHistoryPanel() {
                   {agentSessions.map(s => (
                     <div key={s.id} className="text-xs space-y-0.5">
                       <div className="flex items-center gap-1.5">
-                        <span className={`w-1.5 h-1.5 rounded-full ${s.active ? 'bg-green-500' : 'bg-muted-foreground/30'}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full ${s.active ? 'bg-status-success-solid' : 'bg-muted-foreground/30'}`} />
                         <span className="font-mono-tight text-foreground truncate">{s.kind}</span>
                       </div>
                       <div className="flex gap-3 text-muted-foreground pl-3">
@@ -276,8 +276,8 @@ export function AgentHistoryPanel() {
                         <div key={act.id} className="flex items-start gap-2.5 pl-3 py-1.5 hover:bg-secondary/30 rounded-r-lg transition-smooth relative">
                           {/* Timeline dot */}
                           <span className={`absolute -left-[5px] top-3 w-2 h-2 rounded-full bg-card border-2 ${
-                            act.type === 'agent_status_change' ? 'border-yellow-400' :
-                            act.type.startsWith('task') ? 'border-blue-400' :
+                            act.type === 'agent_status_change' ? 'border-status-warning-border' :
+                            act.type.startsWith('task') ? 'border-status-info-border' :
                             'border-muted-foreground'
                           }`} />
 

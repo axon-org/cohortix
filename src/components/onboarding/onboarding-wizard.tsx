@@ -410,7 +410,7 @@ function StepWelcome({ isGateway, capabilities, onNext, onSkip }: {
 function StatusChip({ ok, label }: { ok: boolean; label: string }) {
   return (
     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-1 border border-border/30">
-      <span className={`w-2 h-2 rounded-full ${ok ? 'bg-green-400' : 'bg-surface-2'}`} />
+      <span className={`w-2 h-2 rounded-full ${ok ? 'bg-status-success-solid' : 'bg-surface-2'}`} />
       <span className="text-xs text-muted-foreground">{label}</span>
     </div>
   )
@@ -550,9 +550,9 @@ function StepGatewayLink({ isGateway, registration, onNext, onBack }: {
 
         <div className="space-y-3">
           <div className={`flex items-start gap-3 p-3 rounded-lg border ${
-            configured ? 'border-green-400/20 bg-green-400/5' : 'border-amber-400/20 bg-amber-400/5'
+            configured ? 'border-status-success-border bg-status-success-bg' : 'border-status-warning-border bg-status-warning-bg'
           }`}>
-            <span className={`font-mono text-sm mt-0.5 ${configured ? 'text-green-400' : 'text-amber-400'}`}>
+            <span className={`font-mono text-sm mt-0.5 ${configured ? 'text-status-success-fg' : 'text-status-warning-fg'}`}>
               [{configured ? '+' : '~'}]
             </span>
             <div>
@@ -566,9 +566,9 @@ function StepGatewayLink({ isGateway, registration, onNext, onBack }: {
           </div>
 
           <div className={`flex items-start gap-3 p-3 rounded-lg border ${
-            configured ? 'border-green-400/20 bg-green-400/5' : 'border-border/20 bg-surface-1/30'
+            configured ? 'border-status-success-border bg-status-success-bg' : 'border-border/20 bg-surface-1/30'
           }`}>
-            <span className={`font-mono text-sm mt-0.5 ${configured ? 'text-green-400' : 'text-muted-foreground'}`}>
+            <span className={`font-mono text-sm mt-0.5 ${configured ? 'text-status-success-fg' : 'text-muted-foreground'}`}>
               [{configured ? '+' : '-'}]
             </span>
             <div>
@@ -592,10 +592,10 @@ function StepGatewayLink({ isGateway, registration, onNext, onBack }: {
               {testing ? t('testing') : t('testConnection')}
             </Button>
             {healthOk === true && (
-              <span className="text-xs text-green-400">{t('gatewayReachable')}</span>
+              <span className="text-xs text-status-success-fg">{t('gatewayReachable')}</span>
             )}
             {healthOk === false && (
-              <span className="text-xs text-red-400">{t('gatewayUnreachable')}</span>
+              <span className="text-xs text-status-error-fg">{t('gatewayUnreachable')}</span>
             )}
           </div>
         </div>
@@ -645,8 +645,8 @@ function StepCredentials({
           </div>
         ) : (
           <div className="space-y-3">
-            <div className={`flex items-start gap-3 p-3 rounded-lg border ${status.authOk ? 'border-green-400/20 bg-green-400/5' : 'border-red-400/20 bg-red-400/5'}`}>
-              <span className={`font-mono text-sm mt-0.5 ${status.authOk ? 'text-green-400' : 'text-red-400'}`}>
+            <div className={`flex items-start gap-3 p-3 rounded-lg border ${status.authOk ? 'border-status-success-border bg-status-success-bg' : 'border-status-error-border bg-status-error-bg'}`}>
+              <span className={`font-mono text-sm mt-0.5 ${status.authOk ? 'text-status-success-fg' : 'text-status-error-fg'}`}>
                 [{status.authOk ? '+' : 'x'}]
               </span>
               <div>
@@ -657,8 +657,8 @@ function StepCredentials({
               </div>
             </div>
 
-            <div className={`flex items-start gap-3 p-3 rounded-lg border ${status.apiKeyOk ? 'border-green-400/20 bg-green-400/5' : 'border-red-400/20 bg-red-400/5'}`}>
-              <span className={`font-mono text-sm mt-0.5 ${status.apiKeyOk ? 'text-green-400' : 'text-red-400'}`}>
+            <div className={`flex items-start gap-3 p-3 rounded-lg border ${status.apiKeyOk ? 'border-status-success-border bg-status-success-bg' : 'border-status-error-border bg-status-error-bg'}`}>
+              <span className={`font-mono text-sm mt-0.5 ${status.apiKeyOk ? 'text-status-success-fg' : 'text-status-error-fg'}`}>
                 [{status.apiKeyOk ? '+' : 'x'}]
               </span>
               <div>

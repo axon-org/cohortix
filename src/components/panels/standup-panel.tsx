@@ -170,10 +170,10 @@ export function StandupPanel() {
   // Get priority color
   const getPriorityColor = (priority: string) => {
     const colors: Record<string, string> = {
-      low: 'text-green-400',
-      medium: 'text-yellow-400',
-      high: 'text-orange-400',
-      urgent: 'text-red-400'
+      low: 'text-status-success-fg',
+      medium: 'text-status-warning-fg',
+      high: 'text-status-warning-fg',
+      urgent: 'text-status-error-fg'
     }
     return colors[priority] || 'text-muted-foreground'
   }
@@ -316,9 +316,9 @@ export function StandupPanel() {
 
       {/* Error Display */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 m-4 rounded-lg text-sm flex items-center justify-between">
+        <div className="bg-status-error-bg border border-status-error-border text-status-error-fg p-3 m-4 rounded-lg text-sm flex items-center justify-between">
           <span>{error}</span>
-          <Button onClick={() => setError(null)} variant="ghost" size="icon-xs" className="text-red-400/60 hover:text-red-400 ml-2 w-5 h-5">×</Button>
+          <Button onClick={() => setError(null)} variant="ghost" size="icon-xs" className="text-status-error-fg/60 hover:text-status-error-fg ml-2 w-5 h-5">×</Button>
         </div>
       )}
 
@@ -342,19 +342,19 @@ export function StandupPanel() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-card rounded-lg p-4 border border-border text-center">
                   <div className="text-2xl font-bold text-foreground">{standupReport.summary.totalCompleted}</div>
-                  <div className="text-sm text-green-400">{t('statCompleted')}</div>
+                  <div className="text-sm text-status-success-fg">{t('statCompleted')}</div>
                 </div>
                 <div className="bg-card rounded-lg p-4 border border-border text-center">
                   <div className="text-2xl font-bold text-foreground">{standupReport.summary.totalInProgress}</div>
-                  <div className="text-sm text-yellow-400">{t('statInProgress')}</div>
+                  <div className="text-sm text-status-warning-fg">{t('statInProgress')}</div>
                 </div>
                 <div className="bg-card rounded-lg p-4 border border-border text-center">
                   <div className="text-2xl font-bold text-foreground">{standupReport.summary.totalBlocked}</div>
-                  <div className="text-sm text-red-400">{t('statBlocked')}</div>
+                  <div className="text-sm text-status-error-fg">{t('statBlocked')}</div>
                 </div>
                 <div className="bg-card rounded-lg p-4 border border-border text-center">
                   <div className="text-2xl font-bold text-foreground">{standupReport.summary.overdue}</div>
-                  <div className="text-sm text-orange-400">{t('statOverdue')}</div>
+                  <div className="text-sm text-status-warning-fg">{t('statOverdue')}</div>
                 </div>
               </div>
 
@@ -364,9 +364,9 @@ export function StandupPanel() {
                   <h4 className="text-lg font-semibold text-foreground mb-3">🎉 {t('teamAccomplishments')}</h4>
                   <div className="space-y-2">
                     {standupReport.teamAccomplishments.map(task => (
-                      <div key={task.id} className="flex justify-between items-center p-2 bg-green-900/20 rounded border-l-4 border-green-500">
+                      <div key={task.id} className="flex justify-between items-center p-2 bg-status-success-bg rounded border-l-4 border-status-success-border">
                         <span className="text-foreground">{task.title}</span>
-                        <span className="text-green-400 text-sm">{task.agent}</span>
+                        <span className="text-status-success-fg text-sm">{task.agent}</span>
                       </div>
                     ))}
                   </div>
@@ -379,14 +379,14 @@ export function StandupPanel() {
                   <h4 className="text-lg font-semibold text-foreground mb-3">🚫 {t('teamBlockers')}</h4>
                   <div className="space-y-2">
                     {standupReport.teamBlockers.map(task => (
-                      <div key={task.id} className="flex justify-between items-center p-2 bg-red-900/20 rounded border-l-4 border-red-500">
+                      <div key={task.id} className="flex justify-between items-center p-2 bg-status-error-bg rounded border-l-4 border-status-error-border">
                         <div>
                           <span className="text-foreground">{task.title}</span>
                           <span className={`ml-2 text-sm ${getPriorityColor(task.priority)}`}>
                             [{task.priority.toUpperCase()}]
                           </span>
                         </div>
-                        <span className="text-red-400 text-sm">{task.agent}</span>
+                        <span className="text-status-error-fg text-sm">{task.agent}</span>
                       </div>
                     ))}
                   </div>
@@ -399,14 +399,14 @@ export function StandupPanel() {
                   <h4 className="text-lg font-semibold text-foreground mb-3">⏰ {t('overdueTasks')}</h4>
                   <div className="space-y-2">
                     {standupReport.overdueTasks.map(task => (
-                      <div key={task.id} className="flex justify-between items-center p-2 bg-orange-900/20 rounded border-l-4 border-orange-500">
+                      <div key={task.id} className="flex justify-between items-center p-2 bg-status-warning-bg rounded border-l-4 border-status-warning-border">
                         <div>
                           <span className="text-foreground">{task.title}</span>
-                          <span className="text-orange-400 text-sm ml-2">
+                          <span className="text-status-warning-fg text-sm ml-2">
                             (Due: {new Date(task.due_date * 1000).toLocaleDateString()})
                           </span>
                         </div>
-                        <span className="text-orange-400 text-sm">{task.agent_name || t('unassigned')}</span>
+                        <span className="text-status-warning-fg text-sm">{task.agent_name || t('unassigned')}</span>
                       </div>
                     ))}
                   </div>
@@ -434,7 +434,7 @@ export function StandupPanel() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {/* Completed Today */}
                       <div>
-                        <h6 className="text-green-400 font-medium mb-2">✅ {t('sectionCompleted', { count: report.completedToday.length })}</h6>
+                        <h6 className="text-status-success-fg font-medium mb-2">✅ {t('sectionCompleted', { count: report.completedToday.length })}</h6>
                         <div className="space-y-1">
                           {report.completedToday.map(task => (
                             <div key={task.id} className="text-sm text-foreground/80 truncate" title={task.title}>
@@ -449,7 +449,7 @@ export function StandupPanel() {
 
                       {/* In Progress */}
                       <div>
-                        <h6 className="text-yellow-400 font-medium mb-2">🔄 {t('sectionInProgress', { count: report.inProgress.length })}</h6>
+                        <h6 className="text-status-warning-fg font-medium mb-2">🔄 {t('sectionInProgress', { count: report.inProgress.length })}</h6>
                         <div className="space-y-1">
                           {report.inProgress.map(task => (
                             <div key={task.id} className="text-sm text-foreground/80 truncate" title={task.title}>
@@ -464,7 +464,7 @@ export function StandupPanel() {
 
                       {/* Assigned */}
                       <div>
-                        <h6 className="text-blue-400 font-medium mb-2">📋 {t('sectionAssigned', { count: report.assigned.length })}</h6>
+                        <h6 className="text-status-info-fg font-medium mb-2">📋 {t('sectionAssigned', { count: report.assigned.length })}</h6>
                         <div className="space-y-1">
                           {report.assigned.map(task => (
                             <div key={task.id} className="text-sm text-foreground/80">
@@ -482,7 +482,7 @@ export function StandupPanel() {
 
                       {/* Blocked */}
                       <div>
-                        <h6 className="text-red-400 font-medium mb-2">🚫 {t('sectionBlocked', { count: report.blocked.length })}</h6>
+                        <h6 className="text-status-error-fg font-medium mb-2">🚫 {t('sectionBlocked', { count: report.blocked.length })}</h6>
                         <div className="space-y-1">
                           {report.blocked.map(task => (
                             <div key={task.id} className="text-sm text-foreground/80">

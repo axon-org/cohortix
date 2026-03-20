@@ -312,11 +312,11 @@ export function GitHubSyncPanel() {
         <div className="flex items-center gap-2">
           <span className={`text-2xs px-2 py-1 rounded flex items-center gap-1.5 ${
             tokenStatus?.connected
-              ? 'bg-green-500/10 text-green-400'
+              ? 'bg-status-success-bg text-status-success-fg'
               : 'bg-destructive/10 text-destructive'
           }`}>
             <span className={`w-1.5 h-1.5 rounded-full ${
-              tokenStatus?.connected ? 'bg-green-500' : 'bg-destructive'
+              tokenStatus?.connected ? 'bg-status-success-solid' : 'bg-destructive'
             }`} />
             {tokenStatus?.connected
               ? t('connectedAs', { user: tokenStatus.user || 'connected' })
@@ -327,9 +327,9 @@ export function GitHubSyncPanel() {
 
       {/* Not configured notice */}
       {tokenStatus && !tokenStatus.connected && (
-        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
+        <div className="rounded-lg border border-status-warning-border bg-status-warning-bg p-4">
           <div className="flex items-start gap-3">
-            <span className="text-amber-400 text-lg mt-0.5">!</span>
+            <span className="text-status-warning-fg text-lg mt-0.5">!</span>
             <div className="space-y-1">
               <p className="text-sm font-medium text-foreground">{t('tokenNotConfigured')}</p>
               <p className="text-xs text-muted-foreground">
@@ -343,7 +343,7 @@ export function GitHubSyncPanel() {
       {/* Feedback */}
       {feedback && (
         <div className={`rounded-lg p-3 text-xs font-medium ${
-          feedback.ok ? 'bg-green-500/10 text-green-400' : 'bg-destructive/10 text-destructive'
+          feedback.ok ? 'bg-status-success-bg text-status-success-fg' : 'bg-destructive/10 text-destructive'
         }`}>
           {feedback.text}
         </div>
@@ -351,7 +351,7 @@ export function GitHubSyncPanel() {
 
       {/* Sync result banner */}
       {syncResult && (
-        <div className="rounded-lg p-3 text-xs bg-blue-500/10 text-blue-400 flex items-center gap-4">
+        <div className="rounded-lg p-3 text-xs bg-status-info-bg/10 text-status-info-fg flex items-center gap-4">
           <span>{t('syncResultImported', { count: syncResult.imported })}</span>
           <span>{t('syncResultSkipped', { count: syncResult.skipped })}</span>
           {syncResult.errors > 0 && <span className="text-destructive">{t('syncResultErrors', { count: syncResult.errors })}</span>}
@@ -478,7 +478,7 @@ export function GitHubSyncPanel() {
           {projects.filter(p => p.github_repo).map(project => (
             <div key={project.id} className="px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className={`w-2 h-2 rounded-full ${project.github_sync_enabled ? 'bg-green-500' : 'bg-muted-foreground/30'}`} />
+                <span className={`w-2 h-2 rounded-full ${project.github_sync_enabled ? 'bg-status-success-solid' : 'bg-muted-foreground/30'}`} />
                 <div>
                   <div className="text-sm text-foreground">{project.name}</div>
                   <div className="text-xs text-muted-foreground font-mono">{project.github_repo}</div>
@@ -571,8 +571,8 @@ export function GitHubSyncPanel() {
                     <td className="px-4 py-2">
                       <span className={`px-1.5 py-0.5 rounded text-2xs ${
                         issue.state === 'open'
-                          ? 'bg-green-500/10 text-green-400'
-                          : 'bg-purple-500/10 text-purple-400'
+                          ? 'bg-status-success-bg text-status-success-fg'
+                          : 'bg-status-info-bg text-primary'
                       }`}>
                         {issue.state}
                       </span>
@@ -612,9 +612,9 @@ export function GitHubSyncPanel() {
                     <td className="px-4 py-2">
                       <span className={`px-1.5 py-0.5 rounded text-2xs ${
                         sync.status === 'success'
-                          ? 'bg-green-500/10 text-green-400'
+                          ? 'bg-status-success-bg text-status-success-fg'
                           : sync.status === 'partial'
-                          ? 'bg-yellow-500/10 text-yellow-400'
+                          ? 'bg-status-warning-bg text-status-warning-fg'
                           : 'bg-destructive/10 text-destructive'
                       }`}>
                         {sync.status}
@@ -665,9 +665,9 @@ export function GitHubSyncPanel() {
                     </td>
                     <td className="px-4 py-2">
                       <span className={`px-1.5 py-0.5 rounded text-2xs ${
-                        task.priority === 'critical' ? 'bg-red-500/10 text-red-400' :
-                        task.priority === 'high' ? 'bg-orange-500/10 text-orange-400' :
-                        task.priority === 'low' ? 'bg-blue-500/10 text-blue-400' :
+                        task.priority === 'critical' ? 'bg-status-error-bg text-status-error-fg' :
+                        task.priority === 'high' ? 'bg-status-warning-bg text-status-warning-fg' :
+                        task.priority === 'low' ? 'bg-status-info-bg/10 text-status-info-fg' :
                         'bg-secondary text-muted-foreground'
                       }`}>
                         {task.priority}

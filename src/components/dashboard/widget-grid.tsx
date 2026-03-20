@@ -213,7 +213,7 @@ export function WidgetGrid({ data }: { data: DashboardData }) {
             <button
               type="button"
               onClick={() => removeWidget(widgetId)}
-              className="text-2xs text-red-400 hover:text-red-300 bg-card/80 backdrop-blur-sm rounded px-1.5 py-0.5 border border-border/50"
+              className="text-2xs text-status-error-fg hover:text-status-error-fg bg-card/80 backdrop-blur-sm rounded px-1.5 py-0.5 border border-border/50"
             >
               x
             </button>

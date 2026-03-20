@@ -171,9 +171,9 @@ function hashColor(name: string): string {
   let hash = 0
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
   const colors = [
-    'bg-blue-600', 'bg-emerald-600', 'bg-violet-600', 'bg-amber-600',
-    'bg-rose-600', 'bg-cyan-600', 'bg-indigo-600', 'bg-teal-600',
-    'bg-orange-600', 'bg-pink-600', 'bg-lime-600', 'bg-fuchsia-600',
+    'bg-status-info-solid', 'bg-status-success-solid', 'bg-status-info-bg', 'bg-status-warning-solid',
+    'bg-status-error-solid', 'bg-status-info-bg', 'bg-status-info-solid', 'bg-status-success-solid',
+    'bg-status-warning-solid', 'bg-status-error-solid', 'bg-status-success-solid', 'bg-status-info-solid',
   ]
   return colors[Math.abs(hash) % colors.length]
 }
@@ -293,11 +293,11 @@ interface WorkerVariant {
 }
 
 const WORKER_VARIANTS: WorkerVariant[] = [
-  { id: 'default', filter: 'none', accent: 'border-cyan-300/60' },
-  { id: 'warm', filter: 'hue-rotate(18deg) saturate(1.08)', accent: 'border-amber-300/60' },
-  { id: 'cool', filter: 'hue-rotate(-20deg) saturate(1.1)', accent: 'border-sky-300/60' },
-  { id: 'mint', filter: 'hue-rotate(42deg) saturate(1.08)', accent: 'border-emerald-300/60' },
-  { id: 'violet', filter: 'hue-rotate(64deg) saturate(1.12)', accent: 'border-violet-300/60' },
+  { id: 'default', filter: 'none', accent: 'border-status-info-border' },
+  { id: 'warm', filter: 'hue-rotate(18deg) saturate(1.08)', accent: 'border-status-warning-border' },
+  { id: 'cool', filter: 'hue-rotate(-20deg) saturate(1.1)', accent: 'border-status-info-border' },
+  { id: 'mint', filter: 'hue-rotate(42deg) saturate(1.08)', accent: 'border-status-success-border' },
+  { id: 'violet', filter: 'hue-rotate(64deg) saturate(1.12)', accent: 'border-status-info-border' },
 ]
 
 function getWorkerVariant(name: string): WorkerVariant {
@@ -1629,30 +1629,30 @@ export function OfficePanel() {
                   }}
                   className={`w-full flex items-center gap-2 rounded-lg p-2 text-left h-auto ${
                     needsAttention
-                      ? 'bg-amber-500/12 border border-amber-400/60 hover:bg-amber-500/20'
-                      : 'bg-black/20 border border-white/5 hover:bg-black/35'
+                      ? 'bg-status-warning-bg border border-status-warning-border hover:bg-status-warning-bg'
+                      : 'bg-black/20 border border-border/5 hover:bg-black/35'
                   }`}
                 >
-                  <span className={`w-6 h-6 rounded ${hashColor(agent.name)} flex items-center justify-center text-[10px] font-bold text-white`}>
+                  <span className={`w-6 h-6 rounded ${hashColor(agent.name)} flex items-center justify-center text-[10px] font-bold text-foreground`}>
                     {getInitials(agent.name)}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-xs font-medium truncate">{agent.name}</span>
-                    <span className="block text-[10px] text-slate-300 truncate">{agent.role}</span>
-                    <span className="block text-[9px] text-slate-400 truncate">
+                    <span className="block text-[10px] text-muted-foreground truncate">{agent.role}</span>
+                    <span className="block text-[9px] text-muted-foreground truncate">
                       {agent.last_activity || t('noRecentActivity')}
                     </span>
                   </span>
                   <span className="flex flex-col items-end gap-1">
                     <span className={`w-2 h-2 rounded-full ${statusDot[agent.status]}`} />
-                    <span className={`text-[9px] ${needsAttention ? 'text-amber-300 font-semibold' : 'text-slate-400'}`}>
+                    <span className={`text-[9px] ${needsAttention ? 'text-status-warning-fg font-semibold' : 'text-muted-foreground'}`}>
                       {agent.status === 'busy' ? t('activeStatus') : t('idleMinutes', { minutes: minutesIdle })}
                     </span>
                   </span>
                 </Button>
               ))}
               {filteredRosterRows.length === 0 && (
-                <div className="text-[11px] text-slate-400 px-1 py-2">{t('noWorkersInFilter')}</div>
+                <div className="text-[11px] text-muted-foreground px-1 py-2">{t('noWorkersInFilter')}</div>
               )}
             </div>
           </div>
@@ -1729,7 +1729,7 @@ export function OfficePanel() {
                 {nightSparkles.map((spark) => (
                   <div
                     key={`spark-${spark.id}`}
-                    className="absolute pointer-events-none z-[2] rounded-full bg-white/80"
+                    className="absolute pointer-events-none z-[2] rounded-full bg-card/80"
                     style={{
                       left: `${spark.x}%`,
                       top: `${spark.y}%`,
@@ -1970,7 +1970,7 @@ export function OfficePanel() {
                     className="absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-500 hover:scale-110 h-auto p-0 rounded-none hover:bg-transparent"
                     style={{ left: `${x}%`, top: `${y}%` }}
                   >
-                    <div className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-black/70 border border-white/10 text-white text-[11px] px-2 py-0.5 shadow-[0_0_12px_rgba(0,0,0,0.4)]">
+                    <div className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-black/70 border border-border/10 text-foreground text-[11px] px-2 py-0.5 shadow-[0_0_12px_rgba(0,0,0,0.4)]">
                       <span className={`inline-block w-2 h-2 rounded-full ${statusDot[agent.status]} mr-1`} />
                       {agent.name}
                     </div>
@@ -1998,12 +1998,12 @@ export function OfficePanel() {
                       />
                       <div className={`absolute left-[8px] top-[14px] w-4 h-3 ${hashColor(agent.name)} border border-black/60`} />
                     </div>
-                    {!isMoving && <div className="text-[9px] text-slate-300 font-mono mt-0.5">#{seatLabel}</div>}
+                    {!isMoving && <div className="text-[9px] text-muted-foreground font-mono mt-0.5">#{seatLabel}</div>}
                   </Button>
 
                   {agentActionOverrides.has(agent.id) && (
                     <div
-                      className="absolute -translate-x-1/2 text-[9px] px-1.5 py-0.5 rounded bg-black/70 border border-white/15 text-cyan-200"
+                      className="absolute -translate-x-1/2 text-[9px] px-1.5 py-0.5 rounded bg-black/70 border border-border/15 text-primary"
                       style={{ left: `${x}%`, top: `calc(${y}% - 24px)` }}
                     >
                       {agentActionOverrides.get(agent.id)}
@@ -2012,7 +2012,7 @@ export function OfficePanel() {
 
                   {(transitioningAgentIds.has(agent.id) || isMoving) && (
                     <div
-                      className="absolute -translate-x-1/2 text-[9px] text-slate-200/85 font-medium px-1.5 py-0.5 rounded bg-black/45 border border-white/10"
+                      className="absolute -translate-x-1/2 text-[9px] text-muted-foreground font-medium px-1.5 py-0.5 rounded bg-black/45 border border-border/10"
                       style={{ left: `${x}%`, top: `calc(${y}% + 22px)` }}
                     >
                       {t('moving')}
@@ -2020,7 +2020,7 @@ export function OfficePanel() {
                   )}
 
                   <div
-                    className="absolute text-[9px] text-slate-500/70 font-mono pointer-events-none"
+                    className="absolute text-[9px] text-muted-foreground font-mono pointer-events-none"
                     style={{ left: `${x}%`, top: `calc(${y}% + 38px)` }}
                   >
                     {zoneLabel}
@@ -2113,23 +2113,23 @@ export function OfficePanel() {
                   </div>
                   <div className="mt-1.5 space-y-1">
                     {selectedHotspot.stats.map((line) => (
-                      <div key={line} className="text-[10px] text-slate-300">{line}</div>
+                      <div key={line} className="text-[10px] text-muted-foreground">{line}</div>
                     ))}
                   </div>
                   <div className="mt-2 grid grid-cols-3 gap-1">
-                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(0, -1)} className="h-auto py-1 text-[10px] border-white/10 hover:bg-white/10">{t('hotspotUp')}</Button>
-                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(-1, 0)} className="h-auto py-1 text-[10px] border-white/10 hover:bg-white/10">{t('hotspotLeft')}</Button>
-                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(1, 0)} className="h-auto py-1 text-[10px] border-white/10 hover:bg-white/10">{t('hotspotRight')}</Button>
-                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(0, 1)} className="h-auto py-1 text-[10px] border-white/10 hover:bg-white/10">{t('hotspotDown')}</Button>
-                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(-0.5, 0)} className="h-auto py-1 text-[10px] border-white/10 hover:bg-white/10">{t('hotspotFineMinusX')}</Button>
-                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(0.5, 0)} className="h-auto py-1 text-[10px] border-white/10 hover:bg-white/10">{t('hotspotFinePlusX')}</Button>
+                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(0, -1)} className="h-auto py-1 text-[10px] border-border/10 hover:bg-card/10">{t('hotspotUp')}</Button>
+                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(-1, 0)} className="h-auto py-1 text-[10px] border-border/10 hover:bg-card/10">{t('hotspotLeft')}</Button>
+                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(1, 0)} className="h-auto py-1 text-[10px] border-border/10 hover:bg-card/10">{t('hotspotRight')}</Button>
+                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(0, 1)} className="h-auto py-1 text-[10px] border-border/10 hover:bg-card/10">{t('hotspotDown')}</Button>
+                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(-0.5, 0)} className="h-auto py-1 text-[10px] border-border/10 hover:bg-card/10">{t('hotspotFineMinusX')}</Button>
+                    <Button variant="outline" size="xs" onClick={() => nudgeSelectedHotspot(0.5, 0)} className="h-auto py-1 text-[10px] border-border/10 hover:bg-card/10">{t('hotspotFinePlusX')}</Button>
                   </div>
                   {selectedHotspot.kind === 'room' && (
                     <div className="mt-1.5 grid grid-cols-2 gap-1">
-                      <Button variant="outline" size="xs" onClick={() => resizeSelectedRoom(1, 0)} className="h-auto py-1 text-[10px] border-white/10 hover:bg-white/10">{t('hotspotWider')}</Button>
-                      <Button variant="outline" size="xs" onClick={() => resizeSelectedRoom(-1, 0)} className="h-auto py-1 text-[10px] border-white/10 hover:bg-white/10">{t('hotspotNarrower')}</Button>
-                      <Button variant="outline" size="xs" onClick={() => resizeSelectedRoom(0, 1)} className="h-auto py-1 text-[10px] border-white/10 hover:bg-white/10">{t('hotspotTaller')}</Button>
-                      <Button variant="outline" size="xs" onClick={() => resizeSelectedRoom(0, -1)} className="h-auto py-1 text-[10px] border-white/10 hover:bg-white/10">{t('hotspotShorter')}</Button>
+                      <Button variant="outline" size="xs" onClick={() => resizeSelectedRoom(1, 0)} className="h-auto py-1 text-[10px] border-border/10 hover:bg-card/10">{t('hotspotWider')}</Button>
+                      <Button variant="outline" size="xs" onClick={() => resizeSelectedRoom(-1, 0)} className="h-auto py-1 text-[10px] border-border/10 hover:bg-card/10">{t('hotspotNarrower')}</Button>
+                      <Button variant="outline" size="xs" onClick={() => resizeSelectedRoom(0, 1)} className="h-auto py-1 text-[10px] border-border/10 hover:bg-card/10">{t('hotspotTaller')}</Button>
+                      <Button variant="outline" size="xs" onClick={() => resizeSelectedRoom(0, -1)} className="h-auto py-1 text-[10px] border-border/10 hover:bg-card/10">{t('hotspotShorter')}</Button>
                     </div>
                   )}
                 </div>
@@ -2190,7 +2190,7 @@ export function OfficePanel() {
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-all hover:scale-[1.02] ${statusGlow[agent.status]}`}
                     style={{ background: 'var(--card)' }}
                   >
-                    <div className={`w-8 h-8 rounded-full ${hashColor(agent.name)} flex items-center justify-center text-white font-bold text-xs`}>
+                    <div className={`w-8 h-8 rounded-full ${hashColor(agent.name)} flex items-center justify-center text-foreground font-bold text-xs`}>
                       {getInitials(agent.name)}
                     </div>
                     <div>
@@ -2213,7 +2213,7 @@ export function OfficePanel() {
           <div className="bg-card border border-border rounded-lg max-w-sm w-full p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
-                <div className={`w-14 h-14 rounded-full ${hashColor(selectedAgent.name)} flex items-center justify-center text-white font-bold text-lg ring-2 ring-offset-2 ring-offset-card ${selectedAgent.status === 'busy' ? 'ring-yellow-500' : selectedAgent.status === 'idle' ? 'ring-green-500' : selectedAgent.status === 'error' ? 'ring-red-500' : 'ring-gray-600'}`}>
+                <div className={`w-14 h-14 rounded-full ${hashColor(selectedAgent.name)} flex items-center justify-center text-foreground font-bold text-lg ring-2 ring-offset-2 ring-offset-card ${selectedAgent.status === 'busy' ? 'ring-yellow-500' : selectedAgent.status === 'idle' ? 'ring-green-500' : selectedAgent.status === 'error' ? 'ring-red-500' : 'ring-gray-600'}`}>
                   {getInitials(selectedAgent.name)}
                 </div>
                 <div>
@@ -2245,15 +2245,15 @@ export function OfficePanel() {
                     <div className="text-[10px] text-muted-foreground">{t('taskStatTotal')}</div>
                   </div>
                   <div className="text-center bg-secondary rounded-lg p-2">
-                    <div className="text-lg font-bold text-blue-400">{selectedAgent.taskStats.assigned}</div>
+                    <div className="text-lg font-bold text-status-info-fg">{selectedAgent.taskStats.assigned}</div>
                     <div className="text-[10px] text-muted-foreground">{t('taskStatAssigned')}</div>
                   </div>
                   <div className="text-center bg-secondary rounded-lg p-2">
-                    <div className="text-lg font-bold text-yellow-400">{selectedAgent.taskStats.in_progress}</div>
+                    <div className="text-lg font-bold text-status-warning-fg">{selectedAgent.taskStats.in_progress}</div>
                     <div className="text-[10px] text-muted-foreground">{t('taskStatActive')}</div>
                   </div>
                   <div className="text-center bg-secondary rounded-lg p-2">
-                    <div className="text-lg font-bold text-green-400">{selectedAgent.taskStats.completed}</div>
+                    <div className="text-lg font-bold text-status-success-fg">{selectedAgent.taskStats.completed}</div>
                     <div className="text-[10px] text-muted-foreground">{t('taskStatDone')}</div>
                   </div>
                 </div>
@@ -2366,10 +2366,10 @@ export function OfficePanel() {
             <span
               className={`mt-1 inline-block h-2.5 w-2.5 rounded-full ${
                 launchToast.kind === 'success'
-                  ? 'bg-green-400'
+                  ? 'bg-status-success-solid'
                   : launchToast.kind === 'info'
-                    ? 'bg-blue-400'
-                    : 'bg-red-400'
+                    ? 'bg-status-info-solid'
+                    : 'bg-status-error-solid'
               }`}
             />
             <div>

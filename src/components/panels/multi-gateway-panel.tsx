@@ -254,7 +254,7 @@ export function MultiGatewayPanel() {
       {shouldShowConnectionSummary && (
         <div className="bg-card border border-border rounded-lg p-4">
           <div className="flex items-center gap-3">
-            <span className={`w-2.5 h-2.5 rounded-full ${connection.isConnected ? 'bg-green-500' : 'bg-red-500 animate-pulse'}`} />
+            <span className={`w-2.5 h-2.5 rounded-full ${connection.isConnected ? 'bg-status-success-solid' : 'bg-status-error-solid animate-pulse'}`} />
             <div>
               <div className="text-sm font-medium text-foreground">
                 {connection.isConnected ? t('connected') : t('disconnected')}
@@ -327,17 +327,17 @@ export function MultiGatewayPanel() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${dg.active ? 'bg-green-500' : 'bg-red-500'}`} />
+                        <span className={`w-2 h-2 rounded-full ${dg.active ? 'bg-status-success-solid' : 'bg-status-error-solid'}`} />
                         <span className="text-sm font-semibold text-foreground">{dg.user}</span>
                         <span className={`text-2xs px-1.5 py-0.5 rounded font-medium ${
                           dg.active
-                            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                            : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            ? 'bg-status-success-bg text-status-success-fg border border-status-success-border'
+                            : 'bg-status-error-bg text-status-error-fg border border-status-error-border'
                         }`}>
                           {dg.active ? t('running') : t('stopped')}
                         </span>
                         {dg.tailscale?.mode && (
-                          <span className="text-2xs px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-400 border border-violet-500/30 font-medium">
+                          <span className="text-2xs px-1.5 py-0.5 rounded bg-status-info-bg text-primary border border-status-info-border font-medium">
                             TS:{dg.tailscale.mode}
                           </span>
                         )}
@@ -408,15 +408,15 @@ export function MultiGatewayPanel() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${conn.status === 'connected' ? 'bg-green-500' : 'bg-red-500'}`} />
+                      <span className={`w-2 h-2 rounded-full ${conn.status === 'connected' ? 'bg-status-success-solid' : 'bg-status-error-solid'}`} />
                       <span className="text-sm font-semibold text-foreground">{conn.agent_name}</span>
-                      <span className="text-2xs px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-medium">
+                      <span className="text-2xs px-1.5 py-0.5 rounded bg-status-info-bg/20 text-status-info-fg border border-status-info-border font-medium">
                         {conn.tool_name}{conn.tool_version ? ` v${conn.tool_version}` : ''}
                       </span>
                       <span className={`text-2xs px-1.5 py-0.5 rounded font-medium ${
                         conn.status === 'connected'
-                          ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                          : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                          ? 'bg-status-success-bg text-status-success-fg border border-status-success-border'
+                          : 'bg-status-error-bg text-status-error-fg border border-status-error-border'
                       }`}>
                         {conn.status.toUpperCase()}
                       </span>
@@ -432,7 +432,7 @@ export function MultiGatewayPanel() {
                       onClick={() => disconnectCli(conn.connection_id)}
                       variant="ghost"
                       size="xs"
-                      className="text-2xs text-red-400 hover:bg-red-500/10"
+                      className="text-2xs text-status-error-fg hover:bg-status-error-bg"
                     >
                       {t('disconnect')}
                     </Button>
@@ -460,10 +460,10 @@ function GatewayCard({ gateway, health, historyEntries = [], isProbing, isCurren
 }) {
   const t = useTranslations('multiGateway')
   const statusColors: Record<string, string> = {
-    online: 'bg-green-500',
-    offline: 'bg-red-500',
-    error: 'bg-amber-500',
-    timeout: 'bg-amber-500',
+    online: 'bg-status-success-solid',
+    offline: 'bg-status-error-solid',
+    error: 'bg-status-warning-solid',
+    timeout: 'bg-status-warning-solid',
     unknown: 'bg-muted-foreground/30',
   }
 
@@ -477,12 +477,12 @@ function GatewayCard({ gateway, health, historyEntries = [], isProbing, isCurren
 
   return (
     <div className={`bg-card border rounded-lg p-4 transition-smooth ${
-      isCurrentlyConnected ? 'border-green-500/30 bg-green-500/5' : 'border-border'
+      isCurrentlyConnected ? 'border-status-success-border bg-status-success-bg' : 'border-border'
     }`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`w-2 h-2 rounded-full ${isCurrentlyConnected ? 'bg-green-500' : (statusColors[gateway.status] || statusColors.unknown)}`} />
+            <span className={`w-2 h-2 rounded-full ${isCurrentlyConnected ? 'bg-status-success-solid' : (statusColors[gateway.status] || statusColors.unknown)}`} />
             <h3 className="text-sm font-semibold text-foreground">{gateway.name}</h3>
             {gateway.is_primary ? (
               <span className="text-2xs px-1.5 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 font-medium">
@@ -490,7 +490,7 @@ function GatewayCard({ gateway, health, historyEntries = [], isProbing, isCurren
               </span>
             ) : null}
             {isCurrentlyConnected && (
-              <span className="text-2xs px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30 font-medium">
+              <span className="text-2xs px-1.5 py-0.5 rounded bg-status-success-bg text-status-success-fg border border-status-success-border font-medium">
                 {t('connectedBadge')}
               </span>
             )}
@@ -507,7 +507,7 @@ function GatewayCard({ gateway, health, historyEntries = [], isProbing, isCurren
             </div>
           )}
           {compatibilityWarning && (
-            <div className="mt-1.5 text-2xs rounded border border-amber-500/30 bg-amber-500/10 text-amber-300 px-2 py-1">
+            <div className="mt-1.5 text-2xs rounded border border-status-warning-border bg-status-warning-bg text-status-warning-fg px-2 py-1">
               {compatibilityWarning}
             </div>
           )}
@@ -548,7 +548,7 @@ function GatewayCard({ gateway, health, historyEntries = [], isProbing, isCurren
             <Button
               onClick={onConnect}
               size="xs"
-              className="text-2xs bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
+              className="text-2xs bg-status-info-bg/20 text-status-info-fg hover:bg-status-info-bg/30"
               title={t('connectToGateway')}
             >
               {t('connect')}
@@ -569,7 +569,7 @@ function GatewayCard({ gateway, health, historyEntries = [], isProbing, isCurren
                 onClick={onDelete}
                 variant="ghost"
                 size="icon-xs"
-                className="hover:text-red-400 hover:bg-red-500/10"
+                className="hover:text-status-error-fg hover:bg-status-error-bg"
                 title={t('removeGateway')}
               >
                 <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -668,7 +668,7 @@ function AddGatewayForm({ onAdded, onCancel }: { onAdded: () => void; onCancel: 
         </div>
       </div>
 
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-status-error-fg">{error}</p>}
 
       <div className="flex gap-2 pt-1">
         <Button type="button" onClick={onCancel} variant="outline" size="sm">

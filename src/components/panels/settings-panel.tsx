@@ -432,14 +432,14 @@ export function SettingsPanel() {
 
       {/* Workspace Info */}
       {currentUser?.role === 'admin' && (
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-xs text-blue-300">
-          <strong className="text-blue-200">{t('workspaceManagementLabel')}</strong>{' '}
+        <div className="bg-status-info-bg/10 border border-status-info-border rounded-lg p-3 text-xs text-status-info-fg">
+          <strong className="text-status-info-fg">{t('workspaceManagementLabel')}</strong>{' '}
           {t('workspaceManagementDesc1')}{' '}
           <Button
             onClick={() => navigateToPanel('super-admin')}
             variant="link"
             size="xs"
-            className="text-blue-400 hover:text-blue-300 p-0 h-auto"
+            className="text-status-info-fg hover:text-status-info-fg p-0 h-auto"
           >
             {t('superAdmin')}
           </Button>{' '}
@@ -570,23 +570,23 @@ export function SettingsPanel() {
                     <p className="text-xs font-medium">Hermes Agent</p>
                     <span className={`text-2xs px-1.5 py-0.5 rounded ${
                       hermesStatus.gatewayRunning
-                        ? 'bg-green-500/15 text-green-400'
+                        ? 'bg-status-success-bg text-status-success-fg'
                         : 'bg-muted text-muted-foreground'
                     }`}>
                       {hermesStatus.gatewayRunning ? 'Gateway running' : 'Gateway offline'}
                     </span>
                     {hermesStatus.activeSessions > 0 && (
-                      <span className="text-2xs px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400">
+                      <span className="text-2xs px-1.5 py-0.5 rounded bg-status-info-bg/15 text-status-info-fg">
                         {hermesStatus.activeSessions} active
                       </span>
                     )}
                     {(hermesStatus.cronJobCount ?? 0) > 0 && (
-                      <span className="text-2xs px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400">
+                      <span className="text-2xs px-1.5 py-0.5 rounded bg-status-info-bg text-primary">
                         {hermesStatus.cronJobCount} cron
                       </span>
                     )}
                     {(hermesStatus.memoryEntries ?? 0) > 0 && (
-                      <span className="text-2xs px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400">
+                      <span className="text-2xs px-1.5 py-0.5 rounded bg-status-info-bg text-primary">
                         {hermesStatus.memoryEntries} mem
                       </span>
                     )}
@@ -640,7 +640,7 @@ export function SettingsPanel() {
       {/* Feedback */}
       {feedback && (
         <div className={`rounded-lg p-3 text-xs font-medium ${
-          feedback.ok ? 'bg-green-500/10 text-green-400' : 'bg-destructive/10 text-destructive'
+          feedback.ok ? 'bg-status-success-bg text-status-success-fg' : 'bg-destructive/10 text-destructive'
         }`}>
           {feedback.text}
         </div>
@@ -724,8 +724,8 @@ export function SettingsPanel() {
                 </Button>
               </div>
             ) : (
-              <div className="mt-3 bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
-                <p className="text-xs text-amber-300 mb-2">
+              <div className="mt-3 bg-status-warning-bg border border-status-warning-border rounded-lg p-3">
+                <p className="text-xs text-status-warning-fg mb-2">
                   Are you sure? Rotating the API key will immediately invalidate the current key.
                   All agents and integrations using the old key will lose access.
                 </p>
@@ -735,7 +735,7 @@ export function SettingsPanel() {
                     disabled={rotating}
                     variant="default"
                     size="sm"
-                    className="bg-amber-600 hover:bg-amber-700"
+                    className="bg-status-warning-solid hover:bg-status-warning-solid"
                   >
                     {rotating ? 'Rotating...' : 'Confirm Rotate'}
                   </Button>
@@ -752,8 +752,8 @@ export function SettingsPanel() {
 
             {/* New key display (shown once after rotation) */}
             {newApiKey && (
-              <div className="mt-3 bg-green-500/10 border border-green-500/20 rounded-lg p-3">
-                <p className="text-xs text-green-300 mb-2 font-medium">
+              <div className="mt-3 bg-status-success-bg border border-status-success-border rounded-lg p-3">
+                <p className="text-xs text-status-success-fg mb-2 font-medium">
                   New API key generated. Copy it now -- it will not be shown again.
                 </p>
                 <div className="flex items-center gap-2">
@@ -917,7 +917,7 @@ export function SettingsPanel() {
                         currentValue === 'true' ? 'bg-primary' : 'bg-muted'
                       }`}
                     >
-                      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-card shadow transition-transform ${
                         currentValue === 'true' ? 'left-5' : 'left-0.5'
                       }`} />
                     </button>
@@ -974,7 +974,7 @@ export function SettingsPanel() {
       {/* Unsaved changes bar */}
       {hasChanges && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-card border border-border rounded-lg shadow-lg px-4 py-2.5 flex items-center gap-3 z-40">
-          <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-status-warning-solid animate-pulse" />
           <span className="text-xs text-foreground">
             {Object.keys(edits).filter(k => {
               const s = settings.find(s => s.key === k)
@@ -1132,7 +1132,7 @@ function AccountOAuthSection() {
           <div className="flex items-center gap-3">
             {/* Google icon */}
             <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-              isGoogleConnected ? 'bg-white' : 'bg-muted'
+              isGoogleConnected ? 'bg-card' : 'bg-muted'
             }`}>
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
@@ -1146,7 +1146,7 @@ function AccountOAuthSection() {
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">Google</span>
                 {isGoogleConnected ? (
-                  <span className="text-2xs px-1.5 py-0.5 rounded bg-green-500/15 text-green-400">Connected</span>
+                  <span className="text-2xs px-1.5 py-0.5 rounded bg-status-success-bg text-status-success-fg">Connected</span>
                 ) : (
                   <span className="text-2xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Not connected</span>
                 )}
@@ -1174,7 +1174,7 @@ function AccountOAuthSection() {
 
         {feedback && (
           <div className={`mt-3 rounded-md p-2.5 text-xs font-medium ${
-            feedback.ok ? 'bg-green-500/10 text-green-400' : 'bg-destructive/10 text-destructive'
+            feedback.ok ? 'bg-status-success-bg text-status-success-fg' : 'bg-destructive/10 text-destructive'
           }`}>
             {feedback.text}
           </div>

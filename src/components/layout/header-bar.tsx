@@ -284,12 +284,12 @@ export function HeaderBar() {
   }
   const typeColors: Record<string, string> = {
     panel: 'bg-primary/20 text-primary',
-    task: 'bg-blue-500/20 text-blue-400',
-    agent: 'bg-purple-500/20 text-purple-400',
-    activity: 'bg-green-500/20 text-green-400',
-    audit: 'bg-amber-500/20 text-amber-400',
-    message: 'bg-cyan-500/20 text-cyan-400',
-    notification: 'bg-red-500/20 text-red-400',
+    task: 'bg-status-info-bg text-status-info-fg',
+    agent: 'bg-primary/20 text-primary',
+    activity: 'bg-status-success-bg text-status-success-fg',
+    audit: 'bg-status-warning-bg text-status-warning-fg',
+    message: 'bg-primary/20 text-primary',
+    notification: 'bg-status-error-bg text-status-error-fg',
     webhook: 'bg-orange-500/20 text-orange-400',
     pipeline: 'bg-indigo-500/20 text-indigo-400',
   }
@@ -486,19 +486,19 @@ function ModeBadge({
   let statusLabel: string
 
   if (isConnected) {
-    dotClass = 'bg-green-500'
-    borderClass = 'border-green-500/25 bg-green-500/10'
-    textClass = 'text-green-400'
+    dotClass = 'bg-status-success-solid'
+    borderClass = 'border-status-success-border/25 bg-status-success-bg'
+    textClass = 'text-status-success-fg'
     statusLabel = connection.latency != null ? `${connection.latency}ms` : th('connected')
   } else if (isReconnecting) {
-    dotClass = 'bg-amber-500 animate-pulse'
-    borderClass = 'border-amber-500/25 bg-amber-500/10'
-    textClass = 'text-amber-400'
+    dotClass = 'bg-status-warning-solid animate-pulse'
+    borderClass = 'border-status-warning-border/25 bg-status-warning-bg'
+    textClass = 'text-status-warning-fg'
     statusLabel = th('retry', { count: connection.reconnectAttempts })
   } else {
-    dotClass = 'bg-red-500 animate-pulse'
-    borderClass = 'border-red-500/25 bg-red-500/10'
-    textClass = 'text-red-400'
+    dotClass = 'bg-status-error-solid animate-pulse'
+    borderClass = 'border-status-error-border/25 bg-status-error-bg'
+    textClass = 'text-status-error-fg'
     statusLabel = th('offline')
   }
 
@@ -527,7 +527,7 @@ function ModeBadge({
           <div className="space-y-1.5 text-muted-foreground">
             <div className="flex justify-between">
               <span>{th('status')}</span>
-              <span className={isConnected ? 'text-green-400' : isReconnecting ? 'text-amber-400' : 'text-red-400'}>
+              <span className={isConnected ? 'text-status-success-fg' : isReconnecting ? 'text-status-warning-fg' : 'text-status-error-fg'}>
                 {isConnected ? th('connected') : isReconnecting ? th('reconnecting') : th('disconnected')}
               </span>
             </div>
@@ -543,20 +543,20 @@ function ModeBadge({
             )}
             <div className="flex justify-between">
               <span>{th('webSocket')}</span>
-              <span className={isConnected ? 'text-green-400' : 'text-red-400'}>
+              <span className={isConnected ? 'text-status-success-fg' : 'text-status-error-fg'}>
                 {isConnected ? th('live') : th('down')}
               </span>
             </div>
             <div className="flex justify-between">
               <span>{th('sse')}</span>
-              <span className={connection.sseConnected ? 'text-green-400' : 'text-muted-foreground/50'}>
+              <span className={connection.sseConnected ? 'text-status-success-fg' : 'text-muted-foreground/50'}>
                 {connection.sseConnected ? th('live') : th('off')}
               </span>
             </div>
             {!isConnected && connection.reconnectAttempts > 0 && (
               <div className="flex justify-between">
                 <span>{th('retries')}</span>
-                <span className="text-amber-400">{connection.reconnectAttempts}</span>
+                <span className="text-status-warning-fg">{connection.reconnectAttempts}</span>
               </div>
             )}
           </div>
@@ -572,7 +572,7 @@ function ModeBadge({
 }
 
 function Stat({ label, value, status }: { label: string; value: string; status?: 'success' | 'error' | 'warning' }) {
-  const statusColor = status === 'success' ? 'text-green-400' : status === 'error' ? 'text-red-400' : status === 'warning' ? 'text-amber-400' : 'text-foreground'
+  const statusColor = status === 'success' ? 'text-status-success-fg' : status === 'error' ? 'text-status-error-fg' : status === 'warning' ? 'text-status-warning-fg' : 'text-foreground'
 
   return (
     <div className="flex items-center gap-1.5 text-xs">
@@ -612,8 +612,8 @@ function SseBadge({ connected }: { connected: boolean }) {
   return (
     <div className="flex items-center gap-1.5 text-xs">
       <span className="text-muted-foreground">{th('events')}</span>
-      <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-blue-500' : 'bg-muted-foreground/30'}`} />
-      <span className={`font-medium font-mono-tight ${connected ? 'text-blue-400' : 'text-muted-foreground'}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-status-info-solid' : 'bg-muted-foreground/30'}`} />
+      <span className={`font-medium font-mono-tight ${connected ? 'text-status-info-fg' : 'text-muted-foreground'}`}>
         {connected ? th('live') : th('off')}
       </span>
     </div>

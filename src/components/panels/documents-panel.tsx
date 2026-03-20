@@ -243,13 +243,13 @@ export function DocumentsPanel() {
           )}
 
           {treeError && (
-            <div className="text-sm text-red-400">{treeError}</div>
+            <div className="text-sm text-status-error-fg">{treeError}</div>
           )}
 
           {!loadingTree && !treeError && isShowingSearch && (
             <div className="space-y-1">
               {searching && <div className="text-sm text-muted-foreground">{t('searching')}</div>}
-              {searchError && <div className="text-sm text-red-400">{searchError}</div>}
+              {searchError && <div className="text-sm text-status-error-fg">{searchError}</div>}
               {!searching && !searchError && searchResults.length === 0 && (
                 <div className="text-sm text-muted-foreground">{t('noMatches')}</div>
               )}
@@ -307,7 +307,7 @@ export function DocumentsPanel() {
               </div>
 
               {loadingDoc && <div className="text-sm text-muted-foreground">{t('loadingDocument')}</div>}
-              {docError && <div className="text-sm text-red-400">{docError}</div>}
+              {docError && <div className="text-sm text-status-error-fg">{docError}</div>}
 
               {!loadingDoc && !docError && (
                 <div className="rounded-md border border-border bg-background p-4">

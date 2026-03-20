@@ -106,18 +106,18 @@ function timeAgo(timestamp: number): string {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  busy: 'bg-green-500',
-  idle: 'bg-yellow-500',
-  error: 'bg-red-500',
+  busy: 'bg-status-success-solid',
+  idle: 'bg-status-warning-solid',
+  error: 'bg-status-error-solid',
   offline: 'bg-muted-foreground/30',
 }
 const TAG_COLORS: Record<string, string> = {
-  slate: 'bg-slate-500',
-  blue: 'bg-blue-500',
-  green: 'bg-green-500',
-  amber: 'bg-amber-500',
-  red: 'bg-red-500',
-  purple: 'bg-purple-500',
+  slate: 'bg-muted-foreground',
+  blue: 'bg-status-info-solid',
+  green: 'bg-status-success-solid',
+  amber: 'bg-status-warning-solid',
+  red: 'bg-status-error-solid',
+  purple: 'bg-primary',
   pink: 'bg-pink-500',
   teal: 'bg-teal-500',
 }
@@ -465,8 +465,8 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
           <>
             {activeGatewayRows.length > 0 && (
               <div>
-                <div className="px-3 pt-2 py-1 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-green-400/70">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                <div className="px-3 pt-2 py-1 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-status-success-fg/70">
+                  <span className="h-1.5 w-1.5 rounded-full bg-status-success-solid animate-pulse" />
                   Active
                 </div>
                 {activeGatewayRows.map(renderConversationItem)}
@@ -474,8 +474,8 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
             )}
             {activeLocalRows.length > 0 && (
               <div>
-                <div className="px-3 pt-2 py-1 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-green-400/70">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                <div className="px-3 pt-2 py-1 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-status-success-fg/70">
+                  <span className="h-1.5 w-1.5 rounded-full bg-status-success-solid animate-pulse" />
                   Active Local
                 </div>
                 {activeLocalRows.map(renderConversationItem)}

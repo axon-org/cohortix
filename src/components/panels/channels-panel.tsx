@@ -203,7 +203,7 @@ function StatusRow({ label, value }: { label: string; value: string }) {
 function ErrorCallout({ message }: { message: string | null | undefined }) {
   if (!message) return null
   return (
-    <div className="text-xs text-red-400 bg-red-500/10 rounded px-2 py-1.5 mt-2 break-words">
+    <div className="text-xs text-status-error-fg bg-status-error-bg rounded px-2 py-1.5 mt-2 break-words">
       {message}
     </div>
   )
@@ -212,7 +212,7 @@ function ErrorCallout({ message }: { message: string | null | undefined }) {
 function ProbeResult({ probe }: { probe: ChannelStatus['probe'] }) {
   if (!probe) return null
   return (
-    <div className={`text-xs mt-2 px-2 py-1.5 rounded ${probe.ok ? 'text-green-400 bg-green-500/10' : 'text-red-400 bg-red-500/10'}`}>
+    <div className={`text-xs mt-2 px-2 py-1.5 rounded ${probe.ok ? 'text-status-success-fg bg-status-success-bg' : 'text-status-error-fg bg-status-error-bg'}`}>
       Probe {probe.ok ? 'OK' : 'failed'}
       {probe.elapsedMs != null && ` - ${probe.elapsedMs}ms`}
       {probe.error && ` - ${probe.error}`}
@@ -242,7 +242,7 @@ function CardShell({ platform, label, children, status, accounts, onProbe, probi
           <span className="text-sm font-medium text-foreground">{name}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className={`w-2 h-2 rounded-full ${isActive ? (status?.connected ? 'bg-green-500' : status?.running ? 'bg-amber-500' : 'bg-muted-foreground/50') : 'bg-red-500'}`} />
+          <span className={`w-2 h-2 rounded-full ${isActive ? (status?.connected ? 'bg-status-success-solid' : status?.running ? 'bg-status-warning-solid' : 'bg-muted-foreground/50') : 'bg-status-error-solid'}`} />
           <span className="text-xs text-muted-foreground">
             {isActive ? (status?.connected ? t('statusConnected') : status?.running ? t('statusRunning') : t('statusConfigured')) : t('statusInactive')}
           </span>
@@ -614,7 +614,7 @@ function AccountList({ accounts }: { accounts: ChannelAccount[] }) {
           <StatusRow label="Connected" value={yesNo(acct.connected)} />
           {acct.lastInboundAt && <StatusRow label="Last inbound" value={relativeTime(acct.lastInboundAt)} />}
           {acct.lastError && (
-            <div className="text-red-400 break-words mt-1">{acct.lastError}</div>
+            <div className="text-status-error-fg break-words mt-1">{acct.lastError}</div>
           )}
         </div>
       ))}
@@ -792,7 +792,7 @@ export function ChannelsPanel() {
         <div>
           <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
           <div className="flex items-center gap-1.5 mt-1">
-            <span className={`w-2 h-2 rounded-full ${gatewayConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+            <span className={`w-2 h-2 rounded-full ${gatewayConnected ? 'bg-status-success-solid' : 'bg-status-error-solid'}`} />
             <span className="text-xs text-muted-foreground">
               {gatewayConnected ? t('gatewayConnected') : t('gatewayDisconnected')}
             </span>

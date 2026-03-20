@@ -20,7 +20,7 @@ interface SessionMessageProps {
 }
 
 const ROLE_CONFIG = {
-  user: { indicator: '$', indicatorClass: 'text-green-400', borderClass: 'border-l-green-500/40' },
+  user: { indicator: '$', indicatorClass: 'text-status-success-fg', borderClass: 'border-l-green-500/40' },
   assistant: { indicator: '\u25C6', indicatorClass: 'text-primary', borderClass: 'border-l-primary/40' },
   system: { indicator: '', indicatorClass: '', borderClass: 'border-l-amber-500/20' },
 } as const
@@ -100,7 +100,7 @@ function ThinkingPart({ thinking }: { thinking: string }) {
 function ToolUsePart({ name, input }: { name: string; input: string }) {
   return (
     <div className="flex items-baseline gap-1.5 font-mono-tight text-[11px]">
-      <span className="text-amber-400/80">{'\u2699'} {name}</span>
+      <span className="text-status-warning-fg/80">{'\u2699'} {name}</span>
       <span className="truncate text-muted-foreground/40">{input.length > 80 ? input.slice(0, 80) + '\u2026' : input}</span>
     </div>
   )
@@ -109,13 +109,13 @@ function ToolUsePart({ name, input }: { name: string; input: string }) {
 function ToolResultPart({ content, isError }: { content: string; isError?: boolean }) {
   const [open, setOpen] = useState(false)
   const icon = isError ? '\u2717' : '\u2713'
-  const colorClass = isError ? 'text-red-400/70' : 'text-green-400/50'
+  const colorClass = isError ? 'text-status-error-fg/70' : 'text-status-success-fg/50'
   return (
     <details open={open} onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}>
       <summary className={`cursor-pointer select-none font-mono-tight text-[11px] ${colorClass} hover:brightness-125`}>
         {icon} {isError ? 'error' : 'result'} ({content.length} chars)
       </summary>
-      <div className="mt-1 max-h-40 overflow-y-auto rounded bg-black/20 p-2">
+      <div className="mt-1 max-h-40 overflow-y-auto rounded bg-background/20 p-2">
         <pre className="font-mono-tight text-[11px] text-muted-foreground/70 whitespace-pre-wrap break-words">
           {content}
         </pre>
@@ -158,11 +158,11 @@ function renderSessionContent(text: string): React.ReactNode[] {
       return (
         <div key={i} className="my-1.5 rounded border border-border/30 overflow-hidden">
           {lang && (
-            <div className="bg-black/30 px-2 py-0.5 text-[10px] text-muted-foreground/50 border-b border-border/20">
+            <div className="bg-background/30 px-2 py-0.5 text-[10px] text-muted-foreground/50 border-b border-border/20">
               {lang}
             </div>
           )}
-          <pre className="bg-black/20 px-3 py-2 text-[11px] overflow-x-auto whitespace-pre">
+          <pre className="bg-background/20 px-3 py-2 text-[11px] overflow-x-auto whitespace-pre">
             {code}
           </pre>
         </div>
@@ -171,7 +171,7 @@ function renderSessionContent(text: string): React.ReactNode[] {
     // Inline code
     if (part.startsWith('`') && part.endsWith('`')) {
       return (
-        <code key={i} className="bg-black/20 rounded px-1 py-0.5 text-[11px]">
+        <code key={i} className="bg-background/20 rounded px-1 py-0.5 text-[11px]">
           {part.slice(1, -1)}
         </code>
       )

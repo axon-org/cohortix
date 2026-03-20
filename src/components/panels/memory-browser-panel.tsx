@@ -86,15 +86,15 @@ function fileIcon(name: string): string {
 }
 
 function statusColor(status: 'healthy' | 'warning' | 'critical'): string {
-  if (status === 'healthy') return 'text-green-400'
-  if (status === 'warning') return 'text-amber-400'
-  return 'text-red-400'
+  if (status === 'healthy') return 'text-status-success-fg'
+  if (status === 'warning') return 'text-status-warning-fg'
+  return 'text-status-error-fg'
 }
 
 function statusBg(status: 'healthy' | 'warning' | 'critical'): string {
-  if (status === 'healthy') return 'bg-green-500'
-  if (status === 'warning') return 'bg-amber-500'
-  return 'bg-red-500'
+  if (status === 'healthy') return 'bg-status-success-solid'
+  if (status === 'warning') return 'bg-status-warning-solid'
+  return 'bg-status-error-solid'
 }
 
 export function MemoryBrowserPanel() {
@@ -623,11 +623,11 @@ export function MemoryBrowserPanel() {
                       {!isEditing ? (
                         <>
                           <button onClick={() => { setIsEditing(true); setEditedContent(memoryContent ?? '') }} className="px-2 py-0.5 text-[11px] font-mono text-muted-foreground hover:text-foreground rounded hover:bg-[hsl(var(--surface-2))] transition-colors">{t('edit')}</button>
-                          <button onClick={() => setShowDeleteConfirm(true)} className="px-2 py-0.5 text-[11px] font-mono text-red-400/60 hover:text-red-400 rounded hover:bg-red-500/10 transition-colors">{t('delete')}</button>
+                          <button onClick={() => setShowDeleteConfirm(true)} className="px-2 py-0.5 text-[11px] font-mono text-status-error-fg/60 hover:text-status-error-fg rounded hover:bg-status-error-bg transition-colors">{t('delete')}</button>
                         </>
                       ) : (
                         <>
-                          <button onClick={saveFile} disabled={isSaving} className="px-2 py-0.5 text-[11px] font-mono text-green-400/80 hover:text-green-400 rounded hover:bg-green-500/10 transition-colors">{isSaving ? t('saving') : t('save')}</button>
+                          <button onClick={saveFile} disabled={isSaving} className="px-2 py-0.5 text-[11px] font-mono text-status-success-fg/80 hover:text-status-success-fg rounded hover:bg-status-success-bg transition-colors">{isSaving ? t('saving') : t('save')}</button>
                           <button onClick={() => { setIsEditing(false); setEditedContent('') }} className="px-2 py-0.5 text-[11px] font-mono text-muted-foreground hover:text-foreground rounded hover:bg-[hsl(var(--surface-2))] transition-colors">{t('cancel')}</button>
                         </>
                       )}
@@ -636,10 +636,10 @@ export function MemoryBrowserPanel() {
                   </div>
                 )}
                 {schemaWarnings.length > 0 && (
-                  <div className="px-4 py-2 bg-amber-500/5 border-b border-amber-500/15">
-                    <div className="text-[11px] font-mono text-amber-400">{t('schemaWarnings')}</div>
+                  <div className="px-4 py-2 bg-status-warning-bg border-b border-status-warning-border/15">
+                    <div className="text-[11px] font-mono text-status-warning-fg">{t('schemaWarnings')}</div>
                     {schemaWarnings.map((w, i) => (
-                      <div key={i} className="text-[11px] font-mono text-amber-400/70 ml-2">- {w}</div>
+                      <div key={i} className="text-[11px] font-mono text-status-warning-fg/70 ml-2">- {w}</div>
                     ))}
                   </div>
                 )}
@@ -721,7 +721,7 @@ function HermesMemoryView({ data, isLoading, onRefresh }: { data: { agentMemory:
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold font-mono text-foreground">MEMORY.md</span>
-            <span className="text-[10px] font-mono text-purple-400">{data.agentMemoryEntries} entries</span>
+            <span className="text-[10px] font-mono text-primary">{data.agentMemoryEntries} entries</span>
           </div>
           <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
             {data.agentMemorySize}/{AGENT_CAP} chars ({agentPct}%)
@@ -729,7 +729,7 @@ function HermesMemoryView({ data, isLoading, onRefresh }: { data: { agentMemory:
         </div>
         <div className="h-1.5 bg-[hsl(var(--surface-0))] rounded-full overflow-hidden mb-3">
           <div
-            className={`h-full rounded-full transition-all ${agentPct > 90 ? 'bg-red-500' : agentPct > 70 ? 'bg-amber-500' : 'bg-purple-500'}`}
+            className={`h-full rounded-full transition-all ${agentPct > 90 ? 'bg-status-error-solid' : agentPct > 70 ? 'bg-status-warning-solid' : 'bg-status-info-bg'}`}
             style={{ width: `${agentPct}%`, opacity: 0.7 }}
           />
         </div>
@@ -745,7 +745,7 @@ function HermesMemoryView({ data, isLoading, onRefresh }: { data: { agentMemory:
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold font-mono text-foreground">USER.md</span>
-            <span className="text-[10px] font-mono text-purple-400">{data.userMemoryEntries} entries</span>
+            <span className="text-[10px] font-mono text-primary">{data.userMemoryEntries} entries</span>
           </div>
           <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
             {data.userMemorySize}/{USER_CAP} chars ({userPct}%)
@@ -753,7 +753,7 @@ function HermesMemoryView({ data, isLoading, onRefresh }: { data: { agentMemory:
         </div>
         <div className="h-1.5 bg-[hsl(var(--surface-0))] rounded-full overflow-hidden mb-3">
           <div
-            className={`h-full rounded-full transition-all ${userPct > 90 ? 'bg-red-500' : userPct > 70 ? 'bg-amber-500' : 'bg-purple-500'}`}
+            className={`h-full rounded-full transition-all ${userPct > 90 ? 'bg-status-error-solid' : userPct > 70 ? 'bg-status-warning-solid' : 'bg-status-info-bg'}`}
             style={{ width: `${userPct}%`, opacity: 0.7 }}
           />
         </div>
@@ -907,7 +907,7 @@ function PipelineView({ result, mocGroups, isRunning, onRunAction, onNavigate }:
             <span className="text-[10px] font-mono text-muted-foreground/50">{t('filesProcessed', { count: result.filesProcessed })}</span>
           </div>
           {result.suggestions.length === 0 ? (
-            <div className="text-[11px] font-mono text-green-400/70">{t('noSuggestions')}</div>
+            <div className="text-[11px] font-mono text-status-success-fg/70">{t('noSuggestions')}</div>
           ) : (
             <div className="space-y-1.5">
               {result.suggestions.map((sug, i) => <div key={i} className="text-[11px] font-mono text-muted-foreground/80 leading-relaxed">{sug}</div>)}
@@ -1001,8 +1001,8 @@ function DeleteConfirmModal({ fileName, onClose, onConfirm }: { fileName: string
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[hsl(var(--surface-1))] border border-border rounded-lg max-w-sm w-full p-5 shadow-xl">
-        <h3 className="text-sm font-semibold text-red-400 font-mono mb-3">{t('deleteFileTitle')}</h3>
-        <div className="bg-red-500/5 border border-red-500/15 rounded-md p-3 mb-4">
+        <h3 className="text-sm font-semibold text-status-error-fg font-mono mb-3">{t('deleteFileTitle')}</h3>
+        <div className="bg-status-error-bg border border-status-error-border/15 rounded-md p-3 mb-4">
           <p className="text-xs text-muted-foreground font-mono">{t('permanentlyDelete')}</p>
           <p className="text-xs font-mono text-foreground mt-1 bg-[hsl(var(--surface-0))] px-2 py-1 rounded">{fileName}</p>
         </div>

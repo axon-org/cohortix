@@ -97,10 +97,10 @@ export function MetricCard({ label, value, total, subtitle, icon, color }: {
   color: 'blue' | 'green' | 'purple' | 'red'
 }) {
   const colorMap = {
-    blue: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-    green: 'bg-green-500/10 text-green-400 border-green-500/20',
-    purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-    red: 'bg-red-500/10 text-red-400 border-red-500/20',
+    blue: 'bg-status-info-bg text-status-info-fg border-status-info-border',
+    green: 'bg-status-success-bg text-status-success-fg border-status-success-border',
+    purple: 'bg-primary/10 text-primary border-primary/20',
+    red: 'bg-status-error-bg text-status-error-fg border-status-error-border',
   }
 
   return (
@@ -124,10 +124,10 @@ export function SignalPill({ label, value, tone }: {
   tone: 'success' | 'warning' | 'info'
 }) {
   const toneClass = tone === 'success'
-    ? 'bg-green-500/15 border-green-500/30 text-green-300'
+    ? 'bg-status-success-bg border-status-success-border text-status-success-fg'
     : tone === 'warning'
-      ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
-      : 'bg-blue-500/15 border-blue-500/30 text-blue-300'
+      ? 'bg-status-warning-bg border-status-warning-border text-status-warning-fg'
+      : 'bg-status-info-bg border-status-info-border text-status-info-fg'
 
   return (
     <div className={`rounded-lg border px-2.5 py-2 ${toneClass}`}>
@@ -143,7 +143,7 @@ export function HealthRow({ label, value, status, bar }: {
   status: 'good' | 'warn' | 'bad'
   bar?: number
 }) {
-  const statusColor = status === 'good' ? 'text-green-400' : status === 'warn' ? 'text-amber-400' : 'text-red-400'
+  const statusColor = status === 'good' ? 'text-status-success-fg' : status === 'warn' ? 'text-status-warning-fg' : 'text-status-error-fg'
 
   return (
     <div className="space-y-1">
@@ -154,7 +154,7 @@ export function HealthRow({ label, value, status, bar }: {
       {bar != null && (
         <div className="h-1 rounded-full bg-secondary overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all duration-500 ${bar > 90 ? 'bg-red-500' : bar > 70 ? 'bg-amber-500' : 'bg-green-500'}`}
+            className={`h-full rounded-full transition-all duration-500 ${bar > 90 ? 'bg-status-error-solid' : bar > 70 ? 'bg-status-warning-solid' : 'bg-status-success-solid'}`}
             style={{ width: `${Math.min(bar, 100)}%` }}
           />
         </div>
@@ -167,7 +167,7 @@ export function StatRow({ label, value, alert }: { label: string; value: number 
   return (
     <div className="flex items-center justify-between">
       <span className="text-xs text-muted-foreground">{label}</span>
-      <span className={`text-xs font-medium font-mono-tight ${alert ? 'text-red-400' : 'text-muted-foreground'}`}>
+      <span className={`text-xs font-medium font-mono-tight ${alert ? 'text-status-error-fg' : 'text-muted-foreground'}`}>
         {value}
       </span>
     </div>
@@ -179,10 +179,10 @@ export function LogRow({ log }: { log: LogLike }) {
     <div className="px-4 py-2 hover:bg-secondary/30 transition-smooth">
       <div className="flex items-start gap-2">
         <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
-          log.level === 'error' ? 'bg-red-500' :
-          log.level === 'warn' ? 'bg-amber-500' :
-          log.level === 'debug' ? 'bg-gray-500' :
-          'bg-blue-500/50'
+          log.level === 'error' ? 'bg-status-error-solid' :
+          log.level === 'warn' ? 'bg-status-warning-solid' :
+          log.level === 'debug' ? 'bg-muted-foreground' :
+          'bg-status-info-solid/50'
         }`} />
         <div className="flex-1 min-w-0">
           <p className="text-xs text-foreground/80 break-words">{log.message.length > 100 ? log.message.slice(0, 100) + '...' : log.message}</p>

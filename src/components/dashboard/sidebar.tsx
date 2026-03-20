@@ -142,8 +142,8 @@ export function Sidebar() {
             <div className="flex items-center space-x-1">
               <div className={`w-2 h-2 rounded-full ${
                 connection.isConnected 
-                  ? 'bg-green-500 animate-pulse' 
-                  : 'bg-red-500'
+                  ? 'bg-status-success-solid animate-pulse' 
+                  : 'bg-status-error-solid'
               }`}></div>
               <span className="text-xs text-muted-foreground">
                 {connection.isConnected ? 'Connected' : 'Disconnected'}

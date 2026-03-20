@@ -48,17 +48,17 @@ interface SoulTemplate {
 }
 
 const statusColors: Record<string, string> = {
-  offline: 'bg-gray-500',
-  idle: 'bg-green-500',
-  busy: 'bg-yellow-500',
-  error: 'bg-red-500',
+  offline: 'bg-muted',
+  idle: 'bg-status-success-solid',
+  busy: 'bg-status-warning-solid',
+  error: 'bg-status-error-solid',
 }
 
 const statusBadgeStyles: Record<string, string> = {
-  offline: 'bg-slate-500/15 text-slate-300 border-slate-500/30',
-  idle: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
-  busy: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-  error: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
+  offline: 'bg-muted text-muted-foreground border-border',
+  idle: 'bg-status-success-bg text-status-success-fg border-status-success-border',
+  busy: 'bg-status-warning-bg text-status-warning-fg border-status-warning-border',
+  error: 'bg-status-error-bg text-status-error-fg border-status-error-border',
 }
 
 const statusIcons: Record<string, string> = {
@@ -71,7 +71,7 @@ const statusIcons: Record<string, string> = {
 const defaultCardStyle = {
   edge: 'from-slate-400/60 to-slate-600/30',
   glow: 'from-slate-500/10 via-transparent to-transparent',
-  dot: 'bg-slate-400',
+  dot: 'bg-muted',
 }
 
 const statusCardStyles: Record<string, { edge: string; glow: string; dot: string }> = {
@@ -79,17 +79,17 @@ const statusCardStyles: Record<string, { edge: string; glow: string; dot: string
   idle: {
     edge: 'from-emerald-300/80 to-emerald-600/30',
     glow: 'from-emerald-400/15 via-transparent to-transparent',
-    dot: 'bg-emerald-300',
+    dot: 'bg-status-success-solid',
   },
   busy: {
     edge: 'from-amber-300/80 to-amber-600/30',
     glow: 'from-amber-400/15 via-transparent to-transparent',
-    dot: 'bg-amber-300',
+    dot: 'bg-status-warning-solid',
   },
   error: {
     edge: 'from-rose-300/80 to-rose-600/30',
     glow: 'from-rose-400/15 via-transparent to-transparent',
-    dot: 'bg-rose-300',
+    dot: 'bg-status-error-solid',
   },
 }
 
@@ -302,7 +302,7 @@ export function AgentSquadPanelPhase3() {
 
           {/* Active Heartbeats Indicator */}
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+            <div className="w-2 h-2 rounded-full bg-status-info-bg animate-pulse"></div>
             <span className="text-sm text-muted-foreground">
               {t('activeHeartbeats', { count: agents.filter(hasRecentHeartbeat).length })}
             </span>
@@ -321,7 +321,7 @@ export function AgentSquadPanelPhase3() {
             onClick={() => syncFromConfig()}
             disabled={syncing}
             size="sm"
-            className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30"
+            className="bg-status-info-bg text-primary border border-status-info-border hover:bg-status-info-bg"
           >
             {syncing ? t('syncing') : t('syncConfig')}
           </Button>
@@ -329,7 +329,7 @@ export function AgentSquadPanelPhase3() {
             onClick={() => syncFromConfig('local')}
             disabled={syncing}
             size="sm"
-            className="bg-violet-500/20 text-violet-400 border border-violet-500/30 hover:bg-violet-500/30"
+            className="bg-status-info-bg text-primary border border-status-info-border hover:bg-status-info-bg"
           >
             {t('syncLocal')}
           </Button>
@@ -351,20 +351,20 @@ export function AgentSquadPanelPhase3() {
 
       {/* Sync Toast */}
       {syncToast && (
-        <div className={`p-3 m-4 rounded-lg text-sm ${syncToast.includes('failed') ? 'bg-red-500/10 border border-red-500/20 text-red-400' : 'bg-green-500/10 border border-green-500/20 text-green-400'}`}>
+        <div className={`p-3 m-4 rounded-lg text-sm ${syncToast.includes('failed') ? 'bg-status-error-bg border border-status-error-border text-status-error-fg' : 'bg-status-success-bg border border-status-success-border text-status-success-fg'}`}>
           {syncToast}
         </div>
       )}
 
       {/* Error Display */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 m-4 rounded-lg text-sm flex items-center justify-between">
+        <div className="bg-status-error-bg border border-status-error-border text-status-error-fg p-3 m-4 rounded-lg text-sm flex items-center justify-between">
           <span>{error}</span>
           <Button
             onClick={() => setError(null)}
             variant="ghost"
             size="icon-sm"
-            className="text-red-400/60 hover:text-red-400 ml-2"
+            className="text-status-error-fg/60 hover:text-status-error-fg ml-2"
           >
             ×
           </Button>
@@ -410,10 +410,10 @@ export function AgentSquadPanelPhase3() {
                           {(agent as any).source && (agent as any).source !== 'manual' && (
                             <span className={`text-2xs px-1.5 py-0.5 rounded-full border ${
                               (agent as any).source === 'local'
-                                ? 'bg-violet-500/15 text-violet-300 border-violet-500/30'
+                                ? 'bg-status-info-bg text-primary border-status-info-border'
                                 : (agent as any).source === 'gateway'
-                                  ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
-                                  : 'bg-slate-500/15 text-slate-300 border-slate-500/30'
+                                  ? 'bg-status-info-bg text-primary border-status-info-border'
+                                  : 'bg-muted text-muted-foreground border-border'
                             }`}>
                               {(agent as any).source}
                             </span>
@@ -427,7 +427,7 @@ export function AgentSquadPanelPhase3() {
 
                     <div className="flex items-center gap-2 shrink-0">
                       {hasRecentHeartbeat(agent) && (
-                        <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" title="Recent heartbeat" />
+                        <div className="w-2 h-2 rounded-full bg-status-info-bg animate-pulse" title="Recent heartbeat" />
                       )}
                       <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs capitalize ${statusBadgeStyles[agent.status]}`}>
                         <span className={`h-1.5 w-1.5 rounded-full ${(statusCardStyles[agent.status] || defaultCardStyle).dot}`} />
@@ -463,7 +463,7 @@ export function AgentSquadPanelPhase3() {
                           }}
                           size="xs"
                           variant="ghost"
-                          className="h-6 px-2 text-xs text-cyan-300 hover:bg-cyan-500/15 hover:text-cyan-200"
+                          className="h-6 px-2 text-xs text-primary hover:bg-status-info-bg hover:text-primary"
                           title="Wake agent via session"
                         >
                           {t('wake')}
@@ -490,7 +490,7 @@ export function AgentSquadPanelPhase3() {
                         }}
                         size="xs"
                         variant="ghost"
-                        className="h-6 px-2 text-xs text-blue-300 hover:bg-blue-500/15 hover:text-blue-200"
+                        className="h-6 px-2 text-xs text-status-info-fg hover:bg-status-info-bg/15 hover:text-status-info-fg"
                       >
                         {t('spawn')}
                       </Button>
@@ -833,7 +833,7 @@ function AgentDetailModalPhase3({
                     {agentState.status}
                   </span>
                   {agentState.session_key && (
-                    <span className="text-[11px] px-2 py-0.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300">
+                    <span className="text-[11px] px-2 py-0.5 rounded-full border border-status-info-border bg-status-info-bg text-primary">
                       Session
                     </span>
                   )}
@@ -850,7 +850,7 @@ function AgentDetailModalPhase3({
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  className="text-muted-foreground hover:text-rose-400"
+                  className="text-muted-foreground hover:text-status-error-fg"
                   title="Delete agent"
                   onClick={() => setShowDeleteMenu(prev => !prev)}
                 >
@@ -863,7 +863,7 @@ function AgentDetailModalPhase3({
                     <button
                       onClick={() => handleDelete(false)}
                       disabled={deleteBusy}
-                      className="text-left text-xs px-2.5 py-1.5 rounded text-rose-300 hover:bg-rose-500/10 transition-colors disabled:opacity-50"
+                      className="text-left text-xs px-2.5 py-1.5 rounded text-status-error-fg hover:bg-status-error-bg transition-colors disabled:opacity-50"
                     >
                       {deleteBusy ? (
                         <span className="flex items-center gap-1.5">
@@ -877,7 +877,7 @@ function AgentDetailModalPhase3({
                     <button
                       onClick={() => handleDelete(true)}
                       disabled={deleteBusy}
-                      className="text-left text-xs px-2.5 py-1.5 rounded text-rose-400 hover:bg-rose-500/10 transition-colors disabled:opacity-50"
+                      className="text-left text-xs px-2.5 py-1.5 rounded text-status-error-fg hover:bg-status-error-bg transition-colors disabled:opacity-50"
                     >
                       {deleteBusy ? (
                         <span className="flex items-center gap-1.5">
@@ -906,7 +906,7 @@ function AgentDetailModalPhase3({
           </div>
 
           {deleteError && (
-            <div className="mb-3 rounded-md border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">
+            <div className="mb-3 rounded-md border border-status-error-border bg-status-error-bg px-3 py-2 text-xs text-status-error-fg">
               {deleteError}
             </div>
           )}
@@ -1086,7 +1086,7 @@ function QuickSpawnModal({
 
         {spawnResult ? (
           <div className="space-y-4">
-            <div className="bg-green-500/10 border border-green-500/20 text-green-400 p-3 rounded-lg text-sm">
+            <div className="bg-status-success-bg border border-status-success-border text-status-success-fg p-3 rounded-lg text-sm">
               Agent spawned successfully!
             </div>
             <div className="text-sm text-foreground/80">

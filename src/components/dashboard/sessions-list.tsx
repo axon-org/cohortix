@@ -24,23 +24,23 @@ function SessionCard({ session }: SessionCardProps) {
   }
 
   const getModelColor = (model: string) => {
-    if (model.includes('opus')) return 'text-purple-400'
-    if (model.includes('sonnet')) return 'text-blue-400'
-    if (model.includes('haiku')) return 'text-green-400'
-    return 'text-gray-400'
+    if (model.includes('opus')) return 'text-primary'
+    if (model.includes('sonnet')) return 'text-status-info-fg'
+    if (model.includes('haiku')) return 'text-status-success-fg'
+    return 'text-muted-foreground'
   }
 
   const getRoleBadge = (key: string) => {
     if (key.includes('main:main')) {
-      return { label: 'LEAD', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' }
+      return { label: 'LEAD', color: 'bg-primary/20 text-primary border-primary/30' }
     }
     if (key.includes('subagent')) {
-      return { label: 'WORKER', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' }
+      return { label: 'WORKER', color: 'bg-status-info-bg text-status-info-fg border-status-info-border' }
     }
     if (key.includes('cron')) {
       return { label: 'CRON', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' }
     }
-    return { label: 'SYSTEM', color: 'bg-gray-500/20 text-gray-400 border-gray-500/30' }
+    return { label: 'SYSTEM', color: 'bg-muted text-muted-foreground border-border' }
   }
 
   const getCurrentTask = (session: Session) => {
@@ -101,8 +101,8 @@ function SessionCard({ session }: SessionCardProps) {
           {/* Working/Status Badge */}
           <div className={`px-2 py-1 rounded-full border text-xs font-medium ${
             session.active 
-              ? 'bg-green-500/20 text-green-400 border-green-500/30 animate-pulse'
-              : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+              ? 'bg-status-success-bg text-status-success-fg border-status-success-border animate-pulse'
+              : 'bg-status-warning-bg text-status-warning-fg border-status-warning-border'
           }`}>
             {session.active ? 'WORKING' : 'IDLE'}
           </div>
@@ -117,9 +117,9 @@ function SessionCard({ session }: SessionCardProps) {
                 <div className="w-16 h-1 bg-secondary rounded-full mt-1">
                   <div 
                     className={`h-full rounded-full ${
-                      tokenUsage.percentage > 80 ? 'bg-red-400' :
-                      tokenUsage.percentage > 60 ? 'bg-yellow-400' :
-                      'bg-green-400'
+                      tokenUsage.percentage > 80 ? 'bg-status-error-solid' :
+                      tokenUsage.percentage > 60 ? 'bg-status-warning-solid' :
+                      'bg-status-success-solid'
                     }`}
                     style={{ width: `${Math.min(tokenUsage.percentage, 100)}%` }}
                   />
@@ -173,7 +173,7 @@ export function SessionsList({ sessions }: SessionsListProps) {
             {activeSessions.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium text-foreground mb-2 flex items-center">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-status-success-solid rounded-full mr-2"></span>
                   Active ({activeSessions.length})
                 </h4>
                 <div className="space-y-2">
@@ -188,7 +188,7 @@ export function SessionsList({ sessions }: SessionsListProps) {
             {idleSessions.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium text-foreground mb-2 flex items-center">
-                  <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                  <span className="w-2 h-2 bg-status-warning-solid rounded-full mr-2"></span>
                   Idle ({idleSessions.length})
                 </h4>
                 <div className="space-y-2">

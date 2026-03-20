@@ -562,26 +562,26 @@ export function SuperAdminPanel() {
         </div>
         <div className="rounded-lg border border-border bg-card px-4 py-3">
           <div className="text-xs text-muted-foreground">{t('erroredOrgs')}</div>
-          <div className="text-xl font-semibold text-red-400 mt-1">{kpis.errored}</div>
+          <div className="text-xl font-semibold text-status-error-fg mt-1">{kpis.errored}</div>
         </div>
         <div className="rounded-lg border border-border bg-card px-4 py-3">
           <div className="text-xs text-muted-foreground">{t('queuedApprovals')}</div>
-          <div className="text-xl font-semibold text-amber-400 mt-1">{kpis.queuedApprovals}</div>
+          <div className="text-xl font-semibold text-status-warning-fg mt-1">{kpis.queuedApprovals}</div>
         </div>
       </div>
 
       {feedback && (
         <div className={`px-3 py-2 rounded-md text-sm border ${
           feedback.ok
-            ? 'bg-green-500/10 text-green-400 border-green-500/20'
-            : 'bg-red-500/10 text-red-400 border-red-500/20'
+            ? 'bg-status-success-bg text-status-success-fg border-status-success-border'
+            : 'bg-status-error-bg text-status-error-fg border-status-error-border'
         }`}>
           {feedback.text}
         </div>
       )}
 
       {error && (
-        <div className="px-3 py-2 rounded-md text-sm border bg-red-500/10 text-red-400 border-red-500/20">
+        <div className="px-3 py-2 rounded-md text-sm border bg-status-error-bg text-status-error-fg border-status-error-border">
           {error}
         </div>
       )}
@@ -605,7 +605,7 @@ export function SuperAdminPanel() {
               {t('createWorkspaceHint')}
             </div>
             {gatewayLoadError && (
-              <div className="px-3 py-2 rounded-md text-xs border bg-amber-500/10 text-amber-300 border-amber-500/20">
+              <div className="px-3 py-2 rounded-md text-xs border bg-status-warning-bg text-status-warning-fg border-status-warning-border">
                 Gateway list unavailable: {gatewayLoadError}. Using fallback owner value.
               </div>
             )}
@@ -756,9 +756,9 @@ export function SuperAdminPanel() {
                         </td>
                         <td className="px-3 py-2 text-xs">
                           <span className={`px-2 py-0.5 rounded border ${
-                            tenant.status === 'active' ? 'border-green-500/30 text-green-400' :
-                            tenant.status === 'error' ? 'border-red-500/30 text-red-400' :
-                            tenant.status === 'decommissioning' ? 'border-amber-500/30 text-amber-400' :
+                            tenant.status === 'active' ? 'border-status-success-border text-status-success-fg' :
+                            tenant.status === 'error' ? 'border-status-error-border text-status-error-fg' :
+                            tenant.status === 'decommissioning' ? 'border-status-warning-border text-status-warning-fg' :
                             'border-border text-muted-foreground'
                           }`}>
                             {tenant.status}
@@ -791,7 +791,7 @@ export function SuperAdminPanel() {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => openDecommissionDialog(tenant)}
-                                    className="w-full justify-start text-xs text-red-300 hover:bg-red-500/10 rounded-none"
+                                    className="w-full justify-start text-xs text-status-error-fg hover:bg-status-error-bg rounded-none"
                                   >
                                     {t('queueDecommission')}
                                   </Button>
@@ -930,7 +930,7 @@ export function SuperAdminPanel() {
                                     size="sm"
                                     onClick={() => Number(job.dry_run) === 1 ? approveAndRunJob(job.id) : setJobState(job.id, 'approve')}
                                     disabled={busyJobId === job.id || !['queued', 'rejected', 'failed'].includes(job.status)}
-                                    className="w-full justify-start text-xs text-emerald-400 hover:bg-emerald-500/10 rounded-none"
+                                    className="w-full justify-start text-xs text-status-success-fg hover:bg-status-success-bg rounded-none"
                                   >
                                     {Number(job.dry_run) === 1 ? t('approveAndRun') : t('approve')}
                                   </Button>
@@ -939,7 +939,7 @@ export function SuperAdminPanel() {
                                     size="sm"
                                     onClick={() => setJobState(job.id, 'reject')}
                                     disabled={busyJobId === job.id || !['queued', 'approved', 'failed'].includes(job.status)}
-                                    className="w-full justify-start text-xs text-amber-400 hover:bg-amber-500/10 rounded-none"
+                                    className="w-full justify-start text-xs text-status-warning-fg hover:bg-status-warning-bg rounded-none"
                                   >
                                     {t('reject')}
                                   </Button>
@@ -1034,7 +1034,7 @@ export function SuperAdminPanel() {
                     <span className="text-muted-foreground">{t('dryRunDesc')}</span>
                   </span>
                 </label>
-                <label className="rounded-md border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-300 flex items-start gap-2">
+                <label className="rounded-md border border-status-error-border bg-status-error-bg p-3 text-xs text-status-error-fg flex items-start gap-2">
                   <input
                     type="radio"
                     checked={!decommissionDialog.dryRun}
@@ -1042,7 +1042,7 @@ export function SuperAdminPanel() {
                   />
                   <span>
                     <span className="block font-medium">{t('liveExecution')}</span>
-                    <span className="text-red-200/80">{t('liveExecutionDesc')}</span>
+                    <span className="text-status-error-fg">{t('liveExecutionDesc')}</span>
                   </span>
                 </label>
               </div>
@@ -1123,7 +1123,7 @@ export function SuperAdminPanel() {
                 size="sm"
                 onClick={queueDecommissionFromDialog}
                 disabled={!canSubmitDecommission || decommissionDialog.submitting}
-                className="bg-red-500/20 text-red-300 border border-red-500/40 hover:bg-red-500/30"
+                className="bg-status-error-bg text-status-error-fg border border-status-error-border/40 hover:bg-status-error-bg"
               >
                 {decommissionDialog.submitting
                   ? t('queueing')

@@ -63,6 +63,8 @@ const defaultMemoryDir = (() => {
   return (openclawStateDir ? path.join(openclawStateDir, 'memory') : '') || path.join(defaultDataDir, 'memory')
 })()
 
+const resolvedAppLogsDir =
+  process.env.MC_LOGS_DIR || path.join(configuredDataDir, 'logs')
 const resolvedGnapRepoPath =
   process.env.GNAP_REPO_PATH || path.join(configuredDataDir, '.gnap')
 
@@ -81,9 +83,12 @@ export const config = {
   clawdbotBin: process.env.CLAWDBOT_BIN || 'clawdbot',
   gatewayHost: process.env.OPENCLAW_GATEWAY_HOST || '127.0.0.1',
   gatewayPort: clampInt(Number(process.env.OPENCLAW_GATEWAY_PORT || '18789'), 1, 65535, 18789),
+  // OpenClaw agent logs (read-only, for viewing in the UI)
   logsDir:
     process.env.OPENCLAW_LOG_DIR ||
     (openclawStateDir ? path.join(openclawStateDir, 'logs') : ''),
+  // Cohortix application logs (dev server, daemons, heartbeats)
+  appLogsDir: resolvedAppLogsDir,
   tempLogsDir: process.env.CLAWDBOT_TMP_LOG_DIR || '',
   memoryDir: defaultMemoryDir,
   memoryAllowedPrefixes:

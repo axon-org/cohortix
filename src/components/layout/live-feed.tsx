@@ -63,9 +63,9 @@ export function LiveFeed() {
             <div
               key={item.id}
               className={`w-1.5 h-1.5 rounded-full ${
-                item.level === 'error' ? 'bg-red-500' :
-                item.level === 'warn' ? 'bg-amber-500' :
-                'bg-blue-500/40'
+                item.level === 'error' ? 'bg-status-error-solid' :
+                item.level === 'warn' ? 'bg-status-warning-solid' :
+                'bg-status-info-solid/40'
               }`}
             />
           ))}
@@ -79,7 +79,7 @@ export function LiveFeed() {
       {/* Header */}
       <div className="h-10 px-3 flex items-center justify-between border-b border-border shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot" />
+          <div className="w-1.5 h-1.5 rounded-full bg-status-success-solid pulse-dot" />
           <span className="text-xs font-semibold text-foreground">{t('liveFeed')}</span>
           <span className="text-2xs text-muted-foreground font-mono-tight">{feedItems.length}</span>
         </div>
@@ -135,7 +135,7 @@ export function LiveFeed() {
         <div className="space-y-1">
           {sessions.filter(s => s.active).slice(0, 4).map(session => (
             <div key={session.id} className="flex items-center gap-1.5 text-2xs">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+              <div className="w-1.5 h-1.5 rounded-full bg-status-success-solid" />
               <span className="text-foreground truncate flex-1 font-mono-tight">{session.key || session.id}</span>
               <span className="text-muted-foreground">{session.model?.split('/').pop()?.slice(0, 8)}</span>
             </div>
@@ -151,12 +151,12 @@ export function LiveFeed() {
 
 function FeedItem({ item }: { item: { id: string; type: string; level: string; message: string; source: string; timestamp: number } }) {
   const levelIndicator = item.level === 'error'
-    ? 'bg-red-500'
+    ? 'bg-status-error-solid'
     : item.level === 'warn'
-    ? 'bg-amber-500'
+    ? 'bg-status-warning-solid'
     : item.level === 'debug'
-    ? 'bg-gray-500'
-    : 'bg-blue-500/50'
+    ? 'bg-muted-foreground'
+    : 'bg-status-info-solid/50'
 
   const timeStr = formatRelativeTime(item.timestamp)
 

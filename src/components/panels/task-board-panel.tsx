@@ -88,12 +88,12 @@ interface MentionOption {
 
 const STATUS_COLUMN_KEYS = [
   { key: 'inbox', titleKey: 'colInbox', color: 'bg-secondary text-foreground' },
-  { key: 'assigned', titleKey: 'colAssigned', color: 'bg-blue-500/20 text-blue-400' },
-  { key: 'awaiting_owner', titleKey: 'colAwaitingOwner', color: 'bg-orange-500/20 text-orange-400' },
-  { key: 'in_progress', titleKey: 'colInProgress', color: 'bg-yellow-500/20 text-yellow-400' },
-  { key: 'review', titleKey: 'colReview', color: 'bg-purple-500/20 text-purple-400' },
-  { key: 'quality_review', titleKey: 'colQualityReview', color: 'bg-indigo-500/20 text-indigo-400' },
-  { key: 'done', titleKey: 'colDone', color: 'bg-green-500/20 text-green-400' },
+  { key: 'assigned', titleKey: 'colAssigned', color: 'bg-status-info-bg/20 text-status-info-fg' },
+  { key: 'awaiting_owner', titleKey: 'colAwaitingOwner', color: 'bg-status-warning-bg text-status-warning-fg' },
+  { key: 'in_progress', titleKey: 'colInProgress', color: 'bg-status-warning-bg text-status-warning-fg' },
+  { key: 'review', titleKey: 'colReview', color: 'bg-status-info-bg text-primary' },
+  { key: 'quality_review', titleKey: 'colQualityReview', color: 'bg-status-info-bg text-status-info-fg' },
+  { key: 'done', titleKey: 'colDone', color: 'bg-status-success-bg text-status-success-fg' },
 ]
 
 const AWAITING_OWNER_KEYWORDS = [
@@ -706,19 +706,19 @@ export function TaskBoardPanel() {
   const getTagColor = (tag: string) => {
     const lowerTag = tag.toLowerCase()
     if (lowerTag.includes('urgent') || lowerTag.includes('critical')) {
-      return 'bg-red-500/20 text-red-400 border-red-500/30'
+      return 'bg-status-error-bg text-status-error-fg border-status-error-border'
     }
     if (lowerTag.includes('bug') || lowerTag.includes('fix')) {
-      return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
+      return 'bg-status-warning-bg text-status-warning-fg border-status-warning-border'
     }
     if (lowerTag.includes('feature') || lowerTag.includes('enhancement')) {
-      return 'bg-green-500/20 text-green-400 border-green-500/30'
+      return 'bg-status-success-bg text-status-success-fg border-status-success-border'
     }
     if (lowerTag.includes('research') || lowerTag.includes('analysis')) {
-      return 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+      return 'bg-status-info-bg text-primary border-status-info-border'
     }
     if (lowerTag.includes('deploy') || lowerTag.includes('release')) {
-      return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+      return 'bg-status-info-bg/20 text-status-info-fg border-status-info-border'
     }
     return 'bg-muted-foreground/10 text-muted-foreground border-muted-foreground/20'
   }
@@ -779,12 +779,12 @@ export function TaskBoardPanel() {
             <button
               onClick={handleGnapSync}
               disabled={gnapSyncing}
-              className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full bg-status-success-bg text-status-success-fg hover:bg-status-success-bg transition-colors disabled:opacity-50"
               title={gnapStatus.lastSync ? `Last sync: ${gnapStatus.lastSync}` : 'Click to sync'}
             >
               GNAP
               {gnapStatus.taskCount != null && (
-                <span className="text-emerald-400/70">{gnapStatus.taskCount}</span>
+                <span className="text-status-success-fg">{gnapStatus.taskCount}</span>
               )}
               {gnapSyncing && (
                 <svg className="w-3 h-3 animate-spin" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
@@ -892,10 +892,10 @@ export function TaskBoardPanel() {
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="font-medium text-foreground truncate">{request.label}</span>
                       <span className={`px-1.5 py-0.5 text-xs rounded-full ${
-                        request.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
-                        request.status === 'running' ? 'bg-blue-500/20 text-blue-400' :
-                        request.status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                        'bg-red-500/20 text-red-400'
+                        request.status === 'pending' ? 'bg-status-warning-bg text-status-warning-fg' :
+                        request.status === 'running' ? 'bg-status-info-bg/20 text-status-info-fg' :
+                        request.status === 'completed' ? 'bg-status-success-bg text-status-success-fg' :
+                        'bg-status-error-bg text-status-error-fg'
                       }`}>
                         {request.status}
                       </span>
@@ -911,13 +911,13 @@ export function TaskBoardPanel() {
 
       {/* Error Display */}
       {error && (
-        <div role="alert" className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 m-4 rounded-lg text-sm flex items-center justify-between">
+        <div role="alert" className="bg-status-error-bg border border-status-error-border text-status-error-fg p-3 m-4 rounded-lg text-sm flex items-center justify-between">
           <span>{error}</span>
           <Button
             variant="ghost"
             size="icon-xs"
             onClick={() => setError(null)}
-            className="text-red-400/60 hover:text-red-400 ml-2"
+            className="text-status-error-fg/60 hover:text-status-error-fg ml-2"
             aria-label={t('dismissError')}
           >
             ×
@@ -941,7 +941,7 @@ export function TaskBoardPanel() {
             {/* Column Header */}
             <div className={`${column.color} px-4 py-3 rounded-t-xl flex justify-between items-center border-b border-border/30`}>
               <h3 className="font-semibold text-sm tracking-wide">{column.title}</h3>
-              <span className="text-xs font-mono bg-white/10 px-2 py-0.5 rounded-md min-w-[1.75rem] text-center">
+              <span className="text-xs font-mono bg-card/10 px-2 py-0.5 rounded-md min-w-[1.75rem] text-center">
                 {tasksByStatus[column.key]?.length || 0}
               </span>
             </div>
@@ -986,12 +986,12 @@ export function TaskBoardPanel() {
                         </h4>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {task.metadata?.recurrence?.enabled && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 font-mono" title={task.metadata.recurrence.natural_text || task.metadata.recurrence.cron_expr}>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-status-info-bg text-primary font-mono" title={task.metadata.recurrence.natural_text || task.metadata.recurrence.cron_expr}>
                               {t('recurring')}
                             </span>
                           )}
                           {task.metadata?.recurrence?.parent_task_id && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400/70 font-mono" title={t('spawnedFromTask', { id: task.metadata.recurrence.parent_task_id })}>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-status-info-bg text-primary/70 font-mono" title={t('spawnedFromTask', { id: task.metadata.recurrence.parent_task_id })}>
                               {t('spawned')}
                             </span>
                           )}
@@ -1005,7 +1005,7 @@ export function TaskBoardPanel() {
                               href={`https://github.com/${task.github_repo}/issues/${task.github_issue_number}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[10px] px-1.5 py-0.5 rounded bg-[#24292e]/30 text-gray-300 hover:text-white font-mono flex items-center gap-1 transition-colors"
+                              className="text-[10px] px-1.5 py-0.5 rounded bg-[#24292e]/30 text-muted-foreground hover:text-foreground font-mono flex items-center gap-1 transition-colors"
                               onClick={(e) => e.stopPropagation()}
                               title={`GitHub issue #${task.github_issue_number}`}
                             >
@@ -1019,9 +1019,9 @@ export function TaskBoardPanel() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className={`text-[10px] px-1.5 py-0.5 rounded font-mono flex items-center gap-1 transition-colors ${
-                                task.github_pr_state === 'merged' ? 'bg-purple-500/20 text-purple-400' :
-                                task.github_pr_state === 'closed' ? 'bg-red-500/20 text-red-400' :
-                                'bg-green-500/20 text-green-400'
+                                task.github_pr_state === 'merged' ? 'bg-status-info-bg text-primary' :
+                                task.github_pr_state === 'closed' ? 'bg-status-error-bg text-status-error-fg' :
+                                'bg-status-success-bg text-status-success-fg'
                               }`}
                               onClick={(e) => e.stopPropagation()}
                               title={`PR #${task.github_pr_number} (${task.github_pr_state || 'open'})`}
@@ -1031,12 +1031,12 @@ export function TaskBoardPanel() {
                             </a>
                           )}
                           {task.aegisApproved && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-status-success-bg text-status-success-fg border border-status-success-border">
                               Aegis
                             </span>
                           )}
                           {detectAwaitingOwner(task) && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/30 font-mono">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-status-warning-bg text-status-warning-fg border border-status-warning-border font-mono">
                               {t('colAwaitingOwner')}
                             </span>
                           )}
@@ -1068,10 +1068,10 @@ export function TaskBoardPanel() {
                         <DunkItButton taskId={task.id} onDunked={() => fetchData()} />
                       )}
                       <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
-                        task.priority === 'critical' ? 'bg-red-500/20 text-red-400' :
-                        task.priority === 'high' ? 'bg-orange-500/20 text-orange-400' :
-                        task.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-green-500/20 text-green-400'
+                        task.priority === 'critical' ? 'bg-status-error-bg text-status-error-fg' :
+                        task.priority === 'high' ? 'bg-status-warning-bg text-status-warning-fg' :
+                        task.priority === 'medium' ? 'bg-status-warning-bg text-status-warning-fg' :
+                        'bg-status-success-bg text-status-success-fg'
                       }`}>
                         {t(`priority_${task.priority}` as any)}
                       </span>
@@ -1100,7 +1100,7 @@ export function TaskBoardPanel() {
                   {task.due_date && (
                     <div className="mt-1.5 ml-5.5 text-[10px]">
                       <span className={`inline-flex items-center gap-1 ${
-                        task.due_date * 1000 < Date.now() ? 'text-red-400 font-medium' : 'text-muted-foreground/60'
+                        task.due_date * 1000 < Date.now() ? 'text-status-error-fg font-medium' : 'text-muted-foreground/60'
                       }`}>
                         {task.due_date * 1000 < Date.now() ? '! ' : ''}{t('due')} {formatTaskTimestamp(task.due_date)}
                       </span>
@@ -1474,7 +1474,7 @@ function TaskDetailModal({
               >
                 {t('tabSession')}
                 {task.status === 'in_progress' && (
-                  <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+                  <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-status-success-solid animate-pulse" />
                 )}
               </Button>
             )}
@@ -1551,9 +1551,9 @@ function TaskDetailModal({
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`ml-2 font-mono hover:underline ${
-                          task.github_pr_state === 'merged' ? 'text-purple-400' :
-                          task.github_pr_state === 'closed' ? 'text-red-400' :
-                          'text-green-400'
+                          task.github_pr_state === 'merged' ? 'text-primary' :
+                          task.github_pr_state === 'closed' ? 'text-status-error-fg' :
+                          'text-status-success-fg'
                         }`}
                       >
                         #{task.github_pr_number} ({task.github_pr_state || 'open'})
@@ -1577,7 +1577,7 @@ function TaskDetailModal({
                       View Session {task.metadata.dispatch_session_id.slice(0, 8)}...
                     </Button>
                     {task.status === 'in_progress' && (
-                      <span className="ml-2 text-xs text-green-400 animate-pulse">{t('live')}</span>
+                      <span className="ml-2 text-xs text-status-success-fg animate-pulse">{t('live')}</span>
                     )}
                   </div>
                 </>
@@ -1589,13 +1589,13 @@ function TaskDetailModal({
             <div id="tabpanel-comments" role="tabpanel" aria-label={t('tabComments')} className="mt-6">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-lg font-semibold text-foreground">{t('tabComments')}</h4>
-              <Button variant="link" size="xs" onClick={fetchComments} className="text-blue-400 hover:text-blue-300">
+              <Button variant="link" size="xs" onClick={fetchComments} className="text-status-info-fg hover:text-status-info-fg">
                 {t('refresh')}
               </Button>
             </div>
 
             {commentError && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-2 rounded-md text-sm mb-3">
+              <div className="bg-status-error-bg border border-status-error-border text-status-error-fg p-2 rounded-md text-sm mb-3">
                 {commentError}
               </div>
             )}
@@ -1633,8 +1633,8 @@ function TaskDetailModal({
               </div>
             </form>
 
-            <div className="mt-5 bg-blue-500/5 border border-blue-500/15 rounded-lg p-3 text-xs text-muted-foreground space-y-1">
-              <div className="font-medium text-blue-300">How notifications work</div>
+            <div className="mt-5 bg-status-info-bg/5 border border-status-info-border/15 rounded-lg p-3 text-xs text-muted-foreground space-y-1">
+              <div className="font-medium text-status-info-fg">How notifications work</div>
               <div><strong className="text-foreground">Comments</strong> are persisted on the task and notify all subscribers. Subscribers are auto-added when they: create the task, are assigned to it, comment on it, or are @mentioned.</div>
               <div><strong className="text-foreground">Broadcasts</strong> send a one-time notification to all current subscribers without creating a comment record.</div>
             </div>
@@ -1654,7 +1654,7 @@ function TaskDetailModal({
                   mentionTargets={mentionTargets}
                 />
                 <div className="flex justify-end">
-                  <Button type="submit" size="sm" className="bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30">
+                  <Button type="submit" size="sm" className="bg-status-info-bg text-primary border border-status-info-border hover:bg-status-info-bg">
                     {t('broadcast')}
                   </Button>
                 </div>
@@ -1667,7 +1667,7 @@ function TaskDetailModal({
             <div id="tabpanel-quality" role="tabpanel" aria-label={t('tabQualityReview')} className="mt-6">
               <h5 className="text-sm font-medium text-foreground mb-2">{t('aegisQualityReview')}</h5>
               {reviewError && (
-                <div className="text-xs text-red-400 mb-2">{reviewError}</div>
+                <div className="text-xs text-status-error-fg mb-2">{reviewError}</div>
               )}
               {reviews.length > 0 ? (
                 <div className="space-y-2 mb-3">
@@ -1783,19 +1783,19 @@ function TaskSessionFeed({ sessionId, agentName, isLive }: { sessionId: string; 
           )}
           <span className="font-mono text-muted-foreground/50">{sessionId.slice(0, 12)}...</span>
           {isLive && (
-            <span className="flex items-center gap-1 text-green-400">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+            <span className="flex items-center gap-1 text-status-success-fg">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-status-success-solid animate-pulse" />
               {t('live')}
             </span>
           )}
         </div>
-        <Button variant="link" size="xs" onClick={fetchTranscript} className="text-blue-400 hover:text-blue-300">
+        <Button variant="link" size="xs" onClick={fetchTranscript} className="text-status-info-fg hover:text-status-info-fg">
           {t('refresh')}
         </Button>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-2 rounded-md text-xs">
+        <div className="bg-status-error-bg border border-status-error-border text-status-error-fg p-2 rounded-md text-xs">
           {error}
         </div>
       )}
@@ -1840,10 +1840,10 @@ function ClaudeCodeTasksSection() {
   }, {})
 
   const statusColor = (s: string) =>
-    s === 'completed' ? 'text-green-400' :
-    s === 'in_progress' ? 'text-blue-400' :
-    s === 'blocked' ? 'text-red-400' :
-    s === 'awaiting_owner' ? 'text-orange-400' :
+    s === 'completed' ? 'text-status-success-fg' :
+    s === 'in_progress' ? 'text-status-info-fg' :
+    s === 'blocked' ? 'text-status-error-fg' :
+    s === 'awaiting_owner' ? 'text-status-warning-fg' :
     'text-muted-foreground'
 
   return (
@@ -1855,7 +1855,7 @@ function ClaudeCodeTasksSection() {
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-foreground">{t('claudeCodeTasks')}</span>
           {data.tasks.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400">{data.tasks.length}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-status-info-bg text-primary">{data.tasks.length}</span>
           )}
         </div>
         <span className="text-muted-foreground text-xs">{expanded ? t('collapse') : t('expand')}</span>
@@ -1888,7 +1888,7 @@ function ClaudeCodeTasksSection() {
                       <span className="text-foreground flex-1 truncate">{task.subject}</span>
                       {task.owner && <span className="text-[10px] text-muted-foreground">{task.owner}</span>}
                       {task.blockedBy?.length > 0 && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-400">{t('blocked')}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-status-error-bg text-status-error-fg">{t('blocked')}</span>
                       )}
                     </div>
                   ))}
@@ -1925,7 +1925,7 @@ function HermesCronSection() {
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-foreground">{t('hermesScheduledTasks')}</span>
           {data.cronJobs.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-400">{data.cronJobs.length}</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-status-info-bg text-primary">{data.cronJobs.length}</span>
           )}
         </div>
         <span className="text-muted-foreground text-xs">{expanded ? t('collapse') : t('expand')}</span>
@@ -1942,11 +1942,11 @@ function HermesCronSection() {
           ) : (
             data.cronJobs.map((job: any) => (
               <div key={job.id} className="flex items-center gap-3 px-3 py-2 rounded bg-surface-1 border border-border text-sm">
-                <span className={`text-[10px] font-mono shrink-0 ${job.enabled ? 'text-purple-400' : 'text-muted-foreground/50'}`}>
+                <span className={`text-[10px] font-mono shrink-0 ${job.enabled ? 'text-primary' : 'text-muted-foreground/50'}`}>
                   {job.schedule || t('noSchedule')}
                 </span>
                 <span className="text-foreground flex-1 truncate">{job.prompt || job.id}</span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded ${job.enabled ? 'bg-green-500/15 text-green-400' : 'bg-muted text-muted-foreground'}`}>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded ${job.enabled ? 'bg-status-success-bg text-status-success-fg' : 'bg-muted text-muted-foreground'}`}>
                   {job.enabled ? t('enabled') : t('disabled')}
                 </span>
                 {job.lastRunAt && (
@@ -2199,12 +2199,12 @@ function CreateTaskModal({
                     placeholder='e.g. "every morning at 9am" or "every 2 hours"'
                   />
                   {parsedSchedule && (
-                    <p className="text-xs text-cyan-400 mt-1">
+                    <p className="text-xs text-primary mt-1">
                       {parsedSchedule.humanReadable} <span className="text-muted-foreground font-mono">({parsedSchedule.cronExpr})</span>
                     </p>
                   )}
                   {scheduleError && (
-                    <p className="text-xs text-red-400 mt-1">{scheduleError}. Try: &quot;daily at 9am&quot;, &quot;every 2 hours&quot;, &quot;weekly on monday&quot;</p>
+                    <p className="text-xs text-status-error-fg mt-1">{scheduleError}. Try: &quot;daily at 9am&quot;, &quot;every 2 hours&quot;, &quot;weekly on monday&quot;</p>
                   )}
                 </div>
               )}
