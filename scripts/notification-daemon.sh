@@ -17,7 +17,11 @@ set -e
 
 # Configuration
 MISSION_CONTROL_URL="${MISSION_CONTROL_URL:-http://localhost:3000}"
-LOG_DIR="${LOG_DIR:-$HOME/.cohortix/logs}"
+# Resolve project root: COHORTIX_DIR env var, or infer from this script's location (scripts/)
+COHORTIX_DIR="${COHORTIX_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+# Logs live inside the project data directory (.data/logs/) to keep everything self-contained.
+# Override with LOG_DIR or MC_LOGS_DIR env vars if needed.
+LOG_DIR="${LOG_DIR:-${MC_LOGS_DIR:-$COHORTIX_DIR/.data/logs}}"
 LOG_FILE="$LOG_DIR/notification-daemon-$(date +%Y-%m-%d).log"
 PID_FILE="/tmp/notification-daemon.pid"
 DEFAULT_INTERVAL=60

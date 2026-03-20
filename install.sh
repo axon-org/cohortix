@@ -247,7 +247,7 @@ deploy_local() {
   fi
 
   info "Starting Cohortix..."
-  PORT="$MC_PORT" nohup pnpm start > "$INSTALL_DIR/.data/mc.log" 2>&1 &
+  PORT="$MC_PORT" nohup pnpm start > "$INSTALL_DIR/.data/logs/mc.log" 2>&1 &
   local pid=$!
   echo "$pid" > "$INSTALL_DIR/.data/mc.pid"
 
@@ -255,7 +255,7 @@ deploy_local() {
   if kill -0 "$pid" 2>/dev/null; then
     ok "Cohortix running (PID $pid)"
   else
-    err "Failed to start. Check logs: $INSTALL_DIR/.data/mc.log"
+    err "Failed to start. Check logs: $INSTALL_DIR/.data/logs/mc.log"
     exit 1
   fi
 }
@@ -424,8 +424,8 @@ main() {
     fetch_source
   fi
 
-  # Ensure data directory exists
-  mkdir -p "$INSTALL_DIR/.data"
+  # Ensure data and logs directories exist
+  mkdir -p "$INSTALL_DIR/.data/logs"
 
   setup_env
 
@@ -457,7 +457,7 @@ main() {
     info "  docker compose down            # stop"
   else
     info "Manage:"
-    info "  cat $INSTALL_DIR/.data/mc.log  # view logs"
+    info "  cat $INSTALL_DIR/.data/logs/mc.log  # view logs"
     info "  kill \$(cat $INSTALL_DIR/.data/mc.pid)  # stop"
   fi
 
