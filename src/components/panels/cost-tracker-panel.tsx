@@ -425,7 +425,7 @@ function OverviewView({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div className="bg-secondary rounded-lg p-4">
               <div className="text-xs text-muted-foreground mb-1">{t('mostEfficientModel')}</div>
-              <div className="text-lg font-bold text-green-500">{mostEfficient ? getModelDisplayName(mostEfficient[0]) : '-'}</div>
+              <div className="text-lg font-bold text-status-success-fg">{mostEfficient ? getModelDisplayName(mostEfficient[0]) : '-'}</div>
               {mostEfficient && <div className="text-xs text-muted-foreground">${(efficientCostPerToken * 1000).toFixed(4)}/1K tokens</div>}
             </div>
             <div className="bg-secondary rounded-lg p-4">
@@ -434,7 +434,7 @@ function OverviewView({
             </div>
             <div className="bg-secondary rounded-lg p-4">
               <div className="text-xs text-muted-foreground mb-1">{t('optimizationPotential')}</div>
-              <div className="text-lg font-bold text-orange-500">{formatCost(potentialSavings)}</div>
+              <div className="text-lg font-bold text-status-warning-fg">{formatCost(potentialSavings)}</div>
               <div className="text-xs text-muted-foreground">{stats.summary.totalCost > 0 ? ((potentialSavings / stats.summary.totalCost) * 100).toFixed(1) : '0'}% {t('savingsPossible')}</div>
             </div>
           </div>
@@ -448,7 +448,7 @@ function OverviewView({
                   <div className="w-32 truncate text-muted-foreground">{m.name}</div>
                   <div className="flex-1 mx-3">
                     <div className="w-full bg-secondary rounded-full h-2">
-                      <div className="bg-green-500 h-2 rounded-full" style={{ width: `${(costPer1k / maxCostPer1k) * 100}%` }} />
+                      <div className="bg-status-success-solid h-2 rounded-full" style={{ width: `${(costPer1k / maxCostPer1k) * 100}%` }} />
                     </div>
                   </div>
                   <div className="w-20 text-right text-xs text-muted-foreground">${costPer1k.toFixed(4)}/1K</div>
@@ -558,11 +558,11 @@ function AgentsView({
                     <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-muted-foreground shrink-0">
                       {agent.session_count} session{agent.session_count !== 1 ? 's' : ''}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 shrink-0">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-status-info-bg/10 text-status-info-fg shrink-0">
                       {agent.request_count} req{agent.request_count !== 1 ? 's' : ''}
                     </span>
                     {agentTasks.length > 0 && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 shrink-0">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-fg shrink-0">
                         {agentTasks.length} task{agentTasks.length !== 1 ? 's' : ''}
                       </span>
                     )}
@@ -570,7 +570,7 @@ function AgentsView({
                   <div className="flex items-center gap-4 text-sm shrink-0">
                     <div className="w-24 hidden md:block">
                       <div className="w-full bg-secondary rounded-full h-2">
-                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${(agent.total_cost / maxCost) * 100}%` }} />
+                        <div className="bg-status-info-bg h-2 rounded-full" style={{ width: `${(agent.total_cost / maxCost) * 100}%` }} />
                       </div>
                     </div>
                     <div className="text-right">
@@ -612,9 +612,9 @@ function AgentsView({
                               <div key={task.taskId} className="flex items-center justify-between text-xs">
                                 <div className="flex items-center gap-2 min-w-0 flex-1">
                                   <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                                    task.priority === 'critical' ? 'bg-red-500/10 text-red-500' :
-                                    task.priority === 'high' ? 'bg-orange-500/10 text-orange-500' :
-                                    task.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-500' :
+                                    task.priority === 'critical' ? 'bg-status-error-bg text-status-error-fg' :
+                                    task.priority === 'high' ? 'bg-status-warning-bg text-status-warning-fg' :
+                                    task.priority === 'medium' ? 'bg-status-warning-bg text-status-warning-fg' :
                                     'bg-secondary text-muted-foreground'
                                   }`}>{task.priority}</span>
                                   {task.project.ticketRef && <span className="text-muted-foreground font-mono">{task.project.ticketRef}</span>}
@@ -702,7 +702,7 @@ function SessionsView({
                       {entry.sessionKey || sessionInfo?.key || entry.sessionId}
                     </div>
                     <div className="text-xs text-muted-foreground flex items-center gap-2">
-                      {sessionInfo?.active && <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500" />}
+                      {sessionInfo?.active && <span className="inline-block w-1.5 h-1.5 rounded-full bg-status-success-solid" />}
                       <span>{sessionInfo?.active ? t('activeStatus') : t('inactiveStatus')}</span>
                       {entry.model && <span>| {getModelDisplayName(entry.model)}</span>}
                       {sessionInfo?.kind && <span>| {sessionInfo.kind}</span>}
@@ -759,7 +759,7 @@ function TasksView({ taskData, onRefresh }: { taskData: TaskCostsResponse | null
           <div className="text-sm text-muted-foreground">{t('attributedTokens')}</div>
         </div>
         <div className="bg-card border border-border rounded-lg p-5">
-          <div className="text-3xl font-bold text-orange-500">{formatCost(taskData.unattributed.totalCost)}</div>
+          <div className="text-3xl font-bold text-status-warning-fg">{formatCost(taskData.unattributed.totalCost)}</div>
           <div className="text-sm text-muted-foreground">{t('unattributed')}</div>
         </div>
       </div>
@@ -773,16 +773,16 @@ function TasksView({ taskData, onRefresh }: { taskData: TaskCostsResponse | null
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0 flex-1">
                   <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${
-                    task.priority === 'critical' ? 'bg-red-500/10 text-red-500' :
-                    task.priority === 'high' ? 'bg-orange-500/10 text-orange-500' :
-                    task.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-500' :
+                    task.priority === 'critical' ? 'bg-status-error-bg text-status-error-fg' :
+                    task.priority === 'high' ? 'bg-status-warning-bg text-status-warning-fg' :
+                    task.priority === 'medium' ? 'bg-status-warning-bg text-status-warning-fg' :
                     'bg-secondary text-muted-foreground'
                   }`}>{task.priority}</span>
                   {task.project.ticketRef && <span className="text-xs text-muted-foreground font-mono shrink-0">{task.project.ticketRef}</span>}
                   <span className="font-medium text-foreground truncate">{task.title}</span>
                   <span className={`px-1.5 py-0.5 rounded text-[10px] shrink-0 ${
-                    task.status === 'done' ? 'bg-green-500/10 text-green-500' :
-                    task.status === 'in_progress' ? 'bg-blue-500/10 text-blue-500' :
+                    task.status === 'done' ? 'bg-status-success-bg text-status-success-fg' :
+                    task.status === 'in_progress' ? 'bg-status-info-bg/10 text-status-info-fg' :
                     'bg-secondary text-muted-foreground'
                   }`}>{task.status}</span>
                 </div>

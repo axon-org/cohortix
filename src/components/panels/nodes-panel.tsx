@@ -71,10 +71,10 @@ function relativeTime(ts: number): string {
 
 function statusColor(status: PresenceEntry['status']): string {
   switch (status) {
-    case 'online': return 'bg-green-500/20 text-green-400 border-green-500/30'
-    case 'idle': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-    case 'offline': return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'
-    default: return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'
+    case 'online': return 'bg-status-success-bg text-status-success-fg border-status-success-border'
+    case 'idle': return 'bg-status-warning-bg text-status-warning-fg border-status-warning-border'
+    case 'offline': return 'bg-muted text-muted-foreground border-border'
+    default: return 'bg-muted text-muted-foreground border-border'
   }
 }
 
@@ -153,8 +153,8 @@ export function NodesPanel() {
         <span
           className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium border ${
             connected
-              ? 'bg-green-500/10 text-green-400 border-green-500/30'
-              : 'bg-red-500/10 text-red-400 border-red-500/30'
+              ? 'bg-status-success-bg text-status-success-fg border-status-success-border'
+              : 'bg-status-error-bg text-status-error-fg border-status-error-border'
           }`}
         >
           {connected ? t('gatewayConnected') : t('gatewayUnreachable')}
@@ -177,7 +177,7 @@ export function NodesPanel() {
         >
           {t('tabDevices', { count: totalDeviceCount })}
           {pendingCount > 0 && (
-            <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+            <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-status-warning-bg text-status-warning-fg border border-status-warning-border">
               {pendingCount}
             </span>
           )}
@@ -185,7 +185,7 @@ export function NodesPanel() {
       </div>
 
       {error && (
-        <div className="mb-4 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div className="mb-4 px-3 py-2 rounded-lg bg-status-error-bg border border-status-error-border text-status-error-fg text-sm">
           {error}
         </div>
       )}
@@ -320,11 +320,11 @@ function PendingDevicesSection({
 
   return (
     <div>
-      <h3 className="text-sm font-medium text-amber-400 mb-2">
+      <h3 className="text-sm font-medium text-status-warning-fg mb-2">
         {t('pendingPairingRequests', { count: devices.length })}
       </h3>
       {actionError && (
-        <div className="mb-2 px-3 py-1.5 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+        <div className="mb-2 px-3 py-1.5 rounded bg-status-error-bg border border-status-error-border text-status-error-fg text-xs">
           {actionError}
         </div>
       )}
@@ -332,7 +332,7 @@ function PendingDevicesSection({
         {devices.map((device) => (
           <div
             key={device.requestId}
-            className="flex items-center justify-between px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/20"
+            className="flex items-center justify-between px-3 py-2 rounded-lg bg-status-warning-bg border border-status-warning-border"
           >
             <div className="flex items-center gap-3">
               <div>
@@ -348,7 +348,7 @@ function PendingDevicesSection({
                   )}
                   {device.remoteIp && <span>{device.remoteIp}</span>}
                   {device.isRepair && (
-                    <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    <span className="px-1.5 py-0.5 rounded bg-status-info-bg/20 text-status-info-fg border border-status-info-border">
                       repair
                     </span>
                   )}
@@ -360,7 +360,7 @@ function PendingDevicesSection({
               <Button
                 size="sm"
                 variant="ghost"
-                className="text-green-400 hover:text-green-300 hover:bg-green-500/10"
+                className="text-status-success-fg hover:text-status-success-fg hover:bg-status-success-bg"
                 disabled={actionLoading !== null}
                 onClick={() => handleAction('approve', device.requestId)}
               >
@@ -369,7 +369,7 @@ function PendingDevicesSection({
               <Button
                 size="sm"
                 variant="ghost"
-                className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                className="text-status-error-fg hover:text-status-error-fg hover:bg-status-error-bg"
                 disabled={actionLoading !== null}
                 onClick={() => handleAction('reject', device.requestId)}
               >
@@ -435,7 +435,7 @@ function PairedDevicesSection({
         {t('pairedDevices', { count: devices.length })}
       </h3>
       {actionError && (
-        <div className="mb-2 px-3 py-1.5 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+        <div className="mb-2 px-3 py-1.5 rounded bg-status-error-bg border border-status-error-border text-status-error-fg text-xs">
           {actionError}
         </div>
       )}
@@ -486,11 +486,11 @@ function PairedDevicesSection({
                   </td>
                   <td className="py-2 pr-4">
                     {device.trusted ? (
-                      <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium border bg-green-500/20 text-green-400 border-green-500/30">
+                      <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium border bg-status-success-bg text-status-success-fg border-status-success-border">
                         {t('trusted')}
                       </span>
                     ) : (
-                      <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium border bg-zinc-500/20 text-zinc-400 border-zinc-500/30">
+                      <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium border bg-muted text-muted-foreground border-border">
                         {t('untrusted')}
                       </span>
                     )}
@@ -509,11 +509,11 @@ function PairedDevicesSection({
                         </Button>
                         {confirmRevoke === deviceKey ? (
                           <div className="flex gap-1 items-center">
-                            <span className="text-xs text-red-400">{t('revokeConfirm')}</span>
+                            <span className="text-xs text-status-error-fg">{t('revokeConfirm')}</span>
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-7 px-2 text-xs text-red-400 hover:bg-red-500/10"
+                              className="h-7 px-2 text-xs text-status-error-fg hover:bg-status-error-bg"
                               disabled={actionLoading !== null}
                               onClick={() => handleRevokeToken(deviceKey)}
                             >
@@ -532,7 +532,7 @@ function PairedDevicesSection({
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 px-2 text-xs text-red-400 hover:bg-red-500/10"
+                            className="h-7 px-2 text-xs text-status-error-fg hover:bg-status-error-bg"
                             disabled={actionLoading !== null}
                             onClick={() => setConfirmRevoke(deviceKey)}
                           >
@@ -569,7 +569,7 @@ function PairedDevicesSection({
                                 </span>
                               )}
                               {token.revokedAtMs && (
-                                <span className="text-red-400">{t('revoked')}</span>
+                                <span className="text-status-error-fg">{t('revoked')}</span>
                               )}
                               <div className="flex gap-1 ml-auto">
                                 <Button
@@ -584,7 +584,7 @@ function PairedDevicesSection({
                                 <Button
                                   size="sm"
                                   variant="ghost"
-                                  className="h-5 px-1.5 text-[10px] text-red-400 hover:bg-red-500/10"
+                                  className="h-5 px-1.5 text-[10px] text-status-error-fg hover:bg-status-error-bg"
                                   disabled={actionLoading !== null || !!token.revokedAtMs}
                                   onClick={() => handleRevokeToken(deviceKey, token.role)}
                                 >

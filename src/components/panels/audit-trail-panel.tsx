@@ -21,39 +21,39 @@ interface AuditEvent {
 // actionLabels are now provided via translations (auditTrail namespace)
 
 const actionColors: Record<string, string> = {
-  login: 'text-green-400',
-  login_failed: 'text-red-400',
+  login: 'text-status-success-fg',
+  login_failed: 'text-status-error-fg',
   logout: 'text-muted-foreground',
-  password_change: 'text-amber-400',
-  profile_update: 'text-blue-400',
-  user_create: 'text-cyan-400',
-  user_update: 'text-indigo-400',
-  user_delete: 'text-red-400',
-  role_denied: 'text-red-500',
-  backup_create: 'text-green-400',
-  backup_delete: 'text-amber-400',
-  settings_update: 'text-indigo-400',
-  auto_backup: 'text-green-400',
+  password_change: 'text-status-warning-fg',
+  profile_update: 'text-status-info-fg',
+  user_create: 'text-primary',
+  user_update: 'text-status-info-fg',
+  user_delete: 'text-status-error-fg',
+  role_denied: 'text-status-error-fg',
+  backup_create: 'text-status-success-fg',
+  backup_delete: 'text-status-warning-fg',
+  settings_update: 'text-status-info-fg',
+  auto_backup: 'text-status-success-fg',
   heartbeat_check: 'text-muted-foreground',
-  agent_config_sync: 'text-cyan-400',
-  local_agent_sync: 'text-cyan-400',
-  integration_test: 'text-amber-400',
-  agent_register: 'text-green-400',
-  agent_update: 'text-blue-400',
-  agent_create: 'text-green-400',
-  agent_delete: 'text-red-400',
-  token_rotate: 'text-amber-400',
-  gateway_config_update: 'text-indigo-400',
-  login_google: 'text-green-400',
-  google_disconnect: 'text-amber-400',
-  workspace_create: 'text-green-400',
-  workspace_update: 'text-blue-400',
-  workspace_delete: 'text-red-400',
+  agent_config_sync: 'text-primary',
+  local_agent_sync: 'text-primary',
+  integration_test: 'text-status-warning-fg',
+  agent_register: 'text-status-success-fg',
+  agent_update: 'text-status-info-fg',
+  agent_create: 'text-status-success-fg',
+  agent_delete: 'text-status-error-fg',
+  token_rotate: 'text-status-warning-fg',
+  gateway_config_update: 'text-status-info-fg',
+  login_google: 'text-status-success-fg',
+  google_disconnect: 'text-status-warning-fg',
+  workspace_create: 'text-status-success-fg',
+  workspace_update: 'text-status-info-fg',
+  workspace_delete: 'text-status-error-fg',
   cleanup: 'text-muted-foreground',
-  export: 'text-blue-400',
-  access_request: 'text-amber-400',
-  access_approve: 'text-green-400',
-  access_deny: 'text-red-400',
+  export: 'text-status-info-fg',
+  access_request: 'text-status-warning-fg',
+  access_approve: 'text-status-success-fg',
+  access_deny: 'text-status-error-fg',
 }
 
 const actionIcons: Record<string, string> = {
@@ -195,7 +195,7 @@ export function AuditTrailPanel() {
   if (error) {
     return (
       <div className="p-6">
-        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-400">
+        <div className="rounded-lg bg-status-error-bg border border-status-error-border p-4 text-sm text-status-error-fg">
           {error}
         </div>
       </div>

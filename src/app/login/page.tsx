@@ -213,14 +213,14 @@ export default function LoginPage() {
         </div>
 
         {pendingApproval && (
-          <div className="mb-4 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-center">
+          <div className="mb-4 p-4 rounded-lg bg-status-warning-bg border border-status-warning-border text-center">
             <div className="flex justify-center mb-2">
-              <svg className="w-8 h-8 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="w-8 h-8 text-status-warning-fg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12,6 12,12 16,14" />
               </svg>
             </div>
-            <div className="text-sm font-medium text-amber-200">{t('accessRequestSubmitted')}</div>
+            <div className="text-sm font-medium text-status-warning-fg">{t('accessRequestSubmitted')}</div>
             <p className="text-xs text-muted-foreground mt-1">
               {t('accessRequestDescription')}
             </p>
@@ -236,15 +236,15 @@ export default function LoginPage() {
         )}
 
         {needsSetup && (
-          <div className="mb-4 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-center">
+          <div className="mb-4 p-4 rounded-lg bg-status-info-bg border border-status-info-border text-center">
             <div className="flex justify-center mb-2">
-              <svg className="w-8 h-8 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="w-8 h-8 text-status-info-fg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
             </div>
-            <div className="text-sm font-medium text-blue-200">{t('noAdminAccount')}</div>
+            <div className="text-sm font-medium text-status-info-fg">{t('noAdminAccount')}</div>
             <p className="text-xs text-muted-foreground mt-1">
               {t('noAdminDescription')}
             </p>
@@ -271,11 +271,11 @@ export default function LoginPage() {
               type="button"
               onClick={handleGoogleSignIn}
               disabled={!googleReady || googleLoading || loading}
-              className="w-full h-10 flex items-center justify-center gap-3 rounded-lg border border-border bg-white text-[#3c4043] text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-10 flex items-center justify-center gap-3 rounded-lg border border-border bg-white text-[#3c4043] text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {googleLoading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-muted border-t-foreground rounded-full animate-spin" />
                   {t('signingIn')}
                 </>
               ) : (

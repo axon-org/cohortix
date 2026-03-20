@@ -37,9 +37,9 @@ interface AccessRequest {
 }
 
 const roleColors: Record<string, string> = {
-  admin: 'bg-red-500/20 text-red-400',
-  operator: 'bg-blue-500/20 text-blue-400',
-  viewer: 'bg-gray-500/20 text-gray-400',
+  admin: 'bg-status-error-bg text-status-error-fg',
+  operator: 'bg-status-info-bg/20 text-status-info-fg',
+  viewer: 'bg-muted text-muted-foreground',
 }
 
 export function UserManagementPanel() {
@@ -223,7 +223,7 @@ export function UserManagementPanel() {
   }
 
   if (error) {
-    return <div className="p-8 text-center"><div className="text-sm text-red-400">{error}</div></div>
+    return <div className="p-8 text-center"><div className="text-sm text-status-error-fg">{error}</div></div>
   }
 
   return (
@@ -242,16 +242,16 @@ export function UserManagementPanel() {
       </div>
 
       {feedback && (
-        <div className={`px-3 py-2 rounded-md text-sm border ${feedback.ok ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+        <div className={`px-3 py-2 rounded-md text-sm border ${feedback.ok ? 'bg-status-success-bg text-status-success-fg border-status-success-border' : 'bg-status-error-bg text-status-error-fg border-status-error-border'}`}>
           {feedback.text}
         </div>
       )}
 
       {pendingRequests.length > 0 && (
-        <div className="border border-amber-500/30 rounded-lg overflow-hidden">
-          <div className="px-4 py-3 bg-amber-500/10 border-b border-amber-500/20 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-sm font-medium text-amber-200">
+        <div className="border border-status-warning-border rounded-lg overflow-hidden">
+          <div className="px-4 py-3 bg-status-warning-bg border-b border-status-warning-border flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-status-warning-solid animate-pulse" />
+            <span className="text-sm font-medium text-status-warning-fg">
               {t('pendingRequests', { count: pendingRequests.length })}
             </span>
           </div>
@@ -443,7 +443,7 @@ export function UserManagementPanel() {
                       </div>
                     </td>
                     <td className="px-4 py-2.5 text-xs">
-                      <span className={`px-2 py-0.5 rounded-full ${u.provider === 'google' ? 'bg-blue-500/20 text-blue-300' : 'bg-gray-500/20 text-gray-300'}`}>{u.provider || 'local'}</span>
+                      <span className={`px-2 py-0.5 rounded-full ${u.provider === 'google' ? 'bg-status-info-bg/20 text-status-info-fg' : 'bg-muted text-muted-foreground'}`}>{u.provider || 'local'}</span>
                     </td>
                     <td className="px-4 py-2.5">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${roleColors[u.role] || ''}`}>{u.role}</span>

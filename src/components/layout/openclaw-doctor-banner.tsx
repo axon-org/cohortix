@@ -107,18 +107,18 @@ export function OpenClawDoctorBanner() {
   const tone =
     doctor.level === 'error'
       ? {
-          frame: 'bg-red-500/10 border-red-500/20 text-red-300',
-          dot: 'bg-red-500',
-          primary: 'text-red-200',
-          button: 'text-red-950 bg-red-400 hover:bg-red-300',
-          secondary: 'text-red-300 border-red-500/20 hover:border-red-500/40 hover:text-red-200',
+          frame: 'bg-status-error-bg border-status-error-border text-status-error-fg',
+          dot: 'bg-status-error-solid',
+          primary: 'text-status-error-fg',
+          button: 'text-destructive-foreground bg-status-error-solid hover:bg-status-error-solid/80',
+          secondary: 'text-status-error-fg border-status-error-border hover:border-status-error-border/80 hover:text-status-error-fg/80',
         }
       : {
-          frame: 'bg-amber-500/10 border-amber-500/20 text-amber-300',
-          dot: 'bg-amber-400',
-          primary: 'text-amber-200',
-          button: 'text-amber-950 bg-amber-400 hover:bg-amber-300',
-          secondary: 'text-amber-300 border-amber-500/20 hover:border-amber-500/40 hover:text-amber-200',
+          frame: 'bg-status-warning-bg border-status-warning-border text-status-warning-fg',
+          dot: 'bg-status-warning-solid',
+          primary: 'text-status-warning-fg',
+          button: 'text-warning-foreground bg-status-warning-solid hover:bg-status-warning-solid/80',
+          secondary: 'text-status-warning-fg border-status-warning-border hover:border-status-warning-border/80 hover:text-status-warning-fg/80',
         }
 
   const visibleIssues = doctor.issues.slice(0, 3)

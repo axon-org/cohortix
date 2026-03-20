@@ -243,7 +243,7 @@ export function OrchestrationBar() {
           >
             {tab === 'command' ? t('tabCommand') : tab === 'templates' ? t('tabWorkflows') : tab === 'pipelines' ? t('tabPipelines') : t('tabFleet')}
             {tab === 'fleet' && (
-              <span className={`ml-1.5 text-2xs ${errorCount > 0 ? 'text-red-400' : 'text-green-400'}`}>
+              <span className={`ml-1.5 text-2xs ${errorCount > 0 ? 'text-status-error-fg' : 'text-status-success-fg'}`}>
                 {onlineCount}/{agents.length}
               </span>
             )}
@@ -252,7 +252,7 @@ export function OrchestrationBar() {
 
         {/* Result toast inline */}
         {commandResult && (
-          <span className={`ml-auto text-xs ${commandResult.ok ? 'text-green-400' : 'text-red-400'}`}>
+          <span className={`ml-auto text-xs ${commandResult.ok ? 'text-status-success-fg' : 'text-status-error-fg'}`}>
             {commandResult.text}
           </span>
         )}
@@ -551,9 +551,9 @@ export function OrchestrationBar() {
                   title={`${a.name} - ${a.role} - ${a.status}`}
                 >
                   <span className={`w-1.5 h-1.5 rounded-full ${
-                    a.status === 'busy' ? 'bg-amber-500' :
-                    a.status === 'idle' ? 'bg-green-500' :
-                    a.status === 'error' ? 'bg-red-500' : 'bg-gray-500'
+                    a.status === 'busy' ? 'bg-status-warning-solid' :
+                    a.status === 'idle' ? 'bg-status-success-solid' :
+                    a.status === 'error' ? 'bg-status-error-solid' : 'bg-muted'
                   }`} />
                   <span className="text-foreground font-medium">{a.name}</span>
                   <span className="text-muted-foreground">{a.role}</span>
@@ -568,9 +568,9 @@ export function OrchestrationBar() {
 }
 
 function FleetCard({ label, value, color }: { label: string; value: number; color?: string }) {
-  const colorClass = color === 'green' ? 'text-green-400' :
-    color === 'amber' ? 'text-amber-400' :
-    color === 'red' ? 'text-red-400' : 'text-foreground'
+  const colorClass = color === 'green' ? 'text-status-success-fg' :
+    color === 'amber' ? 'text-status-warning-fg' :
+    color === 'red' ? 'text-status-error-fg' : 'text-foreground'
 
   return (
     <div className="p-2.5 rounded-lg bg-secondary/50 border border-border">

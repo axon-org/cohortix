@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 72" width="340" height="72" role="img" aria-label="Cohortix">
+  <title>Cohortix</title>
+
+  <!-- Wordmark: "Cohortix" — sentence case, Inter Medium 500 -->
+  <!-- "Cohort" in primary brand dark, "ix" accent in indigo -->
+  <text
+    font-family="'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif"
+    font-weight="500"
+    font-size="48"
+    letter-spacing="-1"
+    y="52"
+  >
+    <tspan x="10" fill="#0F172A">Cohort</tspan><tspan fill="#6366F1">ix</tspan>
+  </text>
+</svg>

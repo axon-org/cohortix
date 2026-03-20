@@ -125,13 +125,13 @@ interface AgentEvalsData {
 }
 
 const SCAN_STATUS_ICON: Record<string, string> = { pass: '+', fail: 'x', warn: '!' }
-const SCAN_STATUS_COLOR: Record<string, string> = { pass: 'text-green-400', fail: 'text-red-400', warn: 'text-amber-400' }
+const SCAN_STATUS_COLOR: Record<string, string> = { pass: 'text-status-success-fg', fail: 'text-status-error-fg', warn: 'text-status-warning-fg' }
 
 const SEVERITY_BADGE: Record<CheckSeverity, { label: string; className: string }> = {
-  critical: { label: 'C', className: 'bg-red-500/20 text-red-400' },
-  high: { label: 'H', className: 'bg-orange-500/20 text-orange-400' },
-  medium: { label: 'M', className: 'bg-amber-500/20 text-amber-400' },
-  low: { label: 'L', className: 'bg-blue-500/20 text-blue-300' },
+  critical: { label: 'C', className: 'bg-status-error-bg text-status-error-fg' },
+  high: { label: 'H', className: 'bg-status-warning-bg text-status-warning-fg' },
+  medium: { label: 'M', className: 'bg-status-warning-bg text-status-warning-fg' },
+  low: { label: 'L', className: 'bg-status-info-bg/20 text-status-info-fg' },
 }
 
 function ScanCategoryRow({ label, icon, category, failingCount }: {
@@ -149,7 +149,7 @@ function ScanCategoryRow({ label, icon, category, failingCount }: {
           {icon}
         </span>
         <span className="flex-1 text-sm font-medium">{label}</span>
-        <span className={`text-xs tabular-nums ${category.score >= 80 ? 'text-green-400' : category.score >= 50 ? 'text-amber-400' : 'text-red-400'}`}>
+        <span className={`text-xs tabular-nums ${category.score >= 80 ? 'text-status-success-fg' : category.score >= 50 ? 'text-status-warning-fg' : 'text-status-error-fg'}`}>
           {category.score}%
         </span>
         {failingCount > 0 && (
@@ -311,10 +311,10 @@ export function SecurityAuditPanel() {
   useSmartPoll(fetchData, 30_000)
 
   const postureColor = (score: number) => {
-    if (score >= 80) return 'text-green-400'
-    if (score >= 60) return 'text-yellow-400'
-    if (score >= 40) return 'text-orange-400'
-    return 'text-red-400'
+    if (score >= 80) return 'text-status-success-fg'
+    if (score >= 60) return 'text-status-warning-fg'
+    if (score >= 40) return 'text-status-warning-fg'
+    return 'text-status-error-fg'
   }
 
   const postureRingColor = (score: number) => {
@@ -326,18 +326,18 @@ export function SecurityAuditPanel() {
 
   const postureBgColor = (level: string) => {
     switch (level) {
-      case 'hardened': return 'bg-green-500/15 text-green-400'
-      case 'secure': return 'bg-green-500/10 text-green-300'
-      case 'needs-attention': return 'bg-yellow-500/15 text-yellow-400'
-      case 'at-risk': return 'bg-red-500/15 text-red-400'
+      case 'hardened': return 'bg-status-success-bg text-status-success-fg'
+      case 'secure': return 'bg-status-success-bg text-status-success-fg'
+      case 'needs-attention': return 'bg-status-warning-solid/15 text-status-warning-fg'
+      case 'at-risk': return 'bg-status-error-bg text-status-error-fg'
       default: return 'bg-muted text-muted-foreground'
     }
   }
 
   const trustBarColor = (score: number) => {
-    if (score >= 0.8) return 'bg-green-500'
-    if (score >= 0.5) return 'bg-yellow-500'
-    return 'bg-red-500'
+    if (score >= 0.8) return 'bg-status-success-solid'
+    if (score >= 0.5) return 'bg-status-warning-solid'
+    return 'bg-status-error-solid'
   }
 
   const formatTime = (ts: number) => new Date(ts * 1000).toLocaleString([], {
@@ -457,8 +457,8 @@ export function SecurityAuditPanel() {
                         <tr key={evt.id} className="text-xs">
                           <td className="py-1.5 pr-3">
                             <span className={`px-1.5 py-0.5 rounded text-2xs font-medium ${
-                              evt.type === 'login_failure' ? 'bg-red-500/15 text-red-400'
-                              : evt.type === 'token_rotation' ? 'bg-blue-500/15 text-blue-400'
+                              evt.type === 'login_failure' ? 'bg-status-error-bg text-status-error-fg'
+                              : evt.type === 'token_rotation' ? 'bg-status-info-bg/15 text-status-info-fg'
                               : 'bg-muted text-muted-foreground'
                             }`}>
                               {evt.type.replace(/_/g, ' ')}
@@ -486,13 +486,13 @@ export function SecurityAuditPanel() {
                     <div
                       key={agent.agentId}
                       className={`p-3 rounded-lg border ${
-                        agent.flagged ? 'border-red-500/50 bg-red-500/5' : 'border-border bg-secondary'
+                        agent.flagged ? 'border-status-error-border/50 bg-status-error-bg' : 'border-border bg-secondary'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-foreground truncate">{agent.name}</span>
                         {agent.flagged && (
-                          <span className="text-2xs px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 shrink-0 ml-1">{t('flagged')}</span>
+                          <span className="text-2xs px-1.5 py-0.5 rounded bg-status-error-bg text-status-error-fg shrink-0 ml-1">{t('flagged')}</span>
                         )}
                       </div>
                       <div className="w-full bg-muted rounded-full h-2">
@@ -514,11 +514,11 @@ export function SecurityAuditPanel() {
             <h2 className="text-xl font-semibold mb-4">{t('secretExposureAlerts')}</h2>
             {data.secretAlerts.length === 0 ? (
               <div className="flex items-center gap-2 py-4 justify-center">
-                <svg className="w-5 h-5 text-green-400" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg className="w-5 h-5 text-status-success-fg" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M8 1a5 5 0 015 5v2a2 2 0 01-2 2H5a2 2 0 01-2-2V6a5 5 0 015-5z" />
                   <path d="M5.5 14h5M6.5 12v2M9.5 12v2" />
                 </svg>
-                <span className="text-sm font-medium text-green-400">{t('noSecretsDetected')}</span>
+                <span className="text-sm font-medium text-status-success-fg">{t('noSecretsDetected')}</span>
               </div>
             ) : (
               <div className="overflow-x-auto max-h-48 overflow-y-auto">
@@ -536,12 +536,12 @@ export function SecurityAuditPanel() {
                     {data.secretAlerts.map(alert => (
                       <tr key={alert.id} className="text-xs">
                         <td className="py-1.5 pr-3">
-                          <span className="px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 text-2xs font-medium">{alert.type}</span>
+                          <span className="px-1.5 py-0.5 rounded bg-status-error-bg text-status-error-fg text-2xs font-medium">{alert.type}</span>
                         </td>
                         <td className="py-1.5 pr-3 font-mono text-foreground">{alert.file}:{alert.line}</td>
                         <td className="py-1.5 pr-3 font-mono text-muted-foreground max-w-48 truncate">{alert.preview}</td>
                         <td className="py-1.5 pr-3">
-                          <span className={`text-2xs ${alert.resolved ? 'text-green-400' : 'text-red-400'}`}>
+                          <span className={`text-2xs ${alert.resolved ? 'text-status-success-fg' : 'text-status-error-fg'}`}>
                             {alert.resolved ? t('statusResolved') : t('statusActive')}
                           </span>
                         </td>
@@ -592,7 +592,7 @@ export function SecurityAuditPanel() {
                         {rl.agent && <span className="ml-2 text-xs text-muted-foreground">({rl.agent})</span>}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`text-xs font-medium ${rl.hits > 100 ? 'text-red-400' : rl.hits > 50 ? 'text-yellow-400' : 'text-muted-foreground'}`}>
+                        <span className={`text-xs font-medium ${rl.hits > 100 ? 'text-status-error-fg' : rl.hits > 50 ? 'text-status-warning-fg' : 'text-muted-foreground'}`}>
                           {t('hits', { hits: rl.hits })}
                         </span>
                         <span className="text-2xs text-muted-foreground">{formatTime(rl.lastHit)}</span>
@@ -609,11 +609,11 @@ export function SecurityAuditPanel() {
             <h2 className="text-xl font-semibold mb-4">{t('injectionAttempts')}</h2>
             {data.injectionAttempts.length === 0 ? (
               <div className="flex items-center gap-2 py-4 justify-center">
-                <svg className="w-5 h-5 text-green-400" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg className="w-5 h-5 text-status-success-fg" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M8 1l6 3v4c0 3.5-2.5 6.5-6 7.5C4.5 14.5 2 11.5 2 8V4l6-3z" />
                   <path d="M5.5 8l2 2 3.5-3.5" />
                 </svg>
-                <span className="text-sm font-medium text-green-400">{t('noInjectionAttempts')}</span>
+                <span className="text-sm font-medium text-status-success-fg">{t('noInjectionAttempts')}</span>
               </div>
             ) : (
               <div className="overflow-x-auto max-h-48 overflow-y-auto">
@@ -631,12 +631,12 @@ export function SecurityAuditPanel() {
                     {data.injectionAttempts.map(attempt => (
                       <tr key={attempt.id} className="text-xs">
                         <td className="py-1.5 pr-3">
-                          <span className="px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 text-2xs font-medium">{attempt.type}</span>
+                          <span className="px-1.5 py-0.5 rounded bg-status-warning-bg text-status-warning-fg text-2xs font-medium">{attempt.type}</span>
                         </td>
                         <td className="py-1.5 pr-3 text-foreground">{attempt.source}</td>
                         <td className="py-1.5 pr-3 font-mono text-muted-foreground max-w-48 truncate">{attempt.input}</td>
                         <td className="py-1.5 pr-3">
-                          <span className={`text-2xs font-medium ${attempt.blocked ? 'text-green-400' : 'text-red-400'}`}>
+                          <span className={`text-2xs font-medium ${attempt.blocked ? 'text-status-success-fg' : 'text-status-error-fg'}`}>
                             {attempt.blocked ? t('statusBlocked') : t('statusPassed')}
                           </span>
                         </td>
@@ -706,7 +706,7 @@ export function SecurityAuditPanel() {
                   {evalsData.driftAlerts.length > 0 && (
                     <div className="mt-2 space-y-1">
                       {evalsData.driftAlerts.map((alert, i) => (
-                        <div key={i} className="text-xs text-red-400 flex items-center gap-1">
+                        <div key={i} className="text-xs text-status-error-fg flex items-center gap-1">
                           <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M8 1l7 14H1L8 1z" />
                             <path d="M8 6v4M8 12v1" />
@@ -728,14 +728,14 @@ export function SecurityAuditPanel() {
                     <div
                       key={agent.agentId}
                       className={`p-4 rounded-lg border ${
-                        agent.driftDetected ? 'border-red-500/50 bg-red-500/5' : 'border-border bg-secondary'
+                        agent.driftDetected ? 'border-status-error-border/50 bg-status-error-bg' : 'border-border bg-secondary'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium text-foreground">{agent.name}</span>
                           {agent.driftDetected && (
-                            <span className="text-2xs px-1.5 py-0.5 rounded bg-red-500/15 text-red-400">{t('drift')}</span>
+                            <span className="text-2xs px-1.5 py-0.5 rounded bg-status-error-bg text-status-error-fg">{t('drift')}</span>
                           )}
                         </div>
                         <div className="flex items-center gap-2">
@@ -750,9 +750,9 @@ export function SecurityAuditPanel() {
                             <div className="w-full bg-muted rounded-full h-1.5">
                               <div
                                 className={`h-1.5 rounded-full ${
-                                  (s.score / s.maxScore) >= 0.8 ? 'bg-green-500'
-                                  : (s.score / s.maxScore) >= 0.5 ? 'bg-yellow-500'
-                                  : 'bg-red-500'
+                                  (s.score / s.maxScore) >= 0.8 ? 'bg-status-success-solid'
+                                  : (s.score / s.maxScore) >= 0.5 ? 'bg-status-warning-solid'
+                                  : 'bg-status-error-solid'
                                 }`}
                                 style={{ width: `${(s.score / s.maxScore) * 100}%` }}
                               />

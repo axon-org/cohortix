@@ -242,12 +242,12 @@ export function ChatInput({ onSend, onAbort, disabled, agents = [], isGenerating
                   <span className="text-[9px] text-muted-foreground truncate w-full text-center">{att.name}</span>
                 </div>
               )}
-              <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-[9px] text-white/80 px-1 py-0.5 truncate">
+              <div className="absolute bottom-0 left-0 right-0 bg-background/60 text-[9px] text-foreground/80 px-1 py-0.5 truncate">
                 {formatFileSize(att.size)}
               </div>
               <button
                 onClick={() => removeAttachment(idx)}
-                className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 text-white/80 text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/80"
+                className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-background/60 text-foreground/80 text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-status-error-solid/80"
               >
                 x
               </button>
@@ -306,7 +306,7 @@ export function ChatInput({ onSend, onAbort, disabled, agents = [], isGenerating
             onClick={onAbort}
             variant="ghost"
             size="icon-sm"
-            className="rounded-lg flex-shrink-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+            className="rounded-lg flex-shrink-0 text-status-error-fg hover:text-status-error-fg hover:bg-status-error-bg"
             title="Stop generation"
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">

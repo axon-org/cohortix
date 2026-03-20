@@ -632,7 +632,7 @@ function MobileBottomSheet({ open, onClose, activeTab, navigateToPanel, groups }
     <div className="md:hidden fixed inset-0 z-[60]">
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${
+        className={`absolute inset-0 bg-background/40 transition-opacity duration-200 ${
           visible ? 'opacity-100' : 'opacity-0'
         }`}
         onClick={handleClose}
@@ -750,17 +750,17 @@ function OrgRow({ label, initial, active, colorClass, onClick, isActiveOrg, proj
             >
               <div
                 className={`w-4 h-4 rounded flex items-center justify-center text-[8px] font-bold shrink-0 ${
-                  !project.color ? (project.status === 'active' ? 'bg-blue-500/20 text-blue-400' : 'bg-muted-foreground/10 text-muted-foreground') : ''
+                  !project.color ? (project.status === 'active' ? 'bg-status-info-bg text-status-info-fg' : 'bg-muted-foreground/10 text-muted-foreground') : ''
                 }`}
                 style={project.color ? { backgroundColor: `${project.color}33`, color: project.color } : undefined}
               >{project.ticket_prefix?.slice(0, 2) || project.name?.[0]?.toUpperCase() || 'P'}</div>
               <span className="truncate">{project.name}</span>
               <div className="flex items-center gap-1 ml-auto shrink-0">
                 {typeof project.task_count === 'number' && project.task_count > 0 && (
-                  <span className="text-[9px] bg-white/10 px-1 rounded text-muted-foreground/50">{project.task_count}</span>
+                  <span className="text-[9px] bg-background/10 px-1 rounded text-muted-foreground/50">{project.task_count}</span>
                 )}
                 {project.deadline && project.deadline < Math.floor(Date.now() / 1000) && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500" title="Overdue" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-status-error-solid" title="Overdue" />
                 )}
                 <span className="text-muted-foreground/30 text-[10px]">{project.ticket_prefix}</span>
               </div>
@@ -824,7 +824,7 @@ function ContextSwitcher({ currentUser, isAdmin, isLocal, isConnected, tenants, 
   const projectName = activeProject?.name
   const contextLine = projectName ? `${tenantName} / ${projectName}` : tenantName
   const connectionLabel = isLocal ? tcs('localMode') : isConnected ? tcs('connected') : tcs('disconnected')
-  const connectionDotClass = isLocal ? 'bg-void-cyan' : isConnected ? 'bg-green-500' : 'bg-red-500'
+  const connectionDotClass = isLocal ? 'bg-void-cyan' : isConnected ? 'bg-status-success-solid' : 'bg-status-error-solid'
 
   return (
     <div className={`shrink-0 relative ${expanded ? 'px-3 pb-3' : 'flex flex-col items-center pb-3'}`}>
@@ -1014,7 +1014,7 @@ function ContextSwitcher({ currentUser, isAdmin, isLocal, isConnected, tenants, 
                       label={tenant.display_name}
                       initial={tenant.display_name?.[0]?.toUpperCase() || 'T'}
                       active={activeTenant?.id === tenant.id}
-                      colorClass={tenant.status === 'active' ? 'bg-green-500/20 text-green-400' : tenant.status === 'error' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'}
+                      colorClass={tenant.status === 'active' ? 'bg-status-success-bg text-status-success-fg' : tenant.status === 'error' ? 'bg-status-error-bg text-status-error-fg' : 'bg-status-warning-bg text-status-warning-fg'}
                       onClick={() => { onSwitchTenant(tenant); setOpen(false) }}
                       isActiveOrg={activeTenant?.id === tenant.id}
                       projects={projects}
@@ -1140,7 +1140,7 @@ function ContextSwitcher({ currentUser, isAdmin, isLocal, isConnected, tenants, 
                         </div>
                       )}
                       {createError && (
-                        <div className="text-[10px] text-red-400 px-0.5">{createError}</div>
+                        <div className="text-[10px] text-status-error-fg px-0.5">{createError}</div>
                       )}
                       <div className="flex gap-1.5">
                         <Button

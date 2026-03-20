@@ -385,9 +385,9 @@ export function AgentCommsPanel() {
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full border ${
               connection.isConnected
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                ? 'bg-status-success-bg text-status-success-fg border-status-success-border'
                 : connection.sseConnected
-                  ? 'bg-sky-500/10 text-sky-400 border-sky-500/30'
+                  ? 'bg-status-info-bg text-status-info-fg border-status-info-border'
                   : 'bg-muted text-muted-foreground border-border/40'
             }`}
           >
@@ -397,10 +397,10 @@ export function AgentCommsPanel() {
             <span
               className={`text-[10px] px-2 py-0.5 rounded-full border ${
                 sourceMode === 'live'
-                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                  ? 'bg-status-success-bg text-status-success-fg border-status-success-border'
                   : sourceMode === 'mixed'
-                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                    : 'bg-sky-500/10 text-sky-400 border-sky-500/30'
+                    ? 'bg-status-warning-bg text-status-warning-fg border-status-warning-border'
+                    : 'bg-status-info-bg text-status-info-fg border-status-info-border'
               }`}
             >
               {sourceMode === 'live' ? t('sourceLive') : sourceMode === 'mixed' ? t('sourceMixed') : t('sourceSeeded')}
@@ -433,14 +433,14 @@ export function AgentCommsPanel() {
         {/* Session count */}
         {(sessions.length > 0 || transcriptSessionCount > 0) && (
           <div className="ml-auto flex items-center gap-1 text-[10px] text-muted-foreground/50">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-status-success-solid animate-pulse" />
             {t('sessions', { active: sessions.filter(s => s.active).length, total: transcriptSessionCount || sessions.length })}
           </div>
         )}
       </div>
 
       {error && (
-        <div className="mx-4 mt-2 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 text-xs text-red-400">
+        <div className="mx-4 mt-2 bg-status-error-bg border border-status-error-border rounded-lg px-3 py-2 text-xs text-status-error-fg">
           {error}
         </div>
       )}
@@ -571,7 +571,7 @@ export function AgentCommsPanel() {
           </Button>
         </div>
         {sendError && (
-          <div className="mt-2 text-[11px] text-red-400">{sendError}</div>
+          <div className="mt-2 text-[11px] text-status-error-fg">{sendError}</div>
         )}
       </div>
     </div>
@@ -584,8 +584,8 @@ function FeedLine({ event }: { event: FeedEvent }) {
   const cat = CATEGORY_META[event.category]
   const identity = getIdentity(event.source)
 
-  const levelColor = event.level === 'error' ? 'text-red-400'
-    : event.level === 'warn' ? 'text-amber-400'
+  const levelColor = event.level === 'error' ? 'text-status-error-fg'
+    : event.level === 'warn' ? 'text-status-warning-fg'
     : ''
 
   return (
@@ -630,11 +630,11 @@ function SessionChip({ session, selected, onClick }: { session: Session; selecte
         selected
           ? 'ring-1 ring-primary bg-primary/10 border-primary/40 text-primary'
           : session.active
-            ? 'bg-emerald-500/8 border-emerald-500/25 text-emerald-300 hover:border-emerald-500/50'
+            ? 'bg-status-success-bg border-status-success-border text-status-success-fg hover:border-status-success-border'
             : 'bg-surface-1 border-border/50 text-muted-foreground/60 hover:border-border'
       }`}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${session.active ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground/30'}`} />
+      <span className={`w-1.5 h-1.5 rounded-full ${session.active ? 'bg-status-success-solid animate-pulse' : 'bg-muted-foreground/30'}`} />
       <span className="font-medium">{session.kind}</span>
       <span className="text-muted-foreground/40">{session.model}</span>
       <span className="text-muted-foreground/30">{session.age}</span>

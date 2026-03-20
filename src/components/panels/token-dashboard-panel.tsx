@@ -622,7 +622,7 @@ export function TokenDashboardPanel() {
                 onClick={() => toggleSessionFilter(sessionId)}
                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
                   sessionFilters.has(sessionId)
-                    ? 'bg-blue-500/30 text-blue-300 border-blue-500/50'
+                    ? 'bg-status-info-bg/30 text-status-info-fg border-status-info-border/50'
                     : 'bg-card text-muted-foreground border-border hover:text-foreground hover:border-foreground/30'
                 }`}
               >
@@ -634,7 +634,7 @@ export function TokenDashboardPanel() {
           {hasActiveFilters && (
             <button
               onClick={clearAllFilters}
-              className="px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors"
+              className="px-2.5 py-1 rounded-full text-xs font-medium bg-status-error-bg text-status-error-fg border border-status-error-border hover:bg-status-error-bg transition-colors"
             >
               {t('clearAll')}
             </button>
@@ -693,7 +693,7 @@ export function TokenDashboardPanel() {
                           {entry.sessionKey || sessionInfo?.key || entry.sessionId}
                         </div>
                         <div className="text-xs text-muted-foreground flex items-center gap-2">
-                          {sessionInfo?.active && <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500" />}
+                          {sessionInfo?.active && <span className="inline-block w-1.5 h-1.5 rounded-full bg-status-success-solid" />}
                           <span>{sessionInfo?.active ? t('sessionActive') : t('sessionInactive')}</span>
                           {entry.model && <span>| {getModelDisplayName(entry.model)}</span>}
                           {sessionInfo?.kind && <span>| {sessionInfo.kind}</span>}
@@ -766,7 +766,7 @@ export function TokenDashboardPanel() {
             {cacheStats && (
               <>
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <div className="text-3xl font-bold text-cyan-400">
+                  <div className="text-3xl font-bold text-primary">
                     {formatNumber(cacheStats.cacheRead)}
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -775,7 +775,7 @@ export function TokenDashboardPanel() {
                 </div>
 
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <div className="text-3xl font-bold text-amber-400">
+                  <div className="text-3xl font-bold text-status-warning-fg">
                     {formatNumber(cacheStats.cacheWrite)}
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -958,14 +958,14 @@ export function TokenDashboardPanel() {
                 <Button
                   onClick={exportClientCsv}
                   disabled={isExporting}
-                  className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30"
+                  className="bg-status-info-bg text-primary border border-status-info-border hover:bg-status-info-bg"
                 >
                   {isExporting ? t('exporting') : t('exportCsvFiltered')}
                 </Button>
                 <Button
                   onClick={() => exportData('csv')}
                   disabled={isExporting}
-                  className="bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30"
+                  className="bg-status-info-bg/20 text-status-info-fg border border-status-info-border hover:bg-status-info-bg/30"
                 >
                   {isExporting ? t('exporting') : t('exportCsvFull')}
                 </Button>
@@ -996,8 +996,8 @@ export function TokenDashboardPanel() {
                       key={index}
                       className={`border-l-4 p-4 rounded ${
                         alert.type === 'warning'
-                          ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
-                          : 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                          ? 'border-status-warning-border bg-status-warning-solid dark:bg-status-warning-bg'
+                          : 'border-status-info-border bg-status-info-bg dark:bg-status-info-bg'
                       }`}
                     >
                       <div className="flex items-start">
@@ -1007,7 +1007,7 @@ export function TokenDashboardPanel() {
                         <div className="ml-3">
                           <p className="text-sm font-medium">{alert.title}</p>
                           <p className="text-xs text-muted-foreground mt-1">{alert.message}</p>
-                          <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">{alert.suggestion}</p>
+                          <p className="text-xs text-status-info-fg dark:text-status-info-fg mt-2">{alert.suggestion}</p>
                         </div>
                       </div>
                     </div>
@@ -1019,7 +1019,7 @@ export function TokenDashboardPanel() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="bg-secondary rounded-lg p-4">
                   <h3 className="text-sm font-medium text-muted-foreground mb-2">{t('mostEfficientModel')}</h3>
-                  <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                  <div className="text-lg font-bold text-status-success-fg dark:text-status-success-fg">
                     {getModelDisplayName(performanceMetrics.mostEfficient.model)}
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -1029,7 +1029,7 @@ export function TokenDashboardPanel() {
 
                 <div className="bg-secondary rounded-lg p-4">
                   <h3 className="text-sm font-medium text-muted-foreground mb-2">{t('mostUsedModel')}</h3>
-                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  <div className="text-lg font-bold text-status-info-fg dark:text-status-info-fg">
                     {getModelDisplayName(performanceMetrics.mostUsed.model)}
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -1039,7 +1039,7 @@ export function TokenDashboardPanel() {
 
                 <div className="bg-secondary rounded-lg p-4">
                   <h3 className="text-sm font-medium text-muted-foreground mb-2">{t('optimizationPotential')}</h3>
-                  <div className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                  <div className="text-lg font-bold text-status-warning-fg dark:text-status-warning-fg">
                     {formatCost(performanceMetrics.potentialSavings)}
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -1067,7 +1067,7 @@ export function TokenDashboardPanel() {
                           <div className="flex-1 mx-3">
                             <div className="w-full bg-secondary rounded-full h-2">
                               <div
-                                className="bg-green-500 h-2 rounded-full"
+                                className="bg-status-success-solid h-2 rounded-full"
                                 style={{ width: `${barWidth}%` }}
                               ></div>
                             </div>

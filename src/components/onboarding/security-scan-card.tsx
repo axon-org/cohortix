@@ -50,10 +50,10 @@ const FIX_SAFETY: Record<string, FixSafety> = {
 const FIXABLE_IDS = new Set(Object.keys(FIX_SAFETY))
 
 const SEVERITY_BADGE: Record<CheckSeverity, { label: string; className: string }> = {
-  critical: { label: 'C', className: 'bg-red-500/20 text-red-400' },
-  high: { label: 'H', className: 'bg-orange-500/20 text-orange-400' },
-  medium: { label: 'M', className: 'bg-amber-500/20 text-amber-400' },
-  low: { label: 'L', className: 'bg-blue-500/20 text-blue-300' },
+  critical: { label: 'C', className: 'bg-status-error-bg text-status-error-fg' },
+  high: { label: 'H', className: 'bg-status-warning-bg text-status-warning-fg' },
+  medium: { label: 'M', className: 'bg-status-warning-bg text-status-warning-fg' },
+  low: { label: 'L', className: 'bg-status-info-bg text-status-info-fg' },
 }
 
 const STATUS_ICON: Record<string, string> = {
@@ -63,16 +63,16 @@ const STATUS_ICON: Record<string, string> = {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  pass: 'text-green-400',
-  fail: 'text-red-400',
-  warn: 'text-amber-400',
+  pass: 'text-status-success-fg',
+  fail: 'text-status-error-fg',
+  warn: 'text-status-warning-fg',
 }
 
 const OVERALL_COLOR: Record<string, string> = {
-  hardened: 'text-green-400',
-  secure: 'text-green-300',
-  'needs-attention': 'text-amber-400',
-  'at-risk': 'text-red-400',
+  hardened: 'text-status-success-fg',
+  secure: 'text-status-success-fg',
+  'needs-attention': 'text-status-warning-fg',
+  'at-risk': 'text-status-error-fg',
 }
 
 const CATEGORY_LABELS: Record<string, { label: string; icon: string }> = {
@@ -200,7 +200,7 @@ export function SecurityScanCard({ compact = false, autoScan = false }: { compac
   if (error) {
     return (
       <div className="flex flex-col items-center gap-3 py-6">
-        <p className="text-sm text-red-400">{error}</p>
+        <p className="text-sm text-status-error-fg">{error}</p>
         <Button onClick={runScan} variant="outline" size="sm">Retry</Button>
       </div>
     )
@@ -236,9 +236,9 @@ export function SecurityScanCard({ compact = false, autoScan = false }: { compac
       <div className="h-1.5 rounded-full bg-surface-2 overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-700 ${
-            result.score >= 90 ? 'bg-green-400' :
-            result.score >= 70 ? 'bg-green-300' :
-            result.score >= 40 ? 'bg-amber-400' : 'bg-red-400'
+            result.score >= 90 ? 'bg-status-success-solid' :
+            result.score >= 70 ? 'bg-status-success-solid' :
+            result.score >= 40 ? 'bg-status-warning-solid' : 'bg-status-error-solid'
           }`}
           style={{ width: `${result.score}%` }}
         />
@@ -268,7 +268,7 @@ export function SecurityScanCard({ compact = false, autoScan = false }: { compac
 
       {/* Fix result feedback */}
       {fixResult && (
-        <div className={`text-xs px-3 py-2 rounded-lg border ${fixResult.failed > 0 ? 'bg-amber-500/10 border-amber-500/20 text-amber-300' : 'bg-green-500/10 border-green-500/20 text-green-300'}`}>
+        <div className={`text-xs px-3 py-2 rounded-lg border ${fixResult.failed > 0 ? 'bg-status-warning-bg border-status-warning-border text-status-warning-fg' : 'bg-status-success-bg border-status-success-border text-status-success-fg'}`}>
           {fixResult.attempted > 0 && <span>{fixResult.attempted} auto-fix attempt{fixResult.attempted > 1 ? 's' : ''}. </span>}
           {fixResult.fixed > 0 && <span>{fixResult.fixed} issue{fixResult.fixed > 1 ? 's' : ''} fixed. </span>}
           {fixResult.failed > 0 && <span>{fixResult.failed} failed. </span>}
@@ -295,7 +295,7 @@ export function SecurityScanCard({ compact = false, autoScan = false }: { compac
                   {meta?.icon || key[0].toUpperCase()}
                 </span>
                 <span className="flex-1 text-sm font-medium">{meta?.label || key}</span>
-                <span className={`text-xs tabular-nums ${cat.score >= 80 ? 'text-green-400' : cat.score >= 50 ? 'text-amber-400' : 'text-red-400'}`}>
+                <span className={`text-xs tabular-nums ${cat.score >= 80 ? 'text-status-success-fg' : cat.score >= 50 ? 'text-status-warning-fg' : 'text-status-error-fg'}`}>
                   {cat.score}%
                 </span>
                 {failing.length > 0 && (

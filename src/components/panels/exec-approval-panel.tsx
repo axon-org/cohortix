@@ -18,10 +18,10 @@ const RISK_BORDER: Record<ExecApprovalRequest['risk'], string> = {
 }
 
 const RISK_BADGE: Record<ExecApprovalRequest['risk'], { bg: string; text: string }> = {
-  low: { bg: 'bg-green-500/20', text: 'text-green-400' },
-  medium: { bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
-  high: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
-  critical: { bg: 'bg-red-500/20', text: 'text-red-400' },
+  low: { bg: 'bg-status-success-bg', text: 'text-status-success-fg' },
+  medium: { bg: 'bg-status-warning-bg', text: 'text-status-warning-fg' },
+  high: { bg: 'bg-status-warning-bg', text: 'text-status-warning-fg' },
+  critical: { bg: 'bg-status-error-bg', text: 'text-status-error-fg' },
 }
 
 function timeAgo(timestamp: number): string {
@@ -90,7 +90,7 @@ export function ExecApprovalPanel() {
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
           {pendingCount > 0 && (
-            <span className="inline-flex items-center rounded-full bg-red-500/20 px-2.5 py-0.5 text-xs font-medium text-red-400 animate-pulse">
+            <span className="inline-flex items-center rounded-full bg-status-error-bg px-2.5 py-0.5 text-xs font-medium text-status-error-fg animate-pulse">
               {t('pendingBadge', { count: pendingCount })}
             </span>
           )}
@@ -282,7 +282,7 @@ function AllowlistEditor({ execApprovals }: { execApprovals: ExecApprovalRequest
   return (
     <div className="space-y-4">
       {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+        <div className="rounded-lg border border-status-error-border bg-status-error-bg p-3 text-sm text-status-error-fg">
           {error}
         </div>
       )}
@@ -372,7 +372,7 @@ function AgentAllowlistCard({
           </Button>
           <button
             onClick={onRemoveAgent}
-            className="text-xs text-muted-foreground hover:text-red-400 transition-colors px-1"
+            className="text-xs text-muted-foreground hover:text-status-error-fg transition-colors px-1"
             title="Remove agent"
           >
             x
@@ -399,7 +399,7 @@ function AgentAllowlistCard({
               />
               <button
                 onClick={() => onRemovePattern(index)}
-                className="text-xs text-muted-foreground hover:text-red-400 transition-colors px-1.5"
+                className="text-xs text-muted-foreground hover:text-status-error-fg transition-colors px-1.5"
                 title="Remove pattern"
               >
                 x
@@ -418,7 +418,7 @@ function AgentAllowlistCard({
           {previewMatches.length > 0 && (
             <div className="space-y-1 max-h-24 overflow-auto">
               {previewMatches.slice(0, 5).map((m, i) => (
-                <div key={i} className="text-xs font-mono text-green-400 truncate">
+                <div key={i} className="text-xs font-mono text-status-success-fg truncate">
                   $ {m.command}
                 </div>
               ))}
@@ -499,7 +499,7 @@ function ApprovalCard({
           <>
             <Button
               size="sm"
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-status-success-solid hover:bg-status-success-solid text-foreground"
               onClick={() => onAction(approval.id, 'allow-once')}
             >
               {t('allowOnce')}
@@ -513,7 +513,7 @@ function ApprovalCard({
             </Button>
             <Button
               size="sm"
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-status-error-solid hover:bg-status-error-solid text-foreground"
               onClick={() => onAction(approval.id, 'deny')}
             >
               {t('deny')}
@@ -527,8 +527,8 @@ function ApprovalCard({
           <span
             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
               approval.status === 'approved'
-                ? 'bg-green-500/20 text-green-400'
-                : 'bg-red-500/20 text-red-400'
+                ? 'bg-status-success-bg text-status-success-fg'
+                : 'bg-status-error-bg text-status-error-fg'
             }`}
           >
             {approval.status === 'approved' ? t('statusApproved') : t('statusDenied')}

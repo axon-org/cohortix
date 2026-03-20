@@ -208,7 +208,7 @@ export function PipelineTab() {
     <div className="space-y-3">
       {/* Result message */}
       {result && (
-        <div className={`text-xs px-2 py-1 rounded ${result.ok ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+        <div className={`text-xs px-2 py-1 rounded ${result.ok ? 'bg-status-success-bg text-status-success-fg' : 'bg-status-error-bg text-status-error-fg'}`}>
           {result.text}
         </div>
       )}
@@ -274,7 +274,7 @@ export function PipelineTab() {
                 <Button onClick={() => moveStep(i, 1)} variant="ghost" size="icon-xs" className="w-5 h-5" title="Move down">
                   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3"><path d="M8 13V3M4 9l4 4 4-4" /></svg>
                 </Button>
-                <Button onClick={() => removeStep(i)} variant="ghost" size="icon-xs" className="w-5 h-5 text-red-400 hover:text-red-300">
+                <Button onClick={() => removeStep(i)} variant="ghost" size="icon-xs" className="w-5 h-5 text-status-error-fg hover:text-status-error-fg">
                   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3"><path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" /></svg>
                 </Button>
               </div>
@@ -326,7 +326,7 @@ export function PipelineTab() {
                     <span className="text-2xs text-muted-foreground">{p.steps.length} steps</span>
                     {p.use_count > 0 && <span className="text-2xs text-muted-foreground">{p.use_count}x</span>}
                     {p.runs.running > 0 && (
-                      <span className="text-2xs px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 animate-pulse">running</span>
+                      <span className="text-2xs px-1.5 py-0.5 rounded-full bg-status-warning-bg text-status-warning-fg animate-pulse">running</span>
                     )}
                   </div>
                   {/* Mini step visualization */}
@@ -388,10 +388,10 @@ export function PipelineTab() {
                         <RunStepsViz steps={run.steps_snapshot} />
                         {run.status === 'running' && (
                           <div className="flex gap-1 mt-1.5">
-                            <Button onClick={() => advanceRun(run.id, true)} variant="success" size="xs" className="bg-green-500/20 text-green-400 hover:bg-green-500/30 h-6 text-2xs">
+                            <Button onClick={() => advanceRun(run.id, true)} variant="success" size="xs" className="bg-status-success-bg text-status-success-fg hover:bg-status-success-bg h-6 text-2xs">
                               Mark Step Done
                             </Button>
-                            <Button onClick={() => advanceRun(run.id, false)} variant="destructive" size="xs" className="bg-red-500/20 text-red-400 hover:bg-red-500/30 h-6 text-2xs">
+                            <Button onClick={() => advanceRun(run.id, false)} variant="destructive" size="xs" className="bg-status-error-bg text-status-error-fg hover:bg-status-error-bg h-6 text-2xs">
                               Mark Step Failed
                             </Button>
                             <Button onClick={() => cancelRun(run.id)} variant="secondary" size="xs" className="h-6 text-2xs">
@@ -423,7 +423,7 @@ function PipelineViz({ steps }: { steps: PipelineStep[] }) {
               {s.template_name || `Step ${i + 1}`}
             </div>
             {s.on_failure === 'continue' && (
-              <span className="text-2xs text-amber-400">continue on fail</span>
+              <span className="text-2xs text-status-warning-fg">continue on fail</span>
             )}
           </div>
           {i < steps.length - 1 && (
@@ -445,10 +445,10 @@ function RunStepsViz({ steps }: { steps: RunStepState[] }) {
         <div key={i} className="flex items-center gap-1 shrink-0">
           <div className="flex items-center gap-1">
             <span className={`w-2 h-2 rounded-full shrink-0 ${
-              s.status === 'completed' ? 'bg-green-500' :
-              s.status === 'running' ? 'bg-amber-500 animate-pulse' :
-              s.status === 'failed' ? 'bg-red-500' :
-              s.status === 'skipped' ? 'bg-gray-500' : 'bg-gray-600'
+              s.status === 'completed' ? 'bg-status-success-solid' :
+              s.status === 'running' ? 'bg-status-warning-solid animate-pulse' :
+              s.status === 'failed' ? 'bg-status-error-solid' :
+              s.status === 'skipped' ? 'bg-muted' : 'bg-muted'
             }`} />
             <span className={`text-2xs whitespace-nowrap ${
               s.status === 'running' ? 'text-foreground font-medium' : 'text-muted-foreground'
@@ -469,11 +469,11 @@ function RunStepsViz({ steps }: { steps: RunStepState[] }) {
 
 function RunStatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    running: 'bg-amber-500/20 text-amber-400',
-    completed: 'bg-green-500/20 text-green-400',
-    failed: 'bg-red-500/20 text-red-400',
-    cancelled: 'bg-gray-500/20 text-gray-400',
-    pending: 'bg-blue-500/20 text-blue-400',
+    running: 'bg-status-warning-bg text-status-warning-fg',
+    completed: 'bg-status-success-bg text-status-success-fg',
+    failed: 'bg-status-error-bg text-status-error-fg',
+    cancelled: 'bg-muted text-muted-foreground',
+    pending: 'bg-status-info-bg/20 text-status-info-fg',
   }
   return (
     <span className={`text-2xs px-1.5 py-0.5 rounded-full ${styles[status] || 'bg-secondary text-muted-foreground'}`}>
@@ -489,10 +489,10 @@ function ActiveRunCard({ run, onAdvance, onCancel }: {
   onCancel: (id: number) => void
 }) {
   return (
-    <div className="p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/5">
+    <div className="p-2.5 rounded-lg border border-status-warning-border bg-status-warning-bg">
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-status-warning-solid animate-pulse" />
           <span className="text-xs font-medium text-foreground">
             {run.pipeline_name || `Pipeline #${run.pipeline_id}`} — Run #{run.id}
           </span>
@@ -503,10 +503,10 @@ function ActiveRunCard({ run, onAdvance, onCancel }: {
       </div>
       <RunStepsViz steps={run.steps_snapshot} />
       <div className="flex gap-1 mt-2">
-        <Button onClick={() => onAdvance(run.id, true)} variant="success" size="xs" className="bg-green-500/20 text-green-400 hover:bg-green-500/30 h-6 text-2xs">
+        <Button onClick={() => onAdvance(run.id, true)} variant="success" size="xs" className="bg-status-success-bg text-status-success-fg hover:bg-status-success-bg h-6 text-2xs">
           Step Done
         </Button>
-        <Button onClick={() => onAdvance(run.id, false)} variant="destructive" size="xs" className="bg-red-500/20 text-red-400 hover:bg-red-500/30 h-6 text-2xs">
+        <Button onClick={() => onAdvance(run.id, false)} variant="destructive" size="xs" className="bg-status-error-bg text-status-error-fg hover:bg-status-error-bg h-6 text-2xs">
           Step Failed
         </Button>
         <Button onClick={() => onCancel(run.id)} variant="secondary" size="xs" className="h-6 text-2xs ml-auto">

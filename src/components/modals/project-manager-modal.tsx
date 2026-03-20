@@ -222,7 +222,7 @@ export function ProjectManagerModal({
             <Button variant="ghost" size="icon-sm" onClick={onClose} className="text-xl">&times;</Button>
           </div>
 
-          {error && <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded p-2">{error}</div>}
+          {error && <div className="text-sm text-status-error-fg bg-status-error-bg border border-status-error-border rounded p-2">{error}</div>}
 
           <form onSubmit={createProject} className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -278,7 +278,7 @@ export function ProjectManagerModal({
                             </span>
                           )}
                           {project.deadline && project.deadline < Math.floor(Date.now() / 1000) && (
-                            <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" title="Overdue" />
+                            <span className="w-2 h-2 rounded-full bg-status-error-solid shrink-0" title="Overdue" />
                           )}
                         </div>
                         <div className="text-xs text-muted-foreground">

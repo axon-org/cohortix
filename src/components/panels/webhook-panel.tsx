@@ -229,15 +229,15 @@ export function WebhookPanel() {
       </div>
 
       {error && (
-        <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
+        <div className="text-xs text-status-error-fg bg-status-error-bg border border-status-error-border rounded-md px-3 py-2">
           {error}
         </div>
       )}
 
       {/* Secret reveal (after creation) */}
       {newSecret && (
-        <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 space-y-2">
-          <p className="text-xs font-semibold text-amber-400">{t('secretLabel')}</p>
+        <div className="rounded-lg border border-status-warning-border bg-status-warning-bg p-4 space-y-2">
+          <p className="text-xs font-semibold text-status-warning-fg">{t('secretLabel')}</p>
           <code className="block text-xs font-mono bg-secondary rounded px-2 py-1.5 text-foreground break-all select-all">
             {newSecret}
           </code>
@@ -254,14 +254,14 @@ export function WebhookPanel() {
       {/* Test result */}
       {testResult && (
         <div className={`rounded-lg border p-3 space-y-1 ${
-          testResult.success ? 'border-green-500/30 bg-green-500/5' : 'border-red-500/30 bg-red-500/5'
+          testResult.success ? 'border-status-success-border bg-status-success-bg' : 'border-status-error-border bg-status-error-bg'
         }`}>
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold">
               {testResult.success ? (
-                <span className="text-green-400">{t('testSuccessful')}</span>
+                <span className="text-status-success-fg">{t('testSuccessful')}</span>
               ) : (
-                <span className="text-red-400">{t('testFailed')}</span>
+                <span className="text-status-error-fg">{t('testFailed')}</span>
               )}
             </p>
             <Button variant="link" size="xs" onClick={() => setTestResult(null)}>
@@ -271,7 +271,7 @@ export function WebhookPanel() {
           <div className="text-xs text-muted-foreground space-y-0.5">
             {testResult.status_code && <p>{t('testStatus')} <span className="font-mono">{testResult.status_code}</span></p>}
             {testResult.duration_ms && <p>{t('testDuration')} <span className="font-mono">{testResult.duration_ms}ms</span></p>}
-            {testResult.error && <p className="text-red-400">{t('testError')} {testResult.error}</p>}
+            {testResult.error && <p className="text-status-error-fg">{t('testError')} {testResult.error}</p>}
           </div>
         </div>
       )}
@@ -287,20 +287,20 @@ export function WebhookPanel() {
       {/* Webhook list */}
       <div className="space-y-2">
         {isLocalMode && webhookAutomations.length > 0 && (
-          <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/5 p-3">
-            <h3 className="text-sm font-semibold text-cyan-200">{t('localAutomations')}</h3>
-            <p className="text-2xs text-cyan-300/80 mt-0.5 mb-2">
+          <div className="rounded-lg border border-status-info-border bg-status-info-bg p-3">
+            <h3 className="text-sm font-semibold text-primary">{t('localAutomations')}</h3>
+            <p className="text-2xs text-primary mt-0.5 mb-2">
               {t('localAutomationsDesc')}
             </p>
             <div className="space-y-2">
               {webhookAutomations.map((task) => (
-                <div key={task.id} className="rounded border border-cyan-500/20 bg-background/30 p-2.5">
+                <div key={task.id} className="rounded border border-status-info-border bg-background/30 p-2.5">
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${task.running ? 'bg-blue-400' : task.enabled ? 'bg-green-500' : 'bg-muted-foreground/40'}`} />
+                        <span className={`w-2 h-2 rounded-full ${task.running ? 'bg-status-info-solid' : task.enabled ? 'bg-status-success-solid' : 'bg-muted-foreground/40'}`} />
                         <span className="text-xs font-medium text-foreground truncate">{task.name}</span>
-                        <span className="px-1.5 py-0.5 text-[10px] rounded bg-cyan-500/15 text-cyan-300 font-mono">{task.id}</span>
+                        <span className="px-1.5 py-0.5 text-[10px] rounded bg-status-info-bg text-primary font-mono">{task.id}</span>
                       </div>
                       <div className="text-2xs text-muted-foreground mt-1">
                         {task.nextRun ? t('nextRun', { time: formatTime(task.nextRun / 1000) }) : t('noNextRun')}
@@ -312,7 +312,7 @@ export function WebhookPanel() {
                       size="xs"
                       onClick={() => handleRunAutomation(task.id)}
                       disabled={runningAutomationId === task.id}
-                      className="text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10 text-2xs"
+                      className="text-primary hover:text-primary hover:bg-status-info-bg text-2xs"
                     >
                       {runningAutomationId === task.id ? t('running') : t('run')}
                     </Button>
@@ -348,13 +348,13 @@ export function WebhookPanel() {
                   onClick={() => setSelectedWebhook(selectedWebhook === wh.id ? null : wh.id)}
                 >
                   <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${wh.enabled ? 'bg-green-500' : 'bg-muted-foreground/30'}`} />
+                    <span className={`w-2 h-2 rounded-full ${wh.enabled ? 'bg-status-success-solid' : 'bg-muted-foreground/30'}`} />
                     <span className="text-sm font-medium text-foreground">{wh.name}</span>
                     {wh.last_status !== null && (
                       <span className={`text-2xs font-mono px-1.5 py-0.5 rounded ${
                         wh.last_status >= 200 && wh.last_status < 300
-                          ? 'bg-green-500/10 text-green-400'
-                          : 'bg-red-500/10 text-red-400'
+                          ? 'bg-status-success-bg text-status-success-fg'
+                          : 'bg-status-error-bg text-status-error-fg'
                       }`}>
                         {wh.last_status}
                       </span>
@@ -365,7 +365,7 @@ export function WebhookPanel() {
                     <span>{wh.events.includes('*') ? t('allEvents') : t('eventCount', { count: wh.events.length })}</span>
                     <span>{t('deliveries', { count: wh.total_deliveries })}</span>
                     {wh.failed_deliveries > 0 && (
-                      <span className="text-red-400">{t('failed', { count: wh.failed_deliveries })}</span>
+                      <span className="text-status-error-fg">{t('failed', { count: wh.failed_deliveries })}</span>
                     )}
                     {wh.last_fired_at && (
                       <span>{t('lastFired', { time: formatTime(wh.last_fired_at) })}</span>
@@ -390,8 +390,8 @@ export function WebhookPanel() {
                     onClick={() => handleToggle(wh.id, !wh.enabled)}
                     className={`text-2xs ${
                       wh.enabled
-                        ? 'text-amber-400 hover:bg-amber-500/10'
-                        : 'text-green-400 hover:bg-green-500/10'
+                        ? 'text-status-warning-fg hover:bg-status-warning-bg'
+                        : 'text-status-success-fg hover:bg-status-success-bg'
                     }`}
                   >
                     {wh.enabled ? t('disable') : t('enable')}
@@ -400,7 +400,7 @@ export function WebhookPanel() {
                     variant="ghost"
                     size="xs"
                     onClick={() => handleDelete(wh.id)}
-                    className="text-red-400 hover:bg-red-500/10 text-2xs"
+                    className="text-status-error-fg hover:bg-status-error-bg text-2xs"
                   >
                     {t('delete')}
                   </Button>
@@ -419,16 +419,16 @@ export function WebhookPanel() {
                         <div key={d.id} className="flex items-center gap-2 text-2xs py-1 px-2 rounded hover:bg-secondary/50">
                           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                             d.status_code && d.status_code >= 200 && d.status_code < 300
-                              ? 'bg-green-500'
-                              : 'bg-red-500'
+                              ? 'bg-status-success-solid'
+                              : 'bg-status-error-solid'
                           }`} />
                           <span className="font-mono text-muted-foreground w-16 shrink-0">
                             {d.event_type}
                           </span>
                           <span className={`font-mono w-8 shrink-0 ${
                             d.status_code && d.status_code >= 200 && d.status_code < 300
-                              ? 'text-green-400'
-                              : 'text-red-400'
+                              ? 'text-status-success-fg'
+                              : 'text-status-error-fg'
                           }`}>
                             {d.status_code ?? 'ERR'}
                           </span>
@@ -436,7 +436,7 @@ export function WebhookPanel() {
                             {d.duration_ms}ms
                           </span>
                           {d.error && (
-                            <span className="text-red-400 truncate">{d.error}</span>
+                            <span className="text-status-error-fg truncate">{d.error}</span>
                           )}
                           <span className="text-muted-foreground/50 ml-auto shrink-0">
                             {formatTime(d.created_at)}

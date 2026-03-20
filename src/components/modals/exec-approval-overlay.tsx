@@ -13,10 +13,10 @@ const RISK_BORDER: Record<ExecApprovalRequest['risk'], string> = {
 }
 
 const RISK_BADGE: Record<ExecApprovalRequest['risk'], string> = {
-  low: 'bg-green-500/20 text-green-400',
-  medium: 'bg-yellow-500/20 text-yellow-400',
-  high: 'bg-orange-500/20 text-orange-400',
-  critical: 'bg-red-500/20 text-red-400',
+  low: 'bg-status-success-bg text-status-success-fg',
+  medium: 'bg-status-warning-bg text-status-warning-fg',
+  high: 'bg-status-warning-bg text-status-warning-fg',
+  critical: 'bg-status-error-bg text-status-error-fg',
 }
 
 function formatRemaining(ms: number): string {
@@ -166,14 +166,14 @@ export function ExecApprovalOverlay() {
 
         {/* Error */}
         {error && (
-          <div className="text-xs text-red-400 mb-3">{error}</div>
+          <div className="text-xs text-status-error-fg mb-3">{error}</div>
         )}
 
         {/* Actions */}
         <div className="flex items-center gap-2">
           <Button
             size="sm"
-            className="bg-green-600 hover:bg-green-700 text-white"
+            className="bg-status-success-solid hover:bg-status-success-solid/90 text-white"
             disabled={busy}
             onClick={() => handleDecision('allow-once')}
           >
@@ -189,7 +189,7 @@ export function ExecApprovalOverlay() {
           </Button>
           <Button
             size="sm"
-            className="bg-red-600 hover:bg-red-700 text-white"
+            className="bg-status-error-solid hover:bg-status-error-solid/90 text-white"
             disabled={busy}
             onClick={() => handleDecision('deny')}
           >

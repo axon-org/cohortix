@@ -71,13 +71,13 @@ export function UpdateBanner() {
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
       <p className="flex-1 text-xs text-emerald-300">
         {state === 'updating' && (
-          <span className="font-medium text-amber-300">{t('updating')}</span>
+          <span className="font-medium text-status-warning-fg">{t('updating')}</span>
         )}
         {state === 'restarting' && (
-          <span className="font-medium text-amber-300">{t('restartingServer')}</span>
+          <span className="font-medium text-status-warning-fg">{t('restartingServer')}</span>
         )}
         {state === 'error' && (
-          <span className="font-medium text-red-300">{errorMsg}</span>
+          <span className="font-medium text-status-error-fg">{errorMsg}</span>
         )}
         {state === 'idle' && (
           <>
@@ -119,7 +119,7 @@ export function UpdateBanner() {
         </>
       )}
       {isbusy && (
-        <svg className="w-4 h-4 animate-spin text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none">
+        <svg className="w-4 h-4 animate-spin text-status-warning-fg shrink-0" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z" />
         </svg>

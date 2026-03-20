@@ -17,14 +17,14 @@ interface DayJobSummary {
 }
 
 const AGENT_COLORS = [
-  'bg-blue-500/20 text-blue-300 border-blue-500/30',
-  'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-  'bg-amber-500/20 text-amber-300 border-amber-500/30',
-  'bg-purple-500/20 text-purple-300 border-purple-500/30',
-  'bg-rose-500/20 text-rose-300 border-rose-500/30',
-  'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
-  'bg-orange-500/20 text-orange-300 border-orange-500/30',
-  'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+  'bg-status-info-bg/20 text-status-info-fg border-status-info-border',
+  'bg-status-success-bg text-status-success-fg border-status-success-border',
+  'bg-status-warning-bg text-status-warning-fg border-status-warning-border',
+  'bg-status-info-bg text-primary border-status-info-border',
+  'bg-status-error-bg text-status-error-fg border-status-error-border',
+  'bg-status-info-bg text-primary border-status-info-border',
+  'bg-status-warning-bg text-status-warning-fg border-status-warning-border',
+  'bg-status-info-bg text-status-info-fg border-status-info-border',
 ]
 
 function getAgentColorClass(agentId: string, allAgents: string[]): string {
@@ -490,19 +490,19 @@ export function CronManagementPanel() {
 
   const getStatusColor = (status?: string) => {
     switch (status) {
-      case 'success': return 'text-green-400'
-      case 'error': return 'text-red-400'
-      case 'running': return 'text-blue-400'
+      case 'success': return 'text-status-success-fg'
+      case 'error': return 'text-status-error-fg'
+      case 'running': return 'text-status-info-fg'
       default: return 'text-muted-foreground'
     }
   }
 
   const getStatusBg = (status?: string) => {
     switch (status) {
-      case 'success': return 'bg-green-500/20'
-      case 'error': return 'bg-red-500/20'
-      case 'running': return 'bg-blue-500/20'
-      default: return 'bg-gray-500/20'
+      case 'success': return 'bg-status-success-bg'
+      case 'error': return 'bg-status-error-bg'
+      case 'running': return 'bg-status-info-bg/20'
+      default: return 'bg-muted'
     }
   }
 
@@ -695,7 +695,7 @@ export function CronManagementPanel() {
             <Button
               onClick={loadCronJobs}
               disabled={isLoading}
-              className="bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30"
+              className="bg-status-info-bg/20 text-status-info-fg border border-status-info-border hover:bg-status-info-bg/30"
             >
               {isLoading ? t('loading') : t('refresh')}
             </Button>
@@ -1052,7 +1052,7 @@ export function CronManagementPanel() {
                       >
                         <td className="py-2.5 pr-3">
                           <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${job.enabled ? 'bg-green-500' : 'bg-gray-500'}`} />
+                            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${job.enabled ? 'bg-status-success-solid' : 'bg-muted'}`} />
                             <span className="font-medium text-foreground truncate max-w-48">{job.name}</span>
                           </div>
                         </td>
@@ -1170,7 +1170,7 @@ export function CronManagementPanel() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-foreground">{selectedJob.name}</h2>
               <div className="flex items-center gap-2">
-                <span className={`px-2 py-1 text-xs rounded-full ${selectedJob.enabled ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'}`}>
+                <span className={`px-2 py-1 text-xs rounded-full ${selectedJob.enabled ? 'bg-status-success-bg text-status-success-fg border border-status-success-border' : 'bg-muted text-muted-foreground border border-border'}`}>
                   {selectedJob.enabled ? t('enabled') : t('disabled')}
                 </span>
                 {selectedJob.lastStatus && (
@@ -1253,14 +1253,14 @@ export function CronManagementPanel() {
                   <Button
                     onClick={() => triggerJob(selectedJob, 'force')}
                     size="sm"
-                    className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border-blue-500/30"
+                    className="bg-status-info-bg/20 text-status-info-fg hover:bg-status-info-bg/30 border-status-info-border"
                   >
                     {t('runNowForce')}
                   </Button>
                   <Button
                     onClick={() => triggerJob(selectedJob, 'due')}
                     size="sm"
-                    className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border-blue-500/30"
+                    className="bg-status-info-bg/20 text-status-info-fg hover:bg-status-info-bg/30 border-status-info-border"
                   >
                     {t('runNowIfDue')}
                   </Button>
@@ -1269,8 +1269,8 @@ export function CronManagementPanel() {
                     disabled={selectedJob.delivery === 'local' && selectedJob.agentId === 'cohortix-local'}
                     size="sm"
                     className={selectedJob.enabled
-                      ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border-yellow-500/30'
-                      : 'bg-green-500/20 text-green-400 hover:bg-green-500/30 border-green-500/30'}
+                      ? 'bg-status-warning-bg text-status-warning-fg hover:bg-status-warning-solid/30 border-status-warning-border'
+                      : 'bg-status-success-bg text-status-success-fg hover:bg-status-success-bg border-status-success-border'}
                   >
                     {selectedJob.enabled ? t('disable') : t('enable')}
                   </Button>
@@ -1377,7 +1377,7 @@ export function CronManagementPanel() {
                         <td className="py-2 pr-3 text-xs text-muted-foreground">
                           {entry.durationMs ? `${(entry.durationMs / 1000).toFixed(1)}s` : '--'}
                         </td>
-                        <td className="py-2 text-xs text-red-400 truncate max-w-64">
+                        <td className="py-2 text-xs text-status-error-fg truncate max-w-64">
                           {entry.error || ''}
                         </td>
                       </tr>
@@ -1418,9 +1418,9 @@ export function CronManagementPanel() {
                   value={newJob.name}
                   onChange={(e) => setNewJob(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g., daily-backup, system-check"
-                  className={`w-full px-3 py-2 border rounded-md bg-background text-foreground ${formErrors.name ? 'border-red-500' : 'border-border'}`}
+                  className={`w-full px-3 py-2 border rounded-md bg-background text-foreground ${formErrors.name ? 'border-status-error-border' : 'border-border'}`}
                 />
-                {formErrors.name && <div className="mt-1 text-xs text-red-400">{formErrors.name}</div>}
+                {formErrors.name && <div className="mt-1 text-xs text-status-error-fg">{formErrors.name}</div>}
               </div>
 
               <div>
@@ -1431,7 +1431,7 @@ export function CronManagementPanel() {
                     value={newJob.schedule}
                     onChange={(e) => setNewJob(prev => ({ ...prev, schedule: e.target.value }))}
                     placeholder="0 * * * *"
-                    className={`flex-1 px-3 py-2 border rounded-md bg-background text-foreground font-mono ${formErrors.schedule ? 'border-red-500' : 'border-border'}`}
+                    className={`flex-1 px-3 py-2 border rounded-md bg-background text-foreground font-mono ${formErrors.schedule ? 'border-status-error-border' : 'border-border'}`}
                   />
                   <select
                     value=""
@@ -1445,7 +1445,7 @@ export function CronManagementPanel() {
                   </select>
                 </div>
                 {formErrors.schedule ? (
-                  <div className="mt-1 text-xs text-red-400">{formErrors.schedule}</div>
+                  <div className="mt-1 text-xs text-status-error-fg">{formErrors.schedule}</div>
                 ) : (
                   <div className="mt-1 text-xs text-muted-foreground">
                     {t('scheduleFormatHint')}
@@ -1459,9 +1459,9 @@ export function CronManagementPanel() {
                   value={newJob.command}
                   onChange={(e) => setNewJob(prev => ({ ...prev, command: e.target.value }))}
                   placeholder="cd /path/to/script && ./script.sh"
-                  className={`w-full px-3 py-2 border rounded-md bg-background text-foreground font-mono h-24 ${formErrors.command ? 'border-red-500' : 'border-border'}`}
+                  className={`w-full px-3 py-2 border rounded-md bg-background text-foreground font-mono h-24 ${formErrors.command ? 'border-status-error-border' : 'border-border'}`}
                 />
-                {formErrors.command && <div className="mt-1 text-xs text-red-400">{formErrors.command}</div>}
+                {formErrors.command && <div className="mt-1 text-xs text-status-error-fg">{formErrors.command}</div>}
               </div>
 
               <div>
@@ -1472,7 +1472,7 @@ export function CronManagementPanel() {
                   onChange={(e) => setNewJob(prev => ({ ...prev, model: e.target.value }))}
                   list="cron-model-suggestions"
                   placeholder="anthropic/claude-sonnet-4-20250514"
-                  className={`w-full px-3 py-2 border rounded-md bg-background text-foreground font-mono text-sm ${formErrors.model ? 'border-red-500' : 'border-border'}`}
+                  className={`w-full px-3 py-2 border rounded-md bg-background text-foreground font-mono text-sm ${formErrors.model ? 'border-status-error-border' : 'border-border'}`}
                 />
                 <datalist id="cron-model-suggestions">
                   {availableModels.map((modelName) => (
@@ -1480,7 +1480,7 @@ export function CronManagementPanel() {
                   ))}
                 </datalist>
                 {formErrors.model ? (
-                  <div className="mt-1 text-xs text-red-400">{formErrors.model}</div>
+                  <div className="mt-1 text-xs text-status-error-fg">{formErrors.model}</div>
                 ) : (
                   <div className="mt-1 text-xs text-muted-foreground">
                     {t('modelHint')}
@@ -1496,12 +1496,12 @@ export function CronManagementPanel() {
                     value={newJob.staggerSeconds}
                     onChange={(e) => setNewJob(prev => ({ ...prev, staggerSeconds: e.target.value }))}
                     placeholder="0"
-                    className={`w-32 px-3 py-2 border rounded-md bg-background text-foreground font-mono text-sm ${formErrors.staggerSeconds ? 'border-red-500' : 'border-border'}`}
+                    className={`w-32 px-3 py-2 border rounded-md bg-background text-foreground font-mono text-sm ${formErrors.staggerSeconds ? 'border-status-error-border' : 'border-border'}`}
                   />
                   <span className="text-sm text-muted-foreground">{t('seconds')}</span>
                 </div>
                 {formErrors.staggerSeconds ? (
-                  <div className="mt-1 text-xs text-red-400">{formErrors.staggerSeconds}</div>
+                  <div className="mt-1 text-xs text-status-error-fg">{formErrors.staggerSeconds}</div>
                 ) : (
                   <div className="mt-1 text-xs text-muted-foreground">
                     {t('staggerHint')}
@@ -1569,7 +1569,7 @@ function ClaudeCodeTeamsSection() {
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold text-foreground">{t('claudeCodeTeams')}</h2>
           {data.teams.length > 0 && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400">{t('teamsCount', { count: data.teams.length })}</span>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-status-info-bg text-primary">{t('teamsCount', { count: data.teams.length })}</span>
           )}
         </div>
         <span className="text-muted-foreground text-sm">{expanded ? t('collapse') : t('expand')}</span>
@@ -1586,9 +1586,9 @@ function ClaudeCodeTeamsSection() {
                 <div className="flex gap-3">
                   {Object.entries(statusCounts).map(([status, count]) => (
                     <span key={status} className={`text-xs px-2 py-1 rounded ${
-                      status === 'completed' ? 'bg-green-500/20 text-green-400' :
-                      status === 'in_progress' ? 'bg-blue-500/20 text-blue-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      status === 'completed' ? 'bg-status-success-bg text-status-success-fg' :
+                      status === 'in_progress' ? 'bg-status-info-bg/20 text-status-info-fg' :
+                      'bg-muted text-muted-foreground'
                     }`}>
                       {status}: {count}
                     </span>
