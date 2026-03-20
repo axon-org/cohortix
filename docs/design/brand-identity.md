@@ -1,4 +1,9 @@
 # Cohortix Brand Identity
+
+<!-- Purpose: Brand identity definition — colors, typography, voice, positioning -->
+<!-- Owner: Lubna (UI Designer) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/design/research-approachable-pm-tools.md -->
 **Author:** Lubna (UI Designer Agent)  
 **Date:** 2025-07-14  
 **Phase:** Codex Phase 3 — Design & UX, Step 1 — Brand Identity  

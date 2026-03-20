@@ -1,5 +1,10 @@
 # Quick Start
 
+<!-- Purpose: Quick start guide for setting up Cohortix locally -->
+<!-- Owner: Team -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: README.md -->
+
 ## Local Development
 
 ```bash

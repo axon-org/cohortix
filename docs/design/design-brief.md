@@ -1,5 +1,10 @@
 # Design Brief: Cohortix Visual Identity & UI Redesign
 
+<!-- Purpose: Design brief for visual identity redesign — screens, interactions, accessibility -->
+<!-- Owner: Alim (CEO) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/design/brand-identity.md -->
+
 ## Context
 Cohortix is forked from Mission Control and needs its own visual identity. The product is a project management and agent orchestration dashboard targeting everyday people (not just developers). This redesign covers brand identity, design token system, and codebase-wide color migration.
 

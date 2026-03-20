@@ -1,17 +1,10 @@
-# [Spec Title]
+# Spec Template
 
-- **Author:** @your-handle
-- **Date:** YYYY-MM-DD
-- **Status:** Draft | Review | Final
+<!-- Purpose: Reference to canonical spec template -->
+<!-- Owner: Team -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/templates/spec-template.md -->
 
-## Overview
-High-level summary of what this spec covers.
+See `docs/templates/spec-template.md` for the canonical Codex-compliant spec format.
 
-## Requirements
-- …
-
-## API
-- …
-
-## UI / UX
-- …
+All new specs MUST use that template.

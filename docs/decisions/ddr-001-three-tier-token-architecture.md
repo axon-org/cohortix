@@ -1,5 +1,10 @@
 # DDR-001: Three-Tier Design Token Architecture
 
+<!-- Purpose: Decision record for adopting three-tier token system per Codex §12 -->
+<!-- Owner: Alim (CEO) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/design/token-architecture.md -->
+
 - **Date:** 2026-03-19
 - **Status:** Accepted
 - **Deciders:** Ahmad (CEO), Alim (AI CEO)

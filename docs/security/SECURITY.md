@@ -1,5 +1,10 @@
 # Security & Responsible Disclosure
 
+<!-- Purpose: Security policy and vulnerability reporting for Cohortix -->
+<!-- Owner: Team -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: CONTRIBUTING.md -->
+
 Cohortix is MIT-licensed open-source software.
 
 ## Reporting Vulnerabilities

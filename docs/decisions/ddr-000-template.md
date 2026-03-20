@@ -1,13 +1,10 @@
-# DDR-000: [Short Title]
+# DDR Template
 
-- **Date:** YYYY-MM-DD
-- **Status:** Proposed | Accepted | Deprecated
+<!-- Purpose: Reference to canonical DDR template -->
+<!-- Owner: Team -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/templates/ddr-template.md -->
 
-## Context
-What problem or change triggered this decision?
+See `docs/templates/ddr-template.md` for the canonical Codex-compliant DDR format.
 
-## Decision
-What is the decision?
-
-## Consequences
-What is gained, what is at risk, any migration notes?
+All new DDRs MUST use that template.

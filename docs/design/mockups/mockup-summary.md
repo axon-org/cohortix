@@ -1,4 +1,10 @@
 # Cohortix Mockup Summary
+
+<!-- Purpose: Summary of v0 SDK generated mockups for visual identity redesign -->
+<!-- Owner: Lubna (UI Designer) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/design/design-brief.md -->
+
 **Generated:** 2026-03-20
 **Phase:** Codex Phase 3 — Visual Identity Redesign (Steps 3–7)
 **Theme:** Brand-Light (warm paper bg + indigo primary)

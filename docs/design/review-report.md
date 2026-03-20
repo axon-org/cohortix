@@ -1,4 +1,9 @@
 # Cohortix Design Review Report — Phase 3 Step 8
+
+<!-- Purpose: Design review of v0 SDK mockups against brand identity spec -->
+<!-- Owner: Lubna (UI Designer) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/design/design-brief.md -->
 **Reviewer:** Lubna (UI Designer Agent)
 **Date:** 2026-03-20
 **Phase:** Codex Phase 3 — Visual Identity Redesign

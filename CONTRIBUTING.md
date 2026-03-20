@@ -1,5 +1,10 @@
 # Contributing to Cohortix
 
+<!-- Purpose: Contribution guidelines for Cohortix -->
+<!-- Owner: Team -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: README.md -->
+
 Thank you for your interest in contributing to Cohortix.
 
 ## Getting Started

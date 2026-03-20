@@ -1,5 +1,10 @@
 # DDR-002: Brand-Light as Default Theme with Warm Indigo Primary
 
+<!-- Purpose: Decision record for brand-light default theme and indigo brand color -->
+<!-- Owner: Alim (CEO) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/design/brand-identity.md -->
+
 - **Date:** 2026-03-19
 - **Status:** Accepted
 - **Deciders:** Ahmad (CEO)

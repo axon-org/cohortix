@@ -1,4 +1,9 @@
 # Research: Approachable PM Tools
+
+<!-- Purpose: Competitive research on approachable PM tool aesthetics -->
+<!-- Owner: Lubna (UI Designer) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/design/brand-identity.md -->
 **Author:** Lubna (UI Designer Agent)  
 **Date:** 2025-07-14  
 **Purpose:** Competitive research — what makes PM tools feel "made for everyday people"

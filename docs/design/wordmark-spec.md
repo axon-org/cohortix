@@ -1,5 +1,10 @@
 # Cohortix Wordmark Specification
 
+<!-- Purpose: Wordmark design spec — typography, colors, sizing guidelines -->
+<!-- Owner: Farhan (Graphic Designer) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/design/brand-identity.md -->
+
 **Version:** 1.0  
 **Created:** 2026-03-19  
 **Designer:** Farhan (Graphic Designer AI)  
