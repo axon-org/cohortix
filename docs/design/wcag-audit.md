@@ -1,5 +1,10 @@
 # WCAG 2.1 AA Contrast Audit — Brand-Light Theme
 
+<!-- Purpose: WCAG accessibility audit results for brand-light theme -->
+<!-- Owner: Alim (CEO) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/specs/visual-identity-redesign.md -->
+
 - **Date:** 2026-03-20
 - **Status:** Pass (after fixes)
 - **Tool:** axe-core 4.9.1 (injected via browser)

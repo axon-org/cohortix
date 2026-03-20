@@ -1,4 +1,9 @@
 # Token Architecture — Cohortix Design System
+
+<!-- Purpose: Three-tier design token architecture specification -->
+<!-- Owner: Lubna (UI Designer) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/decisions/ddr-001-three-tier-token-architecture.md -->
 **Author:** Lubna (UI Designer Agent)  
 **Date:** 2025-07-14  
 **Phase:** Codex Phase 3, Step 1 — Design Token System  

@@ -1,5 +1,10 @@
 # Feature: Visual Identity & UI Redesign
 
+<!-- Purpose: Feature spec for Cohortix visual identity redesign (brand, tokens, theme, migration) -->
+<!-- Owner: Alim (AI CEO) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/design/brand-identity.md -->
+
 - **Author:** Alim (AI CEO)
 - **Date:** 2026-03-19
 - **Status:** Review
