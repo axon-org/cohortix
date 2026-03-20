@@ -47,32 +47,31 @@ const metadataBase = resolveMetadataBase()
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
   viewportFit: 'cover',
 }
 
 export const metadata: Metadata = {
   title: 'Cohortix',
-  description: 'OpenClaw Agent Orchestration Dashboard',
+  description: 'Cohortix',
   metadataBase,
   icons: {
     icon: [
-      { url: '/icon.png', type: 'image/png', sizes: '256x256' },
-      { url: '/brand/mc-logo-128.png', type: 'image/png', sizes: '128x128' },
+      { url: '/brand/cohortix-wordmark-256w.png', type: 'image/png', sizes: '256x64' },
+      { url: '/brand/cohortix-wordmark-128w.png', type: 'image/png', sizes: '128x32' },
     ],
-    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
-    shortcut: ['/icon.png'],
+    apple: [{ url: '/brand/cohortix-wordmark-256w.png', sizes: '256x64', type: 'image/png' }],
+    shortcut: ['/brand/cohortix-wordmark-128w.png'],
   },
   openGraph: {
     title: 'Cohortix',
-    description: 'OpenClaw Agent Orchestration Dashboard',
-    images: [{ url: '/brand/mc-logo-512.png', width: 512, height: 512, alt: 'Cohortix logo' }],
+    description: 'Cohortix',
+    images: [{ url: '/brand/cohortix-wordmark-512w.png', width: 512, height: 128, alt: 'Cohortix wordmark' }],
   },
   twitter: {
     card: 'summary',
     title: 'Cohortix',
-    description: 'OpenClaw Agent Orchestration Dashboard',
-    images: ['/brand/mc-logo-512.png'],
+    description: 'Cohortix',
+    images: ['/brand/cohortix-wordmark-512w.png'],
   },
   appleWebApp: {
     capable: true,
@@ -98,7 +97,7 @@ export default async function RootLayout({
         <script
           nonce={nonce}
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme')||'void';var light=['light','paper'];if(light.indexOf(t)===-1)document.documentElement.classList.add('dark')}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('theme')||'brand-light';var light=['brand-light','light','paper'];if(light.indexOf(t)===-1)document.documentElement.classList.add('dark')}catch(e){}})()`,
           }}
         />
       </head>
@@ -106,7 +105,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="void"
+            defaultTheme="brand-light"
             themes={THEME_IDS}
             enableSystem={false}
             disableTransitionOnChange

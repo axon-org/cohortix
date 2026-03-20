@@ -27,6 +27,8 @@ export function ThemeBackground() {
 
   if (!mounted) return null
 
+  if (theme === 'brand-light') return null
+
   const meta = THEMES.find(t => t.id === theme)
   const bgClass = meta?.background
 

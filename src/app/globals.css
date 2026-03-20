@@ -1,40 +1,41 @@
+@import "../styles/tokens.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* oklch-based color system for perceptual uniformity */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    /* brand-light semantic aliases (defaults) */
+    --background: var(--bg-canvas);
+    --foreground: var(--text-primary);
+    --card: var(--card-bg);
+    --card-foreground: var(--text-primary);
+    --popover: var(--bg-surface-raised);
+    --popover-foreground: var(--text-primary);
+    --primary: var(--interactive-primary);
+    --primary-foreground: var(--interactive-primary-fg);
+    --secondary: var(--interactive-secondary);
+    --secondary-foreground: var(--interactive-secondary-fg);
+    --muted: var(--bg-subtle);
+    --muted-foreground: var(--text-muted);
+    --accent: var(--bg-subtle);
+    --accent-foreground: var(--text-primary);
+    --destructive: var(--status-error-solid);
+    --destructive-foreground: var(--color-white);
+    --border: var(--border-default);
+    --input: var(--input-border);
+    --ring: var(--border-focus);
     --radius: 0.375rem;
 
     /* Semantic status colors */
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 98%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 9%;
-    --info: 217 91% 60%;
-    --info-foreground: 0 0% 98%;
+    --success: var(--status-success-solid);
+    --success-foreground: var(--color-white);
+    --warning: var(--status-warning-solid);
+    --warning-foreground: var(--color-black);
+    --info: var(--status-info-solid);
+    --info-foreground: var(--color-white);
 
-    /* Void accent colors (light fallbacks) */
+    /* Void accent colors (kept for compatibility) */
     --void-cyan: 187 82% 40%;
     --void-mint: 160 60% 40%;
     --void-amber: 38 92% 42%;
@@ -42,10 +43,10 @@
     --void-crimson: 0 72% 45%;
 
     /* Surface hierarchy */
-    --surface-0: 0 0% 100%;
-    --surface-1: 240 5% 96%;
-    --surface-2: 240 6% 93%;
-    --surface-3: 240 5% 88%;
+    --surface-0: var(--bg-canvas);
+    --surface-1: var(--bg-surface);
+    --surface-2: var(--bg-subtle);
+    --surface-3: var(--border-default);
   }
 
   .dark {
@@ -436,6 +437,87 @@
  * Each class is applied to <html> by next-themes alongside the "dark" class.
  * .void is empty because .dark already defines the void palette.
  * ═══════════════════════════════════════════════════════════════════════ */
+
+
+.brand-light {
+  /* Explicit class for new default theme */
+  --bg-canvas: 40 30% 97%;
+  --bg-surface: 40 25% 93%;
+  --bg-surface-raised: 0 0% 100%;
+  --bg-surface-overlay: 0 0% 100%;
+  --bg-subtle: 240 8% 95%;
+  --bg-inverse: 240 10% 10%;
+
+  --text-primary: 240 10% 16%;
+  --text-secondary: 240 6% 28%;
+  --text-muted: 240 5% 44%;
+  --text-inverse: 240 10% 98%;
+
+  --interactive-primary: 248 50% 52%;
+  --interactive-primary-hover: 248 55% 46%;
+  --interactive-primary-subtle: 248 90% 93%;
+  --interactive-primary-fg: 0 0% 100%;
+  --interactive-secondary: 240 8% 95%;
+  --interactive-secondary-hover: 240 6% 90%;
+  --interactive-secondary-fg: 240 8% 18%;
+
+  --border-default: 240 8% 88%;
+  --border-strong: 240 4% 68%;
+  --border-subtle: 240 8% 95%;
+  --border-focus: 248 65% 64%;
+
+  --status-success-bg: 148 60% 94%;
+  --status-success-fg: 148 55% 34%;
+  --status-success-border: 148 55% 85%;
+  --status-success-icon: 148 50% 42%;
+  --status-success-solid: 148 50% 42%;
+
+  --status-warning-bg: 38 90% 94%;
+  --status-warning-fg: 38 85% 40%;
+  --status-warning-border: 38 85% 84%;
+  --status-warning-icon: 38 85% 50%;
+  --status-warning-solid: 38 85% 50%;
+
+  --status-error-bg: 4 80% 95%;
+  --status-error-fg: 4 75% 42%;
+  --status-error-border: 4 75% 86%;
+  --status-error-icon: 4 75% 52%;
+  --status-error-solid: 4 75% 52%;
+
+  --status-info-bg: 220 70% 95%;
+  --status-info-fg: 220 65% 44%;
+  --status-info-border: 220 65% 86%;
+  --status-info-icon: 220 65% 55%;
+  --status-info-solid: 220 65% 55%;
+
+  --background: var(--bg-canvas);
+  --foreground: var(--text-primary);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-surface-raised);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--interactive-primary);
+  --primary-foreground: var(--interactive-primary-fg);
+  --secondary: var(--interactive-secondary);
+  --secondary-foreground: var(--interactive-secondary-fg);
+  --muted: var(--bg-subtle);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--bg-subtle);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--status-error-solid);
+  --destructive-foreground: 0 0% 100%;
+  --border: var(--border-default);
+  --input: var(--border-default);
+  --ring: var(--border-focus);
+  --success: var(--status-success-solid);
+  --warning: var(--status-warning-solid);
+  --info: var(--status-info-solid);
+
+  --surface-0: var(--bg-canvas);
+  --surface-1: var(--bg-surface);
+  --surface-2: var(--bg-subtle);
+  --surface-3: var(--border-default);
+}
 
 .void {
   /* Inherits from .dark — no overrides needed */
