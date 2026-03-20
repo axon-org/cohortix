@@ -1,5 +1,10 @@
 # Cohortix Feature Audit
 
+<!-- Purpose: Audit of features carried over from Mission Control fork -->
+<!-- Owner: Team -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: PROJECT_BRIEF.md -->
+
 > Auto-generated from codebase inspection. Last updated: 2026-03-18
 
 ## Section 1: API Routes (134 endpoints)
@@ -213,4 +218,3 @@
 - **PPV Hierarchy** — Domains → Visions → Missions → Operations/Rhythms → Tasks
 - **Cohortix Terminology** — User-friendly language layer (Deploy, Recruit, Stand Down, etc.)
 - **Everyday People UX** — Simplified flows, guided experiences, reduced complexity
-

@@ -1,5 +1,10 @@
 # Architecture Overview
 
+<!-- Purpose: System architecture overview for Cohortix -->
+<!-- Owner: Team -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: PROJECT_BRIEF.md -->
+
 ## Tech Stack
 
 Cohortix is built on:

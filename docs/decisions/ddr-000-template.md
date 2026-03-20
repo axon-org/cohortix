@@ -1,21 +1,10 @@
-# DDR-{number}: [Short Title]
+# DDR Template
 
-<!-- Purpose: [What decision this records] -->
-<!-- Owner: [Who made this decision] -->
-<!-- Last Reviewed: YYYY-MM-DD -->
-<!-- Read After: [Path to related doc] -->
+<!-- Purpose: Reference to canonical DDR template -->
+<!-- Owner: Team -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: docs/templates/ddr-template.md -->
 
-- **Date:** YYYY-MM-DD
-- **Status:** Proposed | Accepted | Deprecated
-- **Deciders:** [Names]
-- **Consulted:** [Names]
-- **Informed:** [Names]
+See `docs/templates/ddr-template.md` for the canonical Codex-compliant DDR format.
 
-## Context
-What problem or change triggered this decision?
-
-## Decision
-What is the decision?
-
-## Consequences
-What is gained, what is at risk, any migration notes?
+All new DDRs MUST use that template.

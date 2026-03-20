@@ -1,5 +1,10 @@
 # Cohortix — Agent command center for everyday people
 
+<!-- Purpose: Project overview — read first (≤500 words per Codex) -->
+<!-- Owner: Ahmad (CEO) -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: N/A (this is the entry point) -->
+
 **Problem**
 
 Managing AI agents is complex and only accessible to tech-savvy users. Everyday people need a simple way to organize, monitor, and work with AI agents.

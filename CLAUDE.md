@@ -4,6 +4,11 @@ This file provides guidelines for AI coding agents working on the Cohortix proje
 
 # Cohortix — Agent command center for everyday people
 
+<!-- Purpose: Agent instructions for AI coding agents working on Cohortix -->
+<!-- Owner: Team -->
+<!-- Last Reviewed: 2026-03-20 -->
+<!-- Read After: PROJECT_BRIEF.md -->
+
 ## Tech Stack
 - Next.js 16 (App Router)
 - SQLite (better-sqlite3)
