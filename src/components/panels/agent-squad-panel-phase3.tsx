@@ -47,8 +47,8 @@ interface SoulTemplate {
   size: number
 }
 
-const statusColors: Record<string, string> = {
-  offline: 'bg-muted',
+const statusDotClasses: Record<string, string> = {
+  offline: 'bg-muted-foreground/40',
   idle: 'bg-status-success-solid',
   busy: 'bg-status-warning-solid',
   error: 'bg-status-error-solid',
@@ -61,36 +61,11 @@ const statusBadgeStyles: Record<string, string> = {
   error: 'bg-status-error-bg text-status-error-fg border-status-error-border',
 }
 
-const statusIcons: Record<string, string> = {
-  offline: '-',
-  idle: 'o',
-  busy: '~',
-  error: '!',
-}
-
-const defaultCardStyle = {
-  edge: 'from-slate-400/60 to-slate-600/30',
-  glow: 'from-slate-500/10 via-transparent to-transparent',
-  dot: 'bg-muted',
-}
-
-const statusCardStyles: Record<string, { edge: string; glow: string; dot: string }> = {
-  offline: defaultCardStyle,
-  idle: {
-    edge: 'from-emerald-300/80 to-emerald-600/30',
-    glow: 'from-emerald-400/15 via-transparent to-transparent',
-    dot: 'bg-status-success-solid',
-  },
-  busy: {
-    edge: 'from-amber-300/80 to-amber-600/30',
-    glow: 'from-amber-400/15 via-transparent to-transparent',
-    dot: 'bg-status-warning-solid',
-  },
-  error: {
-    edge: 'from-rose-300/80 to-rose-600/30',
-    glow: 'from-rose-400/15 via-transparent to-transparent',
-    dot: 'bg-status-error-solid',
-  },
+const statusEdgeClasses: Record<string, string> = {
+  offline: 'bg-muted-foreground/20',
+  idle: 'bg-status-success-solid',
+  busy: 'bg-status-warning-solid',
+  error: 'bg-status-error-solid',
 }
 
 export function AgentSquadPanelPhase3() {
@@ -181,7 +156,7 @@ export function AgentSquadPanelPhase3() {
       })
 
       if (!response.ok) throw new Error('Failed to update agent status')
-      
+
       // Update store state
       setAgents(agents.map(agent =>
         agent.name === agentName
@@ -251,7 +226,7 @@ export function AgentSquadPanelPhase3() {
   // Format last seen time
   const formatLastSeen = (timestamp?: number) => {
     if (!timestamp) return 'Never'
-    
+
     const now = Date.now()
     const diffMs = now - (timestamp * 1000)
     const diffMinutes = Math.floor(diffMs / (1000 * 60))
@@ -262,7 +237,7 @@ export function AgentSquadPanelPhase3() {
     if (diffMinutes < 60) return `${diffMinutes}m ago`
     if (diffHours < 24) return `${diffHours}h ago`
     if (diffDays < 7) return `${diffDays}d ago`
-    
+
     return new Date(timestamp * 1000).toLocaleDateString()
   }
 
@@ -286,30 +261,30 @@ export function AgentSquadPanelPhase3() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b border-border flex-shrink-0">
-        <div className="flex items-center gap-4">
-          <h2 className="text-xl font-bold text-foreground">{t('title')}</h2>
-          
+      <div className="flex justify-between items-center p-[var(--space-5)] border-b border-[hsl(var(--border-default))] flex-shrink-0">
+        <div className="flex items-center gap-[var(--space-4)]">
+          <h2 className="text-[var(--text-2xl)] font-bold text-[hsl(var(--text-primary))]">{t('title')}</h2>
+
           {/* Status Summary */}
-          <div className="flex gap-2 text-sm">
+          <div className="flex gap-[var(--space-3)] text-[var(--text-sm)]">
             {Object.entries(statusCounts).map(([status, count]) => (
-              <div key={status} className="flex items-center gap-1">
-                <div className={`w-2 h-2 rounded-full ${statusColors[status]}`}></div>
-                <span className="text-muted-foreground">{count}</span>
+              <div key={status} className="flex items-center gap-[var(--space-1)]">
+                <div className={`w-2 h-2 rounded-full ${statusDotClasses[status]}`}></div>
+                <span className="text-[hsl(var(--text-muted))]">{count}</span>
               </div>
             ))}
           </div>
 
           {/* Active Heartbeats Indicator */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-[var(--space-1)]">
             <div className="w-2 h-2 rounded-full bg-status-info-bg animate-pulse"></div>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-[var(--text-sm)] text-[hsl(var(--text-muted))]">
               {t('activeHeartbeats', { count: agents.filter(hasRecentHeartbeat).length })}
             </span>
           </div>
         </div>
-        
-        <div className="flex gap-2">
+
+        <div className="flex gap-[var(--space-2)]">
           <Button
             onClick={() => setAutoRefresh(!autoRefresh)}
             variant={autoRefresh ? 'success' : 'secondary'}
@@ -351,20 +326,20 @@ export function AgentSquadPanelPhase3() {
 
       {/* Sync Toast */}
       {syncToast && (
-        <div className={`p-3 m-4 rounded-lg text-sm ${syncToast.includes('failed') ? 'bg-status-error-bg border border-status-error-border text-status-error-fg' : 'bg-status-success-bg border border-status-success-border text-status-success-fg'}`}>
+        <div className={`p-[var(--space-3)] m-[var(--space-4)] rounded-[var(--radius-lg)] text-[var(--text-sm)] ${syncToast.includes('failed') ? 'bg-status-error-bg border border-status-error-border text-status-error-fg' : 'bg-status-success-bg border border-status-success-border text-status-success-fg'}`}>
           {syncToast}
         </div>
       )}
 
       {/* Error Display */}
       {error && (
-        <div className="bg-status-error-bg border border-status-error-border text-status-error-fg p-3 m-4 rounded-lg text-sm flex items-center justify-between">
+        <div className="bg-status-error-bg border border-status-error-border text-status-error-fg p-[var(--space-3)] m-[var(--space-4)] rounded-[var(--radius-lg)] text-[var(--text-sm)] flex items-center justify-between">
           <span>{error}</span>
           <Button
             onClick={() => setError(null)}
             variant="ghost"
             size="icon-sm"
-            className="text-status-error-fg/60 hover:text-status-error-fg ml-2"
+            className="text-status-error-fg/60 hover:text-status-error-fg ml-[var(--space-2)]"
           >
             ×
           </Button>
@@ -372,22 +347,22 @@ export function AgentSquadPanelPhase3() {
       )}
 
       {/* Agent Grid */}
-      <div className="flex-1 p-4 overflow-y-auto">
+      <div className="flex-1 p-[var(--space-5)] overflow-y-auto">
         {agents.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground/50">
-            <div className="w-12 h-12 rounded-full bg-surface-2 flex items-center justify-center mb-3">
-              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+          <div className="flex flex-col items-center justify-center py-[var(--space-12)] text-[hsl(var(--text-muted))]">
+            <div className="w-14 h-14 rounded-full bg-[hsl(var(--bg-subtle))] flex items-center justify-center mb-[var(--space-3)]">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
                 <circle cx="8" cy="5" r="3" />
                 <path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" />
               </svg>
             </div>
-            <p className="text-sm font-medium">{t('noAgents')}</p>
-            <p className="text-xs text-muted-foreground/70 mt-1 max-w-xs text-center">
+            <p className="text-[var(--text-base)] font-medium">{t('noAgents')}</p>
+            <p className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]/70 mt-[var(--space-1)] max-w-xs text-center">
               {t('noAgentsHint')}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[var(--space-4)]">
             {agents.map(agent => {
               const modelName = formatModelName(agent.config)
               const taskStatsLine = buildTaskStatParts(agent.taskStats)
@@ -395,42 +370,42 @@ export function AgentSquadPanelPhase3() {
               return (
                 <div
                   key={agent.id}
-                  className="group relative overflow-hidden rounded-xl border border-border/70 bg-card p-4 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-border hover:shadow-lg cursor-pointer"
+                  className="group relative overflow-hidden rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-[var(--space-5)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[var(--card-shadow-hover)] cursor-pointer"
+                  style={{ boxShadow: 'var(--card-shadow)' }}
                   onClick={() => setSelectedAgent(agent)}
                 >
-                  <div className={`pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b ${(statusCardStyles[agent.status] || defaultCardStyle).edge}`} />
+                  {/* Accent left edge */}
+                  <div className={`pointer-events-none absolute inset-y-0 left-0 w-1 ${statusEdgeClasses[agent.status]}`} />
 
-                  {/* Header: avatar + name + status */}
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <AgentAvatar name={agent.name} size="md" />
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <h3 className="font-semibold text-foreground truncate">{agent.name}</h3>
-                          {(agent as any).source && (agent as any).source !== 'manual' && (
-                            <span className={`text-2xs px-1.5 py-0.5 rounded-full border ${
-                              (agent as any).source === 'local'
-                                ? 'bg-status-info-bg text-primary border-status-info-border'
-                                : (agent as any).source === 'gateway'
-                                  ? 'bg-status-info-bg text-primary border-status-info-border'
-                                  : 'bg-muted text-muted-foreground border-border'
-                            }`}>
-                              {(agent as any).source}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {agent.role}{modelName && <> · <span className="font-mono text-muted-foreground/80">{modelName}</span></>}
-                        </p>
+                  {/* Header: larger avatar + name + status badge */}
+                  <div className="flex items-start gap-[var(--space-3)] mb-[var(--space-3)]">
+                    <AgentAvatar name={agent.name} size="lg" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-[var(--space-1-5)]">
+                        <h3 className="font-semibold text-[var(--text-md)] text-[hsl(var(--text-primary))] truncate">{agent.name}</h3>
+                        {(agent as any).source && (agent as any).source !== 'manual' && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full border bg-status-info-bg text-primary border-status-info-border">
+                            {(agent as any).source}
+                          </span>
+                        )}
                       </div>
+                      <p className="text-[var(--text-sm)] text-[hsl(var(--text-muted))] truncate">
+                        {agent.role}
+                      </p>
+                      {/* Model badge */}
+                      {modelName && (
+                        <span className="inline-flex mt-[var(--space-1)] px-[var(--space-2)] py-0.5 rounded-[var(--radius-sm)] bg-[hsl(var(--color-indigo-50))] text-[hsl(var(--interactive-primary))] text-[10px] font-mono border border-[hsl(var(--color-indigo-200))]">
+                          {modelName}
+                        </span>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex flex-col items-end gap-[var(--space-1)] shrink-0">
                       {hasRecentHeartbeat(agent) && (
-                        <div className="w-2 h-2 rounded-full bg-status-info-bg animate-pulse" title="Recent heartbeat" />
+                        <div className="w-2 h-2 rounded-full bg-status-info-solid animate-pulse" title="Recent heartbeat" />
                       )}
-                      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs capitalize ${statusBadgeStyles[agent.status]}`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${(statusCardStyles[agent.status] || defaultCardStyle).dot}`} />
+                      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[var(--text-xs)] capitalize ${statusBadgeStyles[agent.status]}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${statusDotClasses[agent.status]}`} />
                         {agent.status}
                       </span>
                     </div>
@@ -438,11 +413,11 @@ export function AgentSquadPanelPhase3() {
 
                   {/* Task stats — inline */}
                   {taskStatsLine && (
-                    <div className="text-xs text-muted-foreground mb-2 pl-0.5">
+                    <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-2)] pl-0.5">
                       {taskStatsLine.map((part, i) => (
                         <span key={part.label}>
-                          {i > 0 && <span className="mx-1 text-muted-foreground/40">·</span>}
-                          <span className={part.color || 'text-foreground/80'}>{part.count}</span>
+                          {i > 0 && <span className="mx-1 opacity-40">·</span>}
+                          <span className={part.color || 'text-[hsl(var(--text-primary))]/80'}>{part.count}</span>
                           {' '}{part.label}
                         </span>
                       ))}
@@ -450,11 +425,11 @@ export function AgentSquadPanelPhase3() {
                   )}
 
                   {/* Footer: last seen + actions */}
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/30">
-                    <span className="text-[11px] text-muted-foreground/70">
+                  <div className="flex items-center justify-between mt-[var(--space-2)] pt-[var(--space-2)] border-t border-[hsl(var(--border-subtle))]">
+                    <span className="text-[11px] text-[hsl(var(--text-muted))]/70">
                       {formatLastSeen(agent.last_seen)}
                     </span>
-                    <div className="flex gap-1">
+                    <div className="flex gap-[var(--space-1)]">
                       {agent.session_key ? (
                         <Button
                           onClick={(e) => {
@@ -463,7 +438,7 @@ export function AgentSquadPanelPhase3() {
                           }}
                           size="xs"
                           variant="ghost"
-                          className="h-6 px-2 text-xs text-primary hover:bg-status-info-bg hover:text-primary"
+                          className="h-6 px-2 text-[var(--text-xs)] text-primary hover:bg-status-info-bg hover:text-primary"
                           title="Wake agent via session"
                         >
                           {t('wake')}
@@ -477,7 +452,7 @@ export function AgentSquadPanelPhase3() {
                           disabled={agent.status === 'idle'}
                           size="xs"
                           variant="ghost"
-                          className="h-6 px-2 text-xs"
+                          className="h-6 px-2 text-[var(--text-xs)]"
                         >
                           {t('wake')}
                         </Button>
@@ -490,7 +465,7 @@ export function AgentSquadPanelPhase3() {
                         }}
                         size="xs"
                         variant="ghost"
-                        className="h-6 px-2 text-xs text-status-info-fg hover:bg-status-info-bg/15 hover:text-status-info-fg"
+                        className="h-6 px-2 text-[var(--text-xs)] text-status-info-fg hover:bg-status-info-bg/15 hover:text-status-info-fg"
                       >
                         {t('spawn')}
                       </Button>
@@ -538,7 +513,311 @@ export function AgentSquadPanelPhase3() {
   )
 }
 
-// Enhanced Agent Detail Modal with Tabs
+// ─── Settings Accordion Section ────────────────────────────────────────────────
+function SettingsAccordionSection({
+  title,
+  summary,
+  isOpen,
+  onToggle,
+  children
+}: {
+  title: string
+  summary: string
+  isOpen: boolean
+  onToggle: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div className="border border-[hsl(var(--border-default))] rounded-[var(--radius-lg)] overflow-hidden">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-[var(--space-4)] py-[var(--space-3)] bg-[hsl(var(--bg-subtle))] hover:bg-[hsl(var(--bg-subtle))]/80 transition-colors text-left"
+      >
+        <div className="flex items-center gap-[var(--space-3)] min-w-0">
+          <span className="text-[var(--text-base)] font-medium text-[hsl(var(--text-primary))]">{title}</span>
+          <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] truncate">{summary}</span>
+        </div>
+        <svg
+          className={`w-4 h-4 shrink-0 text-[hsl(var(--text-muted))] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        >
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className="border-t border-[hsl(var(--border-default))]">
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Consolidated Settings Tab (Accordion: Config, Models, Channels, Cron, Tools) ──
+function SettingsTab({
+  agent,
+  workspaceFiles,
+  onSaveWorkspaceFile,
+  onSave
+}: {
+  agent: Agent & { config?: any; working_memory?: string }
+  workspaceFiles: { identityMd: string; agentMd: string }
+  onSaveWorkspaceFile: (file: 'identity.md' | 'agent.md', content: string) => Promise<void>
+  onSave: () => void
+}) {
+  const [openSection, setOpenSection] = useState<string | null>('config')
+
+  const toggle = (section: string) => {
+    setOpenSection(prev => prev === section ? null : section)
+  }
+
+  // Build summaries
+  const agentConfig = (agent as any).config || {}
+  const modelCfg = agentConfig.model || {}
+  const modelPrimary = typeof modelCfg === 'string' ? modelCfg : (modelCfg.primary || '')
+  const modelFallbacks: string[] = Array.isArray(modelCfg.fallbacks) ? modelCfg.fallbacks : []
+  const modelSummary = modelPrimary
+    ? `${formatModelName(agentConfig) || modelPrimary}${modelFallbacks.length ? ` + ${modelFallbacks.length} fallback${modelFallbacks.length > 1 ? 's' : ''}` : ''}`
+    : 'Not configured'
+
+  const tools = agentConfig.tools || {}
+  const toolAllow = Array.isArray(tools.allow) ? tools.allow : []
+  const toolDeny = Array.isArray(tools.deny) ? tools.deny : []
+  const totalTools = toolAllow.length + toolDeny.length
+  const toolsSummary = totalTools > 0 ? `${toolAllow.length} allowed, ${toolDeny.length} denied` : 'Default profile'
+
+  const cronSummary = 'View cron jobs'
+  const channelsSummary = 'View connected channels'
+  const configSummary = agentConfig.model ? 'Custom configuration' : 'Default configuration'
+
+  return (
+    <div className="p-[var(--space-5)] space-y-[var(--space-3)]">
+      <SettingsAccordionSection
+        title="Config"
+        summary={configSummary}
+        isOpen={openSection === 'config'}
+        onToggle={() => toggle('config')}
+      >
+        <ConfigTab
+          agent={agent}
+          workspaceFiles={workspaceFiles}
+          onSaveWorkspaceFile={onSaveWorkspaceFile}
+          onSave={onSave}
+        />
+      </SettingsAccordionSection>
+
+      <SettingsAccordionSection
+        title="Models"
+        summary={modelSummary}
+        isOpen={openSection === 'models'}
+        onToggle={() => toggle('models')}
+      >
+        <ModelsTab agent={agent} />
+      </SettingsAccordionSection>
+
+      <SettingsAccordionSection
+        title="Channels"
+        summary={channelsSummary}
+        isOpen={openSection === 'channels'}
+        onToggle={() => toggle('channels')}
+      >
+        <ChannelsTab agent={agent} />
+      </SettingsAccordionSection>
+
+      <SettingsAccordionSection
+        title="Cron"
+        summary={cronSummary}
+        isOpen={openSection === 'cron'}
+        onToggle={() => toggle('cron')}
+      >
+        <CronTab agent={agent} />
+      </SettingsAccordionSection>
+
+      <SettingsAccordionSection
+        title="Tools"
+        summary={toolsSummary}
+        isOpen={openSection === 'tools'}
+        onToggle={() => toggle('tools')}
+      >
+        <ToolsTab agent={agent} />
+      </SettingsAccordionSection>
+    </div>
+  )
+}
+
+// ─── Consolidated Identity Tab (Soul + Memory with segmented control) ──────────
+function IdentityTab({
+  agent,
+  soulContent,
+  workingMemory,
+  soulTemplates,
+  onSoulSave,
+  onMemorySave
+}: {
+  agent: Agent & { config?: any; working_memory?: string }
+  soulContent: string
+  workingMemory: string
+  soulTemplates: SoulTemplate[]
+  onSoulSave: (content: string, templateName?: string) => Promise<void>
+  onMemorySave: (content: string, append?: boolean) => Promise<void>
+}) {
+  const [activeView, setActiveView] = useState<'soul' | 'memory'>('soul')
+
+  return (
+    <div className="flex flex-col">
+      {/* Segmented Control */}
+      <div className="flex px-[var(--space-5)] pt-[var(--space-4)] pb-0">
+        <div className="inline-flex rounded-[var(--radius-lg)] bg-[hsl(var(--bg-subtle))] p-[var(--space-0-5)]">
+          {(['soul', 'memory'] as const).map(view => (
+            <button
+              key={view}
+              onClick={() => setActiveView(view)}
+              className={`px-[var(--space-4)] py-[var(--space-1-5)] rounded-[var(--radius-md)] text-[var(--text-sm)] font-medium transition-colors ${
+                activeView === view
+                  ? 'bg-[hsl(var(--card-bg))] text-[hsl(var(--text-primary))] shadow-[var(--shadow-sm)]'
+                  : 'text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))]'
+              }`}
+            >
+              {view === 'soul' ? 'Soul Editor' : 'Memory Browser'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      {activeView === 'soul' ? (
+        <SoulTab
+          agent={agent}
+          soulContent={soulContent}
+          templates={soulTemplates}
+          onSave={onSoulSave}
+        />
+      ) : (
+        <MemoryTab
+          agent={agent}
+          workingMemory={workingMemory}
+          onSave={onMemorySave}
+        />
+      )}
+    </div>
+  )
+}
+
+// ─── Consolidated Work Tab (Tasks + Files) ─────────────────────────────────────
+function WorkTab({ agent }: { agent: Agent & { config?: any } }) {
+  const [activeView, setActiveView] = useState<'tasks' | 'files'>('tasks')
+
+  return (
+    <div className="flex flex-col">
+      {/* Segmented Control */}
+      <div className="flex px-[var(--space-5)] pt-[var(--space-4)] pb-0">
+        <div className="inline-flex rounded-[var(--radius-lg)] bg-[hsl(var(--bg-subtle))] p-[var(--space-0-5)]">
+          {(['tasks', 'files'] as const).map(view => (
+            <button
+              key={view}
+              onClick={() => setActiveView(view)}
+              className={`px-[var(--space-4)] py-[var(--space-1-5)] rounded-[var(--radius-md)] text-[var(--text-sm)] font-medium transition-colors ${
+                activeView === view
+                  ? 'bg-[hsl(var(--card-bg))] text-[hsl(var(--text-primary))] shadow-[var(--shadow-sm)]'
+                  : 'text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))]'
+              }`}
+            >
+              {view === 'tasks' ? 'Tasks' : 'Files'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      {activeView === 'tasks' ? (
+        <TasksTab agent={agent} />
+      ) : (
+        <FilesTab agent={agent} />
+      )}
+    </div>
+  )
+}
+
+// ─── Consolidated Overview Tab (Overview + Activity) ───────────────────────────
+function ConsolidatedOverviewTab({
+  agent,
+  editing,
+  formData,
+  setFormData,
+  onSave,
+  saveBusy,
+  onStatusUpdate,
+  onWakeAgent,
+  onEdit,
+  onCancel,
+  heartbeatData,
+  loadingHeartbeat,
+  onPerformHeartbeat
+}: {
+  agent: Agent & { config?: any; working_memory?: string }
+  editing: boolean
+  formData: any
+  setFormData: (data: any) => void
+  onSave: () => Promise<void>
+  saveBusy?: boolean
+  onStatusUpdate: (name: string, status: Agent['status'], activity?: string) => Promise<void>
+  onWakeAgent: (name: string, sessionKey: string) => Promise<void>
+  onEdit: () => void
+  onCancel: () => void
+  heartbeatData: HeartbeatResponse | null
+  loadingHeartbeat: boolean
+  onPerformHeartbeat: () => Promise<void>
+}) {
+  const [showActivity, setShowActivity] = useState(false)
+
+  return (
+    <div className="flex flex-col">
+      {/* Overview content */}
+      <OverviewTab
+        agent={agent}
+        editing={editing}
+        formData={formData}
+        setFormData={setFormData}
+        onSave={onSave}
+        saveBusy={saveBusy}
+        onStatusUpdate={onStatusUpdate}
+        onWakeAgent={onWakeAgent}
+        onEdit={onEdit}
+        onCancel={onCancel}
+        heartbeatData={heartbeatData}
+        loadingHeartbeat={loadingHeartbeat}
+        onPerformHeartbeat={onPerformHeartbeat}
+      />
+
+      {/* Activity Stream */}
+      <div className="border-t border-[hsl(var(--border-default))]">
+        <button
+          onClick={() => setShowActivity(!showActivity)}
+          className="w-full flex items-center justify-between px-[var(--space-5)] py-[var(--space-3)] hover:bg-[hsl(var(--bg-subtle))] transition-colors"
+        >
+          <span className="text-[var(--text-sm)] font-medium text-[hsl(var(--text-primary))]">Recent Activity</span>
+          <svg
+            className={`w-4 h-4 text-[hsl(var(--text-muted))] transition-transform duration-200 ${showActivity ? 'rotate-180' : ''}`}
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          >
+            <path d="M4 6l4 4 4-4" />
+          </svg>
+        </button>
+        {showActivity && <ActivityTab agent={agent} />}
+      </div>
+    </div>
+  )
+}
+
+// ─── Enhanced Agent Detail Modal with 4 Primary Tabs ───────────────────────────
 function AgentDetailModalPhase3({
   agent,
   onClose,
@@ -555,7 +834,7 @@ function AgentDetailModalPhase3({
   onDelete: (agentId: number, removeWorkspace: boolean) => Promise<void>
 }) {
   const [agentState, setAgentState] = useState<Agent & { config?: any; working_memory?: string }>(agent as Agent & { config?: any; working_memory?: string })
-  const [activeTab, setActiveTab] = useState<'overview' | 'soul' | 'memory' | 'config' | 'tasks' | 'activity' | 'files' | 'tools' | 'channels' | 'cron' | 'models'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'identity' | 'work' | 'settings'>('overview')
   const [editing, setEditing] = useState(false)
   const [formData, setFormData] = useState({
     role: agent.role,
@@ -676,8 +955,8 @@ function AgentDetailModalPhase3({
         log.error('Failed to load SOUL templates:', error)
       }
     }
-    
-    if (activeTab === 'soul') {
+
+    if (activeTab === 'identity') {
       loadTemplates()
     }
   }, [activeTab, agent.name])
@@ -733,7 +1012,7 @@ function AgentDetailModalPhase3({
       })
 
       if (!response.ok) throw new Error('Failed to update SOUL')
-      
+
       setFormData(prev => ({ ...prev, soul_content: content }))
       setAgentState(prev => ({ ...prev, soul_content: content }))
       onUpdate()
@@ -754,7 +1033,7 @@ function AgentDetailModalPhase3({
       })
 
       if (!response.ok) throw new Error('Failed to update memory')
-      
+
       const data = await response.json()
       setFormData(prev => ({ ...prev, working_memory: data.working_memory }))
       setAgentState(prev => ({ ...prev, working_memory: data.working_memory }))
@@ -780,19 +1059,13 @@ function AgentDetailModalPhase3({
     }))
   }
 
+  // 4 primary tabs
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: 'O' },
-    { id: 'files', label: 'Files', icon: 'F' },
-    { id: 'tools', label: 'Tools', icon: 'W' },
-    { id: 'models', label: 'Models', icon: 'P' },
-    { id: 'channels', label: 'Channels', icon: 'H' },
-    { id: 'cron', label: 'Cron', icon: 'R' },
-    { id: 'soul', label: 'SOUL', icon: 'S' },
-    { id: 'memory', label: 'Memory', icon: 'M' },
-    { id: 'tasks', label: 'Tasks', icon: 'T' },
-    { id: 'config', label: 'Config', icon: 'C' },
-    { id: 'activity', label: 'Activity', icon: 'A' }
-  ]
+    { id: 'overview', label: 'Overview' },
+    { id: 'identity', label: 'Identity' },
+    { id: 'work', label: 'Work' },
+    { id: 'settings', label: 'Settings' },
+  ] as const
 
   const handleDelete = async (removeWorkspace: boolean) => {
     const scope = removeWorkspace ? 'agent and workspace' : 'agent'
@@ -813,23 +1086,23 @@ function AgentDetailModalPhase3({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-[var(--space-4)]"
       onClick={onClose}
     >
       <div
-        className="bg-card border border-border/80 rounded-lg shadow-2xl shadow-black/40 max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden"
+        className="bg-[hsl(var(--card-bg))] border border-[hsl(var(--border-default))]/80 rounded-[var(--card-radius)] shadow-[var(--shadow-xl)] max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="px-5 pt-5 pb-0 border-b border-border">
-          <div className="flex justify-between items-center gap-4 mb-4">
-            <div className="flex items-center gap-3 min-w-0">
-              <AgentAvatar name={agent.name} size="md" />
+        <div className="px-[var(--space-5)] pt-[var(--space-5)] pb-0 border-b border-[hsl(var(--border-default))]">
+          <div className="flex justify-between items-center gap-[var(--space-4)] mb-[var(--space-4)]">
+            <div className="flex items-center gap-[var(--space-3)] min-w-0">
+              <AgentAvatar name={agent.name} size="lg" />
               <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-semibold text-foreground leading-tight truncate">{agentState.name}</h3>
+                <div className="flex items-center gap-[var(--space-2)]">
+                  <h3 className="text-[var(--text-lg)] font-semibold text-[hsl(var(--text-primary))] leading-tight truncate">{agentState.name}</h3>
                   <span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full border ${statusBadgeStyles[agentState.status]}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${statusColors[agentState.status]}`} />
+                    <span className={`w-1.5 h-1.5 rounded-full ${statusDotClasses[agentState.status]}`} />
                     {agentState.status}
                   </span>
                   {agentState.session_key && (
@@ -838,14 +1111,14 @@ function AgentDetailModalPhase3({
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-sm text-muted-foreground">{agentState.role}</span>
-                  <span className="text-xs text-muted-foreground/60">·</span>
-                  <span className="text-xs text-muted-foreground/60">seen {formatLastSeen(agentState.last_seen)}</span>
+                <div className="flex items-center gap-[var(--space-2)] mt-0.5">
+                  <span className="text-[var(--text-sm)] text-[hsl(var(--text-muted))]">{agentState.role}</span>
+                  <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]/60">·</span>
+                  <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]/60">seen {formatLastSeen(agentState.last_seen)}</span>
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-[var(--space-1-5)]">
               <div className="relative" ref={deleteMenuRef}>
                 <Button
                   variant="ghost"
@@ -859,11 +1132,11 @@ function AgentDetailModalPhase3({
                   </svg>
                 </Button>
                 {showDeleteMenu && (
-                  <div className="absolute right-0 top-full mt-1 flex flex-col gap-1 bg-card border border-border rounded-md shadow-xl p-1.5 z-10 min-w-[180px]">
+                  <div className="absolute right-0 top-full mt-1 flex flex-col gap-[var(--space-1)] bg-[hsl(var(--card-bg))] border border-[hsl(var(--border-default))] rounded-[var(--radius-md)] shadow-[var(--shadow-xl)] p-[var(--space-1-5)] z-10 min-w-[180px]">
                     <button
                       onClick={() => handleDelete(false)}
                       disabled={deleteBusy}
-                      className="text-left text-xs px-2.5 py-1.5 rounded text-status-error-fg hover:bg-status-error-bg transition-colors disabled:opacity-50"
+                      className="text-left text-[var(--text-xs)] px-2.5 py-1.5 rounded-[var(--radius-sm)] text-status-error-fg hover:bg-status-error-bg transition-colors disabled:opacity-50"
                     >
                       {deleteBusy ? (
                         <span className="flex items-center gap-1.5">
@@ -877,7 +1150,7 @@ function AgentDetailModalPhase3({
                     <button
                       onClick={() => handleDelete(true)}
                       disabled={deleteBusy}
-                      className="text-left text-xs px-2.5 py-1.5 rounded text-status-error-fg hover:bg-status-error-bg transition-colors disabled:opacity-50"
+                      className="text-left text-[var(--text-xs)] px-2.5 py-1.5 rounded-[var(--radius-sm)] text-status-error-fg hover:bg-status-error-bg transition-colors disabled:opacity-50"
                     >
                       {deleteBusy ? (
                         <span className="flex items-center gap-1.5">
@@ -906,21 +1179,21 @@ function AgentDetailModalPhase3({
           </div>
 
           {deleteError && (
-            <div className="mb-3 rounded-md border border-status-error-border bg-status-error-bg px-3 py-2 text-xs text-status-error-fg">
+            <div className="mb-[var(--space-3)] rounded-[var(--radius-md)] border border-status-error-border bg-status-error-bg px-[var(--space-3)] py-[var(--space-2)] text-[var(--text-xs)] text-status-error-fg">
               {deleteError}
             </div>
           )}
 
-          {/* Tab Navigation */}
-          <div className="flex gap-0 overflow-x-auto -mb-px">
+          {/* 4 Primary Tab Navigation */}
+          <div className="flex gap-0 -mb-px">
             {tabs.map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-[var(--space-5)] py-[var(--space-2-5,10px)] text-[var(--text-sm)] font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'border-primary text-foreground'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                    ? 'border-[hsl(var(--interactive-primary))] text-[hsl(var(--text-primary))]'
+                    : 'border-transparent text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] hover:border-[hsl(var(--border-default))]'
                 }`}
               >
                 {tab.label}
@@ -932,7 +1205,7 @@ function AgentDetailModalPhase3({
         {/* Tab Content */}
         <div className="flex-1 overflow-y-auto">
           {activeTab === 'overview' && (
-            <OverviewTab
+            <ConsolidatedOverviewTab
               agent={agentState}
               editing={editing}
               formData={formData}
@@ -948,59 +1221,29 @@ function AgentDetailModalPhase3({
               onPerformHeartbeat={performHeartbeat}
             />
           )}
-          
-          {activeTab === 'soul' && (
-            <SoulTab
+
+          {activeTab === 'identity' && (
+            <IdentityTab
               agent={agentState}
               soulContent={formData.soul_content}
-              templates={soulTemplates}
-              onSave={handleSoulSave}
-            />
-          )}
-          
-          {activeTab === 'memory' && (
-            <MemoryTab
-              agent={agentState}
               workingMemory={formData.working_memory}
-              onSave={handleMemorySave}
+              soulTemplates={soulTemplates}
+              onSoulSave={handleSoulSave}
+              onMemorySave={handleMemorySave}
             />
           )}
-          
-          {activeTab === 'tasks' && (
-            <TasksTab agent={agentState} />
+
+          {activeTab === 'work' && (
+            <WorkTab agent={agentState} />
           )}
-          
-          {activeTab === 'config' && (
-            <ConfigTab
+
+          {activeTab === 'settings' && (
+            <SettingsTab
               agent={agentState}
               workspaceFiles={workspaceFiles}
               onSaveWorkspaceFile={handleWorkspaceFileSave}
               onSave={onUpdate}
             />
-          )}
-
-          {activeTab === 'files' && (
-            <FilesTab agent={agentState} />
-          )}
-
-          {activeTab === 'tools' && (
-            <ToolsTab agent={agentState} />
-          )}
-
-          {activeTab === 'channels' && (
-            <ChannelsTab agent={agentState} />
-          )}
-
-          {activeTab === 'cron' && (
-            <CronTab agent={agentState} />
-          )}
-
-          {activeTab === 'models' && (
-            <ModelsTab agent={agentState} />
-          )}
-
-          {activeTab === 'activity' && (
-            <ActivityTab agent={agentState} />
           )}
         </div>
       </div>
@@ -1058,7 +1301,7 @@ function QuickSpawnModal({
       if (response.ok) {
         setSpawnResult(result)
         onSpawned()
-        
+
         // Auto-close after 2 seconds if successful
         setTimeout(() => {
           onClose()
@@ -1075,50 +1318,60 @@ function QuickSpawnModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-card border border-border rounded-lg max-w-md w-full p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-foreground">
+    <div
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-[var(--space-4)]"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[hsl(var(--card-bg))] border border-[hsl(var(--border-default))] rounded-[var(--card-radius)] shadow-[var(--shadow-xl)] max-w-md w-full p-[var(--space-6)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-[var(--space-4)]">
+          <h3 className="text-[var(--text-lg)] font-bold text-[hsl(var(--text-primary))]">
             Quick Spawn for {agent.name}
           </h3>
-          <Button onClick={onClose} variant="ghost" size="icon-sm" className="text-2xl">×</Button>
+          <Button onClick={onClose} variant="ghost" size="icon-sm">
+            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M4 4l8 8M12 4l-8 8" />
+            </svg>
+          </Button>
         </div>
 
         {spawnResult ? (
-          <div className="space-y-4">
-            <div className="bg-status-success-bg border border-status-success-border text-status-success-fg p-3 rounded-lg text-sm">
+          <div className="space-y-[var(--space-4)]">
+            <div className="bg-status-success-bg border border-status-success-border text-status-success-fg p-[var(--space-3)] rounded-[var(--radius-lg)] text-[var(--text-sm)]">
               Agent spawned successfully!
             </div>
-            <div className="text-sm text-foreground/80">
+            <div className="text-[var(--text-sm)] text-[hsl(var(--text-secondary))]">
               <p><strong>Agent ID:</strong> {spawnResult.agentId}</p>
               <p><strong>Session:</strong> {spawnResult.sessionId}</p>
               <p><strong>Model:</strong> {spawnResult.model}</p>
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-[var(--space-4)]">
             {/* Task Description */}
             <div>
-              <label className="block text-sm font-medium text-foreground/80 mb-2">
+              <label className="block text-[var(--text-sm)] font-medium text-[hsl(var(--text-secondary))] mb-[var(--space-2)]">
                 Task Description *
               </label>
               <textarea
                 value={spawnData.task}
                 onChange={(e) => setSpawnData(prev => ({ ...prev, task: e.target.value }))}
                 placeholder={`Delegate a subtask to ${agent.name}...`}
-                className="w-full h-24 px-3 py-2 bg-surface-1 border border-border rounded text-foreground placeholder-muted-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50 resize-none"
+                className="w-full h-24 px-[var(--space-3)] py-[var(--space-2)] bg-[hsl(var(--input-bg))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] text-[hsl(var(--input-text))] placeholder-[hsl(var(--input-placeholder))] focus:border-[hsl(var(--input-border-focus))] focus:ring-1 focus:ring-[hsl(var(--input-border-focus))] resize-none"
               />
             </div>
 
             {/* Model Selection */}
             <div>
-              <label className="block text-sm font-medium text-foreground/80 mb-2">
+              <label className="block text-[var(--text-sm)] font-medium text-[hsl(var(--text-secondary))] mb-[var(--space-2)]">
                 Model
               </label>
               <select
                 value={spawnData.model}
                 onChange={(e) => setSpawnData(prev => ({ ...prev, model: e.target.value }))}
-                className="w-full px-3 py-2 bg-surface-1 border border-border rounded text-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50"
+                className="w-full px-[var(--space-3)] py-[var(--space-2)] bg-[hsl(var(--input-bg))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] text-[hsl(var(--input-text))] focus:border-[hsl(var(--input-border-focus))] focus:ring-1 focus:ring-[hsl(var(--input-border-focus))]"
               >
                 {models.map(model => (
                   <option key={model.id} value={model.id}>
@@ -1130,20 +1383,20 @@ function QuickSpawnModal({
 
             {/* Agent Label */}
             <div>
-              <label className="block text-sm font-medium text-foreground/80 mb-2">
+              <label className="block text-[var(--text-sm)] font-medium text-[hsl(var(--text-secondary))] mb-[var(--space-2)]">
                 Agent Label
               </label>
               <input
                 type="text"
                 value={spawnData.label}
                 onChange={(e) => setSpawnData(prev => ({ ...prev, label: e.target.value }))}
-                className="w-full px-3 py-2 bg-surface-1 border border-border rounded text-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50"
+                className="w-full px-[var(--space-3)] py-[var(--space-2)] bg-[hsl(var(--input-bg))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] text-[hsl(var(--input-text))] focus:border-[hsl(var(--input-border-focus))] focus:ring-1 focus:ring-[hsl(var(--input-border-focus))]"
               />
             </div>
 
             {/* Timeout */}
             <div>
-              <label className="block text-sm font-medium text-foreground/80 mb-2">
+              <label className="block text-[var(--text-sm)] font-medium text-[hsl(var(--text-secondary))] mb-[var(--space-2)]">
                 Timeout (seconds)
               </label>
               <input
@@ -1152,12 +1405,12 @@ function QuickSpawnModal({
                 onChange={(e) => setSpawnData(prev => ({ ...prev, timeoutSeconds: parseInt(e.target.value) }))}
                 min={30}
                 max={3600}
-                className="w-full px-3 py-2 bg-surface-1 border border-border rounded text-foreground focus:border-primary/50 focus:ring-1 focus:ring-primary/50"
+                className="w-full px-[var(--space-3)] py-[var(--space-2)] bg-[hsl(var(--input-bg))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] text-[hsl(var(--input-text))] focus:border-[hsl(var(--input-border-focus))] focus:ring-1 focus:ring-[hsl(var(--input-border-focus))]"
               />
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
+            <div className="flex gap-[var(--space-3)] pt-[var(--space-4)]">
               <Button
                 onClick={handleSpawn}
                 disabled={isSpawning || !spawnData.task.trim()}
