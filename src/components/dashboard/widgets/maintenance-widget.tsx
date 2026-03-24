@@ -7,7 +7,7 @@ export function MaintenanceWidget({ data }: { data: DashboardData }) {
 
   return (
     <div className="panel">
-      <div className="panel-header"><h3 className="text-sm font-semibold">Maintenance + Backup</h3></div>
+      <div className="panel-header"><h3>Maintenance + Backup</h3></div>
       <div className="panel-body space-y-3">
         {dbStats?.backup ? (
           <>

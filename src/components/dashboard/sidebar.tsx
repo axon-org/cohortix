@@ -81,11 +81,11 @@ export function Sidebar() {
   const totalSessions = sessions.length
 
   return (
-    <aside className="w-64 bg-card border-r border-border flex flex-col">
+    <aside className="w-[210px] flex flex-col h-full" style={{ background: '#1E1E2D' }}>
       {/* Logo/Brand */}
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-lg overflow-hidden bg-background border border-border/50 flex items-center justify-center">
+      <div className="px-5 py-5 border-b border-white/10">
+        <div className="flex items-center space-x-2.5">
+          <div className="w-9 h-9 rounded-[var(--card-radius)] overflow-hidden bg-[hsl(var(--interactive-primary))]/20 flex items-center justify-center">
             <Image
               src="/brand/mc-logo-128.png"
               alt="Cohortix logo"
@@ -95,38 +95,29 @@ export function Sidebar() {
             />
           </div>
           <div>
-            <h2 className="font-bold text-foreground">Cohortix</h2>
-            <p className="text-xs text-muted-foreground">ClawdBot Orchestration</p>
+            <h2 className="font-bold text-white text-[15px]">Cohortix</h2>
+            <p className="text-[11px] text-[#A0A0B0]">ClawdBot Orchestration</p>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 overflow-y-auto">
-        <ul className="space-y-2">
+      <nav className="flex-1 px-3 py-4 overflow-y-auto">
+        <ul className="space-y-0.5">
           {menuItems.map((item) => (
             <li key={item.id}>
               <Button
-                variant={activeTab === item.id ? 'default' : 'ghost'}
+                variant="ghost"
                 onClick={() => navigateToPanel(item.id)}
-                className={`w-full flex items-start space-x-3 px-3 py-3 h-auto rounded-lg text-left justify-start group ${
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 h-auto rounded-[var(--radius-md)] text-left justify-start group transition-colors ${
                   activeTab === item.id
-                    ? 'shadow-sm'
-                    : ''
+                    ? 'bg-[hsl(var(--interactive-primary))] text-white shadow-sm'
+                    : 'text-[#A0A0B0] hover:text-white hover:bg-white/5'
                 }`}
                 title={item.description}
               >
-                <span className="text-lg mt-0.5">{item.icon}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium">{item.label}</div>
-                  <div className={`text-xs mt-0.5 ${
-                    activeTab === item.id
-                      ? 'text-primary-foreground/80'
-                      : 'text-muted-foreground group-hover:text-foreground'
-                  }`}>
-                    {item.description}
-                  </div>
-                </div>
+                <span className="text-base">{item.icon}</span>
+                <span className="font-medium text-sm">{item.label}</span>
               </Button>
             </li>
           ))}
@@ -134,52 +125,52 @@ export function Sidebar() {
       </nav>
 
       {/* Status Footer */}
-      <div className="p-4 border-t border-border space-y-3">
+      <div className="p-3 border-t border-white/10 space-y-2">
         {/* Connection Status */}
-        <div className="bg-secondary rounded-lg p-3">
+        <div className="bg-white/5 rounded-[var(--radius-md)] p-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground">Gateway</span>
+            <span className="text-sm font-medium text-white/80">Gateway</span>
             <div className="flex items-center space-x-1">
               <div className={`w-2 h-2 rounded-full ${
-                connection.isConnected 
-                  ? 'bg-status-success-solid animate-pulse' 
-                  : 'bg-status-error-solid'
+                connection.isConnected
+                  ? 'bg-[hsl(var(--status-success-solid))] animate-pulse'
+                  : 'bg-[hsl(var(--status-error-solid))]'
               }`}></div>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-[11px] text-[#A0A0B0]">
                 {connection.isConnected ? 'Connected' : 'Disconnected'}
               </span>
             </div>
           </div>
-            <div className="mt-2 space-y-1">
-              <div className="text-xs text-muted-foreground">
-                {connection.url || 'ws://<gateway-host>:<gateway-port>'}
+          <div className="mt-2 space-y-1">
+            <div className="text-[11px] text-[#666680] truncate">
+              {connection.url || 'ws://<gateway-host>:<gateway-port>'}
+            </div>
+            {connection.latency && (
+              <div className="text-[11px] text-[#666680]">
+                Latency: {connection.latency}ms
               </div>
-              {connection.latency && (
-                <div className="text-xs text-muted-foreground">
-                  Latency: {connection.latency}ms
-                </div>
             )}
           </div>
         </div>
 
         {/* Session Stats */}
-        <div className="bg-secondary rounded-lg p-3">
+        <div className="bg-white/5 rounded-[var(--radius-md)] p-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground">Sessions</span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-sm font-medium text-white/80">Sessions</span>
+            <span className="text-[11px] text-[#A0A0B0]">
               {activeSessions}/{totalSessions}
             </span>
           </div>
-          <div className="mt-2 text-xs text-muted-foreground">
+          <div className="mt-2 text-[11px] text-[#666680]">
             {activeSessions} active • {totalSessions - activeSessions} idle
           </div>
         </div>
 
         {/* System Stats */}
         {systemStats && (
-          <div className="bg-secondary rounded-lg p-3">
-            <div className="text-sm font-medium text-foreground mb-2">System</div>
-            <div className="space-y-1 text-xs text-muted-foreground">
+          <div className="bg-white/5 rounded-[var(--radius-md)] p-3">
+            <div className="text-sm font-medium text-white/80 mb-2">System</div>
+            <div className="space-y-1 text-[11px] text-[#A0A0B0]">
               <div className="flex justify-between">
                 <span>Memory:</span>
                 <span>{systemStats.memory ? Math.round((systemStats.memory.used / systemStats.memory.total) * 100) : 0}%</span>

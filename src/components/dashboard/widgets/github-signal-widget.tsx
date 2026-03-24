@@ -8,7 +8,7 @@ export function GithubSignalWidget({ data }: { data: DashboardData }) {
   return (
     <div className="panel">
       <div className="panel-header">
-        <h3 className="text-sm font-semibold">GitHub Signal</h3>
+        <h3>GitHub Signal</h3>
         {githubStats?.user && <span className="text-2xs text-muted-foreground font-mono-tight">@{githubStats.user.login}</span>}
       </div>
       <div className="panel-body space-y-3">

@@ -275,15 +275,20 @@
 
   /* Panel styles */
   .panel {
-    @apply bg-card border border-border rounded-lg;
+    @apply bg-card border border-border rounded-xl;
+    box-shadow: var(--card-shadow);
   }
 
   .panel-header {
-    @apply px-4 py-3 border-b border-border flex items-center justify-between;
+    @apply px-5 py-4 border-b border-border flex items-center justify-between;
+  }
+
+  .panel-header h3 {
+    @apply text-[15px] font-semibold text-foreground;
   }
 
   .panel-body {
-    @apply p-4;
+    @apply p-5;
   }
 
   /* Mono/code font */
@@ -492,7 +497,7 @@
 
   --background: var(--bg-canvas);
   --foreground: var(--text-primary);
-  --card: var(--bg-surface);
+  --card: var(--bg-surface-raised);
   --card-foreground: var(--text-primary);
   --popover: var(--bg-surface-raised);
   --popover-foreground: var(--text-primary);

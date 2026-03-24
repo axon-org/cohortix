@@ -40,7 +40,7 @@ export function SecurityAuditWidget({ data }: { data: DashboardData }) {
   return (
     <div className="panel">
       <div className="panel-header">
-        <h3 className="text-sm font-semibold">Security + Audit</h3>
+        <h3>Security + Audit</h3>
         {posture && badge && (
           <span className={`text-2xs px-1.5 py-0.5 rounded font-medium ${badge.className}`}>
             {posture.score} - {badge.label}
@@ -54,7 +54,7 @@ export function SecurityAuditWidget({ data }: { data: DashboardData }) {
         <StatRow label="Unread notifications" value={dbStats?.notifications.unread ?? 0} alert={(dbStats?.notifications.unread ?? 0) > 0} />
         <button
           onClick={() => navigateToPanel('security')}
-          className="w-full text-center text-xs text-primary hover:text-primary/80 py-1.5 mt-1 border border-border/50 rounded hover:bg-secondary transition-colors"
+          className="w-full text-center text-sm text-primary hover:text-primary/80 py-2 mt-1 border border-border rounded-[var(--radius-md)] hover:bg-primary/5 transition-colors min-h-11"
         >
           View Security Panel
         </button>

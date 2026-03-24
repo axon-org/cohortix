@@ -38,7 +38,7 @@ function SessionCard({ session }: SessionCardProps) {
       return { label: 'WORKER', color: 'bg-status-info-bg text-status-info-fg border-status-info-border' }
     }
     if (key.includes('cron')) {
-      return { label: 'CRON', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' }
+      return { label: 'CRON', color: 'bg-status-warning-bg text-status-warning-fg border-status-warning-border' }
     }
     return { label: 'SYSTEM', color: 'bg-muted text-muted-foreground border-border' }
   }
@@ -60,7 +60,7 @@ function SessionCard({ session }: SessionCardProps) {
   const currentTask = getCurrentTask(session)
 
   return (
-    <div className="bg-card border border-border rounded-lg p-4 hover:bg-secondary/50 transition-colors">
+    <div className="bg-card border border-border rounded-[var(--card-radius)] p-4 hover:bg-muted/50 transition-colors" style={{ boxShadow: 'var(--card-shadow)' }}>
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-3">
           <div className={`text-xl ${session.active ? 'working-indicator' : ''}`}>
@@ -152,20 +152,22 @@ export function SessionsList({ sessions }: SessionsListProps) {
   const idleSessions = sessions.filter(s => !s.active)
 
   return (
-    <div className="bg-card rounded-lg border border-border">
-      <div className="p-4 border-b border-border">
-        <h3 className="font-semibold text-foreground">Active Sessions</h3>
-        <p className="text-sm text-muted-foreground">
-          {sessions.length} total • {activeSessions.length} active
-        </p>
+    <div className="panel">
+      <div className="panel-header">
+        <div>
+          <h3>Active Sessions</h3>
+          <p className="text-xs text-muted-foreground">
+            {sessions.length} total · {activeSessions.length} active
+          </p>
+        </div>
       </div>
 
-      <div className="p-4">
+      <div className="panel-body">
         {sessions.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <div className="text-4xl mb-2">🤖</div>
-            <p>No sessions active</p>
-            <p className="text-xs">Sessions will appear here when agents start</p>
+            <p className="text-sm">No sessions active</p>
+            <p className="text-xs mt-1">Sessions will appear here when agents start</p>
           </div>
         ) : (
           <div className="space-y-3">
