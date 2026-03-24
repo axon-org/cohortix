@@ -295,10 +295,11 @@ export function HeaderBar() {
   }
 
   return (
-    <header role="banner" aria-label="Application header" className="relative z-50 h-14 bg-card/80 backdrop-blur-sm border-b border-border px-3 md:px-4 shrink-0">
+    <header role="banner" aria-label="Application header" className="relative z-50 h-16 shrink-0 border-b border-border bg-card/90 px-4 backdrop-blur-sm md:px-6">
       <div className="h-full flex items-center gap-2 md:gap-3">
         {/* Left: Page title + context */}
-        <div className="flex min-w-0 items-center gap-2.5 shrink-0">
+        <div className="flex min-w-0 items-center gap-3 shrink-0">
+          {/* Branding lives in sidebar — no duplication in header */}
           {activeProject ? (
             <Button
               variant="outline"
@@ -309,14 +310,14 @@ export function HeaderBar() {
               className="hidden lg:flex items-center gap-1 text-2xs bg-secondary/50 min-w-0 max-w-[320px]"
               title={`Scoped to project: ${activeProject.name}`}
             >
-              <span className="text-muted-foreground/60 truncate">{activeTenant?.display_name || 'Default'}</span>
-              <span className="text-muted-foreground/40">/</span>
+              <span className="text-muted-foreground truncate">{activeTenant?.display_name || 'Default'}</span>
+              <span className="text-muted-foreground/60">/</span>
               <span className="font-medium text-foreground truncate">{activeProject.name}</span>
             </Button>
           ) : activeTenant ? (
             <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded-md bg-secondary/40 text-2xs">
               <span className="text-muted-foreground">{th('workspace')}</span>
-              <span className="text-muted-foreground/40">/</span>
+              <span className="text-muted-foreground/60">/</span>
               <span className="font-medium text-foreground truncate max-w-[220px]">{activeTenant.display_name}</span>
             </div>
           ) : null}
@@ -325,12 +326,12 @@ export function HeaderBar() {
         </div>
 
         {/* Center: wide command search (desktop) */}
-        <div className="hidden md:flex items-center justify-center flex-1 min-w-0 max-w-[28rem] lg:max-w-[34rem] xl:max-w-[42rem]">
+        <div className="hidden min-w-0 flex-1 items-center justify-center md:flex md:max-w-[32rem] lg:max-w-[40rem]">
           <Button
             variant="outline"
             size="sm"
             onClick={openCommandPalette}
-            className="h-10 w-full justify-between bg-secondary/35 hover:border-primary/40 hover:bg-secondary/50 px-3"
+            className="h-11 w-full justify-between bg-secondary/35 hover:border-primary/40 hover:bg-secondary/50 px-3"
           >
             <span className="flex items-center gap-2 min-w-0">
               <SearchIcon />
@@ -345,8 +346,7 @@ export function HeaderBar() {
 
         {/* Right: status + actions */}
         <div className="flex items-center justify-end gap-1.5 md:gap-2 min-w-0 shrink-0 ml-auto">
-          <div className="hidden xl:flex items-center gap-3">
-            <Stat label={th('sessions')} value={`${activeSessions}/${sessions.length}`} />
+          <div className="hidden xl:flex items-center gap-2">
             <NavigationLatencyStat />
             <SseBadge connected={connection.sseConnected ?? false} />
             <DigitalClock />
@@ -403,7 +403,7 @@ export function HeaderBar() {
                   value={searchQuery}
                   onChange={e => handleSearchInput(e.target.value)}
                   placeholder={th('searchPlaceholder')}
-                  className="w-full h-9 px-3 rounded-md bg-secondary border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                  className="w-full h-11 px-3 rounded-md bg-secondary border-0 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
                   autoFocus
                   role="combobox"
                   aria-expanded={searchOpen}
@@ -436,7 +436,7 @@ export function HeaderBar() {
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-medium text-foreground truncate">{r.title}</div>
                         {r.subtitle && <div className="text-2xs text-muted-foreground truncate">{r.subtitle}</div>}
-                        {r.excerpt && <div className="text-2xs text-muted-foreground/70 truncate mt-0.5">{r.excerpt}</div>}
+                        {r.excerpt && <div className="text-2xs text-muted-foreground truncate mt-0.5">{r.excerpt}</div>}
                       </div>
                     </Button>
                   ))
@@ -533,12 +533,12 @@ function ModeBadge({
             </div>
             <div className="flex justify-between">
               <span>{th('host')}</span>
-              <span className="font-mono text-foreground/80 truncate ml-2">{wsHost}</span>
+              <span className="font-mono text-foreground/90 truncate ml-2">{wsHost}</span>
             </div>
             {connection.latency != null && (
               <div className="flex justify-between">
                 <span>{th('latency')}</span>
-                <span className="font-mono text-foreground/80">{connection.latency}ms</span>
+                <span className="font-mono text-foreground/90">{connection.latency}ms</span>
               </div>
             )}
             <div className="flex justify-between">
@@ -549,7 +549,7 @@ function ModeBadge({
             </div>
             <div className="flex justify-between">
               <span>{th('sse')}</span>
-              <span className={connection.sseConnected ? 'text-status-success-fg' : 'text-muted-foreground/50'}>
+              <span className={connection.sseConnected ? 'text-status-success-fg' : 'text-muted-foreground/70'}>
                 {connection.sseConnected ? th('live') : th('off')}
               </span>
             </div>
@@ -561,7 +561,7 @@ function ModeBadge({
             )}
           </div>
           {!isConnected && (
-            <div className="mt-2 pt-2 border-t border-border/40 text-muted-foreground/60 text-[10px]">
+            <div className="mt-2 pt-2 border-t border-border/40 text-muted-foreground text-[10px]">
               {th('clickToReconnect')}
             </div>
           )}

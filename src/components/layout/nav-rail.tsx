@@ -6,23 +6,10 @@ import { useTranslations } from 'next-intl'
 import { useMissionControl } from '@/store'
 import { useNavigateToPanel, usePrefetchPanel } from '@/lib/navigation'
 import { Button } from '@/components/ui/button'
-import { APP_VERSION } from '@/lib/version'
 import { getPluginNavItems } from '@/lib/plugins'
-
-interface NavItem {
-  id: string
-  label: string
-  icon: React.ReactNode
-  priority: boolean // Show in mobile bottom bar
-  essential?: boolean // Visible in Essential interface mode (default false)
-  children?: NavItem[] // Nested sub-items (expandable parent)
-}
-
-interface NavGroup {
-  id: string
-  label?: string // undefined = no header (core group)
-  items: NavItem[]
-}
+import { NavSidebar } from '@/components/layout/nav/nav-sidebar'
+import { MobileNav } from '@/components/layout/nav/mobile-nav'
+import type { NavGroup, NavItem } from '@/components/layout/nav/types'
 
 const navGroups: NavGroup[] = [
   {
@@ -124,7 +111,7 @@ const gatewayOnlyPanels = new Set([
 const adminOnlyPanels = new Set<string>([])
 
 export function NavRail() {
-  const { activeTab, connection, dashboardMode, currentUser, activeTenant, tenants, osUsers, setActiveTenant, fetchTenants, fetchOsUsers, activeProject, projects, setActiveProject, fetchProjects, sidebarExpanded, collapsedGroups, toggleSidebar, toggleGroup, defaultOrgName, interfaceMode, setInterfaceMode } = useMissionControl()
+  const { activeTab, connection, dashboardMode, currentUser, activeTenant, tenants, osUsers, setActiveTenant, fetchTenants, fetchOsUsers, activeProject, projects, setActiveProject, fetchProjects, sidebarExpanded, collapsedGroups, toggleSidebar, toggleGroup, defaultOrgName, interfaceMode, setInterfaceMode, contentDensity, setContentDensity } = useMissionControl()
   const navigateToPanel = useNavigateToPanel()
   const prefetchPanel = usePrefetchPanel()
   const tn = useTranslations('nav')
@@ -231,463 +218,46 @@ export function NavRail() {
 
   return (
     <>
-      {/* Desktop: Grouped sidebar */}
-      <nav
-        role="navigation"
-        aria-label="Main navigation"
-        className={`hidden md:flex flex-col bg-gradient-to-b from-card to-background border-r border-border shrink-0 transition-all duration-200 ease-in-out ${
-          sidebarExpanded ? 'w-[220px]' : 'w-14'
-        }`}
-      >
-        {/* Header: Logo + toggle */}
-        <div className={`flex items-center shrink-0 ${sidebarExpanded ? 'px-3 py-3 gap-2.5' : 'flex-col py-3 gap-2'}`}>
-          <div className="w-9 h-9 rounded-lg overflow-hidden bg-background border border-border/50 flex items-center justify-center shrink-0 hover:border-void-cyan/40 hover:glow-cyan transition-smooth">
-            <Image
-              src="/brand/mc-logo-128.png"
-              alt="Cohortix logo"
-              width={36}
-              height={36}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          {sidebarExpanded && (
-            <div className="flex items-baseline gap-2 truncate flex-1 min-w-0">
-              <span className="text-sm font-semibold text-foreground truncate">Cohortix</span>
-              <span className="text-2xs text-muted-foreground font-mono-tight shrink-0">v{APP_VERSION}</span>
-            </div>
-          )}
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={toggleSidebar}
-            title={sidebarExpanded ? tn('collapseSidebar') : tn('expandSidebar')}
-            className="shrink-0"
-          >
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-              {sidebarExpanded ? (
-                <polyline points="10,3 5,8 10,13" />
-              ) : (
-                <polyline points="6,3 11,8 6,13" />
-              )}
-            </svg>
-          </Button>
-        </div>
-
-        {/* Nav groups */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden py-1">
-          {filteredGroups.map((group, groupIndex) => (
-            <div key={group.id}>
-              {/* Divider between groups (not before first) */}
-              {groupIndex > 0 && (
-                <div className={`my-1.5 border-t border-border ${sidebarExpanded ? 'mx-3' : 'mx-2'}`} />
-              )}
-
-              {/* Group header (expanded mode, only for groups with labels) */}
-              {sidebarExpanded && group.label && (
-                <Button
-                  variant="ghost"
-                  onClick={() => toggleGroup(group.id)}
-                  className="w-full flex items-center justify-between px-3 mt-3 mb-1 h-auto py-0 rounded-none hover:bg-transparent group/header"
-                >
-                  <span className="text-[10px] tracking-wider text-muted-foreground/60 font-semibold select-none">
-                    {group.label}
-                  </span>
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={`w-3 h-3 text-muted-foreground/40 group-hover/header:text-muted-foreground transition-transform duration-150 ${
-                      collapsedGroups.includes(group.id) ? '-rotate-90' : ''
-                    }`}
-                  >
-                    <polyline points="4,6 8,10 12,6" />
-                  </svg>
-                </Button>
-              )}
-
-              {/* Group items */}
-              <div
-                className={`overflow-hidden transition-all duration-150 ease-in-out ${
-                  sidebarExpanded && collapsedGroups.includes(group.id) ? 'max-h-0 opacity-0' : 'max-h-[500px] opacity-100'
-                }`}
-              >
-                <div className={`flex flex-col ${sidebarExpanded ? 'gap-0.5 px-2' : 'items-center gap-1'}`}>
-                  {group.items.map((item) => {
-                    if (item.children) {
-                      const isParentExpanded = expandedParents.has(item.id)
-                      const childActive = item.children.some(c => activeTab === c.id)
-                      if (!sidebarExpanded) {
-                        // Collapsed mode: clicking parent navigates to first child
-                        return (
-                          <NavButton
-                            key={item.id}
-                            item={item}
-                            active={childActive}
-                            expanded={false}
-                            onClick={() => navigateToPanel(item.children![0].id)}
-                            onPrefetch={() => item.children?.forEach(child => prefetchPanel(child.id))}
-                          />
-                        )
-                      }
-                      return (
-                        <div key={item.id}>
-                          <div className="flex items-center w-full">
-                            <Button
-                              variant="ghost"
-                              onClick={() => { navigateToPanel(item.id); if (!isParentExpanded) toggleParent(item.id) }}
-                              onMouseEnter={() => { prefetchPanel(item.id); item.children?.forEach(child => prefetchPanel(child.id)) }}
-                              onFocus={() => item.children?.forEach(child => prefetchPanel(child.id))}
-                              className={`flex-1 flex items-center gap-2 px-2 py-1.5 h-auto rounded-lg rounded-r-none text-left justify-start relative ${
-                                activeTab === item.id
-                                  ? 'bg-primary/15 text-primary hover:bg-primary/20'
-                                  : childActive && !isParentExpanded
-                                    ? 'bg-primary/10 text-primary/80 hover:bg-primary/15'
-                                    : ''
-                              }`}
-                            >
-                              {activeTab === item.id && (
-                                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-primary rounded-r-full" />
-                              )}
-                              <div className="w-5 h-5 shrink-0">{item.icon}</div>
-                              <span className="text-sm truncate flex-1">{item.label}</span>
-                            </Button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); toggleParent(item.id) }}
-                              className="px-1.5 py-1.5 rounded-r-lg hover:bg-secondary/50 transition-colors"
-                            >
-                              <svg
-                                viewBox="0 0 16 16"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className={`w-3 h-3 shrink-0 text-muted-foreground/40 transition-transform duration-150 ${
-                                  isParentExpanded ? '' : '-rotate-90'
-                                }`}
-                              >
-                                <polyline points="4,6 8,10 12,6" />
-                              </svg>
-                            </button>
-                          </div>
-                          <div
-                            className={`overflow-hidden transition-all duration-150 ease-in-out ${
-                              isParentExpanded ? 'max-h-[200px] opacity-100' : 'max-h-0 opacity-0'
-                            }`}
-                          >
-                            <div className="flex flex-col gap-0.5 pl-4 mt-0.5">
-                              {item.children.map(child => (
-                                <NavButton
-                                  key={child.id}
-                                  item={child}
-                                  active={activeTab === child.id}
-                                  expanded={true}
-                                  onClick={() => navigateToPanel(child.id)}
-                                  onPrefetch={() => prefetchPanel(child.id)}
-                                  nested
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    }
-                    return (
-                      <NavButton
-                        key={item.id}
-                        item={item}
-                        active={activeTab === item.id}
-                        expanded={sidebarExpanded}
-                        onClick={() => navigateToPanel(item.id)}
-                        onPrefetch={() => prefetchPanel(item.id)}
-                      />
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Promo banners */}
-        {sidebarExpanded && (
-          <div className="px-2 pb-2 space-y-2 shrink-0">
-            <a
-              href="https://x.com/nyk_builderz/status/2022996371922649192?s=20"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-lg border border-border/50 bg-surface-1 hover:bg-surface-2 hover:border-primary/30 transition-all duration-200 p-2 group"
-            >
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="text-2xs font-semibold text-foreground group-hover:text-primary transition-colors">xint</span>
-                <span className="text-[9px] px-1 py-px rounded bg-primary/15 text-primary font-mono">CLI</span>
-              </div>
-              <p className="text-[10px] text-muted-foreground/70 leading-snug">X power tools for agents.</p>
-            </a>
-            <a
-              href="https://builderz.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-lg border border-void-cyan/20 bg-gradient-to-br from-void-cyan/5 to-transparent hover:from-void-cyan/10 hover:border-void-cyan/40 transition-all duration-200 p-2 group"
-            >
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="text-2xs font-bold text-foreground group-hover:text-void-cyan transition-colors">builderz</span>
-                <span className="text-[9px] px-1 py-px rounded bg-void-cyan/15 text-void-cyan">.dev</span>
-              </div>
-              <p className="text-[10px] text-muted-foreground/70 leading-snug">AI-native dev shop · Solana experts.</p>
-            </a>
-          </div>
-        )}
-
-        {/* Context switcher (profile-style, bottom of sidebar) */}
-        <ContextSwitcher
-          currentUser={currentUser}
-          isAdmin={isAdmin}
-          isLocal={isLocal}
-          isConnected={connection.isConnected}
-          tenants={tenants}
-          osUsers={osUsers}
-          activeTenant={activeTenant}
-          onSwitchTenant={setActiveTenant}
-          projects={projects}
-          activeProject={activeProject}
-          onSwitchProject={setActiveProject}
-          expanded={sidebarExpanded}
-          defaultOrgName={defaultOrgName}
-          navigateToPanel={navigateToPanel}
-          fetchTenants={fetchTenants}
-          fetchOsUsers={fetchOsUsers}
-          interfaceMode={interfaceMode}
-          setInterfaceMode={setInterfaceMode}
-          activeTab={activeTab}
-        />
-      </nav>
-
-      {/* Mobile: Bottom tab bar */}
-      <MobileBottomBar activeTab={activeTab} navigateToPanel={navigateToPanel} groups={filteredGroups} items={filteredAllNavItems} />
-    </>
-  )
-}
-
-function NavButton({ item, active, expanded, onClick, onPrefetch, nested }: {
-  item: NavItem
-  active: boolean
-  expanded: boolean
-  onClick: () => void
-  onPrefetch?: () => void
-  nested?: boolean
-}) {
-  if (expanded) {
-    return (
-      <Button
-        variant="ghost"
-        onClick={onClick}
-        onMouseEnter={onPrefetch}
-        onFocus={onPrefetch}
-        aria-current={active ? 'page' : undefined}
-        className={`w-full flex items-center gap-2 px-2 h-auto rounded-lg text-left justify-start relative ${
-          nested ? 'py-1' : 'py-1.5'
-        } ${
-          active
-            ? 'bg-primary/15 text-primary hover:bg-primary/20'
-            : ''
-        }`}
-      >
-        {active && (
-          <span className="absolute left-0 w-0.5 h-5 bg-void-cyan rounded-r glow-cyan" />
-        )}
-        <div className={`shrink-0 ${nested ? 'w-4 h-4' : 'w-5 h-5'}`}>{item.icon}</div>
-        <span className={`truncate ${nested ? 'text-xs' : 'text-sm'}`}>{item.label}</span>
-      </Button>
-    )
-  }
-
-  return (
-    <Button
-      variant="ghost"
-      size="icon-lg"
-      onClick={onClick}
-      onMouseEnter={onPrefetch}
-      onFocus={onPrefetch}
-      title={item.label}
-      aria-current={active ? 'page' : undefined}
-      className={`rounded-lg group relative ${
-        active
-          ? 'bg-primary/15 text-primary hover:bg-primary/20'
-          : ''
-      }`}
-    >
-      <div className="w-5 h-5">{item.icon}</div>
-      {/* Tooltip */}
-      <span className="absolute left-full ml-2 px-2 py-1 text-xs font-medium bg-popover text-popover-foreground border border-border rounded-md opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
-        {item.label}
-      </span>
-      {/* Active indicator */}
-      {active && (
-        <span className="absolute left-0 w-0.5 h-5 bg-primary rounded-r" />
-      )}
-    </Button>
-  )
-}
-
-function MobileBottomBar({ activeTab, navigateToPanel, groups, items }: {
-  activeTab: string
-  navigateToPanel: (tab: string) => void
-  groups: NavGroup[]
-  items: NavItem[]
-}) {
-  const tn = useTranslations('nav')
-  const [sheetOpen, setSheetOpen] = useState(false)
-  const priorityItems = items.filter(i => i.priority)
-  const nonPriorityIds = new Set(items.filter(i => !i.priority).map(i => i.id))
-  const moreIsActive = nonPriorityIds.has(activeTab)
-
-  return (
-    <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-border safe-area-bottom">
-        <div className="flex items-center justify-around px-1 h-14">
-          {priorityItems.map((item) => (
-            <Button
-              key={item.id}
-              variant="ghost"
-              onClick={() => navigateToPanel(item.id)}
-              className={`flex flex-col items-center justify-center gap-0.5 px-2 py-2 rounded-lg min-w-[48px] min-h-[48px] h-auto ${
-                activeTab === item.id
-                  ? 'text-primary hover:text-primary'
-                  : ''
-              }`}
-            >
-              <div className="w-5 h-5">{item.icon}</div>
-              <span className="text-[10px] font-medium truncate">{item.label}</span>
-            </Button>
-          ))}
-          {/* More button */}
-          <Button
-            variant="ghost"
-            onClick={() => setSheetOpen(true)}
-            className={`flex flex-col items-center justify-center gap-0.5 px-2 py-2 rounded-lg min-w-[48px] min-h-[48px] h-auto relative ${
-              moreIsActive ? 'text-primary hover:text-primary' : ''
-            }`}
-          >
-            <div className="w-5 h-5">
-              <svg viewBox="0 0 16 16" fill="currentColor">
-                <circle cx="4" cy="8" r="1.5" />
-                <circle cx="8" cy="8" r="1.5" />
-                <circle cx="12" cy="8" r="1.5" />
-              </svg>
-            </div>
-            <span className="text-[10px] font-medium">{tn('more')}</span>
-            {moreIsActive && (
-              <span className="absolute top-1.5 right-2.5 w-1.5 h-1.5 rounded-full bg-primary" />
-            )}
-          </Button>
-        </div>
-      </nav>
-
-      {/* Bottom sheet */}
-      <MobileBottomSheet
-        open={sheetOpen}
-        onClose={() => setSheetOpen(false)}
+      <NavSidebar
+        sidebarExpanded={sidebarExpanded}
+        filteredGroups={filteredGroups}
+        collapsedGroups={collapsedGroups}
+        expandedParents={expandedParents}
         activeTab={activeTab}
+        toggleSidebar={toggleSidebar}
+        toggleGroup={toggleGroup}
+        toggleParent={toggleParent}
         navigateToPanel={navigateToPanel}
-        groups={groups}
+        prefetchPanel={prefetchPanel}
+        contextSwitcher={(
+          <ContextSwitcher
+            currentUser={currentUser}
+            isAdmin={isAdmin}
+            isLocal={isLocal}
+            isConnected={connection.isConnected}
+            tenants={tenants}
+            osUsers={osUsers}
+            activeTenant={activeTenant}
+            onSwitchTenant={setActiveTenant}
+            projects={projects}
+            activeProject={activeProject}
+            onSwitchProject={setActiveProject}
+            expanded={sidebarExpanded}
+            defaultOrgName={defaultOrgName}
+            navigateToPanel={navigateToPanel}
+            fetchTenants={fetchTenants}
+            fetchOsUsers={fetchOsUsers}
+            interfaceMode={interfaceMode}
+            setInterfaceMode={setInterfaceMode}
+            activeTab={activeTab}
+            contentDensity={contentDensity}
+            setContentDensity={setContentDensity}
+          />
+        )}
       />
+
+      <MobileNav activeTab={activeTab} navigateToPanel={navigateToPanel} groups={filteredGroups} items={filteredAllNavItems} />
     </>
-  )
-}
-
-function MobileBottomSheet({ open, onClose, activeTab, navigateToPanel, groups }: {
-  open: boolean
-  onClose: () => void
-  activeTab: string
-  navigateToPanel: (tab: string) => void
-  groups: NavGroup[]
-}) {
-  // Track mount state for animation
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    if (open) {
-      // Mount first, then animate in on next frame
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => setVisible(true))
-      })
-    } else {
-      setVisible(false)
-    }
-  }, [open])
-
-  // Handle close with animation
-  function handleClose() {
-    setVisible(false)
-    setTimeout(onClose, 200) // match transition duration
-  }
-
-  if (!open) return null
-
-  return (
-    <div className="md:hidden fixed inset-0 z-[60]">
-      {/* Backdrop */}
-      <div
-        className={`absolute inset-0 bg-background/40 transition-opacity duration-200 ${
-          visible ? 'opacity-100' : 'opacity-0'
-        }`}
-        onClick={handleClose}
-      />
-
-      {/* Sheet */}
-      <div
-        className={`absolute bottom-0 left-0 right-0 bg-card rounded-t-lg max-h-[70vh] overflow-y-auto safe-area-bottom transition-transform duration-200 ease-out ${
-          visible ? 'translate-y-0' : 'translate-y-full'
-        }`}
-      >
-        {/* Drag handle */}
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
-        </div>
-
-        {/* Grouped navigation */}
-        <div className="px-4 pb-6">
-          {groups.map((group, groupIndex) => (
-            <div key={group.id}>
-              {groupIndex > 0 && <div className="my-3 border-t border-border" />}
-
-              {/* Group header */}
-              <div className="px-1 pt-1 pb-2">
-                <span className="text-[10px] tracking-wider text-muted-foreground/60 font-semibold">
-                  {group.label || 'CORE'}
-                </span>
-              </div>
-
-              {/* 2-column grid — flatten nested children for mobile */}
-              <div className="grid grid-cols-2 gap-1.5">
-                {group.items.flatMap(item => item.children ? item.children : [item]).map((item) => (
-                  <Button
-                    key={item.id}
-                    variant="ghost"
-                    onClick={() => {
-                      navigateToPanel(item.id)
-                      handleClose()
-                    }}
-                    className={`flex items-center gap-2.5 px-3 min-h-[48px] h-auto rounded-lg justify-start ${
-                      activeTab === item.id
-                        ? 'bg-primary/15 text-primary hover:bg-primary/20'
-                        : 'text-foreground'
-                    }`}
-                  >
-                    <div className="w-5 h-5 shrink-0">{item.icon}</div>
-                    <span className="text-xs font-medium truncate">{item.label}</span>
-                  </Button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
   )
 }
 
@@ -784,7 +354,7 @@ function OrgRow({ label, initial, active, colorClass, onClick, isActiveOrg, proj
   )
 }
 
-function ContextSwitcher({ currentUser, isAdmin, isLocal, isConnected, tenants, osUsers, activeTenant, onSwitchTenant, projects, activeProject, onSwitchProject, expanded, defaultOrgName, navigateToPanel, fetchTenants, fetchOsUsers, interfaceMode, setInterfaceMode, activeTab }: {
+function ContextSwitcher({ currentUser, isAdmin, isLocal, isConnected, tenants, osUsers, activeTenant, onSwitchTenant, projects, activeProject, onSwitchProject, expanded, defaultOrgName, navigateToPanel, fetchTenants, fetchOsUsers, interfaceMode, setInterfaceMode, activeTab, contentDensity, setContentDensity }: {
   currentUser: import('@/store').CurrentUser | null
   isAdmin: boolean
   isLocal: boolean
@@ -804,6 +374,8 @@ function ContextSwitcher({ currentUser, isAdmin, isLocal, isConnected, tenants, 
   interfaceMode: 'essential' | 'full'
   setInterfaceMode: (mode: 'essential' | 'full') => void
   activeTab: string
+  contentDensity: 'compact' | 'comfortable' | 'spacious'
+  setContentDensity: (density: 'compact' | 'comfortable' | 'spacious') => void
 }) {
   const { setShowProjectManagerModal } = useMissionControl()
   const tcs = useTranslations('contextSwitcher')
@@ -957,6 +529,26 @@ function ContextSwitcher({ currentUser, isAdmin, isLocal, isConnected, tenants, 
                   <span className={`w-1.5 h-1.5 rounded-full ${interfaceMode === 'full' ? 'bg-void-cyan' : 'bg-muted-foreground/30'}`} />
                   {tcs('full')}
                 </button>
+              </div>
+            </div>
+
+
+            <div className="px-3 py-1.5 flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Density</span>
+              <div className="flex rounded-md border border-border overflow-hidden">
+                {(['compact', 'comfortable', 'spacious'] as const).map((density) => (
+                  <button
+                    key={density}
+                    onClick={() => setContentDensity(density)}
+                    className={`px-2 py-1 text-[11px] font-medium capitalize ${
+                      contentDensity === density
+                        ? 'bg-primary/15 text-primary'
+                        : 'text-muted-foreground/70 hover:text-foreground'
+                    } ${density !== 'compact' ? 'border-l border-border' : ''}`}
+                  >
+                    {density}
+                  </button>
+                ))}
               </div>
             </div>
 

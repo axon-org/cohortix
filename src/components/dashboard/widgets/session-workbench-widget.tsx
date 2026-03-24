@@ -21,7 +21,7 @@ export function SessionWorkbenchWidget({ data }: { data: DashboardData }) {
                   ? 'No active sessions'
                   : 'No gateway sessions'}
             </p>
-            <p className="text-2xs text-muted-foreground/60 mt-1">
+            <p className="text-2xs text-muted-foreground mt-1">
               {isLocal
                 ? 'Start a Claude or Codex session to see it here.'
                 : 'Sessions appear when gateway agents connect.'}
@@ -33,7 +33,7 @@ export function SessionWorkbenchWidget({ data }: { data: DashboardData }) {
               <button
                 type="button"
                 onClick={() => openSession(session)}
-                className="w-full text-left flex items-center gap-3"
+                className="w-full text-left flex items-center gap-3 min-h-11"
               >
                 <div className={`w-2 h-2 rounded-full shrink-0 ${session.active ? 'bg-status-success-solid' : 'bg-muted-foreground/30'}`} />
                 <div className="flex-1 min-w-0">

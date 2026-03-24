@@ -87,7 +87,7 @@ export default function Home() {
   const tb = useTranslations('boot')
   const tp = useTranslations('page')
   const tc = useTranslations('common')
-  const { activeTab, setActiveTab, setCurrentUser, setDashboardMode, setGatewayAvailable, setLocalSessionsAvailable, setCapabilitiesChecked, setSubscription, setDefaultOrgName, setUpdateAvailable, setOpenclawUpdate, showOnboarding, setShowOnboarding, liveFeedOpen, toggleLiveFeed, showProjectManagerModal, setShowProjectManagerModal, fetchProjects, setChatPanelOpen, bootComplete, setBootComplete, setAgents, setSessions, setProjects, setInterfaceMode, setMemoryGraphAgents, setSkillsData } = useMissionControl()
+  const { activeTab, setActiveTab, setCurrentUser, setDashboardMode, setGatewayAvailable, setLocalSessionsAvailable, setCapabilitiesChecked, setSubscription, setDefaultOrgName, setUpdateAvailable, setOpenclawUpdate, showOnboarding, setShowOnboarding, liveFeedOpen, toggleLiveFeed, showProjectManagerModal, setShowProjectManagerModal, fetchProjects, setChatPanelOpen, bootComplete, setBootComplete, setAgents, setSessions, setProjects, setInterfaceMode, setMemoryGraphAgents, setSkillsData, contentDensity } = useMissionControl()
 
   // Sync URL → Zustand activeTab
   const pathname = usePathname()
@@ -371,8 +371,10 @@ export default function Home() {
     return <Loader variant="page" steps={isClient ? initSteps : undefined} />
   }
 
+  const densityClass = contentDensity === 'compact' ? 'cohortix-density-compact' : contentDensity === 'spacious' ? 'cohortix-density-spacious' : 'cohortix-density-comfortable'
+
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className={`flex h-screen overflow-hidden bg-background ${densityClass}`}>
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:text-sm focus:font-medium">
         {tc('skipToMainContent')}
       </a>
@@ -403,8 +405,8 @@ export default function Home() {
             </ErrorBoundary>
           </div>
           <footer className="px-4 pb-4 pt-2">
-            <p className="text-2xs text-muted-foreground/50 text-center">
-              {tc('builtWithCareBy')} <a href="https://x.com/nyk_builderz" target="_blank" rel="noopener noreferrer" className="text-muted-foreground/70 hover:text-primary transition-colors duration-200">nyk</a>.
+            <p className="text-2xs text-muted-foreground text-center">
+              {tc('builtWithCareBy')} <a href="https://x.com/nyk_builderz" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors duration-200">nyk</a>.
             </p>
           </footer>
         </main>

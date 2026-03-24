@@ -890,3 +890,17 @@
     repeating-linear-gradient(90deg, transparent 0px, transparent 19px, hsl(120 100% 50% / 0.02) 20px);
   background-size: 100% 100%, 20px 20px, 20px 20px;
 }
+
+@layer utilities {
+  .cohortix-density-compact main#main-content {
+    @apply p-4;
+  }
+
+  .cohortix-density-comfortable main#main-content {
+    @apply p-4;
+  }
+
+  .cohortix-density-spacious main#main-content {
+    @apply p-6;
+  }
+}

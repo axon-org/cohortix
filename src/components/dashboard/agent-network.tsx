@@ -140,7 +140,7 @@ function AgentNode({ data }: { data: any }) {
         </div>
 
         {agent.session && (
-          <div className="text-xs font-mono text-muted-foreground/70 mt-1 truncate">
+          <div className="text-xs font-mono text-muted-foreground mt-1 truncate">
             {agent.session.key.split(':').pop()}
           </div>
         )}

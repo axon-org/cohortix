@@ -581,6 +581,10 @@ interface MissionControlStore {
   interfaceMode: 'essential' | 'full'
   setInterfaceMode: (mode: 'essential' | 'full') => void
 
+  // Content Density
+  contentDensity: 'compact' | 'comfortable' | 'spacious'
+  setContentDensity: (density: 'compact' | 'comfortable' | 'spacious') => void
+
   // UI State
   activeTab: string
   sidebarExpanded: boolean
@@ -931,6 +935,19 @@ export const useMissionControl = create<MissionControlStore>()(
     // Interface Mode
     interfaceMode: 'essential' as const,
     setInterfaceMode: (mode) => set({ interfaceMode: mode }),
+
+    // Content Density
+    contentDensity: (() => {
+      if (typeof window === 'undefined') return 'comfortable' as const
+      try {
+        const raw = localStorage.getItem('mc-content-density')
+        return raw === 'compact' || raw === 'spacious' ? raw : 'comfortable'
+      } catch { return 'comfortable' as const }
+    })(),
+    setContentDensity: (density) => {
+      try { localStorage.setItem('mc-content-density', density) } catch {}
+      set({ contentDensity: density })
+    },
 
     // UI State — sidebar & layout persistence
     activeTab: 'overview',

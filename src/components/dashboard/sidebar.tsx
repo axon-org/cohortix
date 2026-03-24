@@ -122,7 +122,7 @@ export function Sidebar() {
                   <div className={`text-xs mt-0.5 ${
                     activeTab === item.id
                       ? 'text-primary-foreground/80'
-                      : 'text-muted-foreground group-hover:text-foreground/70'
+                      : 'text-muted-foreground group-hover:text-foreground'
                   }`}>
                     {item.description}
                   </div>

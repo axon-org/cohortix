@@ -213,7 +213,7 @@ export function WidgetGrid({ data }: { data: DashboardData }) {
             <button
               type="button"
               onClick={() => removeWidget(widgetId)}
-              className="text-2xs text-status-error-fg hover:text-status-error-fg bg-card/80 backdrop-blur-sm rounded px-1.5 py-0.5 border border-border/50"
+              className="text-2xs text-status-error-fg hover:text-status-error-fg bg-card/80 backdrop-blur-sm rounded px-2 py-1 border border-border/50 min-h-11 min-w-11"
             >
               x
             </button>
@@ -238,9 +238,9 @@ export function WidgetGrid({ data }: { data: DashboardData }) {
                 key={widget.id}
                 type="button"
                 onClick={() => addWidget(widget.id)}
-                className="rounded-lg border border-dashed border-border/60 p-3 text-left hover:border-primary/40 hover:bg-primary/5 transition-smooth"
+                className="rounded-lg border border-dashed border-border/60 p-3 text-left hover:border-primary/40 hover:bg-primary/5 transition-smooth min-h-11"
               >
-                <div className="text-xs font-medium text-foreground/70">{widget.label}</div>
+                <div className="text-xs font-medium text-foreground">{widget.label}</div>
                 <div className="text-2xs text-muted-foreground mt-0.5">{widget.description}</div>
               </button>
             ))}
@@ -255,7 +255,7 @@ export function WidgetGrid({ data }: { data: DashboardData }) {
             variant="ghost"
             size="sm"
             onClick={resetToDefaults}
-            className="text-2xs h-7"
+            className="text-2xs min-h-11"
           >
             Reset to Defaults
           </Button>
@@ -264,7 +264,7 @@ export function WidgetGrid({ data }: { data: DashboardData }) {
           variant={customizing ? 'default' : 'outline'}
           size="sm"
           onClick={() => setCustomizing(!customizing)}
-          className="text-2xs h-7"
+          className="text-2xs min-h-11"
         >
           {customizing ? 'Done' : 'Customize'}
         </Button>

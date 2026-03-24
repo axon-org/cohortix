@@ -106,14 +106,14 @@ export function MetricCard({ label, value, total, subtitle, icon, color }: {
   return (
     <div className={`rounded-lg border p-3.5 ${colorMap[color]}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium opacity-80">{label}</span>
-        <div className="w-5 h-5 opacity-60">{icon}</div>
+        <span className="text-xs font-medium opacity-100">{label}</span>
+        <div className="w-5 h-5 opacity-100">{icon}</div>
       </div>
       <div className="flex items-baseline gap-1">
         <span className="text-2xl font-bold font-mono-tight">{value}</span>
-        {total != null && <span className="text-xs opacity-50 font-mono-tight">/ {total}</span>}
+        {total != null && <span className="text-xs opacity-100 font-mono-tight">/ {total}</span>}
       </div>
-      {subtitle && <div className="text-2xs opacity-50 font-mono-tight mt-0.5">{subtitle}</div>}
+      {subtitle && <div className="text-2xs opacity-100 font-mono-tight mt-0.5">{subtitle}</div>}
     </div>
   )
 }
@@ -131,7 +131,7 @@ export function SignalPill({ label, value, tone }: {
 
   return (
     <div className={`rounded-lg border px-2.5 py-2 ${toneClass}`}>
-      <div className="text-2xs uppercase tracking-wide opacity-70">{label}</div>
+      <div className="text-2xs uppercase tracking-wide opacity-100">{label}</div>
       <div className="text-xs font-semibold font-mono-tight truncate">{value}</div>
     </div>
   )
@@ -185,10 +185,10 @@ export function LogRow({ log }: { log: LogLike }) {
           'bg-status-info-solid/50'
         }`} />
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-foreground/80 break-words">{log.message.length > 100 ? log.message.slice(0, 100) + '...' : log.message}</p>
+          <p className="text-xs text-foreground break-words">{log.message.length > 100 ? log.message.slice(0, 100) + '...' : log.message}</p>
           <div className="flex items-center gap-1.5 mt-0.5">
             <span className="text-2xs text-muted-foreground font-mono-tight">{log.source}</span>
-            <span className="text-2xs text-muted-foreground/40">·</span>
+            <span className="text-2xs text-muted-foreground">·</span>
             <span className="text-2xs text-muted-foreground">{new Date(log.timestamp).toLocaleTimeString()}</span>
           </div>
         </div>

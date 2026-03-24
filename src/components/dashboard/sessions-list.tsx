@@ -82,7 +82,7 @@ function SessionCard({ session }: SessionCardProps) {
               <span className="font-medium">{currentTask}</span>
             </div>
             
-            <p className="text-xs text-muted-foreground/70 truncate">
+            <p className="text-xs text-muted-foreground truncate">
               {session.key}
             </p>
             

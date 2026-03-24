@@ -19,7 +19,7 @@ export function EventStreamWidget({ data }: { data: DashboardData }) {
             <p className="text-xs text-muted-foreground">
               {isSessionsLoading ? 'Loading logs...' : 'No logs yet'}
             </p>
-            <p className="text-2xs text-muted-foreground/60 mt-1">
+            <p className="text-2xs text-muted-foreground mt-1">
               {isLocal ? 'Local Claude/Codex events stream here.' : 'Gateway incidents and warnings stream here.'}
             </p>
           </div>

@@ -120,7 +120,7 @@ export function OnboardingChecklistWidget() {
         <Button
           variant="ghost"
           size="sm"
-          className="text-2xs text-muted-foreground h-6 px-2"
+          className="text-2xs text-muted-foreground min-h-11 px-3"
           disabled={dismissing}
           onClick={handleDismiss}
         >
@@ -142,11 +142,11 @@ export function OnboardingChecklistWidget() {
           <div
             key={item.id}
             className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm ${
-              item.checked ? 'text-muted-foreground/60' : 'text-foreground'
+              item.checked ? 'text-muted-foreground' : 'text-foreground'
             }`}
           >
             <div className="flex items-center gap-2.5">
-              <span className={`font-mono text-xs ${item.checked ? 'text-status-success-fg' : 'text-muted-foreground/40'}`}>
+              <span className={`font-mono text-xs ${item.checked ? 'text-status-success-fg' : 'text-muted-foreground'}`}>
                 [{item.checked ? 'x' : ' '}]
               </span>
               <span className={item.checked ? 'line-through' : ''}>{item.label}</span>
@@ -155,7 +155,7 @@ export function OnboardingChecklistWidget() {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`text-xs h-6 px-2 ${accentText}`}
+                className={`text-xs min-h-11 px-3 ${accentText}`}
                 onClick={() => navigateToPanel(item.panel!)}
               >
                 {'->'}
