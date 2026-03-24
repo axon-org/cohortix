@@ -60,7 +60,7 @@ function SessionCard({ session }: SessionCardProps) {
   const currentTask = getCurrentTask(session)
 
   return (
-    <div className="bg-card border border-border rounded-[var(--card-radius)] p-4 hover:bg-muted/50 transition-colors" style={{ boxShadow: 'var(--card-shadow)' }}>
+    <div className="bg-card border border-border rounded-[var(--card-radius)] p-5 hover:bg-muted/50 transition-colors" style={{ boxShadow: 'var(--card-shadow)' }}>
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-3">
           <div className={`text-xl ${session.active ? 'working-indicator' : ''}`}>

@@ -113,7 +113,7 @@ function AgentNode({ data }: { data: any }) {
   const isWorking = status === 'active'
 
   return (
-    <div className={`bg-card rounded-[var(--card-radius)] border-2 px-3 py-3 ${getStatusClasses()} min-w-[140px]`} style={{ boxShadow: 'var(--card-shadow)' }}>
+    <div className={`bg-card rounded-[var(--card-radius)] border-2 px-4 py-3.5 ${getStatusClasses()} min-w-[140px]`} style={{ boxShadow: 'var(--card-shadow)' }}>
       <div className="flex items-start justify-between">
         <span className={`text-primary ${isWorking ? 'animate-glow-pulse' : ''}`}>
           {getTypeIcon()}

@@ -29,7 +29,7 @@ export function SessionWorkbenchWidget({ data }: { data: DashboardData }) {
           </div>
         ) : (
           sessions.slice(0, 10).map((session) => (
-            <div key={session.id} className="px-5 py-3 hover:bg-muted/50 transition-smooth">
+            <div key={session.id} className="px-5 py-3.5 hover:bg-muted/50 transition-smooth">
               <button
                 type="button"
                 onClick={() => openSession(session)}

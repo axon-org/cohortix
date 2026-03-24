@@ -81,7 +81,7 @@ export function Sidebar() {
   const totalSessions = sessions.length
 
   return (
-    <aside className="w-[210px] flex flex-col h-full" style={{ background: '#1E1E2D' }}>
+    <aside className="w-[210px] flex flex-col h-full bg-[hsl(var(--bg-inverse))]">
       {/* Logo/Brand */}
       <div className="px-5 py-5 border-b border-white/10">
         <div className="flex items-center space-x-2.5">
@@ -96,7 +96,7 @@ export function Sidebar() {
           </div>
           <div>
             <h2 className="font-bold text-white text-[15px]">Cohortix</h2>
-            <p className="text-[11px] text-[#A0A0B0]">ClawdBot Orchestration</p>
+            <p className="text-[11px] text-[hsl(var(--text-muted))]">ClawdBot Orchestration</p>
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ export function Sidebar() {
                 className={`w-full flex items-center space-x-3 px-3 py-2.5 h-auto rounded-[var(--radius-md)] text-left justify-start group transition-colors ${
                   activeTab === item.id
                     ? 'bg-[hsl(var(--interactive-primary))] text-white shadow-sm'
-                    : 'text-[#A0A0B0] hover:text-white hover:bg-white/5'
+                    : 'text-[hsl(var(--text-muted))] hover:text-white hover:bg-white/5'
                 }`}
                 title={item.description}
               >
@@ -136,17 +136,17 @@ export function Sidebar() {
                   ? 'bg-[hsl(var(--status-success-solid))] animate-pulse'
                   : 'bg-[hsl(var(--status-error-solid))]'
               }`}></div>
-              <span className="text-[11px] text-[#A0A0B0]">
+              <span className="text-[11px] text-[hsl(var(--text-muted))]">
                 {connection.isConnected ? 'Connected' : 'Disconnected'}
               </span>
             </div>
           </div>
           <div className="mt-2 space-y-1">
-            <div className="text-[11px] text-[#666680] truncate">
+            <div className="text-[11px] text-[hsl(var(--text-muted)/0.7)] truncate">
               {connection.url || 'ws://<gateway-host>:<gateway-port>'}
             </div>
             {connection.latency && (
-              <div className="text-[11px] text-[#666680]">
+              <div className="text-[11px] text-[hsl(var(--text-muted)/0.7)]">
                 Latency: {connection.latency}ms
               </div>
             )}
@@ -157,11 +157,11 @@ export function Sidebar() {
         <div className="bg-white/5 rounded-[var(--radius-md)] p-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-white/80">Sessions</span>
-            <span className="text-[11px] text-[#A0A0B0]">
+            <span className="text-[11px] text-[hsl(var(--text-muted))]">
               {activeSessions}/{totalSessions}
             </span>
           </div>
-          <div className="mt-2 text-[11px] text-[#666680]">
+          <div className="mt-2 text-[11px] text-[hsl(var(--text-muted)/0.7)]">
             {activeSessions} active • {totalSessions - activeSessions} idle
           </div>
         </div>
@@ -170,7 +170,7 @@ export function Sidebar() {
         {systemStats && (
           <div className="bg-white/5 rounded-[var(--radius-md)] p-3">
             <div className="text-sm font-medium text-white/80 mb-2">System</div>
-            <div className="space-y-1 text-[11px] text-[#A0A0B0]">
+            <div className="space-y-1 text-[11px] text-[hsl(var(--text-muted))]">
               <div className="flex justify-between">
                 <span>Memory:</span>
                 <span>{systemStats.memory ? Math.round((systemStats.memory.used / systemStats.memory.total) * 100) : 0}%</span>

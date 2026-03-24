@@ -266,7 +266,7 @@ export function Dashboard() {
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="p-6 lg:p-8 space-y-8">
       <OnboardingChecklistWidget />
 
       {/* Page header */}

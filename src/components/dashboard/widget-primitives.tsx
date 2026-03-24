@@ -111,10 +111,10 @@ export function MetricCard({ label, value, total, subtitle, icon, color }: {
   }
 
   return (
-    <div className="bg-card rounded-[var(--card-radius)] border border-border p-5" style={{ boxShadow: 'var(--card-shadow)' }}>
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-card rounded-[var(--card-radius)] border border-border p-6" style={{ boxShadow: 'var(--card-shadow)' }}>
+      <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-muted-foreground">{label}</span>
-        <div className={`w-10 h-10 rounded-[var(--card-radius)] flex items-center justify-center ${iconBgMap[color]}`}>
+        <div className={`w-11 h-11 rounded-[var(--card-radius)] flex items-center justify-center ${iconBgMap[color]}`}>
           <div className="w-5 h-5">{icon}</div>
         </div>
       </div>
@@ -185,7 +185,7 @@ export function StatRow({ label, value, alert }: { label: string; value: number 
 
 export function LogRow({ log }: { log: LogLike }) {
   return (
-    <div className="px-5 py-3 hover:bg-muted/50 transition-smooth">
+    <div className="px-5 py-3.5 hover:bg-muted/50 transition-smooth">
       <div className="flex items-start gap-3">
         <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
           log.level === 'error' ? 'bg-status-error-solid' :
@@ -217,7 +217,7 @@ export function QuickAction({ label, desc, tab, icon, onNavigate }: {
     <Button
       variant="outline"
       onClick={() => onNavigate(tab)}
-      className="flex items-center gap-3 p-4 h-auto rounded-[var(--card-radius)] hover:border-primary/30 hover:bg-primary/5 text-left group justify-start border-border"
+      className="flex items-center gap-3 p-5 h-auto rounded-[var(--card-radius)] hover:border-primary/30 hover:bg-primary/5 text-left group justify-start border-border"
       style={{ boxShadow: 'var(--card-shadow)' }}
     >
       <div className="w-9 h-9 rounded-[var(--radius-lg)] bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-smooth">

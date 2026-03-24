@@ -104,7 +104,7 @@ export function OnboardingChecklistWidget() {
 
   if (celebrating) {
     return (
-      <section className={`rounded-[var(--card-radius)] border ${accentBorder} bg-card p-6 text-center`} style={{ boxShadow: 'var(--card-shadow)' }}>
+      <section className={`rounded-[var(--card-radius)] border ${accentBorder} bg-card p-8 text-center`} style={{ boxShadow: 'var(--card-shadow)' }}>
         <div className={`text-xl font-bold mb-1 ${accentText}`}>Station Fully Operational</div>
         <p className="text-sm text-muted-foreground">All systems online. You&apos;re ready to go.</p>
       </section>
@@ -112,7 +112,7 @@ export function OnboardingChecklistWidget() {
   }
 
   return (
-    <section className="rounded-[var(--card-radius)] border border-border bg-card p-5" style={{ boxShadow: 'var(--card-shadow)' }}>
+    <section className="rounded-[var(--card-radius)] border border-border bg-card p-6" style={{ boxShadow: 'var(--card-shadow)' }}>
       <div className="flex items-center justify-between mb-3">
         <div>
           <h3 className="text-sm font-semibold text-foreground">Setup Progress ({completedCount}/{items.length})</h3>
@@ -129,7 +129,7 @@ export function OnboardingChecklistWidget() {
       </div>
 
       {/* Progress bar */}
-      <div className="h-1.5 bg-muted rounded-full mb-4 overflow-hidden">
+      <div className="h-2 bg-muted rounded-full mb-5 overflow-hidden">
         <div
           className={`h-full ${accentBg} rounded-full transition-all duration-500`}
           style={{ width: `${progressPct}%` }}

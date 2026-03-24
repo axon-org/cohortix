@@ -153,7 +153,7 @@ export function WidgetGrid({ data }: { data: DashboardData }) {
     const flushRow = () => {
       if (rowWidgets.length === 0) return
       elements.push(
-        <section key={`row-${elements.length}`} className="grid xl:grid-cols-12 gap-[var(--space-6)]">
+        <section key={`row-${elements.length}`} className="grid xl:grid-cols-12 gap-[var(--space-8)]">
           {rowWidgets.map(({ id, size }) => renderWidget(id, SIZE_CLASSES[size] || 'xl:col-span-4'))}
         </section>
       )
@@ -225,7 +225,7 @@ export function WidgetGrid({ data }: { data: DashboardData }) {
   }
 
   return (
-    <div className="space-y-[var(--space-6)]">
+    <div className="space-y-[var(--space-8)]">
       {renderWidgets()}
 
       {/* Customize mode: hidden widgets + controls */}

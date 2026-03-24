@@ -101,7 +101,7 @@ function StatCard({ title, value, icon, trend, subtitle, color = 'default' }: St
   }
 
   return (
-    <div className={`p-5 bg-card rounded-[var(--card-radius)] border border-border ${borderClasses[color]}`} style={{ boxShadow: 'var(--card-shadow)' }}>
+    <div className={`p-6 bg-card rounded-[var(--card-radius)] border border-border ${borderClasses[color]}`} style={{ boxShadow: 'var(--card-shadow)' }}>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
@@ -117,7 +117,7 @@ function StatCard({ title, value, icon, trend, subtitle, color = 'default' }: St
             <p className="text-xs text-muted-foreground mt-1.5">{subtitle}</p>
           )}
         </div>
-        <div className={`w-10 h-10 rounded-[var(--card-radius)] flex items-center justify-center ${iconColorClasses[color]}`}>
+        <div className={`w-11 h-11 rounded-[var(--card-radius)] flex items-center justify-center ${iconColorClasses[color]}`}>
           {icon}
         </div>
       </div>
@@ -131,7 +131,7 @@ export function StatsGrid({ stats, systemStats }: StatsGridProps) {
     formatUptime(Date.now() - stats.uptime)
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-[var(--space-6)]">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-[var(--space-6)]">
       <StatCard
         title="Total Sessions"
         value={stats.totalSessions}

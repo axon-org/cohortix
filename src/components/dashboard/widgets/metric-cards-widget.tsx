@@ -96,7 +96,7 @@ export function MetricCardsWidget({ data }: { data: DashboardData }) {
   }
 
   return (
-    <section className="grid grid-cols-2 xl:grid-cols-5 gap-[var(--space-6)]">
+    <section className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-[var(--space-6)]">
       <MetricCard label="Gateway" value={connection.isConnected ? 'Online' : 'Offline'} subtitle="transport status" icon={<GatewayIcon />} color={connection.isConnected ? 'green' : 'red'} />
       <MetricCard label="Sessions" value={activeSessions} total={sessions.length} subtitle="active / total" icon={<SessionIcon />} color="blue" />
       <MetricCard label="Agent Capacity" value={onlineAgents} subtitle={`${dbStats?.agents.total ?? agents.length} total`} icon={<AgentIcon />} color="green" />
