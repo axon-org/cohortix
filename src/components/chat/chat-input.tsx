@@ -191,14 +191,14 @@ export function ChatInput({ onSend, onAbort, disabled, agents = [], isGenerating
 
   return (
     <div
-      className={`relative border-t border-border bg-card/80 backdrop-blur-sm p-3 flex-shrink-0 safe-area-bottom ${isDragOver ? 'ring-2 ring-primary/50 bg-primary/5' : ''}`}
+      className={`relative border-t border-[hsl(var(--border-default))] bg-[hsl(var(--bg-surface-raised))] p-[var(--space-4)] flex-shrink-0 safe-area-bottom ${isDragOver ? 'ring-2 ring-primary/50 bg-primary/5' : ''}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       {/* Mention autocomplete dropdown */}
       {showMentions && filteredAgents.length > 0 && (
-        <div className="absolute bottom-full left-3 right-3 mb-1 bg-popover/95 backdrop-blur-lg border border-border rounded-lg shadow-xl overflow-hidden max-h-40 overflow-y-auto z-10">
+        <div className="absolute bottom-full left-[var(--space-3)] right-[var(--space-3)] mb-1 bg-[hsl(var(--bg-surface-overlay))]/95 backdrop-blur-lg border border-[hsl(var(--border-default))] rounded-[var(--radius-xl)] shadow-[var(--shadow-lg)] overflow-hidden max-h-40 overflow-y-auto z-10">
           {filteredAgents.map((agent, i) => (
             <Button
               key={agent.name}
@@ -297,7 +297,7 @@ export function ChatInput({ onSend, onAbort, disabled, agents = [], isGenerating
           placeholder={disabled ? 'Select a conversation...' : 'Message... (@ to mention, Enter to send)'}
           disabled={disabled || isSendingMessage}
           rows={1}
-          className="flex-1 resize-none bg-surface-1 rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50 disabled:opacity-40 transition-all"
+          className="flex-1 resize-none bg-[hsl(var(--input-bg))] rounded-[var(--radius-full)] px-[var(--space-4)] py-[var(--space-2)] text-[length:var(--text-base)] text-foreground placeholder:text-muted-foreground/50 border border-[hsl(var(--input-border))] focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-[hsl(var(--input-border-focus))] disabled:opacity-40 transition-all"
         />
 
         {/* Stop / Send button */}

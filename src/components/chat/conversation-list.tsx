@@ -118,8 +118,8 @@ const TAG_COLORS: Record<string, string> = {
   amber: 'bg-status-warning-solid',
   red: 'bg-status-error-solid',
   purple: 'bg-primary',
-  pink: 'bg-pink-500',
-  teal: 'bg-teal-500',
+  pink: 'bg-[hsl(var(--color-red-400))]',
+  teal: 'bg-[hsl(var(--color-blue-500))]',
 }
 
 interface ConversationListProps {
@@ -359,32 +359,34 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
         onDoubleClick={() => { if (conv.session?.prefKey) startRename(conv) }}
         onContextMenu={(e) => handleContextMenu(e, conv)}
         variant="ghost"
-        className={`w-full justify-start h-auto px-3 py-2.5 rounded-none ${
+        className={`w-full justify-start h-auto px-[var(--space-3)] py-[var(--space-3)] rounded-[var(--radius-md)] mx-[var(--space-1)] my-[var(--space-0-5)] transition-colors ${
           isSelected
-            ? 'bg-accent/60 border-l-2 border-primary'
-            : 'border-l-2 border-transparent'
+            ? 'bg-[hsl(var(--color-indigo-50))] border-l-[3px] border-l-primary'
+            : 'border-l-[3px] border-l-transparent hover:bg-[hsl(var(--bg-subtle))]'
         }`}
+        style={{ width: 'calc(100% - var(--space-2))' }}
       >
-        <div className="flex items-center gap-2 w-full">
+        <div className="flex items-center gap-[var(--space-3)] w-full">
           {/* Mini avatar */}
           <div className="relative flex-shrink-0">
             <SessionKindAvatar
               kind={conv.session?.sessionKind || 'gateway'}
               fallback={displayName.charAt(0).toUpperCase()}
+              sizeClassName="w-9 h-9"
             />
             {isSessionRow && conv.session?.active && (
-              <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-card ${STATUS_COLORS.busy}`} />
+              <div className={`absolute -bottom-0.5 -right-0.5 w-[10px] h-[10px] rounded-full border-2 border-[hsl(var(--card-bg))] ${STATUS_COLORS.busy}`} />
             )}
             {!isSessionRow && (
-              <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-card ${STATUS_COLORS.offline}`} />
+              <div className={`absolute -bottom-0.5 -right-0.5 w-[10px] h-[10px] rounded-full border-2 border-[hsl(var(--card-bg))] ${STATUS_COLORS.offline}`} />
             )}
           </div>
 
           <div className="flex-1 min-w-0 text-left">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 min-w-0">
+              <div className="flex items-center gap-[var(--space-1-5)] min-w-0">
                 {conv.session?.colorTag && TAG_COLORS[conv.session.colorTag] && (
-                  <span className={`h-2 w-2 rounded-full ${TAG_COLORS[conv.session.colorTag]}`} />
+                  <span className={`h-2 w-2 rounded-full flex-shrink-0 ${TAG_COLORS[conv.session.colorTag]}`} />
                 )}
                 {isSessionRow && conv.session?.sessionKind && conv.session.sessionKind !== 'gateway' && (
                   <SessionKindPill kind={conv.session.sessionKind} />
@@ -401,27 +403,27 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
                     }}
                     onClick={(e) => e.stopPropagation()}
                     maxLength={80}
-                    className="w-full bg-surface-1 rounded px-1 py-0.5 text-xs font-medium text-foreground outline-none ring-1 ring-primary/40"
+                    className="w-full bg-[hsl(var(--bg-surface))] rounded-[var(--radius-sm)] px-1 py-0.5 text-[length:var(--text-sm)] font-[var(--font-medium)] text-foreground outline-none ring-1 ring-primary/40"
                   />
                 ) : (
-                  <span className="text-xs font-medium text-foreground truncate">
+                  <span className="text-[length:var(--text-sm)] font-[var(--font-medium)] text-foreground truncate">
                     {displayName}
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-1 flex-shrink-0 ml-1">
                 {conv.unreadCount > 0 && (
-                  <span className="bg-primary text-primary-foreground text-[9px] rounded-full w-4 h-4 flex items-center justify-center font-medium">
+                  <span className="bg-primary text-primary-foreground text-[9px] rounded-full w-[18px] h-[18px] flex items-center justify-center font-[var(--font-medium)]">
                     {conv.unreadCount}
                   </span>
                 )}
-                <span className="text-[10px] text-muted-foreground/40">
+                <span className="text-[length:var(--text-xs)] text-muted-foreground/50">
                   {conv.updatedAt ? timeAgo(conv.updatedAt) : ''}
                 </span>
               </div>
             </div>
             {conv.lastMessage && !isEditing && (
-              <p className="text-[11px] text-muted-foreground/60 truncate mt-0.5">
+              <p className="text-[length:var(--text-xs)] text-muted-foreground truncate mt-[var(--space-0-5)]">
                 {conv.lastMessage.from_agent === 'human'
                   ? `You: ${conv.lastMessage.content}`
                   : conv.lastMessage.content}
@@ -434,14 +436,14 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
   }
 
   return (
-    <div className="flex flex-col h-full bg-card">
+    <div className="flex flex-col h-full bg-[hsl(var(--card-bg))]">
       {/* Header */}
-      <div className="p-3 border-b border-border flex-shrink-0">
-        <div className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-      Sessions
+      <div className="p-[var(--space-4)] border-b border-[hsl(var(--border-default))] flex-shrink-0">
+        <div className="mb-[var(--space-3)] text-[11px] font-[var(--font-semibold)] text-muted-foreground uppercase tracking-wider">
+          Sessions
         </div>
         <div className="relative">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground/50">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="absolute left-[var(--space-3)] top-1/2 -translate-y-1/2 text-muted-foreground/50">
             <circle cx="7" cy="7" r="4" />
             <path d="M14 14l-3-3" />
           </svg>
@@ -449,8 +451,8 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search..."
-            className="w-full bg-surface-1 rounded-md pl-7 pr-2 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/30"
+            placeholder="Search sessions..."
+            className="w-full bg-[hsl(var(--bg-surface))] rounded-[var(--radius-full)] pl-9 pr-[var(--space-3)] py-[var(--space-2)] text-[length:var(--text-sm)] text-foreground placeholder:text-muted-foreground/50 border border-[hsl(var(--border-default))] focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-[hsl(var(--border-focus))] transition-colors"
           />
         </div>
       </div>
@@ -465,8 +467,8 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
           <>
             {activeGatewayRows.length > 0 && (
               <div>
-                <div className="px-3 pt-2 py-1 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-status-success-fg/70">
-                  <span className="h-1.5 w-1.5 rounded-full bg-status-success-solid animate-pulse" />
+                <div className="px-[var(--space-4)] pt-[var(--space-3)] pb-[var(--space-1)] flex items-center gap-[var(--space-1-5)] text-[11px] uppercase tracking-wider font-[var(--font-medium)] text-status-success-fg/70">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--status-success-solid))] animate-pulse" />
                   Active
                 </div>
                 {activeGatewayRows.map(renderConversationItem)}
@@ -474,8 +476,8 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
             )}
             {activeLocalRows.length > 0 && (
               <div>
-                <div className="px-3 pt-2 py-1 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-status-success-fg/70">
-                  <span className="h-1.5 w-1.5 rounded-full bg-status-success-solid animate-pulse" />
+                <div className="px-[var(--space-4)] pt-[var(--space-3)] pb-[var(--space-1)] flex items-center gap-[var(--space-1-5)] text-[11px] uppercase tracking-wider font-[var(--font-medium)] text-status-success-fg/70">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--status-success-solid))] animate-pulse" />
                   Active Local
                 </div>
                 {activeLocalRows.map(renderConversationItem)}
@@ -483,7 +485,7 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
             )}
             {inactiveGatewayRows.length > 0 && (
               <div>
-                <div className="px-3 pt-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground/40">
+                <div className="px-[var(--space-4)] pt-[var(--space-3)] pb-[var(--space-1)] text-[11px] uppercase tracking-wider font-[var(--font-medium)] text-muted-foreground/50">
                   Recent
                 </div>
                 {inactiveGatewayRows.map(renderConversationItem)}
@@ -491,7 +493,7 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
             )}
             {inactiveLocalRows.length > 0 && (
               <div>
-                <div className="px-3 pt-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground/40">
+                <div className="px-[var(--space-4)] pt-[var(--space-3)] pb-[var(--space-1)] text-[11px] uppercase tracking-wider font-[var(--font-medium)] text-muted-foreground/50">
                   Recent Local
                 </div>
                 {inactiveLocalRows.map(renderConversationItem)}
@@ -508,7 +510,7 @@ export function ConversationList({ onNewConversation: _onNewConversation }: Conv
         return (
           <div
             ref={ctxMenuRef}
-            className="fixed z-50 min-w-[180px] rounded-lg border border-border bg-card p-1 shadow-xl"
+            className="fixed z-50 min-w-[180px] rounded-[var(--radius-xl)] border border-[hsl(var(--border-default))] bg-[hsl(var(--bg-surface-overlay))] p-[var(--space-1)] shadow-[var(--shadow-lg)]"
             style={{ top: ctxMenu.y, left: ctxMenu.x }}
           >
             <button

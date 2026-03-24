@@ -9,16 +9,16 @@ const AGENT_COLORS: Record<string, { bg: string; text: string; border: string }>
   coordinator: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
   aegis: { bg: 'bg-status-error-bg', text: 'text-status-error-fg', border: 'border-status-error-border' },
   research: { bg: 'bg-status-success-bg', text: 'text-status-success-fg', border: 'border-status-success-border' },
-  design: { bg: 'bg-pink-500/10', text: 'text-pink-400', border: 'border-pink-500/20' },
+  design: { bg: 'bg-status-info-bg', text: 'text-status-info-fg', border: 'border-status-info-border' },
   quant: { bg: 'bg-status-warning-bg', text: 'text-status-warning-fg', border: 'border-status-warning-border' },
-  ops: { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20' },
-  reviewer: { bg: 'bg-teal-500/10', text: 'text-teal-400', border: 'border-teal-500/20' },
-  content: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/20' },
+  ops: { bg: 'bg-status-warning-bg', text: 'text-status-warning-fg', border: 'border-status-warning-border' },
+  reviewer: { bg: 'bg-status-info-bg', text: 'text-status-info-fg', border: 'border-status-info-border' },
+  content: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
   seo: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
-  security: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
+  security: { bg: 'bg-status-error-bg', text: 'text-status-error-fg', border: 'border-status-error-border' },
   ai: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
-  'frontend-dev': { bg: 'bg-sky-500/10', text: 'text-sky-400', border: 'border-sky-500/20' },
-  'backend-dev': { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
+  'frontend-dev': { bg: 'bg-status-info-bg', text: 'text-status-info-fg', border: 'border-status-info-border' },
+  'backend-dev': { bg: 'bg-status-success-bg', text: 'text-status-success-fg', border: 'border-status-success-border' },
   'solana-dev': { bg: 'bg-status-warning-bg', text: 'text-status-warning-fg', border: 'border-status-warning-border' },
   system: { bg: 'bg-muted/50', text: 'text-muted-foreground', border: 'border-border' },
   human: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
@@ -197,11 +197,11 @@ export function MessageBubble({ message, isHuman, isGrouped }: MessageBubbleProp
     <div className={`flex gap-2 ${isHuman ? 'flex-row-reverse' : 'flex-row'} ${isGrouped ? 'mt-0.5' : 'mt-3'}`}>
       {/* Avatar */}
       {!isGrouped ? (
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold ${theme.bg} ${theme.text} border ${theme.border}`}>
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold ${theme.bg} ${theme.text} border ${theme.border}`}>
           {message.from_agent.charAt(0).toUpperCase()}
         </div>
       ) : (
-        <div className="w-7 flex-shrink-0" />
+        <div className="w-8 flex-shrink-0" />
       )}
 
       {/* Content */}
@@ -227,12 +227,12 @@ export function MessageBubble({ message, isHuman, isGrouped }: MessageBubbleProp
         )}
 
         {/* Bubble */}
-        <div className={`rounded-lg px-3 py-2 text-sm leading-relaxed ${
+        <div className={`rounded-[var(--radius-xl)] px-[var(--space-4)] py-[var(--space-3)] text-[length:var(--text-base)] leading-relaxed ${
           isHuman
-            ? 'bg-primary text-primary-foreground rounded-tr-sm'
+            ? 'bg-[hsl(var(--color-indigo-50))] text-[hsl(var(--text-primary))] rounded-tr-[var(--radius-xs)]'
             : isCommand
-            ? `${theme.bg} border ${theme.border} font-mono text-xs rounded-tl-sm`
-            : `bg-surface-2 text-foreground ${isGrouped ? 'rounded-tl-sm' : 'rounded-tl-sm'}`
+            ? `${theme.bg} border ${theme.border} font-mono text-xs rounded-tl-[var(--radius-xs)]`
+            : `bg-[hsl(var(--bg-surface-raised))] text-[hsl(var(--text-primary))] border border-[hsl(var(--border-default))] shadow-[var(--shadow-sm)] ${isGrouped ? 'rounded-tl-[var(--radius-xs)]' : 'rounded-tl-[var(--radius-xs)]'}`
         }`}>
           {/* Attachment thumbnails */}
           {message.attachments && message.attachments.length > 0 && (

@@ -12,12 +12,12 @@ export function ChatPanel() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:bg-black/20"
+        className="fixed inset-0 z-40 bg-[hsl(var(--color-black))]/40 backdrop-blur-sm md:bg-[hsl(var(--color-black))]/20"
         onClick={() => setChatPanelOpen(false)}
       />
 
       {/* Panel */}
-      <div className="slide-in-right fixed inset-0 z-50 flex flex-col md:inset-auto md:right-0 md:top-0 md:bottom-0 md:w-[480px] lg:w-[560px]">
+      <div className="slide-in-right fixed inset-0 z-50 flex flex-col md:inset-auto md:right-0 md:top-0 md:bottom-0 md:w-[480px] lg:w-[560px] shadow-[var(--shadow-xl)]">
         <ChatWorkspace mode="overlay" onClose={() => setChatPanelOpen(false)} />
       </div>
     </>

@@ -20,9 +20,9 @@ interface SessionMessageProps {
 }
 
 const ROLE_CONFIG = {
-  user: { indicator: '$', indicatorClass: 'text-status-success-fg', borderClass: 'border-l-green-500/40' },
+  user: { indicator: '$', indicatorClass: 'text-status-success-fg', borderClass: 'border-l-[hsl(var(--status-success-solid)/0.4)]' },
   assistant: { indicator: '\u25C6', indicatorClass: 'text-primary', borderClass: 'border-l-primary/40' },
-  system: { indicator: '', indicatorClass: '', borderClass: 'border-l-amber-500/20' },
+  system: { indicator: '', indicatorClass: '', borderClass: 'border-l-[hsl(var(--status-warning-solid)/0.2)]' },
 } as const
 
 export function SessionMessage({ message, showTimestamp }: SessionMessageProps) {
