@@ -6,6 +6,10 @@ import { useTranslations } from 'next-intl'
 import { useMissionControl } from '@/store'
 import { Button } from '@/components/ui/button'
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
 interface SkillSummary {
   id: string
   name: string
@@ -50,6 +54,10 @@ interface RegistrySkill {
 
 type PanelTab = 'installed' | 'registry'
 
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
 const SOURCE_LABELS: Record<string, string> = {
   'user-agents': '~/.agents/skills (global)',
   'user-codex': '~/.codex/skills (global)',
@@ -67,6 +75,83 @@ function getSourceLabel(source: string): string {
   }
   return source
 }
+
+// ---------------------------------------------------------------------------
+// Helper: source badge color
+// ---------------------------------------------------------------------------
+
+function sourceBadgeClasses(source: string): string {
+  if (source === 'openclaw' || source.startsWith('workspace-')) {
+    return 'bg-[hsl(var(--status-info-bg))] text-[hsl(var(--interactive-primary))] border-[hsl(var(--status-info-border))]'
+  }
+  if (source.startsWith('project-')) {
+    return 'bg-[hsl(var(--status-warning-bg))] text-[hsl(var(--status-warning-fg))] border-[hsl(var(--status-warning-border))]'
+  }
+  return 'bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-muted))] border-[hsl(var(--border-default))]'
+}
+
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
+
+function SecurityBadge({ status }: { status?: string | null }) {
+  if (!status || status === 'unchecked') return <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">unchecked</span>
+  if (status === 'clean') return <span className="text-[var(--text-xs)] text-[hsl(var(--status-success-fg))]">clean</span>
+  if (status === 'warning') return <span className="text-[var(--text-xs)] text-[hsl(var(--status-warning-fg))]">warning</span>
+  if (status === 'rejected') return <span className="text-[var(--text-xs)] text-[hsl(var(--status-error-fg))]">rejected</span>
+  return null
+}
+
+function InstallStep({ label, status }: { label: string; status: 'pending' | 'active' | 'done' | 'error' }) {
+  return (
+    <div className="flex items-center gap-[var(--space-2)]">
+      <div className="w-[var(--space-5)] h-[var(--space-5)] flex items-center justify-center shrink-0">
+        {status === 'pending' && (
+          <span className="w-[var(--space-2)] h-[var(--space-2)] rounded-full bg-[hsl(var(--text-muted))]/30" />
+        )}
+        {status === 'active' && (
+          <span className="w-[var(--space-2)] h-[var(--space-2)] rounded-full bg-[hsl(var(--interactive-primary))] animate-pulse" />
+        )}
+        {status === 'done' && (
+          <svg className="w-[var(--space-4)] h-[var(--space-4)] text-[hsl(var(--status-success-fg))]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3.5 8.5L6.5 11.5L12.5 4.5" />
+          </svg>
+        )}
+        {status === 'error' && (
+          <svg className="w-[var(--space-4)] h-[var(--space-4)] text-[hsl(var(--status-error-fg))]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4.5 4.5L11.5 11.5M11.5 4.5L4.5 11.5" />
+          </svg>
+        )}
+      </div>
+      <span className={`text-[var(--text-xs)] ${
+        status === 'active' ? 'text-[hsl(var(--text-primary))] font-[var(--font-medium)]'
+          : status === 'done' ? 'text-[hsl(var(--text-muted))]'
+          : status === 'error' ? 'text-[hsl(var(--status-error-fg))]'
+          : 'text-[hsl(var(--text-muted))]/50'
+      }`}>
+        {label}
+      </span>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Category filter — derives categories from source groups
+// ---------------------------------------------------------------------------
+
+const CATEGORY_ALL = '__all__'
+
+function deriveCategories(skills: SkillSummary[]): string[] {
+  const cats = new Set<string>()
+  for (const s of skills) {
+    cats.add(s.source)
+  }
+  return Array.from(cats)
+}
+
+// ---------------------------------------------------------------------------
+// Main panel
+// ---------------------------------------------------------------------------
 
 export function SkillsPanel() {
   const t = useTranslations('skills')
@@ -115,6 +200,8 @@ export function SkillsPanel() {
     setIsMounted(true)
   }, [])
 
+  // ---- Data fetching ----
+
   const loadSkills = useCallback(async (opts?: { initial?: boolean }) => {
     if (opts?.initial) setLoading(true)
     setError(null)
@@ -127,7 +214,6 @@ export function SkillsPanel() {
   }, [setSkillsData])
 
   useEffect(() => {
-    // Skip initial fetch if we already have cached data from a previous mount
     if (skillsList !== null) return
     let cancelled = false
     async function run() {
@@ -144,13 +230,16 @@ export function SkillsPanel() {
     return () => { cancelled = true }
   }, [loadSkills, skillsList])
 
-  // Two-way disk sync: poll for external on-disk changes.
   useEffect(() => {
     const id = window.setInterval(() => {
       loadSkills().catch(() => {})
     }, 10000)
     return () => window.clearInterval(id)
   }, [loadSkills])
+
+  // ---- Filtering ----
+
+  const categories = useMemo(() => deriveCategories(skillsList || []), [skillsList])
 
   const filtered = useMemo(() => {
     let list = skillsList || []
@@ -162,6 +251,8 @@ export function SkillsPanel() {
       return haystack.includes(q)
     })
   }, [skillsList, query, activeRoot])
+
+  // ---- Skill detail loading ----
 
   useEffect(() => {
     if (!selectedSkill) return
@@ -203,6 +294,8 @@ export function SkillsPanel() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [selectedSkill])
+
+  // ---- Actions ----
 
   const refresh = async () => {
     setLoading(true)
@@ -309,8 +402,6 @@ export function SkillsPanel() {
     setInstallMessage(null)
     setInstallModal({ slug, name: displayName, step: 'fetching' })
     try {
-      // Simulate step progression — the API does fetch+scan+write in one call,
-      // so we show intermediate steps on a timer for UX feedback
       const stepTimer = setTimeout(() => {
         setInstallModal(prev => prev?.slug === slug ? { ...prev, step: 'scanning' } : prev)
       }, 800)
@@ -347,7 +438,7 @@ export function SkillsPanel() {
       const res = await fetch(`/api/skills?${params.toString()}`, { cache: 'no-store' })
       const body = await res.json()
       if (res.ok && body?.security) {
-        await loadSkills() // refresh to pick up updated security_status
+        await loadSkills()
       }
     } catch { /* best-effort */ }
   }
@@ -393,130 +484,212 @@ export function SkillsPanel() {
     await loadSkills()
   }
 
-  const securityBadge = (status?: string | null) => {
-    if (!status || status === 'unchecked') return <span className="text-2xs text-muted-foreground/50">unchecked</span>
-    if (status === 'clean') return <span className="text-2xs text-status-success-fg">clean</span>
-    if (status === 'warning') return <span className="text-2xs text-status-warning-fg">warning</span>
-    if (status === 'rejected') return <span className="text-2xs text-status-error-fg">rejected</span>
-    return null
+  // ---- Loading state ----
+
+  if (loading) {
+    return (
+      <div className="p-[var(--space-6)]">
+        <div className="flex items-center gap-[var(--space-3)] mb-[var(--space-6)]">
+          <div className="w-[var(--space-4)] h-[var(--space-4)] border-2 border-[hsl(var(--interactive-primary))] border-t-transparent rounded-full animate-spin" />
+          <span className="text-[var(--text-sm)] text-[hsl(var(--text-muted))]">{t('loadingSkills')}</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[var(--space-5)]">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-[var(--space-5)] animate-pulse">
+              <div className="flex items-center gap-[var(--space-3)] mb-[var(--space-4)]">
+                <div className="w-[var(--space-10)] h-[var(--space-10)] rounded-[var(--radius-lg)] bg-[hsl(var(--bg-subtle))]" />
+                <div>
+                  <div className="h-4 bg-[hsl(var(--bg-subtle))] rounded w-24 mb-[var(--space-1)]" />
+                  <div className="h-3 bg-[hsl(var(--bg-subtle))] rounded w-16" />
+                </div>
+              </div>
+              <div className="h-3 bg-[hsl(var(--bg-subtle))] rounded w-full mb-[var(--space-2)]" />
+              <div className="h-3 bg-[hsl(var(--bg-subtle))] rounded w-2/3" />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
   }
 
+  // ---- Error state ----
+
+  if (error) {
+    return (
+      <div className="p-[var(--space-6)]">
+        <div className="bg-[hsl(var(--status-error-bg))] text-[hsl(var(--status-error-fg))] border border-[hsl(var(--status-error-border))] rounded-[var(--card-radius)] p-[var(--space-4)] text-[var(--text-sm)]">{error}</div>
+      </div>
+    )
+  }
+
+  const installedCount = (skillsList || []).filter(s => s.registry_slug).length
+  const totalCount = skillsTotal ?? (skillsList || []).length
+
   return (
-    <div className="p-4 md:p-6 max-w-6xl mx-auto space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+    <div className="p-[var(--space-6)]">
+      {/* ── Header ── */}
+      <div className="flex flex-wrap items-center justify-between gap-[var(--space-4)] mb-[var(--space-5)]">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <h2 className="text-[var(--text-2xl)] font-[var(--font-bold)] text-[hsl(var(--text-primary))]">
+            {t('title')}
+          </h2>
+          <p className="text-[var(--text-sm)] text-[hsl(var(--text-muted))] mt-[var(--space-1)]">
             {t('subtitle')} {dashboardMode === 'local' ? t('localMode') : t('gatewayMode')}.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setActiveTab('installed')}
-            className={`px-3 py-1.5 text-xs rounded-md transition-colors ${activeTab === 'installed' ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground hover:text-foreground'}`}
-          >
-            {t('tabInstalled')}
-          </button>
-          <button
-            onClick={() => setActiveTab('registry')}
-            className={`px-3 py-1.5 text-xs rounded-md transition-colors ${activeTab === 'registry' ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground hover:text-foreground'}`}
-          >
-            {t('tabRegistry')}
-          </button>
+
+        <div className="flex items-center gap-[var(--space-3)]">
+          {/* Pill-style tab switcher */}
+          <div className="flex rounded-[var(--radius-full)] bg-[hsl(var(--bg-subtle))] p-[var(--space-0-5)]">
+            <button
+              onClick={() => setActiveTab('installed')}
+              className={`px-[var(--space-4)] py-[var(--space-1-5)] text-[var(--text-sm)] font-[var(--font-medium)] rounded-[var(--radius-full)] transition-colors ${
+                activeTab === 'installed'
+                  ? 'bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-fg))] shadow-sm'
+                  : 'text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))]'
+              }`}
+            >
+              {t('tabInstalled')}
+            </button>
+            <button
+              onClick={() => setActiveTab('registry')}
+              className={`px-[var(--space-4)] py-[var(--space-1-5)] text-[var(--text-sm)] font-[var(--font-medium)] rounded-[var(--radius-full)] transition-colors ${
+                activeTab === 'registry'
+                  ? 'bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-fg))] shadow-sm'
+                  : 'text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))]'
+              }`}
+            >
+              {t('tabRegistry')}
+            </button>
+          </div>
         </div>
       </div>
 
+      {/* ── Install message banner ── */}
       {installMessage && (
-        <div className={`rounded-lg border px-4 py-2 text-xs ${
+        <div className={`rounded-[var(--radius-md)] border px-[var(--space-4)] py-[var(--space-2)] text-[var(--text-xs)] mb-[var(--space-4)] ${
           installMessage.startsWith('Failed') || installMessage.startsWith('Install error')
-            ? 'bg-destructive/10 border-destructive/30 text-destructive'
-            : 'bg-status-success-bg border-status-success-border text-status-success-fg'
+            ? 'bg-[hsl(var(--status-error-bg))] border-[hsl(var(--status-error-border))] text-[hsl(var(--status-error-fg))]'
+            : 'bg-[hsl(var(--status-success-bg))] border-[hsl(var(--status-success-border))] text-[hsl(var(--status-success-fg))]'
         }`}>
           {installMessage}
         </div>
       )}
 
+      {/* ================================================================
+           INSTALLED TAB
+         ================================================================ */}
       {activeTab === 'installed' && (
         <>
-          <div className="relative">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/50" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="7" cy="7" r="4.5" />
-              <path d="M10.5 10.5L14 14" />
-            </svg>
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t('searchPlaceholder')}
-              className="h-9 w-full rounded-md border border-border bg-secondary/50 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40"
-            />
-            {query && (
-              <button
-                onClick={() => setQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-foreground text-xs"
-                title="Clear"
-              >
-                ✕
-              </button>
-            )}
+          {/* Search + actions bar */}
+          <div className="flex flex-wrap items-center gap-[var(--space-3)] mb-[var(--space-4)]">
+            <div className="relative flex-1 min-w-[200px]">
+              <svg className="absolute left-[var(--space-3)] top-1/2 -translate-y-1/2 w-4 h-4 text-[hsl(var(--text-muted))]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="7" cy="7" r="4.5" />
+                <path d="M10.5 10.5L14 14" />
+              </svg>
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t('searchPlaceholder')}
+                className="h-[var(--space-10)] w-full rounded-[var(--input-radius)] border border-[hsl(var(--input-border))] bg-[hsl(var(--bg-surface-raised))] pl-[var(--space-10)] pr-[var(--space-3)] text-[var(--input-font-size)] text-[hsl(var(--input-text))] placeholder:text-[hsl(var(--input-placeholder))] focus:outline-none focus:border-[hsl(var(--input-border-focus))]"
+              />
+              {query && (
+                <button
+                  onClick={() => setQuery('')}
+                  className="absolute right-[var(--space-3)] top-1/2 -translate-y-1/2 text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] text-[var(--text-xs)]"
+                  title="Clear"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            <Button variant="outline" size="sm" onClick={scanAllSkills} disabled={loading || saving || !!scanAll?.running}>
+              {scanAll?.running ? t('scanningProgress', { done: scanAll.done, total: scanAll.total }) : t('scanAll')}
+            </Button>
+            <Button variant="outline" size="sm" onClick={refresh} disabled={loading || saving}>
+              {t('refreshNow')}
+            </Button>
           </div>
+
+          {/* Category filter pills */}
+          {categories.length > 1 && (
+            <div className="flex flex-wrap gap-[var(--space-2)] mb-[var(--space-4)]">
+              <button
+                onClick={() => setActiveRoot(null)}
+                className={`px-[var(--space-3)] py-[var(--space-1)] text-[var(--text-xs)] font-[var(--font-medium)] rounded-[var(--radius-full)] border transition-colors ${
+                  !activeRoot
+                    ? 'bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-fg))] border-transparent'
+                    : 'bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-muted))] border-[hsl(var(--border-default))] hover:text-[hsl(var(--text-primary))]'
+                }`}
+              >
+                {t('showAllRoots')} {totalCount}
+              </button>
+              {(skillGroups || []).filter(g => g.skills.length > 0 || ['user-agents', 'user-codex', 'openclaw', 'workspace'].includes(g.source) || g.source.startsWith('workspace-')).map((group) => (
+                <button
+                  key={group.source}
+                  onClick={() => setActiveRoot(activeRoot === group.source ? null : group.source)}
+                  className={`px-[var(--space-3)] py-[var(--space-1)] text-[var(--text-xs)] font-[var(--font-medium)] rounded-[var(--radius-full)] border transition-colors ${
+                    activeRoot === group.source
+                      ? 'bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-fg))] border-transparent'
+                      : 'bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-muted))] border-[hsl(var(--border-default))] hover:text-[hsl(var(--text-primary))]'
+                  }`}
+                >
+                  {getSourceLabel(group.source)} {group.skills.length}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Scan All progress/results */}
+          {scanAll && (
+            <div className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-[var(--space-4)] mb-[var(--space-4)]">
+              {scanAll.running ? (
+                <div className="space-y-[var(--space-2)]">
+                  <div className="flex items-center justify-between text-[var(--text-xs)] text-[hsl(var(--text-muted))]">
+                    <span>{t('scanning')} <span className="text-[hsl(var(--text-primary))] font-[var(--font-medium)]">{scanAll.current}</span></span>
+                    <span>{scanAll.done}/{scanAll.total}</span>
+                  </div>
+                  <div className="h-[var(--space-1-5)] rounded-[var(--radius-full)] bg-[hsl(var(--bg-subtle))] overflow-hidden">
+                    <div
+                      className="h-full rounded-[var(--radius-full)] bg-[hsl(var(--interactive-primary))] transition-all duration-300"
+                      style={{ width: `${(scanAll.done / scanAll.total) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-[var(--space-3)] text-[var(--text-xs)]">
+                    <span className="text-[hsl(var(--status-success-fg))]">{scanAll.results.clean} clean</span>
+                    {scanAll.results.warning > 0 && <span className="text-[hsl(var(--status-warning-fg))]">{scanAll.results.warning} warning</span>}
+                    {scanAll.results.rejected > 0 && <span className="text-[hsl(var(--status-error-fg))]">{scanAll.results.rejected} rejected</span>}
+                    {scanAll.results.error > 0 && <span className="text-[hsl(var(--status-error-fg))]">{scanAll.results.error} errors</span>}
+                    <span className="text-[hsl(var(--text-muted))]">— {t('skillsScanned', { count: scanAll.total })}</span>
+                  </div>
+                  <button onClick={() => setScanAll(null)} className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))]">{t('dismiss')}</button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Search results count */}
           {query && (
-            <div className="text-2xs text-muted-foreground">
+            <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-3)]">
               {t('searchResults', { count: filtered.length, total: skillsTotal, query })}
             </div>
           )}
 
-          <div className="rounded-lg border border-border bg-card p-3 space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <div className="text-xs text-muted-foreground">{t('diskSyncActive')}</div>
-              <div className="flex items-center gap-1.5">
-                <Button
-                  variant="outline"
-                  size="xs"
-                  onClick={scanAllSkills}
-                  disabled={loading || saving || !!scanAll?.running}
-                >
-                  {scanAll?.running ? t('scanningProgress', { done: scanAll.done, total: scanAll.total }) : t('scanAll')}
-                </Button>
-                <Button variant="outline" size="xs" onClick={refresh} disabled={loading || saving}>{t('refreshNow')}</Button>
-              </div>
+          {/* Create skill card */}
+          <div className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-[var(--space-5)] mb-[var(--space-5)]" style={{ boxShadow: 'var(--card-shadow)' }}>
+            <div className="text-[var(--text-sm)] font-[var(--font-semibold)] text-[hsl(var(--text-primary))] mb-[var(--space-3)]">
+              {t('addSkill')}
             </div>
-
-            {/* Scan All progress / results */}
-            {scanAll && (
-              <div className="space-y-2">
-                {scanAll.running && (
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-2xs text-muted-foreground">
-                      <span>{t('scanning')} <span className="text-foreground font-medium">{scanAll.current}</span></span>
-                      <span>{scanAll.done}/{scanAll.total}</span>
-                    </div>
-                    <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-primary transition-all duration-300"
-                        style={{ width: `${(scanAll.done / scanAll.total) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-                {!scanAll.running && (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-2xs">
-                      <span className="text-status-success-fg">{scanAll.results.clean} clean</span>
-                      {scanAll.results.warning > 0 && <span className="text-status-warning-fg">{scanAll.results.warning} warning</span>}
-                      {scanAll.results.rejected > 0 && <span className="text-status-error-fg">{scanAll.results.rejected} rejected</span>}
-                      {scanAll.results.error > 0 && <span className="text-destructive">{scanAll.results.error} errors</span>}
-                      <span className="text-muted-foreground">— {t('skillsScanned', { count: scanAll.total })}</span>
-                    </div>
-                    <button onClick={() => setScanAll(null)} className="text-2xs text-muted-foreground/50 hover:text-foreground">{t('dismiss')}</button>
-                  </div>
-                )}
-              </div>
-            )}
-            <div className="grid grid-cols-1 md:grid-cols-[240px_1fr_auto] gap-2">
+            <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-3)]">{t('diskSyncActive')}</div>
+            <div className="grid grid-cols-1 md:grid-cols-[240px_1fr_auto] gap-[var(--space-2)]">
               <select
                 value={createSource}
                 onChange={(e) => setCreateSource(e.target.value)}
-                className="h-9 rounded-md border border-border bg-secondary/50 px-2 text-xs text-foreground"
+                className="h-[var(--space-10)] rounded-[var(--input-radius)] border border-[hsl(var(--input-border))] bg-[hsl(var(--bg-surface-raised))] px-[var(--space-3)] text-[var(--text-xs)] text-[hsl(var(--text-primary))]"
               >
                 <option value="user-agents">{SOURCE_LABELS['user-agents']}</option>
                 <option value="user-codex">{SOURCE_LABELS['user-codex']}</option>
@@ -531,7 +704,7 @@ export function SkillsPanel() {
                 value={createName}
                 onChange={(e) => setCreateName(e.target.value)}
                 placeholder="new-skill-name"
-                className="h-9 rounded-md border border-border bg-secondary/50 px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                className="h-[var(--space-10)] rounded-[var(--input-radius)] border border-[hsl(var(--input-border))] bg-[hsl(var(--bg-surface-raised))] px-[var(--space-3)] text-[var(--text-sm)] text-[hsl(var(--input-text))] placeholder:text-[hsl(var(--input-placeholder))] focus:outline-none focus:border-[hsl(var(--input-border-focus))]"
               />
               <Button variant="default" size="sm" onClick={createSkill} disabled={saving || !createName.trim()}>
                 {t('addSkill')}
@@ -540,130 +713,130 @@ export function SkillsPanel() {
             <textarea
               value={createContent}
               onChange={(e) => setCreateContent(e.target.value)}
-              className="w-full h-24 rounded-md border border-border bg-secondary/30 p-2 text-xs text-foreground font-mono focus:outline-none"
+              className="w-full h-24 rounded-[var(--input-radius)] border border-[hsl(var(--input-border))] bg-[hsl(var(--bg-surface-raised))] p-[var(--space-3)] text-[var(--text-xs)] text-[hsl(var(--text-primary))] font-[var(--font-mono)] focus:outline-none focus:border-[hsl(var(--input-border-focus))] mt-[var(--space-2)]"
               placeholder={t('initialContent')}
             />
-            {createError && <p className="text-xs text-destructive">{createError}</p>}
+            {createError && <p className="text-[var(--text-xs)] text-[hsl(var(--status-error-fg))] mt-[var(--space-2)]">{createError}</p>}
           </div>
 
-          {loading ? (
-            <div className="rounded-lg border border-border bg-card px-4 py-6 text-sm text-muted-foreground">{t('loadingSkills')}</div>
-          ) : error ? (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-6 text-sm text-destructive">{error}</div>
+          {/* Skills grid */}
+          {filtered.length === 0 ? (
+            <div className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] px-[var(--space-6)] py-[var(--space-10)] text-center text-[var(--text-sm)] text-[hsl(var(--text-muted))]" style={{ boxShadow: 'var(--card-shadow)' }}>
+              {t('noMatch')}
+            </div>
           ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-                {activeRoot && (
-                  <button
-                    onClick={() => setActiveRoot(null)}
-                    className="col-span-full text-left text-2xs text-primary hover:underline"
-                  >
-                    {t('showAllRoots')}
-                  </button>
-                )}
-                {(skillGroups || []).filter(g => g.skills.length > 0 || ['user-agents', 'user-codex', 'openclaw', 'workspace'].includes(g.source) || g.source.startsWith('workspace-')).map((group) => (
-                  <button
-                    key={group.source}
-                    onClick={() => setActiveRoot(activeRoot === group.source ? null : group.source)}
-                    className={`rounded-lg border bg-card p-3 text-left transition-colors ${
-                      activeRoot === group.source
-                        ? 'border-primary ring-1 ring-primary/30'
-                        : group.source === 'openclaw' ? 'border-status-info-border hover:border-status-info-border'
-                        : group.source.startsWith('workspace-') ? 'border-status-info-border hover:border-status-info-border'
-                        : 'border-border hover:border-border/80'
-                    }`}
-                  >
-                    <div className="text-xs font-medium text-muted-foreground">{getSourceLabel(group.source)}</div>
-                    <div className="mt-1 text-lg font-semibold text-foreground">{group.skills.length}</div>
-                    <div className="mt-1 text-2xs text-muted-foreground truncate">{group.path}</div>
-                  </button>
-                ))}
-              </div>
-
-              <div className="rounded-lg border border-border bg-card overflow-hidden">
-                <div className="px-4 py-3 border-b border-border text-xs text-muted-foreground">
-                  {t('skillCount', { count: filtered.length, total: skillsTotal })}
-                </div>
-                {filtered.length === 0 ? (
-                  <div className="px-4 py-6 text-sm text-muted-foreground">{t('noMatch')}</div>
-                ) : (
-                  <div className="divide-y divide-border">
-                    {filtered.map((skill) => (
-                      <div key={skill.id} className="px-4 py-3">
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2">
-                            <div className="font-medium text-sm text-foreground">{skill.name}</div>
-                            {skill.registry_slug && (
-                              <span className="text-2xs rounded-full bg-status-info-bg text-primary border border-status-info-border px-1.5 py-0.5">
-                                registry
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {securityBadge(skill.security_status)}
-                            <span className={`text-2xs rounded-full border px-2 py-0.5 ${
-                              skill.source === 'openclaw'
-                                ? 'bg-status-info-bg text-primary border-status-info-border'
-                                : skill.source.startsWith('workspace-')
-                                  ? 'bg-status-info-bg text-primary border-status-info-border'
-                                  : skill.source.startsWith('project-')
-                                    ? 'bg-status-warning-bg text-status-warning-fg border-status-warning-border'
-                                    : 'border-border text-muted-foreground'
-                            }`}>
-                              {getSourceLabel(skill.source)}
-                            </span>
-                            <Button variant="outline" size="xs" onClick={() => checkSecurity(skill)}>
-                              {t('scan')}
-                            </Button>
-                            <Button variant="outline" size="xs" onClick={() => setSelectedSkill(skill)}>
-                              {t('view')}
-                            </Button>
-                          </div>
-                        </div>
-                        {skill.description && (
-                          <p className="mt-1 text-xs text-muted-foreground">{skill.description}</p>
-                        )}
-                        <p className="mt-1 text-2xs text-muted-foreground/70 break-all">{skill.path}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[var(--space-5)]">
+              {filtered.map((skill) => (
+                <div
+                  key={skill.id}
+                  className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-[var(--space-5)] flex flex-col transition-shadow hover:shadow-[var(--card-shadow-hover)] cursor-pointer"
+                  style={{ boxShadow: 'var(--card-shadow)' }}
+                  onClick={() => setSelectedSkill(skill)}
+                >
+                  {/* Card header: icon + name + version */}
+                  <div className="flex items-start justify-between mb-[var(--space-3)]">
+                    <div className="flex items-center gap-[var(--space-3)]">
+                      {/* Skill icon placeholder */}
+                      <div className="w-[var(--space-10)] h-[var(--space-10)] rounded-[var(--radius-lg)] bg-[hsl(var(--color-indigo-50))] flex items-center justify-center shrink-0">
+                        <svg className="w-[var(--space-5)] h-[var(--space-5)] text-[hsl(var(--interactive-primary))]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M10 2L13 6H17L14 10L15.5 14L10 12L4.5 14L6 10L3 6H7L10 2Z" />
+                        </svg>
                       </div>
-                    ))}
+                      <div className="min-w-0">
+                        <div className="text-[var(--text-md)] font-[var(--font-semibold)] text-[hsl(var(--text-primary))] truncate">{skill.name}</div>
+                        <SecurityBadge status={skill.security_status} />
+                      </div>
+                    </div>
+                    {/* Status badge */}
+                    {skill.registry_slug ? (
+                      <span className="shrink-0 flex items-center gap-[var(--space-1)] text-[var(--text-xs)] text-[hsl(var(--status-success-fg))]">
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M3.5 8.5L6.5 11.5L12.5 4.5" />
+                        </svg>
+                        Installed
+                      </span>
+                    ) : null}
                   </div>
-                )}
-              </div>
-            </>
+
+                  {/* Description */}
+                  {skill.description && (
+                    <p className="text-[var(--text-sm)] text-[hsl(var(--text-muted))] leading-[var(--leading-normal)] mb-[var(--space-3)] line-clamp-2 flex-1">
+                      {skill.description}
+                    </p>
+                  )}
+                  {!skill.description && <div className="flex-1" />}
+
+                  {/* Source badge + path tag */}
+                  <div className="flex flex-wrap gap-[var(--space-1-5)] mb-[var(--space-3)]">
+                    <span className={`text-[var(--text-xs)] rounded-[var(--radius-full)] border px-[var(--space-2)] py-[var(--space-0-5)] ${sourceBadgeClasses(skill.source)}`}>
+                      {getSourceLabel(skill.source)}
+                    </span>
+                  </div>
+
+                  {/* Footer: actions */}
+                  <div className="flex items-center justify-between pt-[var(--space-3)] border-t border-[hsl(var(--border-subtle))]">
+                    <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] truncate">{skill.path}</span>
+                    <div className="flex items-center gap-[var(--space-1-5)] shrink-0 ml-[var(--space-2)]">
+                      <Button variant="outline" size="xs" onClick={(e) => { e.stopPropagation(); checkSecurity(skill) }}>
+                        {t('scan')}
+                      </Button>
+                      <Button variant="outline" size="xs" onClick={(e) => { e.stopPropagation(); setSelectedSkill(skill) }}>
+                        {t('view')}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
+
+          {/* Summary footer */}
+          <div className="mt-[var(--space-5)] text-[var(--text-sm)] text-[hsl(var(--text-muted))]">
+            {t('skillCount', { count: filtered.length, total: skillsTotal })}
+          </div>
         </>
       )}
 
+      {/* ================================================================
+           REGISTRY TAB
+         ================================================================ */}
       {activeTab === 'registry' && (
         <>
-          <div className="rounded-lg border border-border bg-card p-3 space-y-3">
-            <div className="flex items-center gap-2">
+          {/* Registry search card */}
+          <div className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-[var(--space-5)] mb-[var(--space-5)]" style={{ boxShadow: 'var(--card-shadow)' }}>
+            <div className="flex flex-wrap items-center gap-[var(--space-3)]">
               <select
                 value={registrySource}
                 onChange={(e) => { setRegistrySource(e.target.value as 'clawhub' | 'skills-sh' | 'awesome-openclaw'); setRegistryResults([]); setRegistrySearched(false) }}
-                className="h-9 rounded-md border border-border bg-secondary/50 px-2 text-xs text-foreground"
+                className="h-[var(--space-10)] rounded-[var(--input-radius)] border border-[hsl(var(--input-border))] bg-[hsl(var(--bg-surface-raised))] px-[var(--space-3)] text-[var(--text-xs)] text-[hsl(var(--text-primary))]"
               >
                 <option value="clawhub">ClawdHub</option>
                 <option value="skills-sh">skills.sh</option>
                 <option value="awesome-openclaw">Awesome OpenClaw</option>
               </select>
-              <input
-                value={registryQuery}
-                onChange={(e) => setRegistryQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && searchRegistry()}
-                placeholder={t('registrySearchPlaceholder')}
-                className="h-9 flex-1 rounded-md border border-border bg-secondary/50 px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-              />
+              <div className="relative flex-1 min-w-[200px]">
+                <svg className="absolute left-[var(--space-3)] top-1/2 -translate-y-1/2 w-4 h-4 text-[hsl(var(--text-muted))]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="7" cy="7" r="4.5" />
+                  <path d="M10.5 10.5L14 14" />
+                </svg>
+                <input
+                  value={registryQuery}
+                  onChange={(e) => setRegistryQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && searchRegistry()}
+                  placeholder={t('registrySearchPlaceholder')}
+                  className="h-[var(--space-10)] w-full rounded-[var(--input-radius)] border border-[hsl(var(--input-border))] bg-[hsl(var(--bg-surface-raised))] pl-[var(--space-10)] pr-[var(--space-3)] text-[var(--input-font-size)] text-[hsl(var(--input-text))] placeholder:text-[hsl(var(--input-placeholder))] focus:outline-none focus:border-[hsl(var(--input-border-focus))]"
+                />
+              </div>
               <Button variant="default" size="sm" onClick={searchRegistry} disabled={registryLoading || !registryQuery.trim()}>
                 {registryLoading ? t('searching') : t('search')}
               </Button>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">{t('installTo')}</span>
+            <div className="flex items-center gap-[var(--space-2)] mt-[var(--space-3)]">
+              <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">{t('installTo')}</span>
               <select
                 value={installTarget}
                 onChange={(e) => setInstallTarget(e.target.value)}
-                className="h-7 rounded-md border border-border bg-secondary/50 px-2 text-xs text-foreground"
+                className="h-7 rounded-[var(--input-radius)] border border-[hsl(var(--input-border))] bg-[hsl(var(--bg-surface-raised))] px-[var(--space-3)] text-[var(--text-xs)] text-[hsl(var(--text-primary))]"
               >
                 <option value="user-agents">{SOURCE_LABELS['user-agents']}</option>
                 <option value="user-codex">{SOURCE_LABELS['user-codex']}</option>
@@ -677,26 +850,35 @@ export function SkillsPanel() {
             </div>
           </div>
 
+          {/* Registry error */}
           {registryError && (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <div className="rounded-[var(--card-radius)] border border-[hsl(var(--status-error-border))] bg-[hsl(var(--status-error-bg))] px-[var(--space-4)] py-[var(--space-3)] text-[var(--text-sm)] text-[hsl(var(--status-error-fg))] mb-[var(--space-5)]">
               {registryError}
             </div>
           )}
 
+          {/* Registry results grid */}
           {registryResults.length > 0 ? (
-            <div className="rounded-lg border border-border bg-card overflow-hidden">
-              <div className="px-4 py-3 border-b border-border text-xs text-muted-foreground">
+            <>
+              <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-3)]">
                 {registryResults.length} results from {{ clawhub: 'ClawdHub', 'skills-sh': 'skills.sh', 'awesome-openclaw': 'Awesome OpenClaw' }[registrySource]}
               </div>
-              <div className="divide-y divide-border">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[var(--space-5)]">
                 {registryResults.map((skill) => (
-                  <div key={skill.slug} className="px-4 py-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <div className="font-medium text-sm text-foreground">{skill.name}</div>
-                        <div className="text-2xs text-muted-foreground mt-0.5">
-                          by {skill.author} • v{skill.version}
-                          {skill.installCount != null && ` • ${skill.installCount} installs`}
+                  <div key={skill.slug} className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-[var(--space-5)] flex flex-col" style={{ boxShadow: 'var(--card-shadow)' }}>
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-[var(--space-3)]">
+                      <div className="flex items-center gap-[var(--space-3)]">
+                        <div className="w-[var(--space-10)] h-[var(--space-10)] rounded-[var(--radius-lg)] bg-[hsl(var(--color-indigo-50))] flex items-center justify-center shrink-0">
+                          <svg className="w-[var(--space-5)] h-[var(--space-5)] text-[hsl(var(--interactive-primary))]" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M10 2L13 6H17L14 10L15.5 14L10 12L4.5 14L6 10L3 6H7L10 2Z" />
+                          </svg>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-[var(--text-md)] font-[var(--font-semibold)] text-[hsl(var(--text-primary))] truncate">{skill.name}</div>
+                          <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">
+                            v{skill.version}
+                          </div>
                         </div>
                       </div>
                       <Button
@@ -708,51 +890,87 @@ export function SkillsPanel() {
                         {installing === skill.slug ? t('installing') : t('install')}
                       </Button>
                     </div>
+
+                    {/* Description */}
                     {skill.description && (
-                      <p className="mt-1 text-xs text-muted-foreground">{skill.description}</p>
+                      <p className="text-[var(--text-sm)] text-[hsl(var(--text-muted))] leading-[var(--leading-normal)] mb-[var(--space-3)] line-clamp-2 flex-1">
+                        {skill.description}
+                      </p>
                     )}
+                    {!skill.description && <div className="flex-1" />}
+
+                    {/* Tags */}
                     {skill.tags && skill.tags.length > 0 && (
-                      <div className="mt-1.5 flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-[var(--space-1-5)] mb-[var(--space-3)]">
                         {skill.tags.slice(0, 5).map((tag) => (
-                          <span key={tag} className="text-2xs rounded-full bg-secondary/50 border border-border px-1.5 py-0.5 text-muted-foreground">
+                          <span key={tag} className="text-[var(--text-xs)] rounded-[var(--radius-full)] bg-[hsl(var(--bg-subtle))] border border-[hsl(var(--border-default))] px-[var(--space-2)] py-[var(--space-0-5)] text-[hsl(var(--text-muted))]">
                             {tag}
                           </span>
                         ))}
                       </div>
                     )}
+
+                    {/* Footer: author + installs */}
+                    <div className="flex items-center justify-between pt-[var(--space-3)] border-t border-[hsl(var(--border-subtle))]">
+                      <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">
+                        by {skill.author}
+                      </span>
+                      {skill.installCount != null && (
+                        <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">
+                          {skill.installCount.toLocaleString()} installs
+                        </span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
+            </>
           ) : registryLoading ? (
-            <div className="rounded-lg border border-border bg-card px-4 py-6 text-sm text-muted-foreground">{t('searching')}</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[var(--space-5)]">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-[var(--space-5)] animate-pulse">
+                  <div className="flex items-center gap-[var(--space-3)] mb-[var(--space-4)]">
+                    <div className="w-[var(--space-10)] h-[var(--space-10)] rounded-[var(--radius-lg)] bg-[hsl(var(--bg-subtle))]" />
+                    <div>
+                      <div className="h-4 bg-[hsl(var(--bg-subtle))] rounded w-24 mb-[var(--space-1)]" />
+                      <div className="h-3 bg-[hsl(var(--bg-subtle))] rounded w-16" />
+                    </div>
+                  </div>
+                  <div className="h-3 bg-[hsl(var(--bg-subtle))] rounded w-full mb-[var(--space-2)]" />
+                  <div className="h-3 bg-[hsl(var(--bg-subtle))] rounded w-2/3" />
+                </div>
+              ))}
+            </div>
           ) : registrySearched ? (
-            <div className="rounded-lg border border-border bg-card px-4 py-6 text-sm text-muted-foreground">
+            <div className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] px-[var(--space-6)] py-[var(--space-10)] text-center text-[var(--text-sm)] text-[hsl(var(--text-muted))]" style={{ boxShadow: 'var(--card-shadow)' }}>
               {t('noRegistryResults', { query: registryQuery, registry: { clawhub: 'ClawdHub', 'skills-sh': 'skills.sh', 'awesome-openclaw': 'Awesome OpenClaw' }[registrySource] })}
             </div>
           ) : (
-            <div className="rounded-lg border border-border bg-card px-4 py-6 text-sm text-muted-foreground">
+            <div className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] px-[var(--space-6)] py-[var(--space-10)] text-center text-[var(--text-sm)] text-[hsl(var(--text-muted))]" style={{ boxShadow: 'var(--card-shadow)' }}>
               {t('registryPrompt')}
             </div>
           )}
         </>
       )}
 
+      {/* ================================================================
+           INSTALL MODAL
+         ================================================================ */}
       {isMounted && installModal && createPortal(
         <div className="fixed inset-0 z-[130]">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-card border border-border rounded-lg shadow-2xl overflow-hidden">
-              <div className="px-5 pt-5 pb-4">
-                <h3 className="text-sm font-semibold text-foreground">
+          <div className="absolute inset-0 flex items-center justify-center p-[var(--space-4)]">
+            <div className="w-full max-w-md rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] shadow-[var(--shadow-xl)] overflow-hidden">
+              <div className="px-[var(--space-5)] pt-[var(--space-5)] pb-[var(--space-4)]">
+                <h3 className="text-[var(--text-base)] font-[var(--font-semibold)] text-[hsl(var(--text-primary))]">
                   {installModal.step === 'done' ? t('skillInstalled') : installModal.step === 'error' ? t('installFailed') : t('installingSkill')}
                 </h3>
-                <p className="text-xs text-muted-foreground mt-1 truncate">{installModal.name}</p>
+                <p className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] mt-[var(--space-1)] truncate">{installModal.name}</p>
               </div>
 
-              <div className="px-5 pb-5 space-y-3">
+              <div className="px-[var(--space-5)] pb-[var(--space-5)] space-y-[var(--space-3)]">
                 {/* Progress steps */}
-                <div className="space-y-2">
+                <div className="space-y-[var(--space-2)]">
                   <InstallStep
                     label={t('stepFetching')}
                     status={installModal.step === 'fetching' ? 'active' : installModal.step === 'error' && !installModal.securityStatus ? 'error' : 'done'}
@@ -780,10 +998,10 @@ export function SkillsPanel() {
 
                 {/* Result message */}
                 {installModal.message && (installModal.step === 'done' || installModal.step === 'error') && (
-                  <div className={`rounded-md border px-3 py-2 text-xs ${
+                  <div className={`rounded-[var(--radius-md)] border px-[var(--space-3)] py-[var(--space-2)] text-[var(--text-xs)] ${
                     installModal.step === 'error'
-                      ? 'bg-destructive/10 border-destructive/30 text-destructive'
-                      : 'bg-status-success-bg border-status-success-border text-status-success-fg'
+                      ? 'bg-[hsl(var(--status-error-bg))] border-[hsl(var(--status-error-border))] text-[hsl(var(--status-error-fg))]'
+                      : 'bg-[hsl(var(--status-success-bg))] border-[hsl(var(--status-success-border))] text-[hsl(var(--status-success-fg))]'
                   }`}>
                     {installModal.message}
                   </div>
@@ -791,12 +1009,12 @@ export function SkillsPanel() {
 
                 {/* Security badge */}
                 {installModal.securityStatus && installModal.step === 'done' && (
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="text-muted-foreground">{t('security')}</span>
+                  <div className="flex items-center gap-[var(--space-2)] text-[var(--text-xs)]">
+                    <span className="text-[hsl(var(--text-muted))]">{t('security')}</span>
                     <span className={
-                      installModal.securityStatus === 'clean' ? 'text-status-success-fg'
-                        : installModal.securityStatus === 'warning' ? 'text-status-warning-fg'
-                        : 'text-status-error-fg'
+                      installModal.securityStatus === 'clean' ? 'text-[hsl(var(--status-success-fg))]'
+                        : installModal.securityStatus === 'warning' ? 'text-[hsl(var(--status-warning-fg))]'
+                        : 'text-[hsl(var(--status-error-fg))]'
                     }>{installModal.securityStatus}</span>
                   </div>
                 )}
@@ -804,7 +1022,7 @@ export function SkillsPanel() {
 
               {/* Footer */}
               {(installModal.step === 'done' || installModal.step === 'error') && (
-                <div className="px-5 py-3 border-t border-border flex items-center justify-end gap-2">
+                <div className="px-[var(--space-5)] py-[var(--space-3)] border-t border-[hsl(var(--border-default))] flex items-center justify-end gap-[var(--space-2)]">
                   {installModal.step === 'done' && (
                     <Button
                       variant="outline"
@@ -829,18 +1047,22 @@ export function SkillsPanel() {
         document.body
       )}
 
+      {/* ================================================================
+           SKILL DETAIL DRAWER
+         ================================================================ */}
       {isMounted && selectedSkill && createPortal(
         <div className="fixed inset-0 z-[120]">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setSelectedSkill(null)} />
-          <aside className="absolute right-0 top-0 h-full w-[min(52rem,100vw)] bg-card border-l border-border shadow-2xl flex flex-col">
-            <div className="px-4 py-3 border-b border-border flex items-center justify-between gap-3">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setSelectedSkill(null)} />
+          <aside className="absolute right-0 top-0 h-full w-[min(52rem,100vw)] bg-[hsl(var(--card-bg))] border-l border-[hsl(var(--border-default))] shadow-[var(--shadow-xl)] flex flex-col">
+            {/* Drawer header */}
+            <div className="px-[var(--space-5)] py-[var(--space-4)] border-b border-[hsl(var(--border-default))] flex items-center justify-between gap-[var(--space-3)]">
               <div className="min-w-0">
-                <h3 className="text-sm font-semibold text-foreground truncate">{selectedSkill.name}</h3>
-                <p className="text-2xs text-muted-foreground truncate">
+                <h3 className="text-[var(--text-lg)] font-[var(--font-semibold)] text-[hsl(var(--text-primary))] truncate">{selectedSkill.name}</h3>
+                <p className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] truncate mt-[var(--space-0-5)]">
                   {selectedSkill.source} • {selectedSkill.path}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-[var(--space-2)]">
                 <Button variant="destructive" size="sm" onClick={deleteSkill} disabled={saving || drawerLoading}>
                   {t('delete')}
                 </Button>
@@ -850,26 +1072,27 @@ export function SkillsPanel() {
                 <Button variant="ghost" size="sm" onClick={() => setSelectedSkill(null)}>{t('close')}</Button>
               </div>
             </div>
+            {/* Drawer body */}
             <div className="flex-1 overflow-y-auto">
               {drawerLoading ? (
-                <div className="p-4 text-sm text-muted-foreground">{t('loadingSkillContent')}</div>
+                <div className="p-[var(--space-5)] text-[var(--text-sm)] text-[hsl(var(--text-muted))]">{t('loadingSkillContent')}</div>
               ) : drawerError ? (
-                <div className="p-4 text-sm text-destructive">{drawerError}</div>
+                <div className="p-[var(--space-5)] text-[var(--text-sm)] text-[hsl(var(--status-error-fg))]">{drawerError}</div>
               ) : selectedContent ? (
                 <>
                   {selectedContent.security && selectedContent.security.issues.length > 0 && (
-                    <div className={`mx-4 mt-3 rounded-lg border p-3 text-xs ${
+                    <div className={`mx-[var(--space-5)] mt-[var(--space-4)] rounded-[var(--radius-lg)] border p-[var(--space-4)] text-[var(--text-xs)] ${
                       selectedContent.security.status === 'rejected'
-                        ? 'bg-status-error-bg border-status-error-border text-status-error-fg'
+                        ? 'bg-[hsl(var(--status-error-bg))] border-[hsl(var(--status-error-border))] text-[hsl(var(--status-error-fg))]'
                         : selectedContent.security.status === 'warning'
-                          ? 'bg-status-warning-bg border-status-warning-border text-status-warning-fg'
-                          : 'bg-muted border-border text-muted-foreground'
+                          ? 'bg-[hsl(var(--status-warning-bg))] border-[hsl(var(--status-warning-border))] text-[hsl(var(--status-warning-fg))]'
+                          : 'bg-[hsl(var(--bg-subtle))] border-[hsl(var(--border-default))] text-[hsl(var(--text-muted))]'
                     }`}>
-                      <div className="font-medium mb-1">{t('security')}: {selectedContent.security.status}</div>
+                      <div className="font-[var(--font-medium)] mb-[var(--space-2)]">{t('security')}: {selectedContent.security.status}</div>
                       {selectedContent.security.issues.map((issue, i) => (
-                        <div key={i} className="flex items-start gap-1.5 mt-1">
-                          <span className={`mt-0.5 text-2xs font-mono ${
-                            issue.severity === 'critical' ? 'text-status-error-fg' : issue.severity === 'warning' ? 'text-status-warning-fg' : 'text-muted-foreground'
+                        <div key={i} className="flex items-start gap-[var(--space-2)] mt-[var(--space-1)]">
+                          <span className={`mt-[var(--space-0-5)] text-[var(--text-xs)] font-[var(--font-mono)] ${
+                            issue.severity === 'critical' ? 'text-[hsl(var(--status-error-fg))]' : issue.severity === 'warning' ? 'text-[hsl(var(--status-warning-fg))]' : 'text-[hsl(var(--text-muted))]'
                           }`}>[{issue.severity}]</span>
                           <span>{issue.description}{issue.line ? ` (line ${issue.line})` : ''}</span>
                         </div>
@@ -879,50 +1102,17 @@ export function SkillsPanel() {
                   <textarea
                     value={draftContent}
                     onChange={(e) => setDraftContent(e.target.value)}
-                    className="w-full h-full min-h-[70vh] bg-card p-4 text-xs text-muted-foreground leading-5 font-mono whitespace-pre rounded-none border-0 focus:outline-none"
+                    className="w-full h-full min-h-[70vh] bg-[hsl(var(--card-bg))] p-[var(--space-5)] text-[var(--text-xs)] text-[hsl(var(--text-muted))] leading-[var(--leading-relaxed)] font-[var(--font-mono)] whitespace-pre rounded-none border-0 focus:outline-none"
                   />
                 </>
               ) : (
-                <div className="p-4 text-sm text-muted-foreground">{t('noContent')}</div>
+                <div className="p-[var(--space-5)] text-[var(--text-sm)] text-[hsl(var(--text-muted))]">{t('noContent')}</div>
               )}
             </div>
           </aside>
         </div>,
         document.body
       )}
-    </div>
-  )
-}
-
-function InstallStep({ label, status }: { label: string; status: 'pending' | 'active' | 'done' | 'error' }) {
-  return (
-    <div className="flex items-center gap-2.5">
-      <div className="w-5 h-5 flex items-center justify-center shrink-0">
-        {status === 'pending' && (
-          <span className="w-2 h-2 rounded-full bg-muted-foreground/30" />
-        )}
-        {status === 'active' && (
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-        )}
-        {status === 'done' && (
-          <svg className="w-4 h-4 text-status-success-fg" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3.5 8.5L6.5 11.5L12.5 4.5" />
-          </svg>
-        )}
-        {status === 'error' && (
-          <svg className="w-4 h-4 text-destructive" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4.5 4.5L11.5 11.5M11.5 4.5L4.5 11.5" />
-          </svg>
-        )}
-      </div>
-      <span className={`text-xs ${
-        status === 'active' ? 'text-foreground font-medium'
-          : status === 'done' ? 'text-muted-foreground'
-          : status === 'error' ? 'text-destructive'
-          : 'text-muted-foreground/50'
-      }`}>
-        {label}
-      </span>
     </div>
   )
 }
