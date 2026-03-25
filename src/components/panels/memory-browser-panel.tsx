@@ -82,11 +82,16 @@ function totalSize(files: MemoryFile[]): number {
 // File type icons (SVG) for VS Code-style tree
 // ---------------------------------------------------------------------------
 
-function FileTypeIcon({ name, isDir }: { name: string; isDir: boolean }) {
+function FileTypeIcon({ name, isDir, isOpen }: { name: string; isDir: boolean; isOpen?: boolean }) {
   if (isDir) {
-    return (
+    return isOpen ? (
       <svg className="w-[var(--space-4)] h-[var(--space-4)] shrink-0" viewBox="0 0 16 16" fill="none">
-        <path d="M1.5 2.5h4.5l1.5 1.5h7v9.5h-13z" fill="hsl(var(--status-warning-icon))" opacity="0.7" />
+        <path d="M1.5 2.5h4.5l1.5 1.5h7v9.5h-13z" fill="#6C5CE7" opacity="0.85" />
+        <path d="M1.5 6h13l-2 7.5h-9z" fill="#6C5CE7" opacity="0.6" />
+      </svg>
+    ) : (
+      <svg className="w-[var(--space-4)] h-[var(--space-4)] shrink-0" viewBox="0 0 16 16" fill="none">
+        <path d="M1.5 2.5h4.5l1.5 1.5h7v9.5h-13z" fill="#6C5CE7" opacity="0.7" />
       </svg>
     )
   }
@@ -264,7 +269,6 @@ export function MemoryBrowserPanel() {
   const [hermesMemory, setHermesMemory] = useState<{ agentMemory: string | null; userMemory: string | null; agentMemorySize: number; userMemorySize: number; agentMemoryEntries: number; userMemoryEntries: number } | null>(null)
   const [hermesInstalled, setHermesInstalled] = useState<boolean | null>(null)
   const [isLoadingHermes, setIsLoadingHermes] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
   const [fileFilter, setFileFilter] = useState<'all' | 'daily' | 'knowledge'>('all')
   const [schemaWarnings, setSchemaWarnings] = useState<string[]>([])
   const [linksOpen, setLinksOpen] = useState(false)
@@ -559,8 +563,8 @@ export function MemoryBrowserPanel() {
           <div
             className={`group flex items-center gap-[var(--space-1)] py-[var(--space-1)] pr-[var(--space-3)] cursor-pointer text-[var(--text-sm)] transition-colors duration-75 rounded-[var(--radius-sm)] ${
               isSelected
-                ? 'bg-[hsl(var(--interactive-primary-subtle))] text-[hsl(var(--text-primary))]'
-                : 'text-[hsl(var(--text-secondary))] hover:bg-[hsl(var(--bg-subtle))]'
+                ? 'bg-[#EDE9FD] text-[#6C5CE7]'
+                : 'text-[#444455] hover:bg-black/[0.03]'
             }`}
             style={{ paddingLeft: `${8 + depth * 16}px` }}
             onClick={() => void (isDir ? toggleFolder(file.path, file.children === undefined) : loadFileContent(file.path))}
@@ -589,12 +593,12 @@ export function MemoryBrowserPanel() {
               <span className="w-[var(--space-4)] shrink-0" />
             )}
             {/* File type icon */}
-            <FileTypeIcon name={file.name} isDir={isDir} />
+            <FileTypeIcon name={file.name} isDir={isDir} isOpen={isDir && isExpanded} />
             {/* Name */}
             <span className="truncate flex-1 font-[var(--font-regular)]">{file.name}</span>
             {/* Size (muted) */}
             {!isDir && file.size != null && (
-              <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] shrink-0 tabular-nums opacity-0 group-hover:opacity-100 transition-opacity">{formatFileSize(file.size)}</span>
+              <span className="text-[var(--text-xs)] text-[#888899] shrink-0 tabular-nums">{formatFileSize(file.size)}</span>
             )}
             {/* Hover actions */}
             {!isDir && (
@@ -631,16 +635,16 @@ export function MemoryBrowserPanel() {
           <button
             key={key++}
             onClick={() => navigateToWikiLink(target)}
-            className="text-[hsl(var(--interactive-primary))] hover:text-[hsl(var(--interactive-primary-hover))] underline underline-offset-2 decoration-[hsl(var(--interactive-primary))]/30 hover:decoration-[hsl(var(--interactive-primary))]/60 transition-colors font-[var(--font-mono)] text-[var(--text-xs)] cursor-pointer"
+            className="text-[#6C5CE7] hover:text-[#5B4BD5] underline underline-offset-2 decoration-[#6C5CE7]/30 hover:decoration-[#6C5CE7]/60 transition-colors font-mono text-xs cursor-pointer"
             title={`Navigate to [[${target}]]`}
           >
             {display}
           </button>
         )
       } else if (m.startsWith('`') && m.endsWith('`')) {
-        parts.push(<code key={key++} className="bg-[hsl(var(--bg-subtle))] px-[var(--space-1)] py-[var(--space-0-5)] rounded-[var(--radius-xs)] text-[var(--text-xs)] font-[var(--font-mono)] text-[hsl(var(--interactive-primary))]">{m.slice(1, -1)}</code>)
+        parts.push(<code key={key++} className="px-1 py-0.5 rounded text-xs font-mono" style={{ background: '#F0EDFF', color: '#6C5CE7' }}>{m.slice(1, -1)}</code>)
       } else if (m.startsWith('**') && m.endsWith('**')) {
-        parts.push(<strong key={key++} className="font-[var(--font-semibold)] text-[hsl(var(--text-primary))]">{m.slice(2, -2)}</strong>)
+        parts.push(<strong key={key++} className="font-semibold" style={{ color: '#1A1A2E' }}>{m.slice(2, -2)}</strong>)
       } else if (m.startsWith('*') && m.endsWith('*')) {
         parts.push(<em key={key++}>{m.slice(1, -1)}</em>)
       }
@@ -662,25 +666,33 @@ export function MemoryBrowserPanel() {
         const id = `h1-${text.toLowerCase().replace(/\s+/g, '-')}`
         if (seenHeaders.has(id)) continue
         seenHeaders.add(id)
-        elements.push(<h1 key={i} className="text-[var(--text-xl)] font-[var(--font-bold)] mt-[var(--space-6)] mb-[var(--space-2)] text-[hsl(var(--text-primary))] font-[var(--font-mono)]">{renderInline(text)}</h1>)
+        elements.push(<h1 key={i} className="text-xl font-bold mt-6 mb-2" style={{ color: '#1A1A2E' }}>{renderInline(text)}</h1>)
       } else if (trimmed.startsWith('## ')) {
         const text = trimmed.slice(3)
         const id = `h2-${text.toLowerCase().replace(/\s+/g, '-')}`
         if (seenHeaders.has(id)) continue
         seenHeaders.add(id)
-        elements.push(<h2 key={i} className="text-[var(--text-lg)] font-[var(--font-semibold)] mt-[var(--space-5)] mb-[var(--space-2)] text-[hsl(var(--text-secondary))] font-[var(--font-mono)]">{renderInline(text)}</h2>)
+        elements.push(<h2 key={i} className="text-base font-semibold mt-5 mb-2" style={{ color: '#1A1A2E' }}>{renderInline(text)}</h2>)
       } else if (trimmed.startsWith('### ')) {
         const text = trimmed.slice(4)
         const id = `h3-${text.toLowerCase().replace(/\s+/g, '-')}`
         if (seenHeaders.has(id)) continue
         seenHeaders.add(id)
-        elements.push(<h3 key={i} className="text-[var(--text-base)] font-[var(--font-semibold)] mt-[var(--space-4)] mb-[var(--space-1-5)] text-[hsl(var(--text-secondary))] font-[var(--font-mono)]">{renderInline(text)}</h3>)
+        elements.push(<h3 key={i} className="text-sm font-semibold mt-4 mb-1.5" style={{ color: '#1A1A2E' }}>{renderInline(text)}</h3>)
+      } else if (trimmed.startsWith('> ')) {
+        elements.push(
+          <blockquote key={i} className="border-l-2 pl-4 my-2 italic text-sm leading-relaxed" style={{ borderColor: '#6C5CE7', color: '#888899' }}>{renderInline(trimmed.slice(2))}</blockquote>
+        )
       } else if (trimmed.startsWith('- ')) {
         elements.push(
-          <li key={i} className="ml-[var(--space-5)] mb-[var(--space-0-5)] list-disc text-[hsl(var(--text-secondary))] text-[var(--text-sm)] leading-[var(--leading-relaxed)]">{renderInline(trimmed.slice(2))}</li>
+          <li key={i} className="ml-5 mb-0.5 text-sm leading-relaxed marker:text-[#6C5CE7]" style={{ color: '#444455', listStyleType: 'disc' }}>
+            {renderInline(trimmed.slice(2))}
+          </li>
         )
+      } else if (trimmed === '---' || trimmed === '***') {
+        elements.push(<hr key={i} className="my-4" style={{ borderColor: '#E8E8EC' }} />)
       } else if (trimmed === '') {
-        elements.push(<div key={i} className="h-[var(--space-2)]" />)
+        elements.push(<div key={i} className="h-2" />)
       } else if (trimmed.startsWith('```')) {
         const codeLang = trimmed.slice(3)
         const codeLines: string[] = []
@@ -690,15 +702,17 @@ export function MemoryBrowserPanel() {
           j++
         }
         elements.push(
-          <pre key={i} className="bg-[hsl(var(--bg-subtle))] border border-[hsl(var(--border-default))]/50 rounded-[var(--radius-md)] px-[var(--space-3)] py-[var(--space-2)] my-[var(--space-2)] text-[var(--text-xs)] font-[var(--font-mono)] overflow-x-auto">
-            {codeLang && <span className="text-[hsl(var(--text-muted))] text-[10px] block mb-[var(--space-1)]">{codeLang}</span>}
-            <code className="text-[hsl(var(--text-secondary))]">{codeLines.join('\n')}</code>
-          </pre>
+          <div key={i} className="rounded-lg overflow-hidden my-3">
+            {codeLang && <div className="px-3 py-1.5 text-[10px] font-mono font-medium" style={{ background: '#F5F4FF', color: '#6C5CE7' }}>{codeLang}</div>}
+            <pre className="px-3 py-2 text-xs font-mono overflow-x-auto" style={{ background: '#1E1E2D', color: '#E8E8EC' }}>
+              <code>{codeLines.join('\n')}</code>
+            </pre>
+          </div>
         )
         i = j
       } else {
         elements.push(
-          <p key={i} className="mb-[var(--space-1-5)] text-[var(--text-sm)] text-[hsl(var(--text-secondary))] leading-[var(--leading-relaxed)]">{renderInline(trimmed)}</p>
+          <p key={i} className="mb-1.5 text-sm leading-relaxed" style={{ color: '#444455' }}>{renderInline(trimmed)}</p>
         )
       }
     }
@@ -720,38 +734,56 @@ export function MemoryBrowserPanel() {
     return tabs
   }, [isLocal, hermesInstalled, fileCount, healthReport])
 
+  const folderCount = useMemo(() => {
+    const countDirs = (files: MemoryFile[]): number =>
+      files.reduce((acc, f) => acc + (f.type === 'directory' ? 1 + countDirs(f.children || []) : 0), 0)
+    return countDirs(memoryFiles)
+  }, [memoryFiles])
+
+  const selectedFileName = selectedMemoryFile ? selectedMemoryFile.split('/').pop() || '' : ''
+  const selectedFileData = useMemo(() => {
+    if (!selectedMemoryFile || !memoryContent) return null
+    const lines = memoryContent.split('\n').length
+    const words = memoryContent.split(/\s+/).filter(Boolean).length
+    const file = (function findFile(files: MemoryFile[]): MemoryFile | null {
+      for (const f of files) {
+        if (f.path === selectedMemoryFile) return f
+        if (f.children) { const found = findFile(f.children); if (found) return found }
+      }
+      return null
+    })(memoryFiles)
+    const ext = selectedMemoryFile.split('.').pop() || 'txt'
+    const modified = file?.modified ? new Date(file.modified) : null
+    const modifiedLabel = modified ? (() => {
+      const diffMs = Date.now() - modified.getTime()
+      const diffDays = Math.floor(diffMs / 86400000)
+      if (diffDays === 0) return 'Modified today'
+      if (diffDays === 1) return 'Modified yesterday'
+      return `Modified ${diffDays} days ago`
+    })() : null
+    return { lines, words, size: file?.size || 0, ext, modifiedLabel }
+  }, [selectedMemoryFile, memoryContent, memoryFiles])
+
   return (
     <div className="h-[calc(100vh-3.5rem)] flex flex-col overflow-hidden bg-[hsl(var(--bg-canvas))]">
       {/* Top bar */}
       <div className="flex items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-2)] border-b border-[hsl(var(--border-default))] bg-[hsl(var(--bg-surface-raised))]">
-        {/* Sidebar toggle */}
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-[var(--space-1-5)] rounded-[var(--radius-md)] hover:bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-muted))] transition-colors min-w-[var(--space-10)] min-h-[var(--space-10)] flex items-center justify-center"
-          title={sidebarOpen ? t('hideSidebar') : t('showSidebar')}
-          aria-label={sidebarOpen ? t('hideSidebar') : t('showSidebar')}
-        >
-          <svg className="w-[var(--space-4)] h-[var(--space-4)]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-            <path d="M2 4h12M2 8h12M2 12h12" />
-          </svg>
-        </button>
-
-        {/* Segmented control (FR43) */}
-        <div className="inline-flex rounded-[var(--radius-lg)] bg-[hsl(var(--bg-subtle))] p-[var(--space-0-5)]">
+        {/* Segmented pill control */}
+        <div className="inline-flex rounded-full bg-[#F0F0F5] p-0.5">
           {viewTabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveView(tab.key)}
-              className={`px-[var(--space-3)] py-[var(--space-1-5)] rounded-[var(--radius-md)] text-[var(--text-sm)] font-[var(--font-medium)] transition-all duration-150 min-h-[var(--space-8)] ${
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${
                 activeView === tab.key
-                  ? 'bg-[hsl(var(--card-bg))] text-[hsl(var(--text-primary))] shadow-[var(--shadow-sm)]'
-                  : 'text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))]'
+                  ? 'bg-white text-[#1A1A2E] shadow-sm'
+                  : 'text-[#888899] hover:text-[#444455]'
               }`}
             >
               {tab.label}
               {tab.hint && (
-                <span className={`ml-[var(--space-1)] text-[var(--text-xs)] ${
-                  activeView === tab.key ? 'text-[hsl(var(--text-muted))]' : 'text-[hsl(var(--text-muted))]/60'
+                <span className={`ml-1 text-[10px] ${
+                  activeView === tab.key ? 'text-[#888899]' : 'text-[#888899]/60'
                 }`}>
                   ({tab.hint})
                 </span>
@@ -766,51 +798,89 @@ export function MemoryBrowserPanel() {
         {healthReport && (
           <span className={`text-[var(--text-xs)] font-[var(--font-mono)] tabular-nums ${statusColor(healthReport.overall)}`}>{healthReport.overallScore}%</span>
         )}
-        <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] font-[var(--font-mono)] tabular-nums">{t('fileCountSize', { count: fileCount, size: formatFileSize(sizeTotal) })}</span>
-        {isHydratingTree && <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]/50 font-[var(--font-mono)]">{t('indexing')}</span>}
-
-        <div className="w-px h-[var(--space-4)] bg-[hsl(var(--border-default))]" />
+        {isHydratingTree && <span className="text-xs text-[#888899]/50 font-mono">{t('indexing')}</span>}
 
         <button
           onClick={() => setShowCreateModal(true)}
-          className="px-[var(--space-3)] py-[var(--space-1-5)] rounded-[var(--radius-md)] text-[var(--text-sm)] font-[var(--font-medium)] text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] hover:bg-[hsl(var(--bg-subtle))] transition-colors min-h-[var(--space-10)]"
+          className="px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors hover:bg-[#F0F0F5]"
+          style={{ borderColor: '#E8E8EC', color: '#444455' }}
         >
           + {t('newFile')}
         </button>
       </div>
 
       <div className="flex flex-1 min-h-0">
-        {/* Sidebar — VS Code-style file tree */}
-        {sidebarOpen && (
-          <div className="w-64 shrink-0 border-r border-[hsl(var(--border-default))] bg-[hsl(var(--bg-surface-raised))] flex flex-col min-h-0">
-            {/* Search */}
-            <div className="p-[var(--space-2)]">
-              <div className="relative">
-                <svg className="absolute left-[var(--space-2)] top-1/2 -translate-y-1/2 w-[var(--space-4)] h-[var(--space-4)] text-[hsl(var(--text-muted))]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <circle cx="7" cy="7" r="4.5" />
-                  <path d="M10.5 10.5L14 14" strokeLinecap="round" />
-                </svg>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && searchFiles()}
-                  placeholder={t('searchPlaceholder')}
-                  className="w-full pl-[var(--space-8)] pr-[var(--space-2)] py-[var(--space-1-5)] text-[var(--text-sm)] bg-[hsl(var(--input-bg))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] text-[hsl(var(--input-text))] placeholder-[hsl(var(--input-placeholder))] focus:outline-none focus:border-[hsl(var(--input-border-focus))]"
+        {/* Non-files views still use full width */}
+        {activeView === 'graph' && !isLocal ? (
+          <div className="flex-1 overflow-hidden flex flex-col"><MemoryGraph /></div>
+        ) : activeView === 'health' ? (
+          <div className="flex-1 overflow-auto p-[var(--space-6)]"><HealthView report={healthReport} isLoading={isLoadingHealth} onRefresh={loadHealth} /></div>
+        ) : activeView === 'pipeline' ? (
+          <div className="flex-1 overflow-auto p-[var(--space-6)]"><PipelineView result={pipelineResult} mocGroups={mocGroups} isRunning={isRunningPipeline} onRunAction={runPipelineAction} onNavigate={loadFileContent} /></div>
+        ) : activeView === 'hermes' ? (
+          <div className="flex-1 overflow-auto p-[var(--space-6)]">
+            <HermesMemoryView data={hermesMemory} isLoading={isLoadingHermes} onRefresh={() => { setHermesMemory(null); setIsLoadingHermes(false) }} />
+          </div>
+        ) : (
+        /* FILES VIEW — 2-panel card layout matching v0 mockup */
+        <div className="flex flex-1 min-h-0 gap-4 p-4">
+          {/* LEFT PANEL — File Tree (35%) */}
+          <div className="w-[35%] shrink-0 min-w-0 overflow-hidden">
+            <div className="flex flex-col h-full bg-white rounded-xl border" style={{ borderColor: '#E8E8EC', boxShadow: 'rgba(0,0,0,0.06) 0px 1px 3px' }}>
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: '#F0F0F5' }}>
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="none">
+                    <path d="M1.5 2.5h4.5l1.5 1.5h7v9.5h-13z" fill="#6C5CE7" opacity="0.7" />
+                  </svg>
+                  <span className="text-sm font-semibold" style={{ color: '#1A1A2E' }}>Knowledge Base</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: '#F0F0F5', color: '#888899' }}>{fileCount} files</span>
+                  <button
+                    onClick={loadFileTree}
+                    disabled={isLoading}
+                    className="p-1 rounded-md hover:bg-black/[0.03] transition-colors"
+                    style={{ color: '#888899' }}
+                    title={t('refresh')}
+                  >
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                      <path d="M2 8a6 6 0 0111.5-2.3M14 8a6 6 0 01-11.5 2.3" />
+                      <path d="M14 2v4h-4M2 14v-4h4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Search */}
+              <div className="px-3 pt-2 pb-1">
+                <div className="relative">
+                  <svg className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: '#888899' }} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <circle cx="7" cy="7" r="4.5" />
+                    <path d="M10.5 10.5L14 14" strokeLinecap="round" />
+                  </svg>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && searchFiles()}
+                    placeholder={t('searchPlaceholder')}
+                    className="w-full pl-7 pr-2 py-1.5 text-xs bg-white border rounded-lg focus:outline-none focus:border-[#6C5CE7]/40 transition-colors"
+                    style={{ borderColor: '#E8E8EC', color: '#1A1A2E' }}
                 />
               </div>
             </div>
 
             {/* Filter pills */}
-            <div className="flex gap-[var(--space-1)] px-[var(--space-2)] pb-[var(--space-2)]">
+            <div className="flex gap-1 px-3 pb-2">
               {(['all', 'daily', 'knowledge'] as const).map((f) => (
                 <button
                   key={f}
                   onClick={() => setFileFilter(f)}
-                  className={`px-[var(--space-2)] py-[var(--space-0-5)] rounded-[var(--radius-full)] text-[var(--text-xs)] font-[var(--font-medium)] transition-colors capitalize ${
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors capitalize ${
                     fileFilter === f
-                      ? 'bg-[hsl(var(--interactive-primary-subtle))] text-[hsl(var(--interactive-primary))]'
-                      : 'text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] hover:bg-[hsl(var(--bg-subtle))]'
+                      ? 'bg-[#EDE9FD] text-[#6C5CE7]'
+                      : 'text-[#888899] hover:text-[#444455] hover:bg-black/[0.03]'
                   }`}
                 >
                   {f}
@@ -820,144 +890,142 @@ export function MemoryBrowserPanel() {
 
             {/* Search results */}
             {searchResults.length > 0 && (
-              <div className="px-[var(--space-2)] pb-[var(--space-2)] border-b border-[hsl(var(--border-subtle))]">
-                <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] font-[var(--font-mono)] mb-[var(--space-1)]">{t('searchResults', { count: searchResults.length })}</div>
+              <div className="px-3 pb-2 border-b" style={{ borderColor: '#F0F0F5' }}>
+                <div className="text-[10px] font-mono mb-1" style={{ color: '#888899' }}>{t('searchResults', { count: searchResults.length })}</div>
                 <div className="max-h-28 overflow-y-auto space-y-px">
                   {searchResults.map((r, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-[var(--space-1-5)] py-[var(--space-1)] px-[var(--space-1-5)] rounded-[var(--radius-sm)] text-[var(--text-sm)] cursor-pointer hover:bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-secondary))]"
+                      className="flex items-center gap-1.5 py-1 px-1.5 rounded text-xs cursor-pointer hover:bg-black/[0.03]"
+                      style={{ color: '#444455' }}
                       onClick={() => { loadFileContent(r.path); setSearchResults([]) }}
                     >
                       <span className="truncate flex-1">{r.name}</span>
-                      <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">{r.matches}</span>
+                      <span className="text-[10px]" style={{ color: '#888899' }}>{r.matches}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* File tree */}
-            <div className="flex-1 overflow-y-auto py-[var(--space-1)] relative">
-              {isLoading ? (
-                <div className="flex items-center justify-center h-20"><Loader variant="inline" /></div>
-              ) : filteredFiles.length === 0 ? (
-                <div className="text-center text-[hsl(var(--text-muted))] text-[var(--text-sm)] py-[var(--space-8)]">{t('noFiles')}</div>
-              ) : renderTree(filteredFiles)}
-            </div>
+              {/* File tree */}
+              <div className="flex-1 overflow-y-auto py-1 relative">
+                {isLoading ? (
+                  <div className="flex items-center justify-center h-20"><Loader variant="inline" /></div>
+                ) : filteredFiles.length === 0 ? (
+                  <div className="text-center text-xs py-8" style={{ color: '#888899' }}>{t('noFiles')}</div>
+                ) : renderTree(filteredFiles)}
+              </div>
 
-            {/* Refresh */}
-            <div className="p-[var(--space-2)] border-t border-[hsl(var(--border-subtle))]">
-              <button
-                onClick={loadFileTree}
-                disabled={isLoading}
-                className="w-full py-[var(--space-1)] text-[var(--text-xs)] text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] rounded-[var(--radius-md)] hover:bg-[hsl(var(--bg-subtle))] transition-colors"
-              >
-                {t('refresh')}
-              </button>
+              {/* Footer: file/folder count + total size */}
+              <div className="px-4 py-2.5 border-t flex items-center justify-between" style={{ borderColor: '#F0F0F5' }}>
+                <span className="text-xs" style={{ color: '#888899' }}>{folderCount} folders · {fileCount} files</span>
+                <span className="text-xs" style={{ color: '#888899' }}>{formatFileSize(sizeTotal)} total</span>
+              </div>
             </div>
           </div>
-        )}
 
-        {/* Main content */}
-        <div className="flex-1 min-w-0 flex flex-col bg-[hsl(var(--bg-canvas))]">
-          {activeView === 'graph' && !isLocal ? (
-            <div className="flex-1 overflow-hidden flex flex-col"><MemoryGraph /></div>
-          ) : activeView === 'health' ? (
-            <div className="flex-1 overflow-auto p-[var(--space-6)]"><HealthView report={healthReport} isLoading={isLoadingHealth} onRefresh={loadHealth} /></div>
-          ) : activeView === 'pipeline' ? (
-            <div className="flex-1 overflow-auto p-[var(--space-6)]"><PipelineView result={pipelineResult} mocGroups={mocGroups} isRunning={isRunningPipeline} onRunAction={runPipelineAction} onNavigate={loadFileContent} /></div>
-          ) : activeView === 'hermes' ? (
-            <div className="flex-1 overflow-auto p-[var(--space-6)]">
-              <HermesMemoryView data={hermesMemory} isLoading={isLoadingHermes} onRefresh={() => { setHermesMemory(null); setIsLoadingHermes(false) }} />
-            </div>
-          ) : (
-            <div className="flex-1 flex min-h-0">
-              <div className="flex-1 flex flex-col min-h-0">
-                {/* Breadcrumb path bar */}
-                {selectedMemoryFile && (
-                  <div className="flex items-center gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-2)] border-b border-[hsl(var(--border-subtle))] bg-[hsl(var(--bg-surface-raised))]">
-                    {/* Breadcrumb */}
-                    <div className="flex items-center gap-[var(--space-1)] flex-1 min-w-0">
-                      {selectedMemoryFile.split('/').map((segment, idx, arr) => (
-                        <React.Fragment key={idx}>
-                          {idx > 0 && <span className="text-[hsl(var(--text-muted))] text-[var(--text-xs)]">/</span>}
-                          <span className={`text-[var(--text-sm)] truncate ${idx === arr.length - 1 ? 'text-[hsl(var(--text-primary))] font-[var(--font-medium)]' : 'text-[hsl(var(--text-muted))]'}`}>
-                            {segment}
-                          </span>
-                        </React.Fragment>
-                      ))}
+          {/* RIGHT PANEL — File Viewer (65%) */}
+          <div className="flex-1 min-w-0 overflow-hidden">
+            <div className="flex flex-col h-full bg-white rounded-xl border" style={{ borderColor: '#E8E8EC', boxShadow: 'rgba(0,0,0,0.06) 0px 1px 3px' }}>
+              {selectedMemoryFile ? (
+                <>
+                  {/* File header */}
+                  <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: '#F0F0F5' }}>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#F0EDFF' }}>
+                        <svg className="w-3.5 h-3.5" style={{ color: '#6C5CE7' }} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2">
+                          <rect x="2" y="1" width="12" height="14" rx="1.5" />
+                          <path d="M5 5h6M5 8h4M5 11h5" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold truncate" style={{ color: '#1A1A2E' }}>{selectedFileName}</p>
+                        <div className="flex items-center gap-3 mt-0.5">
+                          {selectedFileData && <span className="text-xs" style={{ color: '#888899' }}>{formatFileSize(selectedFileData.size)}</span>}
+                          {selectedFileData?.modifiedLabel && <span className="text-xs" style={{ color: '#888899' }}>{selectedFileData.modifiedLabel}</span>}
+                        </div>
+                      </div>
                     </div>
-                    {memoryContent != null && (
-                      <span className="text-[var(--text-xs)] font-[var(--font-mono)] text-[hsl(var(--text-muted))] tabular-nums shrink-0">{memoryContent.length} chars</span>
-                    )}
-                    <div className="flex items-center gap-[var(--space-1)] shrink-0">
-                      <button onClick={() => setLinksOpen(!linksOpen)} className={`px-[var(--space-2)] py-[var(--space-1)] text-[var(--text-xs)] font-[var(--font-medium)] rounded-[var(--radius-md)] transition-colors min-h-[var(--space-8)] ${linksOpen ? 'bg-[hsl(var(--interactive-primary-subtle))] text-[hsl(var(--interactive-primary))]' : 'text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] hover:bg-[hsl(var(--bg-subtle))]'}`} title={t('toggleBacklinks')}>{t('links')}</button>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button onClick={() => setLinksOpen(!linksOpen)} className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors ${linksOpen ? 'bg-[#F0EDFF] text-[#6C5CE7] border-[#6C5CE7]/20' : ''}`} style={linksOpen ? {} : { borderColor: '#E8E8EC', color: '#444455' }} title={t('toggleBacklinks')}>{t('links')}</button>
                       {!isEditing ? (
                         <>
-                          <button onClick={() => { setIsEditing(true); setEditedContent(memoryContent ?? '') }} className="px-[var(--space-2)] py-[var(--space-1)] text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] rounded-[var(--radius-md)] hover:bg-[hsl(var(--bg-subtle))] transition-colors min-h-[var(--space-8)]">{t('edit')}</button>
-                          <button onClick={() => setShowDeleteConfirm(true)} className="px-[var(--space-2)] py-[var(--space-1)] text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--status-error-fg))]/60 hover:text-[hsl(var(--status-error-fg))] rounded-[var(--radius-md)] hover:bg-[hsl(var(--status-error-bg))] transition-colors min-h-[var(--space-8)]">{t('delete')}</button>
+                          <button onClick={() => { setIsEditing(true); setEditedContent(memoryContent ?? '') }} className="px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors hover:bg-[#F0F0F5]" style={{ borderColor: '#E8E8EC', color: '#444455' }}>{t('edit')}</button>
+                          <button onClick={() => setShowDeleteConfirm(true)} className="px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors hover:bg-red-50" style={{ borderColor: '#E8E8EC', color: '#888899' }}>{t('delete')}</button>
                         </>
                       ) : (
                         <>
-                          <button onClick={saveFile} disabled={isSaving} className="px-[var(--space-2)] py-[var(--space-1)] text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--status-success-fg))] hover:bg-[hsl(var(--status-success-bg))] rounded-[var(--radius-md)] transition-colors min-h-[var(--space-8)]">{isSaving ? t('saving') : t('save')}</button>
-                          <button onClick={() => { setIsEditing(false); setEditedContent('') }} className="px-[var(--space-2)] py-[var(--space-1)] text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] rounded-[var(--radius-md)] hover:bg-[hsl(var(--bg-subtle))] transition-colors min-h-[var(--space-8)]">{t('cancel')}</button>
+                          <button onClick={saveFile} disabled={isSaving} className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-[#6C5CE7] text-white transition-colors hover:bg-[#5B4BD5]">{isSaving ? t('saving') : t('save')}</button>
+                          <button onClick={() => { setIsEditing(false); setEditedContent('') }} className="px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors hover:bg-[#F0F0F5]" style={{ borderColor: '#E8E8EC', color: '#444455' }}>{t('cancel')}</button>
                         </>
                       )}
-                      <button onClick={() => { setSelectedMemoryFile(''); setMemoryContent(''); setMemoryFileLinks(null); setIsEditing(false); setEditedContent(''); setSchemaWarnings([]); setLinksOpen(false) }} className="p-[var(--space-1)] text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] rounded-[var(--radius-md)] hover:bg-[hsl(var(--bg-subtle))] transition-colors min-w-[var(--space-8)] min-h-[var(--space-8)] flex items-center justify-center">
-                        <svg className="w-[var(--space-4)] h-[var(--space-4)]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+                      <button onClick={() => { setSelectedMemoryFile(''); setMemoryContent(''); setMemoryFileLinks(null); setIsEditing(false); setEditedContent(''); setSchemaWarnings([]); setLinksOpen(false) }} className="p-1 rounded-lg hover:bg-[#F0F0F5] transition-colors" style={{ color: '#888899' }}>
+                        <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M4 4l8 8M12 4l-8 8" /></svg>
                       </button>
                     </div>
                   </div>
-                )}
-                {schemaWarnings.length > 0 && (
-                  <div className="px-[var(--space-4)] py-[var(--space-2)] bg-[hsl(var(--status-warning-bg))] border-b border-[hsl(var(--status-warning-border))]">
-                    <div className="text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--status-warning-fg))]">{t('schemaWarnings')}</div>
-                    {schemaWarnings.map((w, i) => (
-                      <div key={i} className="text-[var(--text-xs)] text-[hsl(var(--status-warning-fg))]/70 ml-[var(--space-2)]">- {w}</div>
-                    ))}
-                  </div>
-                )}
-                <div className="flex-1 overflow-auto">
-                  {isLoading ? (
-                    <div className="flex items-center justify-center h-full"><Loader variant="inline" /></div>
-                  ) : memoryContent != null && selectedMemoryFile ? (
-                    <div className="p-[var(--space-6)] max-w-3xl">
-                      {isEditing ? (
-                        <textarea
-                          value={editedContent}
-                          onChange={(e) => setEditedContent(e.target.value)}
-                          className="w-full min-h-[500px] p-[var(--space-3)] bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] font-[var(--font-mono)] text-[var(--text-sm)] border border-[hsl(var(--input-border))] rounded-[var(--radius-md)] resize-none focus:outline-none focus:border-[hsl(var(--input-border-focus))] leading-[var(--leading-relaxed)]"
-                          placeholder={t('editPlaceholder')}
-                        />
-                      ) : selectedMemoryFile.endsWith('.md') ? (
-                        <div>{renderMarkdown(memoryContent)}</div>
-                      ) : selectedMemoryFile.endsWith('.json') ? (
-                        <pre className="text-[var(--text-sm)] font-[var(--font-mono)] overflow-auto whitespace-pre-wrap break-words text-[hsl(var(--text-secondary))] leading-[var(--leading-relaxed)]">
-                          <code>{(() => { try { return JSON.stringify(JSON.parse(memoryContent), null, 2) } catch { return memoryContent } })()}</code>
-                        </pre>
-                      ) : (
-                        <pre className="text-[var(--text-sm)] font-[var(--font-mono)] whitespace-pre-wrap break-words text-[hsl(var(--text-secondary))] leading-[var(--leading-relaxed)]">{memoryContent}</pre>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-[hsl(var(--text-muted))]">
-                      <svg className="w-[var(--space-12)] h-[var(--space-12)] mb-[var(--space-3)] text-[hsl(var(--border-default))]" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <rect x="8" y="4" width="32" height="40" rx="4" />
-                        <path d="M16 16h16M16 24h12M16 32h8" strokeLinecap="round" />
-                      </svg>
-                      <span className="text-[var(--text-sm)]">{t('selectFilePrompt')}</span>
-                      <span className="text-[var(--text-xs)] mt-[var(--space-1)] text-[hsl(var(--text-muted))]/60">{t('orSwitchView')}</span>
+                  {schemaWarnings.length > 0 && (
+                    <div className="px-5 py-2 bg-[hsl(var(--status-warning-bg))] border-b border-[hsl(var(--status-warning-border))]">
+                      <div className="text-xs font-medium text-[hsl(var(--status-warning-fg))]">{t('schemaWarnings')}</div>
+                      {schemaWarnings.map((w, i) => (
+                        <div key={i} className="text-xs text-[hsl(var(--status-warning-fg))]/70 ml-2">- {w}</div>
+                      ))}
                     </div>
                   )}
+                  {/* Content */}
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="flex min-h-full">
+                      <div className="flex-1 px-6 py-5">
+                        {isLoading ? (
+                          <div className="flex items-center justify-center h-40"><Loader variant="inline" /></div>
+                        ) : isEditing ? (
+                          <textarea
+                            value={editedContent}
+                            onChange={(e) => setEditedContent(e.target.value)}
+                            className="w-full min-h-[500px] p-3 bg-white text-sm font-mono border rounded-lg resize-none focus:outline-none focus:border-[#6C5CE7]/40 leading-relaxed"
+                            style={{ borderColor: '#E8E8EC', color: '#444455' }}
+                            placeholder={t('editPlaceholder')}
+                          />
+                        ) : selectedMemoryFile.endsWith('.md') ? (
+                          <div>{renderMarkdown(memoryContent ?? '')}</div>
+                        ) : selectedMemoryFile.endsWith('.json') ? (
+                          <pre className="text-sm font-mono overflow-auto whitespace-pre-wrap break-words leading-relaxed" style={{ color: '#444455' }}>
+                            <code>{(() => { try { return JSON.stringify(JSON.parse(memoryContent ?? ''), null, 2) } catch { return memoryContent } })()}</code>
+                          </pre>
+                        ) : (
+                          <pre className="text-sm font-mono whitespace-pre-wrap break-words leading-relaxed" style={{ color: '#444455' }}>{memoryContent}</pre>
+                        )}
+                      </div>
+                      {linksOpen && memoryFileLinks && (
+                        <LinksSidebar fileLinks={memoryFileLinks} onNavigate={loadFileContent} />
+                      )}
+                    </div>
+                  </div>
+                  {/* Footer */}
+                  {selectedFileData && (
+                    <div className="px-5 py-2.5 border-t flex items-center gap-3" style={{ borderColor: '#F0F0F5', background: '#FAFAFA' }}>
+                      <span className="text-xs px-2 py-0.5 rounded-full font-mono font-medium" style={{ background: '#F0EDFF', color: '#6C5CE7' }}>{selectedFileData.ext}</span>
+                      <span className="text-xs" style={{ color: '#888899' }}>{selectedFileData.lines} lines</span>
+                      <span className="text-xs" style={{ color: '#888899' }}>{selectedFileData.words} words</span>
+                      <span className="ml-auto text-xs px-2 py-0.5 rounded-full" style={{ background: '#EDFBF2', color: '#22C55E' }}>synced</span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full">
+                  <svg className="w-12 h-12 mb-3" style={{ color: '#E8E8EC' }} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="8" y="4" width="32" height="40" rx="4" />
+                    <path d="M16 16h16M16 24h12M16 32h8" strokeLinecap="round" />
+                  </svg>
+                  <span className="text-sm" style={{ color: '#888899' }}>{t('selectFilePrompt')}</span>
+                  <span className="text-xs mt-1" style={{ color: '#888899', opacity: 0.6 }}>{t('orSwitchView')}</span>
                 </div>
-              </div>
-              {linksOpen && selectedMemoryFile && memoryFileLinks && (
-                <LinksSidebar fileLinks={memoryFileLinks} onNavigate={loadFileContent} />
               )}
             </div>
-          )}
+          </div>
         </div>
+        )}
       </div>
 
       {showCreateModal && <CreateFileModal onClose={() => setShowCreateModal(false)} onCreate={createNewFile} />}
