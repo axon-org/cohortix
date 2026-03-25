@@ -87,13 +87,13 @@ interface MentionOption {
 }
 
 const STATUS_COLUMN_KEYS = [
-  { key: 'inbox', titleKey: 'colInbox', color: 'text-[hsl(var(--text-secondary))]', dotColor: 'bg-[hsl(var(--text-muted))]' },
-  { key: 'assigned', titleKey: 'colAssigned', color: 'text-[hsl(var(--status-info-fg))]', dotColor: 'bg-[hsl(var(--status-info-solid))]' },
-  { key: 'awaiting_owner', titleKey: 'colAwaitingOwner', color: 'text-[hsl(var(--status-warning-fg))]', dotColor: 'bg-[hsl(var(--status-warning-solid))]' },
-  { key: 'in_progress', titleKey: 'colInProgress', color: 'text-[hsl(var(--status-warning-fg))]', dotColor: 'bg-[hsl(var(--status-warning-solid))]' },
-  { key: 'review', titleKey: 'colReview', color: 'text-[hsl(var(--interactive-primary))]', dotColor: 'bg-[hsl(var(--interactive-primary))]' },
-  { key: 'quality_review', titleKey: 'colQualityReview', color: 'text-[hsl(var(--status-info-fg))]', dotColor: 'bg-[hsl(var(--status-info-solid))]' },
-  { key: 'done', titleKey: 'colDone', color: 'text-[hsl(var(--status-success-fg))]', dotColor: 'bg-[hsl(var(--status-success-solid))]' },
+  { key: 'inbox', titleKey: 'colInbox', dotColor: 'bg-slate-400', badgeColor: 'bg-slate-100 text-slate-600' },
+  { key: 'assigned', titleKey: 'colAssigned', dotColor: 'bg-blue-400', badgeColor: 'bg-blue-50 text-blue-700' },
+  { key: 'awaiting_owner', titleKey: 'colAwaitingOwner', dotColor: 'bg-amber-500', badgeColor: 'bg-amber-50 text-amber-700' },
+  { key: 'in_progress', titleKey: 'colInProgress', dotColor: 'bg-amber-400', badgeColor: 'bg-amber-50 text-amber-700' },
+  { key: 'review', titleKey: 'colReview', dotColor: 'bg-violet-400', badgeColor: 'bg-violet-50 text-violet-700' },
+  { key: 'quality_review', titleKey: 'colQualityReview', dotColor: 'bg-violet-300', badgeColor: 'bg-violet-50 text-violet-600' },
+  { key: 'done', titleKey: 'colDone', dotColor: 'bg-emerald-400', badgeColor: 'bg-emerald-50 text-emerald-700' },
 ]
 
 const AWAITING_OWNER_KEYWORDS = [
@@ -154,12 +154,12 @@ function useAgentSessions(agentName: string | undefined) {
   return sessions
 }
 
-const priorityColors: Record<string, string> = {
-  low: 'border-l-[hsl(var(--priority-low))]',
-  medium: 'border-l-[hsl(var(--priority-medium))]',
-  high: 'border-l-[hsl(var(--priority-high))]',
-  critical: 'border-l-[hsl(var(--priority-urgent))]',
-  urgent: 'border-l-[hsl(var(--priority-urgent))]',
+const priorityPillColors: Record<string, { pill: string; dot: string }> = {
+  low: { pill: 'bg-emerald-50 text-emerald-700 border border-emerald-200', dot: 'bg-emerald-500' },
+  medium: { pill: 'bg-blue-50 text-blue-700 border border-blue-200', dot: 'bg-blue-500' },
+  high: { pill: 'bg-orange-50 text-orange-700 border border-orange-200', dot: 'bg-orange-500' },
+  critical: { pill: 'bg-red-50 text-red-700 border border-red-200', dot: 'bg-red-500' },
+  urgent: { pill: 'bg-red-50 text-red-700 border border-red-200', dot: 'bg-red-500' },
 }
 
 function useMentionTargets() {
@@ -927,31 +927,38 @@ export function TaskBoardPanel() {
       )}
 
       {/* Kanban Board */}
-      <div className="flex-1 flex gap-[var(--space-4)] p-[var(--space-5)] overflow-x-auto bg-[hsl(var(--bg-canvas))]" role="region" aria-label={t('taskBoard')}>
+      <div className="flex-1 flex gap-4 px-5 py-5 items-start overflow-x-auto bg-[hsl(var(--bg-canvas))]" role="region" aria-label={t('taskBoard')}>
         {statusColumns.map(column => (
           <div
             key={column.key}
             role="region"
             aria-label={t('columnAriaLabel', { title: column.title, count: tasksByStatus[column.key]?.length || 0 })}
-            className="flex-1 min-w-[18rem] rounded-[var(--kanban-column-radius)] flex flex-col transition-colors duration-200 [&.drag-over]:bg-[hsl(var(--interactive-primary)/0.04)]"
-            onDragEnter={(e) => handleDragEnter(e, column.key)}
-            onDragLeave={handleDragLeave}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, column.key)}
+            className="flex flex-col min-w-[272px] w-[272px] flex-shrink-0 h-full"
           >
             {/* Column Header */}
-            <div className="px-[var(--space-3)] py-[var(--space-3)] flex items-center gap-[var(--space-2)] mb-[var(--space-2)]">
-              <div className={`w-2 h-2 rounded-full shrink-0 ${column.dotColor}`} />
-              <h3 className={`font-[var(--font-semibold)] text-[var(--text-sm)] ${column.color}`}>{column.title}</h3>
-              <span className="text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--text-muted))] bg-[hsl(var(--bg-subtle))] px-[var(--space-2)] py-[var(--space-0-5)] rounded-[var(--radius-full)] min-w-[1.5rem] text-center">
+            <div className="flex items-center gap-2 mb-3 px-1">
+              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${column.dotColor}`} />
+              <h3 className="text-[13px] font-semibold text-[var(--foreground)] tracking-tight">{column.title}</h3>
+              <span className={`ml-1 text-[10px] font-bold rounded-full px-1.5 py-0.5 leading-none ${column.badgeColor}`}>
                 {tasksByStatus[column.key]?.length || 0}
               </span>
-              <div className="flex-1 border-t border-dashed border-[hsl(var(--border-default))]" />
+              <button className="ml-auto opacity-40 hover:opacity-80 text-[var(--foreground)]">⋯</button>
             </div>
 
             {/* Column Body */}
-            <div className="flex-1 px-[var(--space-1)] space-y-[var(--space-3)] min-h-32 h-full overflow-y-auto pb-[var(--space-3)]">
-              {tasksByStatus[column.key]?.map(task => (
+            <div
+              className="flex-1 rounded-xl p-2 space-y-2.5 overflow-y-auto bg-[var(--muted)]/50 border border-dashed border-[var(--border)] min-h-[120px] transition-colors duration-200 [&.drag-over]:bg-[hsl(var(--interactive-primary)/0.06)]"
+              onDragEnter={(e) => handleDragEnter(e, column.key)}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, column.key)}
+            >
+              {tasksByStatus[column.key]?.map(task => {
+                const pColors = priorityPillColors[task.priority] || priorityPillColors.medium
+                const isDragging = draggedTask?.id === task.id
+                const isOverdue = task.due_date ? task.due_date * 1000 < Date.now() : false
+                const isSoon = task.due_date ? !isOverdue && (task.due_date * 1000 - Date.now()) < 2 * 24 * 60 * 60 * 1000 : false
+                return (
                 <div
                   key={task.id}
                   draggable
@@ -970,46 +977,42 @@ export function TaskBoardPanel() {
                       updateTaskUrl(task.id)
                     }
                   }}
-                  className={`group bg-[hsl(var(--card-bg))] rounded-[var(--card-radius)] p-[var(--space-4)] cursor-pointer border border-[hsl(var(--card-border))] shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] hover:border-[hsl(var(--border-strong))] transition-all duration-200 ease-out border-l-[3px] ${priorityColors[task.priority]} ${
-                    draggedTask?.id === task.id ? 'opacity-40 scale-[0.97] rotate-1 shadow-[var(--kanban-card-shadow-drag)]' : ''
-                  } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--border-focus))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--bg-canvas))]`}
+                  className={`group relative rounded-xl border bg-[var(--card)] p-3.5 cursor-grab active:cursor-grabbing transition-all duration-150 select-none shadow-sm hover:shadow-md hover:-translate-y-0.5 border-[var(--border)] ${
+                    isDragging ? 'shadow-2xl ring-2 ring-[var(--ring)] rotate-2 scale-105 opacity-80' : ''
+                  } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--border-focus))] focus-visible:ring-offset-2`}
                 >
-                  {/* Ticket ref + badges row */}
-                  <div className="flex items-center justify-between gap-[var(--space-2)] mb-[var(--space-2)]">
-                    <div className="flex items-center gap-[var(--space-2)] min-w-0">
-                      {task.ticket_ref && (
-                        <span className="text-[var(--text-xs)] font-mono text-[hsl(var(--text-muted))] font-[var(--font-medium)]">
-                          {task.ticket_ref}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-[var(--space-1)] shrink-0">
-                      {/* Grip handle — visible on hover */}
-                      <svg className="w-3.5 h-3.5 text-transparent group-hover:text-[hsl(var(--text-muted))] transition-colors shrink-0 cursor-grab" viewBox="0 0 16 16" fill="currentColor">
-                        <circle cx="5" cy="3" r="1.2" /><circle cx="11" cy="3" r="1.2" />
-                        <circle cx="5" cy="8" r="1.2" /><circle cx="11" cy="8" r="1.2" />
-                        <circle cx="5" cy="13" r="1.2" /><circle cx="11" cy="13" r="1.2" />
-                      </svg>
-                    </div>
+                  {/* Grip handle (hidden, shown on hover) */}
+                  <div className="absolute left-1.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-30">
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+                      <circle cx="5" cy="3" r="1.2" /><circle cx="11" cy="3" r="1.2" />
+                      <circle cx="5" cy="8" r="1.2" /><circle cx="11" cy="8" r="1.2" />
+                      <circle cx="5" cy="13" r="1.2" /><circle cx="11" cy="13" r="1.2" />
+                    </svg>
+                  </div>
+
+                  {/* Ticket number + menu row */}
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-mono font-semibold text-[var(--muted-foreground)] tracking-wider opacity-70">
+                      {task.ticket_ref || `#${task.id}`}
+                    </span>
+                    <button className="opacity-0 group-hover:opacity-60 hover:!opacity-100 text-[var(--foreground)]" onClick={(e) => e.stopPropagation()}>⋯</button>
                   </div>
 
                   {/* Title */}
-                  <div className="mb-[var(--space-2)]">
-                    <h4 className="text-[hsl(var(--text-primary))] font-[var(--font-medium)] text-[var(--text-base)] leading-[var(--leading-snug)] line-clamp-2">
-                      {task.title}
-                    </h4>
-                  </div>
+                  <p className="text-[13px] font-medium text-[var(--foreground)] leading-snug mb-3 pr-2 line-clamp-2">
+                    {task.title}
+                  </p>
 
-                  {/* Inline badges */}
-                  <div className="flex items-center flex-wrap gap-[var(--space-1)] mb-[var(--space-2)]">
-                        <div className="flex items-center gap-[var(--space-1)] flex-wrap">
+                  {/* Inline badges (recurrence, github, aegis) */}
+                  {(task.metadata?.recurrence?.enabled || task.github_issue_number || task.github_pr_number || task.aegisApproved || detectAwaitingOwner(task)) && (
+                    <div className="flex items-center flex-wrap gap-1 mb-2.5">
                           {task.metadata?.recurrence?.enabled && (
-                            <span className="text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-sm)] bg-[hsl(var(--status-info-bg))] text-[hsl(var(--interactive-primary))] font-mono font-[var(--font-medium)]" title={task.metadata.recurrence.natural_text || task.metadata.recurrence.cron_expr}>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--muted)] text-[var(--muted-foreground)] font-medium" title={task.metadata.recurrence.natural_text || task.metadata.recurrence.cron_expr}>
                               {t('recurring')}
                             </span>
                           )}
                           {task.metadata?.recurrence?.parent_task_id && (
-                            <span className="text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-sm)] bg-[hsl(var(--status-info-bg))] text-[hsl(var(--interactive-primary)/.7)] font-mono font-[var(--font-medium)]" title={t('spawnedFromTask', { id: task.metadata.recurrence.parent_task_id })}>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--muted)] text-[var(--muted-foreground)] font-medium" title={t('spawnedFromTask', { id: task.metadata.recurrence.parent_task_id })}>
                               {t('spawned')}
                             </span>
                           )}
@@ -1018,7 +1021,7 @@ export function TaskBoardPanel() {
                               href={`https://github.com/${task.github_repo}/issues/${task.github_issue_number}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-sm)] bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] font-mono flex items-center gap-1 transition-colors"
+                              className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-mono flex items-center gap-1 transition-colors"
                               onClick={(e) => e.stopPropagation()}
                               title={`GitHub issue #${task.github_issue_number}`}
                             >
@@ -1031,10 +1034,10 @@ export function TaskBoardPanel() {
                               href={`https://github.com/${task.github_repo}/pull/${task.github_pr_number}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className={`text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-sm)] font-mono flex items-center gap-1 transition-colors ${
-                                task.github_pr_state === 'merged' ? 'bg-[hsl(var(--status-info-bg))] text-[hsl(var(--interactive-primary))]' :
-                                task.github_pr_state === 'closed' ? 'bg-[hsl(var(--status-error-bg))] text-[hsl(var(--status-error-fg))]' :
-                                'bg-[hsl(var(--status-success-bg))] text-[hsl(var(--status-success-fg))]'
+                              className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono flex items-center gap-1 transition-colors ${
+                                task.github_pr_state === 'merged' ? 'bg-violet-50 text-violet-700' :
+                                task.github_pr_state === 'closed' ? 'bg-red-50 text-red-600' :
+                                'bg-emerald-50 text-emerald-700'
                               }`}
                               onClick={(e) => e.stopPropagation()}
                               title={`PR #${task.github_pr_number} (${task.github_pr_state || 'open'})`}
@@ -1044,90 +1047,90 @@ export function TaskBoardPanel() {
                             </a>
                           )}
                           {task.aegisApproved && (
-                            <span className="text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-sm)] bg-[hsl(var(--status-success-bg))] text-[hsl(var(--status-success-fg))] border border-[hsl(var(--status-success-border))] font-[var(--font-medium)]">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
                               Aegis
                             </span>
                           )}
                           {detectAwaitingOwner(task) && (
-                            <span className="text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-sm)] bg-[hsl(var(--status-warning-bg))] text-[hsl(var(--status-warning-fg))] border border-[hsl(var(--status-warning-border))] font-mono font-[var(--font-medium)]">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 font-medium">
                               {t('colAwaitingOwner')}
                             </span>
                           )}
-                        </div>
-                  </div>
+                    </div>
+                  )}
 
-                  {/* Tags row */}
+                  {/* Tags */}
                   {task.tags && task.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-[var(--space-1)] mb-[var(--space-2)]">
+                    <div className="flex flex-wrap gap-1 mb-2.5">
                       {task.tags.slice(0, 3).map((tag, index) => (
                         <span
                           key={index}
-                          className={`text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-full)] border font-[var(--font-medium)] ${getTagColor(tag)}`}
+                          className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--muted)] text-[var(--muted-foreground)] font-medium"
                         >
                           {tag}
                         </span>
                       ))}
                       {task.tags.length > 3 && (
-                        <span className="text-[hsl(var(--text-muted)/.6)] text-[var(--text-xs)]">+{task.tags.length - 3}</span>
+                        <span className="text-[10px] text-[var(--muted-foreground)] opacity-60">+{task.tags.length - 3}</span>
                       )}
                     </div>
                   )}
 
-                  {task.description && (
-                    <div className="mb-[var(--space-2)] line-clamp-2 overflow-hidden text-[var(--text-xs)] text-[hsl(var(--text-muted))]">
-                      <MarkdownRenderer content={task.description} preview />
-                    </div>
-                  )}
-
-                  {/* Footer: assignee, priority, due date, timestamp */}
-                  <div className="flex items-center justify-between gap-[var(--space-2)] mt-auto pt-[var(--space-3)] border-t border-[hsl(var(--border-subtle))]">
-                    <span className="flex items-center gap-[var(--space-1-5)] min-w-0 text-[var(--text-xs)] text-[hsl(var(--text-muted))]">
-                      {task.assigned_to ? (
-                        <>
-                          <AgentAvatar name={getAgentName(task.assigned_to)} size="xs" />
-                          <span className="truncate max-w-[8rem]">{getAgentName(task.assigned_to)}</span>
-                        </>
-                      ) : (
-                        <span className="text-[hsl(var(--text-muted)/.5)] italic">{t('unassigned')}</span>
-                      )}
+                  {/* Bottom row: priority + due date + assignee avatar */}
+                  <div className="flex items-center justify-between gap-2 mt-1">
+                    {/* Priority pill */}
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold rounded-full px-2 py-0.5 ${pColors.pill}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${pColors.dot}`} />
+                      {t(`priority_${task.priority}` as any)}
                     </span>
-                    <div className="flex items-center gap-[var(--space-1-5)] shrink-0">
+
+                    <div className="flex items-center gap-1.5 ml-auto">
                       {task.status !== 'done' && (
                         <DunkItButton taskId={task.id} onDunked={() => fetchData()} />
                       )}
-                      <span className={`text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-sm)] font-[var(--font-medium)] ${
-                        task.priority === 'critical' || task.priority === 'urgent' ? 'bg-[hsl(var(--status-error-bg))] text-[hsl(var(--status-error-fg))]' :
-                        task.priority === 'high' ? 'bg-[hsl(var(--status-warning-bg))] text-[hsl(var(--status-warning-fg))]' :
-                        task.priority === 'medium' ? 'bg-[hsl(var(--status-info-bg))] text-[hsl(var(--status-info-fg))]' :
-                        'bg-[hsl(var(--status-success-bg))] text-[hsl(var(--status-success-fg))]'
-                      }`}>
-                        {t(`priority_${task.priority}` as any)}
-                      </span>
-                      {/* Due date badge */}
+                      {/* Due date */}
                       {task.due_date && (
-                        <span className={`text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-sm)] font-[var(--font-medium)] ${
-                          task.due_date * 1000 < Date.now()
-                            ? 'bg-[hsl(var(--status-error-bg))] text-[hsl(var(--status-error-fg))]'
-                            : 'text-[hsl(var(--text-muted)/.6)]'
+                        <span className={`text-[10px] font-medium rounded-full px-2 py-0.5 ${
+                          isOverdue
+                            ? 'bg-red-50 text-red-600 border border-red-200'
+                            : isSoon
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-[var(--muted)] text-[var(--muted-foreground)] border border-[var(--border)]'
                         }`}>
-                          {task.due_date * 1000 < Date.now() ? t('overdue') ?? 'Overdue' : formatTaskTimestamp(task.due_date)}
+                          {isOverdue ? t('overdue') ?? 'Overdue' : formatTaskTimestamp(task.due_date)}
                         </span>
+                      )}
+                      {/* Assignee avatar circle */}
+                      {task.assigned_to && (
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0 ring-2 ring-white bg-indigo-500">
+                          {getAgentName(task.assigned_to).slice(0, 2).toUpperCase()}
+                        </div>
                       )}
                     </div>
                   </div>
                 </div>
-              ))}
+                )
+              })}
 
               {/* Empty State */}
               {tasksByStatus[column.key]?.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-[var(--space-10)] text-[hsl(var(--text-muted)/.3)]">
-                  <svg className="w-8 h-8 mb-[var(--space-2)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <div className="flex flex-col items-center justify-center py-10 text-[var(--muted-foreground)] opacity-30">
+                  <svg className="w-8 h-8 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <path d="M9 12h6M12 9v6" strokeLinecap="round" />
                   </svg>
-                  <span className="text-[var(--text-xs)]">{t('dropTasksHere')}</span>
+                  <span className="text-[12px]">{t('dropTasksHere')}</span>
                 </div>
               )}
+
+              {/* Add task button */}
+              <button
+                className="flex items-center gap-1.5 w-full rounded-lg px-3 py-2 text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors group"
+                onClick={() => setShowCreateModal(true)}
+              >
+                <svg className="w-[13px] h-[13px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                {t('addTask') ?? 'Add task'}
+              </button>
             </div>
           </div>
         ))}
