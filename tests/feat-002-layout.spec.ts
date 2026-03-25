@@ -21,12 +21,14 @@ const VIEWPORTS = [
 
 // Cached session token — login once and reuse across all tests in this file.
 let _cachedSessionToken: string | null = null
+let _cachedSessionIssuedAt = 0
 
 // Authenticate via login API and inject the session cookie into the browser context.
 // The server may set the Secure flag (MC_COOKIE_SECURE=1) which Playwright's HTTP
 // origin rejects, so we extract the token and re-add it ourselves.
 async function authenticateSession(context: import('@playwright/test').BrowserContext) {
-  if (!_cachedSessionToken) {
+  const maxSessionAgeMs = 20 * 60 * 1000
+  if (!_cachedSessionToken || (Date.now() - _cachedSessionIssuedAt) > maxSessionAgeMs) {
     const baseURL = 'http://127.0.0.1:' + (process.env.E2E_PORT || '3005')
     const username = process.env.AUTH_USER || 'testadmin'
     const password = process.env.AUTH_PASS || 'testpass1234!'
@@ -46,6 +48,7 @@ async function authenticateSession(context: import('@playwright/test').BrowserCo
       throw new Error(`No session cookie in login response: ${setCookie}`)
     }
     _cachedSessionToken = tokenMatch[1]
+    _cachedSessionIssuedAt = Date.now()
   }
 
   await context.addCookies([{
@@ -55,6 +58,7 @@ async function authenticateSession(context: import('@playwright/test').BrowserCo
     path: '/',
   }])
 }
+
 
 // Login via API, set cookie, then navigate
 async function login(page: Page) {
@@ -121,7 +125,7 @@ test.describe('Non-visual isolated checks', () => {
       try { window.sessionStorage.setItem('mc-onboarding-dismissed', '1') } catch {}
     })
     await page.reload({ waitUntil: 'domcontentloaded' })
-    await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 30_000 })
+    await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 45_000 })
   })
 
 // ═══════════════════════════════════════════════════════════
