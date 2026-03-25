@@ -217,21 +217,18 @@ type ChannelFilter = 'all' | 'connected' | 'disconnected'
 
 function StatusRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between items-center py-[var(--space-1)]">
-      <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">{label}</span>
-      <span className="text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--text-primary))]">{value}</span>
+    <div className="flex justify-between items-center py-0.5">
+      <span className="text-[11px] text-[var(--muted-foreground)]">{label}</span>
+      <span className="text-[11px] font-medium text-[var(--foreground)]">{value}</span>
     </div>
   )
 }
 
 function StatsRow({ items }: { items: { label: string; value: string }[] }) {
   return (
-    <div className="flex divide-x divide-[hsl(var(--border-subtle))] mt-[var(--space-3)]">
+    <div className="flex items-center gap-4 text-[11px] text-[var(--muted-foreground)]">
       {items.map((item, i) => (
-        <div key={i} className="flex-1 px-[var(--space-3)] first:pl-0 last:pr-0">
-          <div className="text-[var(--text-md)] font-[var(--font-semibold)] text-[hsl(var(--text-primary))]">{item.value}</div>
-          <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">{item.label}</div>
-        </div>
+        <span key={i}>{item.label}: {item.value}</span>
       ))}
     </div>
   )
@@ -240,7 +237,7 @@ function StatsRow({ items }: { items: { label: string; value: string }[] }) {
 function ErrorCallout({ message }: { message: string | null | undefined }) {
   if (!message) return null
   return (
-    <div className="text-[var(--text-xs)] text-[hsl(var(--status-error-fg))] bg-[hsl(var(--status-error-bg))] border border-[hsl(var(--status-error-border))] rounded-[var(--radius-md)] px-[var(--space-3)] py-[var(--space-2)] mt-[var(--space-3)] break-words">
+    <div className="text-[11px] text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mt-3 break-words">
       {message}
     </div>
   )
@@ -250,7 +247,7 @@ function ProbeResult({ probe }: { probe: ChannelStatus['probe'] }) {
   if (!probe) return null
   const ok = probe.ok
   return (
-    <div className={`text-[var(--text-xs)] mt-[var(--space-3)] px-[var(--space-3)] py-[var(--space-2)] rounded-[var(--radius-md)] border ${ok ? 'text-[hsl(var(--status-success-fg))] bg-[hsl(var(--status-success-bg))] border-[hsl(var(--status-success-border))]' : 'text-[hsl(var(--status-error-fg))] bg-[hsl(var(--status-error-bg))] border-[hsl(var(--status-error-border))]'}`}>
+    <div className={`text-[11px] mt-3 px-3 py-2 rounded-lg border ${ok ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-red-700 bg-red-50 border-red-200'}`}>
       Probe {ok ? 'OK' : 'failed'}
       {probe.elapsedMs != null && ` \u2014 ${probe.elapsedMs}ms`}
       {probe.error && ` \u2014 ${probe.error}`}
@@ -260,35 +257,34 @@ function ProbeResult({ probe }: { probe: ChannelStatus['probe'] }) {
 
 function StatusBadge({ connected, running, configured, isActive }: { connected?: boolean; running?: boolean; configured?: boolean; isActive: boolean }) {
   const t = useTranslations('channels')
-  let dotColor = 'bg-[hsl(var(--status-neutral-fg))]'
+  let badgeClasses = 'bg-[var(--muted)] text-[var(--muted-foreground)] border border-[var(--border)]'
   let label = t('statusInactive')
 
   if (isActive) {
     if (connected) {
-      dotColor = 'bg-[hsl(var(--status-success-solid))]'
+      badgeClasses = 'bg-emerald-50 text-emerald-700 border border-emerald-200'
       label = t('statusConnected')
     } else if (running) {
-      dotColor = 'bg-[hsl(var(--status-warning-solid))]'
+      badgeClasses = 'bg-amber-50 text-amber-700 border border-amber-200'
       label = t('statusRunning')
     } else if (configured) {
-      dotColor = 'bg-[hsl(var(--text-muted))]'
+      badgeClasses = 'bg-amber-50 text-amber-700 border border-amber-200'
       label = t('statusConfigured')
     }
   }
 
   return (
-    <div className="flex items-center gap-[var(--space-1-5)]">
-      <span className={`w-[var(--space-2)] h-[var(--space-2)] rounded-full ${dotColor}`} />
-      <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">{label}</span>
-    </div>
+    <span className={`text-[10px] font-semibold rounded-full px-2.5 py-1 ${badgeClasses}`}>
+      {label}
+    </span>
   )
 }
 
 function PlatformIcon({ platform }: { platform: string }) {
-  const colors = PLATFORM_COLORS[platform] ?? { bg: 'bg-[hsl(var(--interactive-primary))]', fg: 'text-white' }
+  const colors = PLATFORM_COLORS[platform] ?? { bg: 'bg-[#6C5CE7]', fg: 'text-white' }
   const icon = PLATFORM_ICONS[platform] ?? '\u{1F4E1}'
   return (
-    <div className={`w-[var(--space-10)] h-[var(--space-10)] rounded-[var(--radius-lg)] ${colors.bg} flex items-center justify-center text-[var(--text-lg)] ${colors.fg} shrink-0`}>
+    <div className={`w-10 h-10 rounded-xl ${colors.bg} flex items-center justify-center text-lg ${colors.fg} shrink-0`}>
       {icon}
     </div>
   )
@@ -310,38 +306,34 @@ function CardShell({ platform, label, children, status, accounts, onProbe, probi
   const isConnected = channelIsConnected(status, accts)
 
   return (
-    <div className={`rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] shadow-[var(--card-shadow)] overflow-hidden transition-shadow hover:shadow-[var(--card-shadow-hover)] ${isConnected ? 'border-l-[3px] border-l-[hsl(var(--status-success-solid))]' : ''} ${!isActive ? 'opacity-75' : ''}`}>
-      <div className="p-[var(--space-5)]">
-        {/* Card header: icon + name + status badge */}
-        <div className="flex items-start justify-between mb-[var(--space-4)]">
-          <div className="flex items-center gap-[var(--space-3)]">
-            <PlatformIcon platform={platform} />
-            <div>
-              <div className="text-[var(--text-md)] font-[var(--font-semibold)] text-[hsl(var(--text-primary))]">{name}</div>
-              <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] capitalize">{platform.replace(/-/g, ' ')}</div>
-            </div>
-          </div>
-          <StatusBadge connected={status?.connected} running={status?.running} configured={status?.configured} isActive={isActive} />
+    <div className={`group rounded-xl border bg-[var(--card)] p-4 transition-all duration-150 shadow-sm hover:shadow-md border-[var(--border)] ${!isActive ? 'opacity-75' : ''}`}>
+      {/* Card header: icon + name + status badge */}
+      <div className="flex items-center gap-3 mb-3">
+        <PlatformIcon platform={platform} />
+        <div className="flex-1 min-w-0">
+          <p className="text-[13px] font-semibold text-[var(--foreground)] truncate">{name}</p>
+          <p className="text-[11px] text-[var(--muted-foreground)] capitalize">{platform.replace(/-/g, ' ')}</p>
         </div>
+        <StatusBadge connected={status?.connected} running={status?.running} configured={status?.configured} isActive={isActive} />
+      </div>
 
-        {/* Card body */}
-        {children}
+      {/* Card body */}
+      {children}
 
-        {/* Probe button */}
-        <Button
+      {/* Action row */}
+      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-[var(--border)]">
+        <button
           onClick={onProbe}
           disabled={probing}
-          variant="outline"
-          size="xs"
-          className="w-full mt-[var(--space-4)]"
+          className="px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors disabled:opacity-50"
         >
           {probing ? (
-            <>
-              <span className="w-[var(--space-3)] h-[var(--space-3)] border-2 border-current border-t-transparent rounded-full animate-spin" />
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
               {t('probing')}
-            </>
+            </span>
           ) : t('probe')}
-        </Button>
+        </button>
       </div>
     </div>
   )
@@ -390,7 +382,7 @@ function WhatsAppCard({ status, accounts, onProbe, probing, onAction, actionBusy
         { label: 'Auth age', value: formatDuration(status?.authAgeMs) },
       ]} />
 
-      <div className="mt-[var(--space-3)] space-y-[var(--space-1)] border-t border-[hsl(var(--border-subtle))] pt-[var(--space-3)]">
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Linked" value={yesNo(status?.linked)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
@@ -400,19 +392,19 @@ function WhatsAppCard({ status, accounts, onProbe, probing, onAction, actionBusy
       <ErrorCallout message={status?.lastError} />
 
       {message && (
-        <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-md)] px-[var(--space-3)] py-[var(--space-2)] mt-[var(--space-3)]">
+        <div className="text-[11px] text-[var(--muted-foreground)] bg-[var(--muted)] rounded-lg px-3 py-2 mt-3">
           {message}
         </div>
       )}
 
       {qrDataUrl && (
-        <div className="flex justify-center mt-[var(--space-4)]">
+        <div className="flex justify-center mt-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qrDataUrl} alt="WhatsApp QR" className="w-48 h-48 rounded-[var(--radius-md)]" />
+          <img src={qrDataUrl} alt="WhatsApp QR" className="w-48 h-48 rounded-lg" />
         </div>
       )}
 
-      <div className="flex flex-wrap gap-[var(--space-2)] mt-[var(--space-3)]">
+      <div className="flex flex-wrap gap-2 mt-3">
         <Button onClick={() => handleLink(false)} disabled={actionBusy} variant="outline" size="xs">
           {t('showQr')}
         </Button>
@@ -443,7 +435,7 @@ function TelegramCard({ status, accounts, onProbe, probing }: PlatformCardProps)
         ...(botUsername ? [{ label: 'Bot', value: `@${botUsername}` }] : []),
       ]} />
 
-      <div className="mt-[var(--space-3)] space-y-[var(--space-1)] border-t border-[hsl(var(--border-subtle))] pt-[var(--space-3)]">
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
       </div>
@@ -465,7 +457,7 @@ function DiscordCard({ status, accounts, onProbe, probing }: PlatformCardProps) 
         ...(botUsername ? [{ label: 'Bot', value: botUsername }] : [{ label: 'Bot', value: 'n/a' }]),
       ]} />
 
-      <div className="mt-[var(--space-3)] space-y-[var(--space-1)] border-t border-[hsl(var(--border-subtle))] pt-[var(--space-3)]">
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
       </div>
@@ -489,7 +481,7 @@ function SlackCard({ status, accounts, onProbe, probing }: PlatformCardProps) {
         { label: 'Last start', value: relativeTime(status?.lastStartAt) },
       ]} />
 
-      <div className="mt-[var(--space-3)] space-y-[var(--space-1)] border-t border-[hsl(var(--border-subtle))] pt-[var(--space-3)]">
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
       </div>
@@ -509,7 +501,7 @@ function SignalCard({ status, accounts, onProbe, probing }: PlatformCardProps) {
         { label: 'Last start', value: relativeTime(status?.lastStartAt) },
       ]} />
 
-      <div className="mt-[var(--space-3)] space-y-[var(--space-1)] border-t border-[hsl(var(--border-subtle))] pt-[var(--space-3)]">
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
       </div>
@@ -583,7 +575,7 @@ function NostrCard({ status, accounts, onProbe, probing, onAction, actionBusy }:
         { label: 'Last start', value: relativeTime(status?.lastStartAt) },
       ]} />
 
-      <div className="mt-[var(--space-3)] space-y-[var(--space-1)] border-t border-[hsl(var(--border-subtle))] pt-[var(--space-3)]">
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
       </div>
@@ -592,31 +584,31 @@ function NostrCard({ status, accounts, onProbe, probing, onAction, actionBusy }:
 
       {/* Profile Section */}
       {!editingProfile ? (
-        <div className="mt-[var(--space-3)] p-[var(--space-3)] bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-md)]">
-          <div className="flex justify-between items-center mb-[var(--space-2)]">
-            <span className="text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--text-primary))]">{t('profile')}</span>
+        <div className="mt-3 p-3 bg-[var(--muted)]/60 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[11px] font-medium text-[var(--foreground)]">{t('profile')}</span>
             {status?.configured && (
-              <Button onClick={openProfileForm} variant="ghost" size="xs" className="h-5 text-[10px] px-[var(--space-2)]">
+              <Button onClick={openProfileForm} variant="ghost" size="xs" className="h-5 text-[10px] px-2">
                 {t('edit')}
               </Button>
             )}
           </div>
           {profile?.displayName || profile?.name ? (
-            <div className="space-y-[var(--space-1)]">
+            <div className="space-y-0.5">
               {profile.displayName && <StatusRow label={t('displayName')} value={profile.displayName} />}
               {profile.name && <StatusRow label={t('username')} value={profile.name} />}
               {profile.about && <StatusRow label={t('about')} value={profile.about.slice(0, 80)} />}
               {profile.nip05 && <StatusRow label="NIP-05" value={profile.nip05} />}
             </div>
           ) : (
-            <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">{t('noProfileSet')}</span>
+            <span className="text-[11px] text-[var(--muted-foreground)]">{t('noProfileSet')}</span>
           )}
         </div>
       ) : (
-        <div className="mt-[var(--space-3)] p-[var(--space-3)] bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-md)] space-y-[var(--space-2)]">
-          <div className="text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--text-primary))]">{t('editProfile')}</div>
+        <div className="mt-3 p-3 bg-[var(--muted)]/60 rounded-lg space-y-2">
+          <div className="text-[11px] font-medium text-[var(--foreground)]">{t('editProfile')}</div>
           {profileMessage && (
-            <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] bg-[hsl(var(--bg-surface))] rounded-[var(--radius-sm)] px-[var(--space-2)] py-[var(--space-1)]">{profileMessage}</div>
+            <div className="text-[11px] text-[var(--muted-foreground)] bg-white rounded px-2 py-1">{profileMessage}</div>
           )}
           <ProfileField label={t('username')} value={profileForm.name ?? ''} onChange={v => setProfileForm(p => ({ ...p, name: v }))} disabled={profileSaving} />
           <ProfileField label={t('displayName')} value={profileForm.displayName ?? ''} onChange={v => setProfileForm(p => ({ ...p, displayName: v }))} disabled={profileSaving} />
@@ -630,7 +622,7 @@ function NostrCard({ status, accounts, onProbe, probing, onAction, actionBusy }:
               <ProfileField label={t('lightning')} value={profileForm.lud16 ?? ''} onChange={v => setProfileForm(p => ({ ...p, lud16: v }))} disabled={profileSaving} />
             </>
           )}
-          <div className="flex flex-wrap gap-[var(--space-2)]">
+          <div className="flex flex-wrap gap-2">
             <Button onClick={handleProfileSave} disabled={profileSaving || actionBusy} variant="default" size="xs">
               {profileSaving ? t('saving') : t('saveAndPublish')}
             </Button>
@@ -660,7 +652,7 @@ function GenericChannelCard({ platform, label, status, accounts, onProbe, probin
         { label: 'Connected', value: yesNo(status?.connected) },
       ]} />
 
-      <div className="mt-[var(--space-3)] space-y-[var(--space-1)] border-t border-[hsl(var(--border-subtle))] pt-[var(--space-3)]">
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
       </div>
@@ -679,10 +671,10 @@ function GenericChannelCard({ platform, label, status, accounts, onProbe, probin
 function ProfileField({ label, value, onChange, disabled, multiline }: {
   label: string; value: string; onChange: (v: string) => void; disabled: boolean; multiline?: boolean
 }) {
-  const baseInputClasses = "w-full bg-[hsl(var(--bg-surface-raised))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-2)] py-[var(--space-1)] text-[var(--text-xs)] text-[hsl(var(--input-text))] focus:outline-none focus:border-[hsl(var(--input-border-focus))]"
+  const baseInputClasses = "w-full bg-white border border-[var(--border)] rounded-lg px-2 py-1 text-[11px] text-[var(--foreground)] focus:outline-none focus:border-[#6C5CE7]"
   return (
     <div>
-      <label className="text-[10px] text-[hsl(var(--text-muted))] mb-[var(--space-0-5)] block">{label}</label>
+      <label className="text-[10px] text-[var(--muted-foreground)] mb-0.5 block">{label}</label>
       {multiline ? (
         <textarea
           value={value}
@@ -707,22 +699,22 @@ function ProfileField({ label, value, onChange, disabled, multiline }: {
 function AccountList({ accounts }: { accounts: ChannelAccount[] }) {
   const t = useTranslations('channels')
   return (
-    <div className="mt-[var(--space-4)] space-y-[var(--space-2)]">
-      <div className="text-[10px] text-[hsl(var(--text-muted))] font-[var(--font-medium)] uppercase tracking-wider">
+    <div className="mt-4 space-y-2">
+      <div className="text-[10px] text-[var(--muted-foreground)] font-medium uppercase tracking-wider">
         {t('accounts', { count: accounts.length })}
       </div>
       {accounts.map(acct => (
-        <div key={acct.accountId} className="p-[var(--space-3)] bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-md)] space-y-[var(--space-1)]">
+        <div key={acct.accountId} className="p-3 bg-[var(--muted)]/60 rounded-lg space-y-0.5">
           <div className="flex justify-between items-center">
-            <span className="text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--text-primary))]">{acct.name || acct.accountId}</span>
-            <span className="text-[10px] text-[hsl(var(--text-muted))]">{acct.accountId}</span>
+            <span className="text-[11px] font-medium text-[var(--foreground)]">{acct.name || acct.accountId}</span>
+            <span className="text-[10px] text-[var(--muted-foreground)]">{acct.accountId}</span>
           </div>
           <StatusRow label="Running" value={yesNo(acct.running)} />
           <StatusRow label="Configured" value={yesNo(acct.configured)} />
           <StatusRow label="Connected" value={yesNo(acct.connected)} />
           {acct.lastInboundAt && <StatusRow label="Last inbound" value={relativeTime(acct.lastInboundAt)} />}
           {acct.lastError && (
-            <div className="text-[var(--text-xs)] text-[hsl(var(--status-error-fg))] break-words mt-[var(--space-1)]">{acct.lastError}</div>
+            <div className="text-[11px] text-red-700 break-words mt-1">{acct.lastError}</div>
           )}
         </div>
       ))}
@@ -736,10 +728,10 @@ function AccountList({ accounts }: { accounts: ChannelAccount[] }) {
 
 function SectionHeader({ label, count }: { label: string; count: number }) {
   return (
-    <div className="flex items-center gap-[var(--space-3)] mb-[var(--space-4)]">
-      <span className="text-[var(--text-xs)] font-[var(--font-semibold)] text-[hsl(var(--text-muted))] uppercase tracking-wider">{label}</span>
-      <span className="text-[var(--text-xs)] font-[var(--font-medium)] text-[hsl(var(--text-muted))]">{count}</span>
-      <div className="flex-1 h-px bg-[hsl(var(--border-default))]" />
+    <div className="flex items-center gap-3 mb-4">
+      <span className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{label}</span>
+      <span className="text-[11px] font-medium text-[var(--muted-foreground)]">{count}</span>
+      <div className="flex-1 h-px bg-[var(--border)]" />
     </div>
   )
 }
@@ -753,14 +745,14 @@ function FilterTabs({ active, onChange, counts }: {
   onChange: (f: ChannelFilter) => void
   counts: { all: number; connected: number; disconnected: number }
 }) {
-  const filters: { key: ChannelFilter; label: string; dot?: string }[] = [
-    { key: 'all', label: `All Channels` },
-    { key: 'connected', label: `Connected`, dot: 'bg-[hsl(var(--status-success-solid))]' },
-    { key: 'disconnected', label: `Disconnected`, dot: 'bg-[hsl(var(--text-muted))]' },
+  const filters: { key: ChannelFilter; label: string }[] = [
+    { key: 'all', label: `All` },
+    { key: 'connected', label: `Connected` },
+    { key: 'disconnected', label: `Disconnected` },
   ]
 
   return (
-    <div className="flex items-center gap-[var(--space-2)] mb-[var(--space-6)]">
+    <div className="inline-flex items-center gap-1 rounded-xl bg-[var(--muted)]/60 p-1 border border-[var(--border)] mb-6">
       {filters.map(f => {
         const isActive = active === f.key
         const count = counts[f.key]
@@ -768,15 +760,14 @@ function FilterTabs({ active, onChange, counts }: {
           <button
             key={f.key}
             onClick={() => onChange(f.key)}
-            className={`flex items-center gap-[var(--space-1-5)] px-[var(--space-4)] py-[var(--space-2)] rounded-full text-[var(--text-sm)] font-[var(--font-medium)] transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all ${
               isActive
-                ? 'bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-fg))]'
-                : 'bg-[hsl(var(--bg-subtle))] text-[hsl(var(--text-secondary))] hover:bg-[hsl(var(--interactive-secondary-hover))]'
+                ? 'bg-white text-[var(--foreground)] shadow-sm'
+                : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
             }`}
           >
-            {f.dot && <span className={`w-[6px] h-[6px] rounded-full ${f.dot}`} />}
             {f.label}
-            <span className={`ml-[var(--space-0-5)] text-[var(--text-xs)] ${isActive ? 'opacity-80' : 'opacity-60'}`}>{count}</span>
+            <span className={`ml-1 text-[11px] ${isActive ? 'opacity-80' : 'opacity-60'}`}>{count}</span>
           </button>
         )
       })}
@@ -873,23 +864,23 @@ export function ChannelsPanel() {
   // Loading state
   if (loading) {
     return (
-      <div className="p-[var(--space-6)]">
-        <div className="flex items-center gap-[var(--space-3)] mb-[var(--space-6)]">
-          <div className="w-[var(--space-4)] h-[var(--space-4)] border-2 border-[hsl(var(--interactive-primary))] border-t-transparent rounded-full animate-spin" />
-          <span className="text-[var(--text-sm)] text-[hsl(var(--text-muted))]">{t('loadingChannels')}</span>
+      <div className="p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-4 h-4 border-2 border-[var(--foreground)] border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm text-[var(--muted-foreground)]">{t('loadingChannels')}</span>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[var(--space-5)]">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-[var(--space-5)] animate-pulse">
-              <div className="flex items-center gap-[var(--space-3)] mb-[var(--space-4)]">
-                <div className="w-[var(--space-10)] h-[var(--space-10)] rounded-[var(--radius-lg)] bg-[hsl(var(--bg-subtle))]" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 animate-pulse">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-[var(--muted)]" />
                 <div>
-                  <div className="h-4 bg-[hsl(var(--bg-subtle))] rounded w-24 mb-[var(--space-1)]" />
-                  <div className="h-3 bg-[hsl(var(--bg-subtle))] rounded w-16" />
+                  <div className="h-4 bg-[var(--muted)] rounded w-24 mb-1" />
+                  <div className="h-3 bg-[var(--muted)] rounded w-16" />
                 </div>
               </div>
-              <div className="h-3 bg-[hsl(var(--bg-subtle))] rounded w-1/3 mb-[var(--space-2)]" />
-              <div className="h-3 bg-[hsl(var(--bg-subtle))] rounded w-1/4" />
+              <div className="h-3 bg-[var(--muted)] rounded w-1/3 mb-2" />
+              <div className="h-3 bg-[var(--muted)] rounded w-1/4" />
             </div>
           ))}
         </div>
@@ -900,8 +891,8 @@ export function ChannelsPanel() {
   // Error state
   if (error) {
     return (
-      <div className="p-[var(--space-6)]">
-        <div className="bg-[hsl(var(--status-error-bg))] text-[hsl(var(--status-error-fg))] border border-[hsl(var(--status-error-border))] rounded-[var(--card-radius)] p-[var(--space-4)] text-[var(--text-sm)]">{error}</div>
+      <div className="p-6">
+        <div className="bg-red-50 text-red-700 border border-red-200 rounded-xl p-4 text-sm">{error}</div>
       </div>
     )
   }
@@ -969,30 +960,30 @@ export function ChannelsPanel() {
   }
 
   return (
-    <div className="p-[var(--space-6)]">
+    <div className="p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-[var(--space-2)]">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-[var(--text-2xl)] font-[var(--font-bold)] text-[hsl(var(--text-primary))]">{t('title')}</h2>
-          <p className="text-[var(--text-sm)] text-[hsl(var(--text-muted))] mt-[var(--space-1)]">
+          <h1 className="text-xl font-bold text-[var(--foreground)] tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-[var(--muted-foreground)] mt-1">
             {gatewayConnected ? t('gatewayConnected') : t('gatewayDisconnected')}
           </p>
         </div>
-        <Button
-          onClick={() => { setLoading(true); fetchChannels() }}
-          variant="outline"
-          size="sm"
-        >
-          {t('refresh')}
-        </Button>
-      </div>
-
-      {/* Gateway status indicator */}
-      <div className="flex items-center gap-[var(--space-1-5)] mb-[var(--space-5)]">
-        <span className={`w-[var(--space-2)] h-[var(--space-2)] rounded-full ${gatewayConnected ? 'bg-[hsl(var(--status-success-solid))]' : 'bg-[hsl(var(--status-error-solid))]'}`} />
-        <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]">
-          {gatewayConnected ? t('gatewayConnected') : t('gatewayDisconnected')}
-        </span>
+        <div className="flex items-center gap-3">
+          {/* Gateway status indicator */}
+          <div className="flex items-center gap-1.5">
+            <span className={`w-2 h-2 rounded-full ${gatewayConnected ? 'bg-emerald-500' : 'bg-red-500'}`} />
+            <span className="text-[11px] text-[var(--muted-foreground)]">
+              {gatewayConnected ? 'Online' : 'Offline'}
+            </span>
+          </div>
+          <button
+            onClick={() => { setLoading(true); fetchChannels() }}
+            className="px-3 py-1.5 rounded-lg text-[12px] font-medium border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
+          >
+            {t('refresh')}
+          </button>
+        </div>
       </div>
 
       {/* Filter tabs */}
@@ -1000,20 +991,20 @@ export function ChannelsPanel() {
 
       {/* Channel cards */}
       {channelOrder.length === 0 ? (
-        <div className="text-center py-[var(--space-16)]">
-          <p className="text-[var(--text-sm)] text-[hsl(var(--text-muted))]">
+        <div className="text-center py-16">
+          <p className="text-sm text-[var(--muted-foreground)]">
             {gatewayConnected
               ? t('noChannelsConfigured')
               : t('gatewayUnreachable')}
           </p>
         </div>
       ) : (
-        <div className="space-y-[var(--space-6)]">
+        <div className="space-y-6">
           {/* Connected section */}
           {showConnected && connectedKeys.length > 0 && (
             <div>
               <SectionHeader label="Connected" count={connectedKeys.length} />
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[var(--space-5)]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {connectedKeys.map(key => renderCard(key))}
               </div>
             </div>
@@ -1023,7 +1014,7 @@ export function ChannelsPanel() {
           {showDisconnected && disconnectedKeys.length > 0 && (
             <div>
               <SectionHeader label="Disconnected" count={disconnectedKeys.length} />
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[var(--space-5)]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {disconnectedKeys.map(key => renderCard(key))}
               </div>
             </div>
@@ -1031,13 +1022,13 @@ export function ChannelsPanel() {
 
           {/* Empty state for filtered views */}
           {filter === 'connected' && connectedKeys.length === 0 && (
-            <div className="text-center py-[var(--space-12)]">
-              <p className="text-[var(--text-sm)] text-[hsl(var(--text-muted))]">{t('noChannelsConfigured')}</p>
+            <div className="text-center py-12">
+              <p className="text-sm text-[var(--muted-foreground)]">{t('noChannelsConfigured')}</p>
             </div>
           )}
           {filter === 'disconnected' && disconnectedKeys.length === 0 && (
-            <div className="text-center py-[var(--space-12)]">
-              <p className="text-[var(--text-sm)] text-[hsl(var(--text-muted))]">{t('noChannelsConfigured')}</p>
+            <div className="text-center py-12">
+              <p className="text-sm text-[var(--muted-foreground)]">{t('noChannelsConfigured')}</p>
             </div>
           )}
         </div>
