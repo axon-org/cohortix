@@ -243,6 +243,7 @@ export function SkillsPanel() {
     message?: string
     securityStatus?: string
   } | null>(null)
+  const [showCreateForm, setShowCreateForm] = useState(false)
 
   useEffect(() => {
     setIsMounted(true)
@@ -570,7 +571,6 @@ export function SkillsPanel() {
     )
   }
 
-  const [showCreateForm, setShowCreateForm] = useState(false)
   const totalCount = skillsTotal ?? (skillsList || []).length
   const installedCount = (skillsList || []).filter(s => s.registry_slug).length
   const availableCount = totalCount - installedCount
