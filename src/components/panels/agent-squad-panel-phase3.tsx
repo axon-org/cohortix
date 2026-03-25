@@ -370,66 +370,65 @@ export function AgentSquadPanelPhase3() {
               return (
                 <div
                   key={agent.id}
-                  className="group relative overflow-hidden rounded-[var(--card-radius)] border border-[hsl(var(--card-border))] bg-[hsl(var(--card-bg))] p-[var(--space-5)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[var(--card-shadow-hover)] cursor-pointer"
-                  style={{ boxShadow: 'var(--card-shadow)' }}
+                  className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md cursor-pointer"
                   onClick={() => setSelectedAgent(agent)}
                 >
-                  {/* Accent left edge */}
-                  <div className={`pointer-events-none absolute inset-y-0 left-0 w-1 ${statusEdgeClasses[agent.status]}`} />
+                  {/* Top accent bar */}
+                  <div className={`h-1 w-full ${statusEdgeClasses[agent.status]}`} />
 
+                  <div className="p-5">
                   {/* Header: larger avatar + name + status badge */}
-                  <div className="flex items-start gap-[var(--space-3)] mb-[var(--space-3)]">
+                  <div className="flex items-start gap-3 mb-3">
                     <AgentAvatar name={agent.name} size="lg" />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-[var(--space-1-5)]">
-                        <h3 className="font-semibold text-[var(--text-md)] text-[hsl(var(--text-primary))] truncate">{agent.name}</h3>
+                      <div className="flex items-center gap-1.5">
+                        <h3 className="font-semibold text-base text-foreground truncate">{agent.name}</h3>
                         {(agent as any).source && (agent as any).source !== 'manual' && (
                           <span className="text-[10px] px-1.5 py-0.5 rounded-full border bg-status-info-bg text-primary border-status-info-border">
                             {(agent as any).source}
                           </span>
                         )}
                       </div>
-                      <p className="text-[var(--text-sm)] text-[hsl(var(--text-muted))] truncate">
+                      <p className="text-sm text-muted-foreground font-medium truncate">
                         {agent.role}
                       </p>
                       {/* Model badge */}
                       {modelName && (
-                        <span className="inline-flex mt-[var(--space-1)] px-[var(--space-2)] py-0.5 rounded-[var(--radius-sm)] bg-[hsl(var(--color-indigo-50))] text-[hsl(var(--interactive-primary))] text-[10px] font-mono border border-[hsl(var(--color-indigo-200))]">
+                        <span className="inline-flex mt-1 px-2 py-0.5 rounded-lg bg-muted/60 text-muted-foreground text-[10px] font-mono border border-border">
                           {modelName}
                         </span>
                       )}
                     </div>
 
-                    <div className="flex flex-col items-end gap-[var(--space-1)] shrink-0">
+                    <div className="flex flex-col items-end gap-1 shrink-0">
                       {hasRecentHeartbeat(agent) && (
                         <div className="w-2 h-2 rounded-full bg-status-info-solid animate-pulse" title="Recent heartbeat" />
                       )}
-                      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[var(--text-xs)] capitalize ${statusBadgeStyles[agent.status]}`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${statusDotClasses[agent.status]}`} />
+                      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold capitalize ${statusBadgeStyles[agent.status]}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${statusDotClasses[agent.status]} animate-pulse`} />
                         {agent.status}
                       </span>
                     </div>
                   </div>
 
-                  {/* Task stats — inline */}
+                  {/* Task stats — chip style */}
                   {taskStatsLine && (
-                    <div className="text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-2)] pl-0.5">
-                      {taskStatsLine.map((part, i) => (
-                        <span key={part.label}>
-                          {i > 0 && <span className="mx-1 opacity-40">·</span>}
-                          <span className={part.color || 'text-[hsl(var(--text-primary))]/80'}>{part.count}</span>
-                          {' '}{part.label}
-                        </span>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {taskStatsLine.map((part) => (
+                        <div key={part.label} className="flex items-center gap-1.5 rounded-lg border border-border bg-muted/60 px-3 py-1.5 text-sm">
+                          <span className="font-semibold text-foreground">{part.count}</span>
+                          <span className="text-muted-foreground">{part.label}</span>
+                        </div>
                       ))}
                     </div>
                   )}
 
                   {/* Footer: last seen + actions */}
-                  <div className="flex items-center justify-between mt-[var(--space-2)] pt-[var(--space-2)] border-t border-[hsl(var(--border-subtle))]">
-                    <span className="text-[11px] text-[hsl(var(--text-muted))]/70">
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-border">
+                    <span className="text-[11px] text-muted-foreground">
                       {formatLastSeen(agent.last_seen)}
                     </span>
-                    <div className="flex gap-[var(--space-1)]">
+                    <div className="flex gap-1">
                       {agent.session_key ? (
                         <Button
                           onClick={(e) => {
@@ -438,7 +437,7 @@ export function AgentSquadPanelPhase3() {
                           }}
                           size="xs"
                           variant="ghost"
-                          className="h-6 px-2 text-[var(--text-xs)] text-primary hover:bg-status-info-bg hover:text-primary"
+                          className="h-6 px-2 text-xs text-primary hover:bg-status-info-bg hover:text-primary"
                           title="Wake agent via session"
                         >
                           {t('wake')}
@@ -452,7 +451,7 @@ export function AgentSquadPanelPhase3() {
                           disabled={agent.status === 'idle'}
                           size="xs"
                           variant="ghost"
-                          className="h-6 px-2 text-[var(--text-xs)]"
+                          className="h-6 px-2 text-xs"
                         >
                           {t('wake')}
                         </Button>
@@ -465,12 +464,13 @@ export function AgentSquadPanelPhase3() {
                         }}
                         size="xs"
                         variant="ghost"
-                        className="h-6 px-2 text-[var(--text-xs)] text-status-info-fg hover:bg-status-info-bg/15 hover:text-status-info-fg"
+                        className="h-6 px-2 text-xs text-status-info-fg hover:bg-status-info-bg/15 hover:text-status-info-fg"
                       >
                         {t('spawn')}
                       </Button>
                     </div>
                   </div>
+                  </div>{/* close p-5 wrapper */}
                 </div>
               )
             })}
@@ -1093,16 +1093,87 @@ function AgentDetailModalPhase3({
         className="bg-[hsl(var(--card-bg))] border border-[hsl(var(--border-default))]/80 rounded-[var(--card-radius)] shadow-[var(--shadow-xl)] max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
-        <div className="px-[var(--space-5)] pt-[var(--space-5)] pb-0 border-b border-[hsl(var(--border-default))]">
-          <div className="flex justify-between items-center gap-[var(--space-4)] mb-[var(--space-4)]">
-            <div className="flex items-center gap-[var(--space-3)] min-w-0">
-              <AgentAvatar name={agent.name} size="lg" />
-              <div className="min-w-0">
-                <div className="flex items-center gap-[var(--space-2)]">
-                  <h3 className="text-[var(--text-lg)] font-semibold text-[hsl(var(--text-primary))] leading-tight truncate">{agentState.name}</h3>
-                  <span className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full border ${statusBadgeStyles[agentState.status]}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${statusDotClasses[agentState.status]}`} />
+        {/* Close button row */}
+        <div className="flex items-center justify-end gap-1.5 px-4 pt-3 pb-0">
+          <div className="relative" ref={deleteMenuRef}>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="text-muted-foreground hover:text-status-error-fg"
+              title="Delete agent"
+              onClick={() => setShowDeleteMenu(prev => !prev)}
+            >
+              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 4h12M5.33 4V2.67a1.33 1.33 0 0 1 1.34-1.34h2.66a1.33 1.33 0 0 1 1.34 1.34V4M12.67 4v9.33a1.33 1.33 0 0 1-1.34 1.34H4.67a1.33 1.33 0 0 1-1.34-1.34V4" />
+              </svg>
+            </Button>
+            {showDeleteMenu && (
+              <div className="absolute right-0 top-full mt-1 flex flex-col gap-1 bg-card border border-border rounded-md shadow-xl p-1.5 z-10 min-w-[180px]">
+                <button
+                  onClick={() => handleDelete(false)}
+                  disabled={deleteBusy}
+                  className="text-left text-xs px-2.5 py-1.5 rounded-sm text-status-error-fg hover:bg-status-error-bg transition-colors disabled:opacity-50"
+                >
+                  {deleteBusy ? (
+                    <span className="flex items-center gap-1.5">
+                      <svg className="w-3 h-3 animate-spin" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" strokeDasharray="28" strokeDashoffset="8" />
+                      </svg>
+                      Deleting...
+                    </span>
+                  ) : 'Delete agent'}
+                </button>
+                <button
+                  onClick={() => handleDelete(true)}
+                  disabled={deleteBusy}
+                  className="text-left text-xs px-2.5 py-1.5 rounded-sm text-status-error-fg hover:bg-status-error-bg transition-colors disabled:opacity-50"
+                >
+                  {deleteBusy ? (
+                    <span className="flex items-center gap-1.5">
+                      <svg className="w-3 h-3 animate-spin" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" strokeDasharray="28" strokeDashoffset="8" />
+                      </svg>
+                      Deleting...
+                    </span>
+                  ) : 'Delete agent + workspace'}
+                </button>
+              </div>
+            )}
+          </div>
+          <Button
+            onClick={onClose}
+            aria-label="Close agent details"
+            variant="ghost"
+            size="icon-sm"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M4 4l8 8M12 4l-8 8" />
+            </svg>
+          </Button>
+        </div>
+
+        {deleteError && (
+          <div className="mx-5 mb-3 rounded-md border border-status-error-border bg-status-error-bg px-3 py-2 text-xs text-status-error-fg">
+            {deleteError}
+          </div>
+        )}
+
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto px-4 pb-8 md:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl space-y-5 pt-5">
+
+          {/* HERO CARD: Agent profile with top accent bar */}
+          <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+            <div className={`h-1 w-full ${statusEdgeClasses[agentState.status]}`} />
+            <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-start sm:gap-6">
+              {/* Large squared avatar */}
+              <AgentAvatar name={agentState.name} size="xl" />
+              <div className="flex flex-1 flex-col gap-3 min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-xl font-bold text-foreground tracking-tight">{agentState.name}</h1>
+                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold capitalize ${statusBadgeStyles[agentState.status]}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${statusDotClasses[agentState.status]} animate-pulse`} />
                     {agentState.status}
                   </span>
                   {agentState.session_key && (
@@ -1111,99 +1182,58 @@ function AgentDetailModalPhase3({
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-[var(--space-2)] mt-0.5">
-                  <span className="text-[var(--text-sm)] text-[hsl(var(--text-muted))]">{agentState.role}</span>
-                  <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]/60">·</span>
-                  <span className="text-[var(--text-xs)] text-[hsl(var(--text-muted))]/60">seen {formatLastSeen(agentState.last_seen)}</span>
-                </div>
+                <p className="text-sm text-muted-foreground font-medium">{agentState.role}</p>
+                {/* Stat chips */}
+                {(() => {
+                  const statsLine = buildTaskStatParts(agentState.taskStats)
+                  return statsLine ? (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {statsLine.map((part) => (
+                        <div key={part.label} className="flex items-center gap-1.5 rounded-lg border border-border bg-muted/60 px-3 py-1.5 text-sm">
+                          <span className="font-semibold text-foreground">{part.count}</span>
+                          <span className="text-muted-foreground">{part.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null
+                })()}
               </div>
-            </div>
-            <div className="flex items-center gap-[var(--space-1-5)]">
-              <div className="relative" ref={deleteMenuRef}>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-muted-foreground hover:text-status-error-fg"
-                  title="Delete agent"
-                  onClick={() => setShowDeleteMenu(prev => !prev)}
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M2 4h12M5.33 4V2.67a1.33 1.33 0 0 1 1.34-1.34h2.66a1.33 1.33 0 0 1 1.34 1.34V4M12.67 4v9.33a1.33 1.33 0 0 1-1.34 1.34H4.67a1.33 1.33 0 0 1-1.34-1.34V4" />
-                  </svg>
-                </Button>
-                {showDeleteMenu && (
-                  <div className="absolute right-0 top-full mt-1 flex flex-col gap-[var(--space-1)] bg-[hsl(var(--card-bg))] border border-[hsl(var(--border-default))] rounded-[var(--radius-md)] shadow-[var(--shadow-xl)] p-[var(--space-1-5)] z-10 min-w-[180px]">
-                    <button
-                      onClick={() => handleDelete(false)}
-                      disabled={deleteBusy}
-                      className="text-left text-[var(--text-xs)] px-2.5 py-1.5 rounded-[var(--radius-sm)] text-status-error-fg hover:bg-status-error-bg transition-colors disabled:opacity-50"
-                    >
-                      {deleteBusy ? (
-                        <span className="flex items-center gap-1.5">
-                          <svg className="w-3 h-3 animate-spin" viewBox="0 0 16 16" fill="none">
-                            <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" strokeDasharray="28" strokeDashoffset="8" />
-                          </svg>
-                          Deleting...
-                        </span>
-                      ) : 'Delete agent'}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(true)}
-                      disabled={deleteBusy}
-                      className="text-left text-[var(--text-xs)] px-2.5 py-1.5 rounded-[var(--radius-sm)] text-status-error-fg hover:bg-status-error-bg transition-colors disabled:opacity-50"
-                    >
-                      {deleteBusy ? (
-                        <span className="flex items-center gap-1.5">
-                          <svg className="w-3 h-3 animate-spin" viewBox="0 0 16 16" fill="none">
-                            <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" strokeDasharray="28" strokeDashoffset="8" />
-                          </svg>
-                          Deleting...
-                        </span>
-                      ) : 'Delete agent + workspace'}
-                    </button>
-                  </div>
-                )}
+              {/* Right meta: Agent ID + last active */}
+              <div className="hidden sm:flex flex-col items-end gap-2 shrink-0">
+                <span className="text-[11px] text-muted-foreground uppercase tracking-widest font-semibold">Agent ID</span>
+                <span className="font-mono text-xs text-foreground bg-muted rounded px-2 py-1 border border-border">AGT-{String(agentState.id).padStart(4, '0')}</span>
+                <span className="text-[11px] text-muted-foreground mt-1">Last active {formatLastSeen(agentState.last_seen)}</span>
               </div>
-              <Button
-                onClick={onClose}
-                aria-label="Close agent details"
-                variant="ghost"
-                size="icon-sm"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                  <path d="M4 4l8 8M12 4l-8 8" />
-                </svg>
-              </Button>
             </div>
           </div>
 
-          {deleteError && (
-            <div className="mb-[var(--space-3)] rounded-[var(--radius-md)] border border-status-error-border bg-status-error-bg px-[var(--space-3)] py-[var(--space-2)] text-[var(--text-xs)] text-status-error-fg">
-              {deleteError}
+          {/* TABS CARD */}
+          <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+            <div className="border-b border-border px-1">
+              <div className="flex overflow-x-auto scrollbar-none" role="tablist">
+                {tabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative shrink-0 px-4 py-3.5 text-sm font-medium transition-colors whitespace-nowrap ${
+                      activeTab === tab.id
+                        ? 'text-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {tab.label}
+                    {activeTab === tab.id && (
+                      <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[hsl(var(--interactive-primary))]" />
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
-          )}
-
-          {/* 4 Primary Tab Navigation */}
-          <div className="flex gap-0 -mb-px">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-[var(--space-5)] py-[var(--space-2-5,10px)] text-[var(--text-sm)] font-medium border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'border-[hsl(var(--interactive-primary))] text-[hsl(var(--text-primary))]'
-                    : 'border-transparent text-[hsl(var(--text-muted))] hover:text-[hsl(var(--text-primary))] hover:border-[hsl(var(--border-default))]'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div role="tabpanel">
           {activeTab === 'overview' && (
             <ConsolidatedOverviewTab
               agent={agentState}
@@ -1246,6 +1276,10 @@ function AgentDetailModalPhase3({
             />
           )}
         </div>
+          </div>{/* close tabs card */}
+
+          </div>{/* close max-w-3xl */}
+        </div>{/* close scrollable content */}
       </div>
     </div>
   )
