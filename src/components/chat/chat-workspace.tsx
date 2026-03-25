@@ -394,61 +394,161 @@ export function ChatWorkspace({ mode = 'embedded', onClose }: ChatWorkspaceProps
           </div>
         )}
 
-        {/* Message area */}
+        {/* Message area — 2-column layout */}
         {(!isMobile || !showConversations) && (
-          <div className="flex min-w-0 flex-1 flex-col">
-            {/* Conversation header */}
-            {activeConversation && (
-              <div className="bg-[hsl(var(--bg-surface-raised))] flex flex-shrink-0 items-center gap-[var(--space-3)] border-b border-[hsl(var(--border-default))] px-[var(--space-5)] py-[var(--space-3)]">
-                <div className="relative">
-                  <AgentAvatar
-                    name={(selectedConversation?.name || activeConversation).replace('agent_', '')}
-                    size="md"
-                  />
-                  {(() => {
-                    const status = getConversationStatus(agents, activeConversation)
-                    const isOnline = status === 'Online'
-                    return (
-                      <div className={`absolute -bottom-0.5 -right-0.5 w-[10px] h-[10px] rounded-full border-2 border-[hsl(var(--bg-surface-raised))] ${isOnline ? 'bg-[hsl(var(--status-success-solid))]' : 'bg-muted-foreground/30'}`} />
-                    )
-                  })()}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-[length:var(--text-base)] font-[var(--font-medium)] text-foreground">
-                    {(selectedConversation?.name || activeConversation).replace('agent_', '')}
+          <div className="flex min-w-0 flex-1 gap-4 p-4 overflow-hidden">
+            {/* LEFT COLUMN — Chat */}
+            <div className="flex-[7] min-w-0 overflow-hidden">
+              <div className="flex flex-col h-full rounded-xl overflow-hidden bg-white border border-[#E8E8EC] shadow-[0px_1px_3px_rgba(0,0,0,0.04)]">
+                {/* Chat header */}
+                {activeConversation && (
+                  <div className="flex items-center justify-between px-5 py-3.5 shrink-0 border-b border-[#E8E8EC]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white bg-[#6C5CE7]">
+                        {((selectedConversation?.name || activeConversation).replace('agent_', '')).charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-semibold text-[#1A1A2E]">
+                            {(selectedConversation?.name || activeConversation).replace('agent_', '')}
+                          </span>
+                          {getConversationStatus(agents, activeConversation) === 'Online' && (
+                            <span className="w-2 h-2 rounded-full bg-[#22C55E]" />
+                          )}
+                        </div>
+                        <p className="text-[11px] text-[#888899]">
+                          {(() => {
+                            const name = activeConversation.replace('agent_', '')
+                            const agent = agents.find(a => a.name.toLowerCase() === name.toLowerCase())
+                            return agent?.role || getConversationStatus(agents, activeConversation)
+                          })()}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-[#EDE9FD] text-[#6C5CE7] border border-[#D8D2F9]">
+                      Claude Sonnet 4
+                    </span>
                   </div>
-                  <div className="text-[length:var(--text-xs)] text-muted-foreground flex items-center gap-[var(--space-1)]">
-                    <span className={`inline-block w-1.5 h-1.5 rounded-full ${getConversationStatus(agents, activeConversation) === 'Online' ? 'bg-[hsl(var(--status-success-solid))]' : 'bg-muted-foreground/30'}`} />
-                    {getConversationStatus(agents, activeConversation)}
-                  </div>
-                </div>
-              </div>
-            )}
+                )}
 
-            {selectedConversation?.source === 'session' && selectedConversation.session ? (
-              <SessionConversationView
-                session={selectedConversation.session}
-                messages={sessionTranscript}
-                loading={sessionTranscriptLoading}
-                error={sessionTranscriptError}
-                onRefreshTranscript={refreshSessionTranscript}
-                onSavePreferences={handleSaveSessionPreferences}
+                {selectedConversation?.source === 'session' && selectedConversation.session ? (
+                  <SessionConversationView
+                    session={selectedConversation.session}
+                    messages={sessionTranscript}
+                    loading={sessionTranscriptLoading}
+                    error={sessionTranscriptError}
+                    onRefreshTranscript={refreshSessionTranscript}
+                    onSavePreferences={handleSaveSessionPreferences}
+                  />
+                ) : (
+                  <>
+                    <MessageList />
+                    <ChatIndicators notifications={notifications} />
+                    <ChatInput
+                      onSend={handleSend}
+                      onAbort={handleAbort}
+                      disabled={!canSendMessage}
+                      agents={agents.map(a => ({ name: a.name, role: a.role }))}
+                      isGenerating={isGenerating}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN — Info Panel */}
+            {!isMobile && activeConversation && !activeConversation.startsWith('session:') && (
+              <ChatInfoPanel
+                agentName={(selectedConversation?.name || activeConversation).replace('agent_', '')}
+                agents={agents}
+                activeConversation={activeConversation}
               />
-            ) : (
-              <>
-                <MessageList />
-                <ChatIndicators notifications={notifications} />
-                <ChatInput
-                  onSend={handleSend}
-                  onAbort={handleAbort}
-                  disabled={!canSendMessage}
-                  agents={agents.map(a => ({ name: a.name, role: a.role }))}
-                  isGenerating={isGenerating}
-                />
-              </>
             )}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+function ChatInfoPanel({
+  agentName,
+  agents,
+  activeConversation,
+}: {
+  agentName: string
+  agents: Array<{ name: string; status: string; role: string }>
+  activeConversation: string
+}) {
+  const status = getConversationStatus(agents, activeConversation)
+  const isOnline = status === 'Online'
+  const agent = agents.find(a => a.name.toLowerCase() === agentName.toLowerCase())
+
+  return (
+    <div className="flex-[3] min-w-0 overflow-y-auto space-y-4">
+      {/* Card 1: Agent Profile */}
+      <div className="rounded-xl p-5 bg-white border border-[#E8E8EC]">
+        <div className="flex flex-col items-center pb-4 mb-4 border-b border-[#E8E8EC]">
+          <div className="w-14 h-14 rounded-full text-xl font-bold text-white flex items-center justify-center mb-3 bg-[#6C5CE7] shadow-[0px_0px_0px_4px_#EDE9FD]">
+            {agentName.charAt(0).toUpperCase()}
+          </div>
+          <h2 className="text-base font-bold text-[#1A1A2E]">{agentName}</h2>
+          <p className="text-xs mt-0.5 text-[#888899]">{agent?.role || 'Agent'}</p>
+          <span className={`mt-2 px-2.5 py-1 rounded-full text-xs font-semibold ${
+            isOnline
+              ? 'bg-[#DCFCE7] text-[#16A34A]'
+              : 'bg-[#F4F4F5] text-[#888899]'
+          }`}>
+            {isOnline ? '● Online' : '● Offline'}
+          </span>
+        </div>
+        <div className="space-y-2.5 text-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-[#888899]">Model</span>
+            <span className="text-[#1A1A2E] font-medium">Claude Sonnet 4</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[#888899]">Active since</span>
+            <span className="text-[#1A1A2E] font-medium">Today</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Card 2: Current Task */}
+      <div className="rounded-xl p-5 bg-white border border-[#E8E8EC]">
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-[#888899]">Current Task</h3>
+        <p className="text-sm font-medium text-[#1A1A2E]">Awaiting instructions</p>
+        <p className="text-xs mb-3 text-[#888899]">No active task assigned</p>
+        <div className="w-full h-2 rounded-full bg-[#EDE9FD]">
+          <div style={{ width: '0%' }} className="h-full rounded-full bg-[#6C5CE7]" />
+        </div>
+      </div>
+
+      {/* Card 3: Recent Files */}
+      <div className="rounded-xl p-5 bg-white border border-[#E8E8EC]">
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-[#888899]">Recent Files</h3>
+        <div className="space-y-2.5 text-sm text-[#888899]">
+          <p className="text-xs">No recent files</p>
+        </div>
+      </div>
+
+      {/* Card 4: Quick Actions */}
+      <div className="rounded-xl p-5 bg-white border border-[#E8E8EC]">
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-[#888899]">Quick Actions</h3>
+        <div className="space-y-2">
+          <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-[#D97706] bg-[#FEF3C7] hover:bg-[#FDE68A] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M8 4v8M4 8h8" /></svg>
+            Pause Agent
+          </button>
+          <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-[#6C5CE7] bg-[#EDE9FD] hover:bg-[#D8D2F9] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 3l10 5-10 5V3z" /></svg>
+            Restart Agent
+          </button>
+          <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-[#444455] bg-[#F4F4F8] hover:bg-[#E8E8EC] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 12h12M2 8h12M2 4h12" /></svg>
+            View Logs
+          </button>
+        </div>
       </div>
     </div>
   )

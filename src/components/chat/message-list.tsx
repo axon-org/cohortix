@@ -129,15 +129,15 @@ export function MessageList() {
   if (!activeConversation) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="text-center px-[var(--space-6)]">
-          <div className="w-14 h-14 rounded-[var(--radius-xl)] bg-[hsl(var(--bg-subtle))] flex items-center justify-center mx-auto mb-[var(--space-4)]">
-            <svg width="24" height="24" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/40">
+        <div className="text-center px-6">
+          <div className="w-14 h-14 rounded-2xl bg-[#EDE9FD] flex items-center justify-center mx-auto mb-4">
+            <svg width="24" height="24" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#6C5CE7]">
               <path d="M14 10c0 .37-.1.7-.28 1-.53.87-2.2 3-5.72 3-4.42 0-6-3-6-4V4a2 2 0 012-2h8a2 2 0 012 2v6z" />
               <path d="M6 7h.01M10 7h.01" />
             </svg>
           </div>
-          <p className="text-[length:var(--text-base)] font-[var(--font-medium)] text-foreground">Select a conversation</p>
-          <p className="text-[length:var(--text-sm)] text-muted-foreground mt-[var(--space-1)]">or start a new one with an agent</p>
+          <p className="text-[15px] font-semibold text-[#1A1A2E]">Select a conversation</p>
+          <p className="text-[13px] text-[#888899] mt-1">or start a new one with an agent</p>
         </div>
       </div>
     )
@@ -150,15 +150,15 @@ export function MessageList() {
   if (conversationMessages.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="text-center px-[var(--space-6)]">
-          <div className="w-14 h-14 rounded-[var(--radius-xl)] bg-[hsl(var(--bg-subtle))] flex items-center justify-center mx-auto mb-[var(--space-4)]">
-            <svg width="24" height="24" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/40">
+        <div className="text-center px-6">
+          <div className="w-14 h-14 rounded-2xl bg-[#EDE9FD] flex items-center justify-center mx-auto mb-4">
+            <svg width="24" height="24" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#6C5CE7]">
               <path d="M12 3H4a1 1 0 00-1 1v6l3-2h6a1 1 0 001-1V4a1 1 0 00-1-1z" />
               <path d="M7 11v1a1 1 0 001 1h5l2 2v-6a1 1 0 00-1-1h-1" />
             </svg>
           </div>
-          <p className="text-[length:var(--text-base)] font-[var(--font-medium)] text-foreground">No messages yet</p>
-          <p className="text-[length:var(--text-sm)] text-muted-foreground mt-[var(--space-1)]">Send a message to get started</p>
+          <p className="text-[15px] font-semibold text-[#1A1A2E]">No messages yet</p>
+          <p className="text-[13px] text-[#888899] mt-1">Send a message to get started</p>
         </div>
       </div>
     )
@@ -171,10 +171,10 @@ export function MessageList() {
       {groups.map((group) => (
         <div key={group.date}>
           {/* Date separator */}
-          <div className="flex items-center gap-[var(--space-3)] my-[var(--space-5)]">
-            <div className="flex-1 h-px bg-[hsl(var(--border-subtle))]" />
-            <span className="text-[11px] text-muted-foreground font-[var(--font-medium)] uppercase tracking-wider px-[var(--space-2)]">{group.date}</span>
-            <div className="flex-1 h-px bg-[hsl(var(--border-subtle))]" />
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-[#E8E8EC]" />
+            <span className="text-[11px] text-[#888899] font-medium uppercase tracking-wider px-2">{group.date}</span>
+            <div className="flex-1 h-px bg-[#E8E8EC]" />
           </div>
 
           {group.messages.map((msg, idx) => (
@@ -222,19 +222,19 @@ export function MessageList() {
 
       {/* Typing indicator */}
       {isSendingMessage && (
-        <div className="flex gap-[var(--space-2)] mt-[var(--space-3)]">
-          <div className="w-8 h-8 rounded-full bg-[hsl(var(--bg-subtle))] flex items-center justify-center flex-shrink-0">
+        <div className="flex gap-2.5 mt-4">
+          <div className="w-8 h-8 rounded-full bg-[#6C5CE7]/15 flex items-center justify-center flex-shrink-0">
             <div className="flex gap-0.5">
-              <div className="w-1 h-1 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-1 h-1 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-1 h-1 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="w-1 h-1 rounded-full bg-[#6C5CE7]/50 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-1 h-1 rounded-full bg-[#6C5CE7]/50 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-1 h-1 rounded-full bg-[#6C5CE7]/50 animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
-          <div className="bg-[hsl(var(--bg-surface-raised))] border border-[hsl(var(--border-default))] rounded-[var(--radius-xl)] rounded-tl-[var(--radius-xs)] px-[var(--space-4)] py-[var(--space-3)]">
+          <div className="bg-white border border-[#E8E8EC] rounded-2xl rounded-tl-[4px] px-4 py-3 shadow-[0px_1px_3px_rgba(0,0,0,0.04)]">
             <div className="flex gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#888899]/40 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#888899]/40 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#888899]/40 animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         </div>
