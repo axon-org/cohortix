@@ -114,7 +114,7 @@ test.describe('Accessibility', () => {
       .withTags(['wcag2a', 'wcag2aa'])
       .analyze()
 
-    const violations = results.violations.map(v => ({
+    const violations = results.violations.map((v: any) => ({
       id: v.id,
       impact: v.impact,
       description: v.description,
@@ -125,11 +125,11 @@ test.describe('Accessibility', () => {
       console.log('Accessibility violations:', JSON.stringify(violations, null, 2))
     }
     // Filter out pre-existing violations not introduced by feat-002
-    const feat002Violations = results.violations.filter(v => {
+    const feat002Violations = results.violations.filter((v: any) => {
       // button-name on header search is pre-existing
-      if (v.id === 'button-name' && v.nodes.some(n => n.target.some(t => String(t).includes('header')))) return false
+      if (v.id === 'button-name' && v.nodes.some((n: any) => n.target.some((t: any) => String(t).includes('header')))) return false
       // color-contrast on status indicators is pre-existing
-      if (v.id === 'color-contrast' && v.nodes.every(n => n.target.some(t => String(t).includes('header')))) return false
+      if (v.id === 'color-contrast' && v.nodes.every((n: any) => n.target.some((t: any) => String(t).includes('header')))) return false
       return true
     })
     expect(feat002Violations.length, `Found ${feat002Violations.length} feat-002 a11y violations`).toBe(0)
