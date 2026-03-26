@@ -62,10 +62,15 @@ async function setTheme(page: Page, themeId: string) {
 
 for (const vp of VIEWPORTS) {
   test.describe(`Layout @ ${vp.name} (${vp.width}px)`, () => {
-    for (const theme of THEMES) {
-      test(`screenshot: ${theme}`, async ({ page }) => {
-        await page.setViewportSize({ width: vp.width, height: vp.height })
-        await login(page)
+    // Collapse all theme screenshots into a single test per viewport.
+    // This avoids 12 separate login+navigate cycles which exhaust
+    // browser resources in CI (especially at mobile 320px).
+    test('screenshots: all themes', async ({ page }) => {
+      test.setTimeout(120_000) // 2 min for all 12 themes
+      await page.setViewportSize({ width: vp.width, height: vp.height })
+      await login(page)
+
+      for (const theme of THEMES) {
         await setTheme(page, theme)
         await page.waitForTimeout(200)
 
@@ -73,8 +78,8 @@ for (const vp of VIEWPORTS) {
           path: `${SCREENSHOT_DIR}/${theme}-${vp.name}.png`,
           fullPage: true,
         })
-      })
-    }
+      }
+    })
   })
 }
 
