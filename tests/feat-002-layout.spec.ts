@@ -19,56 +19,23 @@ const VIEWPORTS = [
   { name: 'wide', width: 1440, height: 900 },
 ]
 
-// Cached session token — login once and reuse across all tests in this file.
-let _cachedSessionToken: string | null = null
-let _cachedSessionIssuedAt = 0
-
-// Authenticate via login API and inject the session cookie into the browser context.
-// The server may set the Secure flag (MC_COOKIE_SECURE=1) which Playwright's HTTP
-// origin rejects, so we extract the token and re-add it ourselves.
-async function authenticateSession(context: import('@playwright/test').BrowserContext) {
-  const maxSessionAgeMs = 20 * 60 * 1000
-  if (!_cachedSessionToken || (Date.now() - _cachedSessionIssuedAt) > maxSessionAgeMs) {
-    const baseURL = 'http://127.0.0.1:' + (process.env.E2E_PORT || '3005')
-    const username = process.env.AUTH_USER || 'testadmin'
-    const password = process.env.AUTH_PASS || 'testpass1234!'
-
-    const resp = await context.request.post(`${baseURL}/api/auth/login`, {
-      data: { username, password },
-      headers: { 'x-forwarded-for': '127.0.0.1' },
-    })
-    if (!resp.ok()) {
-      throw new Error(`Login failed (${resp.status()}): ${await resp.text()}`)
-    }
-
-    // Extract token from Set-Cookie header (handles both mc-session and __Host-mc-session)
-    const setCookie = resp.headers()['set-cookie'] || ''
-    const tokenMatch = setCookie.match(/(?:mc-session|__Host-mc-session)=([^;]+)/)
-    if (!tokenMatch) {
-      throw new Error(`No session cookie in login response: ${setCookie}`)
-    }
-    _cachedSessionToken = tokenMatch[1]
-    _cachedSessionIssuedAt = Date.now()
-  }
-
-  await context.addCookies([{
+// Login via API, set cookie, then navigate
+async function login(page: Page) {
+  // Inject session cookie directly (bypasses rate limiter and password issues)
+  const token = process.env.E2E_SESSION_TOKEN || '11c3ebf7f3e6d9dc7ed785dc96336ffa55c42ff87357c1a2ef14612582186ca2'
+  await page.context().addCookies([{
     name: 'mc-session',
-    value: _cachedSessionToken,
+    value: token,
     domain: '127.0.0.1',
     path: '/',
   }])
-}
-
-
-// Login via API, set cookie, then navigate
-async function login(page: Page) {
-  await authenticateSession(page.context())
   await page.goto('/', { waitUntil: 'domcontentloaded' })
   // Wait for shell to render — retry once if redirected to login
-  const navVisible = await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 30_000 }).catch(() => null)
+  const navVisible = await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 15_000 }).catch(() => null)
   if (!navVisible) {
+    // Might have been redirected — reload with cookie
     await page.goto('/', { waitUntil: 'domcontentloaded' })
-    await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 30_000 }).catch(() => {})
+    await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 15_000 }).catch(() => {})
   }
 }
 
@@ -117,7 +84,13 @@ test.describe('Non-visual isolated checks', () => {
 
   test.beforeEach(async ({ context, page }) => {
     await context.clearCookies()
-    await authenticateSession(context)
+    const token = process.env.E2E_SESSION_TOKEN || '11c3ebf7f3e6d9dc7ed785dc96336ffa55c42ff87357c1a2ef14612582186ca2'
+    await context.addCookies([{
+      name: 'mc-session',
+      value: token,
+      domain: '127.0.0.1',
+      path: '/',
+    }])
     // Navigate first so we have a window/sessionStorage context, then dismiss onboarding
     await page.goto('/', { waitUntil: 'domcontentloaded' })
     // Dismiss onboarding so nav renders (completed+skipped admins get onboarding on fresh sessions)
@@ -125,7 +98,7 @@ test.describe('Non-visual isolated checks', () => {
       try { window.sessionStorage.setItem('mc-onboarding-dismissed', '1') } catch {}
     })
     await page.reload({ waitUntil: 'domcontentloaded' })
-    await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 45_000 })
+    await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 15_000 })
   })
 
 // ═══════════════════════════════════════════════════════════
