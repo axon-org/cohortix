@@ -8,10 +8,10 @@ export function SessionWorkbenchWidget({ data }: { data: DashboardData }) {
   return (
     <div className="panel">
       <div className="panel-header">
-        <h3 className="text-sm font-semibold">{isLocal ? 'Session Workbench' : 'Session Router'}</h3>
+        <h3>{isLocal ? 'Session Workbench' : 'Session Router'}</h3>
         <span className="text-2xs text-muted-foreground font-mono-tight">{sessions.length}</span>
       </div>
-      <div className="divide-y divide-border/50 max-h-80 overflow-y-auto">
+      <div className="divide-y divide-border max-h-80 overflow-y-auto">
         {sessions.length === 0 ? (
           <div className="px-4 py-8 text-center">
             <p className="text-xs text-muted-foreground">
@@ -29,7 +29,7 @@ export function SessionWorkbenchWidget({ data }: { data: DashboardData }) {
           </div>
         ) : (
           sessions.slice(0, 10).map((session) => (
-            <div key={session.id} className="px-4 py-2.5 hover:bg-secondary/20 transition-smooth">
+            <div key={session.id} className="px-5 py-3.5 hover:bg-muted/50 transition-smooth">
               <button
                 type="button"
                 onClick={() => openSession(session)}

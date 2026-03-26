@@ -59,7 +59,7 @@ export function SessionKindAvatar({
   if (meta.imageSrc) {
     return (
       <div
-        className={`${sizeClassName} relative overflow-hidden rounded-full border border-border/50 bg-surface-2 shrink-0`}
+        className={`${sizeClassName} relative overflow-hidden rounded-full border border-[hsl(var(--border-default))]/50 bg-[hsl(var(--bg-subtle))] shrink-0`}
         title={meta.label}
         aria-label={meta.label}
       >
@@ -76,7 +76,7 @@ export function SessionKindAvatar({
 
   return (
     <div
-      className={`${sizeClassName} rounded-full bg-surface-2 flex items-center justify-center text-[10px] font-bold text-muted-foreground shrink-0`}
+      className={`${sizeClassName} rounded-full bg-[hsl(var(--bg-subtle))] flex items-center justify-center text-[10px] font-[var(--font-bold)] text-muted-foreground shrink-0`}
       title={meta.label}
       aria-label={meta.label}
     >

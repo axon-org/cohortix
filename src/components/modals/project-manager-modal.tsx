@@ -214,24 +214,24 @@ export function ProjectManagerModal({
   const dialogRef = useFocusTrap(onClose)
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="projects-title" className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 space-y-4">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-[var(--space-4)]" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="projects-title" className="bg-[hsl(var(--bg-surface-raised))] border border-[hsl(var(--border-default))] rounded-[var(--card-radius)] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[var(--shadow-xl)]">
+        <div className="p-[var(--space-6)] space-y-[var(--space-4)]">
           <div className="flex items-center justify-between">
-            <h3 id="projects-title" className="text-xl font-bold text-foreground">Project Management</h3>
+            <h3 id="projects-title" className="text-[var(--text-xl)] font-[var(--font-bold)] text-[hsl(var(--text-primary))]">Project Management</h3>
             <Button variant="ghost" size="icon-sm" onClick={onClose} className="text-xl">&times;</Button>
           </div>
 
-          {error && <div className="text-sm text-status-error-fg bg-status-error-bg border border-status-error-border rounded p-2">{error}</div>}
+          {error && <div className="text-[var(--text-sm)] text-[hsl(var(--status-error-fg))] bg-[hsl(var(--status-error-bg))] border border-[hsl(var(--status-error-border))] rounded-[var(--radius-md)] p-[var(--space-2)]">{error}</div>}
 
-          <form onSubmit={createProject} className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <form onSubmit={createProject} className="space-y-[var(--space-3)]">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-[var(--space-3)]">
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
                 placeholder="Project name"
-                className="bg-surface-1 text-foreground border border-border rounded-md px-3 py-2"
+                className="bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)]"
                 required
               />
               <input
@@ -239,7 +239,7 @@ export function ProjectManagerModal({
                 value={form.ticket_prefix}
                 onChange={(e) => setForm((prev) => ({ ...prev, ticket_prefix: e.target.value }))}
                 placeholder="Ticket prefix (e.g. PA)"
-                className="bg-surface-1 text-foreground border border-border rounded-md px-3 py-2"
+                className="bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)]"
               />
               <Button type="submit">
                 Add Project
@@ -250,18 +250,18 @@ export function ProjectManagerModal({
               onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="Description (optional)"
               rows={2}
-              className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 text-sm resize-none"
+              className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] text-sm resize-none"
             />
           </form>
 
           {loading ? (
             <div className="text-sm text-muted-foreground">Loading projects...</div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-[var(--space-2)]">
               {projects.map((project) => (
-                <div key={project.id} className="border border-border rounded-md overflow-hidden">
+                <div key={project.id} className="border border-[hsl(var(--border-default))] rounded-[var(--radius-lg)] overflow-hidden">
                   <div
-                    className="flex items-center justify-between p-3 cursor-pointer hover:bg-secondary/30 transition-smooth"
+                    className="flex items-center justify-between p-[var(--space-3)] cursor-pointer hover:bg-[hsl(var(--bg-subtle))] transition-smooth"
                     onClick={() => startEditing(project)}
                   >
                     <div className="flex items-center gap-2.5">
@@ -317,39 +317,39 @@ export function ProjectManagerModal({
 
                   {/* Inline Edit Section */}
                   {editingId === project.id && (
-                    <div className="border-t border-border p-3 bg-surface-1/50 space-y-3" onClick={(e) => e.stopPropagation()}>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="border-t border-[hsl(var(--border-default))] p-[var(--space-3)] bg-[hsl(var(--bg-subtle)/.5)] space-y-[var(--space-3)]" onClick={(e) => e.stopPropagation()}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-3)]">
                         <div>
-                          <label className="block text-xs text-muted-foreground mb-1">Description</label>
+                          <label className="block text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">Description</label>
                           <textarea
                             value={editForm.description}
                             onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
                             rows={2}
-                            className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 text-sm resize-none"
+                            className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] text-sm resize-none"
                             placeholder="Project description"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-muted-foreground mb-1">GitHub Repo</label>
+                          <label className="block text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">GitHub Repo</label>
                           <input
                             type="text"
                             value={editForm.github_repo}
                             onChange={(e) => setEditForm(prev => ({ ...prev, github_repo: e.target.value }))}
-                            className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 text-sm"
+                            className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] text-sm"
                             placeholder="owner/repo"
                           />
                         </div>
                       </div>
 
                       {editForm.github_repo && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-3)]">
                           <div>
-                            <label className="block text-xs text-muted-foreground mb-1">Default Branch</label>
+                            <label className="block text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">Default Branch</label>
                             <input
                               type="text"
                               value={editForm.github_default_branch}
                               onChange={(e) => setEditForm(prev => ({ ...prev, github_default_branch: e.target.value }))}
-                              className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 text-sm"
+                              className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] text-sm"
                               placeholder="main"
                             />
                           </div>
@@ -370,18 +370,18 @@ export function ProjectManagerModal({
                         </div>
                       )}
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-3)]">
                         <div>
-                          <label className="block text-xs text-muted-foreground mb-1">Deadline</label>
+                          <label className="block text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">Deadline</label>
                           <input
                             type="date"
                             value={editForm.deadline}
                             onChange={(e) => setEditForm(prev => ({ ...prev, deadline: e.target.value }))}
-                            className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 text-sm"
+                            className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] text-sm"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-muted-foreground mb-1">Color</label>
+                          <label className="block text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">Color</label>
                           <div className="flex gap-1.5 items-center flex-wrap">
                             {COLOR_PALETTE.map(c => (
                               <button
@@ -398,7 +398,7 @@ export function ProjectManagerModal({
 
                       {agents.length > 0 && (
                         <div>
-                          <label className="block text-xs text-muted-foreground mb-1">Assigned Agents</label>
+                          <label className="block text-[var(--text-xs)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">Assigned Agents</label>
                           <div className="flex flex-wrap gap-1.5">
                             {agents.map(agent => (
                               <button
@@ -418,7 +418,7 @@ export function ProjectManagerModal({
                         </div>
                       )}
 
-                      <div className="flex gap-2 pt-1">
+                      <div className="flex gap-[var(--space-2)] pt-[var(--space-1)]">
                         <Button size="sm" onClick={() => saveEdit(project)}>Save</Button>
                         <Button size="sm" variant="secondary" onClick={() => setEditingId(null)}>Cancel</Button>
                       </div>

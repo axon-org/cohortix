@@ -15,7 +15,7 @@ export function QuickActionsWidget({ data }: { data: DashboardData }) {
   const { isLocal, navigateToPanel } = data
 
   return (
-    <section className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+    <section className="grid grid-cols-2 lg:grid-cols-5 gap-[var(--space-5)]">
       {!isLocal && <QuickAction label="Spawn Agent" desc="Launch sub-agent" tab="spawn" icon={<SpawnActionIcon />} onNavigate={navigateToPanel} />}
       <QuickAction label="View Logs" desc="Realtime viewer" tab="logs" icon={<LogActionIcon />} onNavigate={navigateToPanel} />
       <QuickAction label="Task Board" desc="Flow + queue control" tab="tasks" icon={<TaskActionIcon />} onNavigate={navigateToPanel} />

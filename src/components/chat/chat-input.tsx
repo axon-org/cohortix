@@ -191,14 +191,14 @@ export function ChatInput({ onSend, onAbort, disabled, agents = [], isGenerating
 
   return (
     <div
-      className={`relative border-t border-border bg-card/80 backdrop-blur-sm p-3 flex-shrink-0 safe-area-bottom ${isDragOver ? 'ring-2 ring-primary/50 bg-primary/5' : ''}`}
+      className={`relative shrink-0 px-4 py-3 safe-area-bottom border-t border-[#E8E8EC] bg-[#FAFAFA] ${isDragOver ? 'ring-2 ring-primary/50 bg-primary/5' : ''}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       {/* Mention autocomplete dropdown */}
       {showMentions && filteredAgents.length > 0 && (
-        <div className="absolute bottom-full left-3 right-3 mb-1 bg-popover/95 backdrop-blur-lg border border-border rounded-lg shadow-xl overflow-hidden max-h-40 overflow-y-auto z-10">
+        <div className="absolute bottom-full left-[var(--space-3)] right-[var(--space-3)] mb-1 bg-[hsl(var(--bg-surface-overlay))]/95 backdrop-blur-lg border border-[hsl(var(--border-default))] rounded-[var(--radius-xl)] shadow-[var(--shadow-lg)] overflow-hidden max-h-40 overflow-y-auto z-10">
           {filteredAgents.map((agent, i) => (
             <Button
               key={agent.name}
@@ -263,20 +263,18 @@ export function ChatInput({ onSend, onAbort, disabled, agents = [], isGenerating
         </div>
       )}
 
-      <div className="flex items-end gap-2">
+      <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-[#E8E8EC] shadow-[0px_1px_2px_rgba(0,0,0,0.04)]">
         {/* Attach button */}
-        <Button
+        <button
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled || isSendingMessage}
-          variant="ghost"
-          size="icon-sm"
-          className="rounded-lg flex-shrink-0"
-          title="Attach file"
+          className="flex-shrink-0 text-[#888899] hover:text-[#444455] disabled:opacity-40 transition-colors"
+          aria-label="Attach file"
         >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M13.5 7.5l-5.8 5.8a3.2 3.2 0 01-4.5-4.5l5.8-5.8a2.1 2.1 0 013 3l-5.8 5.7a1 1 0 01-1.4-1.4l5.1-5.2" />
           </svg>
-        </Button>
+        </button>
         <input
           ref={fileInputRef}
           type="file"
@@ -294,42 +292,38 @@ export function ChatInput({ onSend, onAbort, disabled, agents = [], isGenerating
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
-          placeholder={disabled ? 'Select a conversation...' : 'Message... (@ to mention, Enter to send)'}
+          placeholder={disabled ? 'Select a conversation...' : 'Message Agent...'}
           disabled={disabled || isSendingMessage}
           rows={1}
-          className="flex-1 resize-none bg-surface-1 rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/50 disabled:opacity-40 transition-all"
+          className="flex-1 resize-none bg-transparent text-sm text-[#1A1A2E] placeholder:text-[#888899]/50 focus:outline-none disabled:opacity-40"
         />
 
         {/* Stop / Send button */}
         {isGenerating && onAbort ? (
-          <Button
+          <button
             onClick={onAbort}
-            variant="ghost"
-            size="icon-sm"
-            className="rounded-lg flex-shrink-0 text-status-error-fg hover:text-status-error-fg hover:bg-status-error-bg"
+            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-500 text-white hover:bg-red-600 transition-colors"
             title="Stop generation"
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
               <rect x="3" y="3" width="10" height="10" rx="1.5" />
             </svg>
-          </Button>
+          </button>
         ) : (
-          <Button
+          <button
             onClick={handleSend}
             disabled={(!chatInput.trim() && attachments.length === 0) || disabled || isSendingMessage}
-            size="icon-sm"
-            className="rounded-lg flex-shrink-0"
+            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#6C5CE7] text-white hover:bg-[#5B4BD5] disabled:opacity-40 transition-colors"
             title="Send message"
           >
             {isSendingMessage ? (
-              <span className="inline-block w-3.5 h-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+              <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2L7 9" />
-                <path d="M14 2l-5 12-2-5-5-2 12-5z" />
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12l6-4-6-4v8z" />
               </svg>
             )}
-          </Button>
+          </button>
         )}
       </div>
     </div>

@@ -20,9 +20,9 @@ interface SessionMessageProps {
 }
 
 const ROLE_CONFIG = {
-  user: { indicator: '$', indicatorClass: 'text-status-success-fg', borderClass: 'border-l-green-500/40' },
+  user: { indicator: '$', indicatorClass: 'text-status-success-fg', borderClass: 'border-l-[hsl(var(--status-success-solid)/0.4)]' },
   assistant: { indicator: '\u25C6', indicatorClass: 'text-primary', borderClass: 'border-l-primary/40' },
-  system: { indicator: '', indicatorClass: '', borderClass: 'border-l-amber-500/20' },
+  system: { indicator: '', indicatorClass: '', borderClass: 'border-l-[hsl(var(--status-warning-solid)/0.2)]' },
 } as const
 
 export function SessionMessage({ message, showTimestamp }: SessionMessageProps) {
@@ -156,13 +156,13 @@ function renderSessionContent(text: string): React.ReactNode[] {
       const lang = newlineIdx > 0 ? inner.slice(0, newlineIdx).trim() : ''
       const code = newlineIdx > 0 ? inner.slice(newlineIdx + 1) : inner
       return (
-        <div key={i} className="my-1.5 rounded border border-border/30 overflow-hidden">
+        <div key={i} className="my-1.5 rounded-lg border border-[#E8E8EC] overflow-hidden">
           {lang && (
-            <div className="bg-background/30 px-2 py-0.5 text-[10px] text-muted-foreground/50 border-b border-border/20">
+            <div className="bg-[#F4F4F8] px-3 py-1.5 text-[10px] text-[#888899] border-b border-[#E8E8EC]">
               {lang}
             </div>
           )}
-          <pre className="bg-background/20 px-3 py-2 text-[11px] overflow-x-auto whitespace-pre">
+          <pre className="bg-[#1E1E2D] px-3 py-2 text-[11px] text-[#E8E8EC] overflow-x-auto whitespace-pre">
             {code}
           </pre>
         </div>

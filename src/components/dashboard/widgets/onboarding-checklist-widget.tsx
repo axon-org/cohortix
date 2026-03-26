@@ -98,13 +98,13 @@ export function OnboardingChecklistWidget() {
 
   if (!visible) return null
 
-  const accentText = isGateway ? 'text-void-cyan' : 'text-void-amber'
-  const accentBg = isGateway ? 'bg-void-cyan' : 'bg-void-amber'
-  const accentBorder = isGateway ? 'border-void-cyan/30' : 'border-void-amber/30'
+  const accentText = isGateway ? 'text-status-info-fg' : 'text-primary'
+  const accentBg = isGateway ? 'bg-status-info-solid' : 'bg-primary'
+  const accentBorder = isGateway ? 'border-status-info-border' : 'border-primary/30'
 
   if (celebrating) {
     return (
-      <section className={`rounded-xl border ${accentBorder} bg-card p-6 text-center`}>
+      <section className={`rounded-[var(--card-radius)] border ${accentBorder} bg-card p-8 text-center`} style={{ boxShadow: 'var(--card-shadow)' }}>
         <div className={`text-xl font-bold mb-1 ${accentText}`}>Station Fully Operational</div>
         <p className="text-sm text-muted-foreground">All systems online. You&apos;re ready to go.</p>
       </section>
@@ -112,10 +112,10 @@ export function OnboardingChecklistWidget() {
   }
 
   return (
-    <section className="rounded-xl border border-border bg-card p-4">
+    <section className="rounded-[var(--card-radius)] border border-border bg-card p-6" style={{ boxShadow: 'var(--card-shadow)' }}>
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h3 className="text-sm font-semibold">Setup Progress ({completedCount}/{items.length})</h3>
+          <h3 className="text-sm font-semibold text-foreground">Setup Progress ({completedCount}/{items.length})</h3>
         </div>
         <Button
           variant="ghost"
@@ -129,7 +129,7 @@ export function OnboardingChecklistWidget() {
       </div>
 
       {/* Progress bar */}
-      <div className="h-1.5 bg-surface-2 rounded-full mb-4 overflow-hidden">
+      <div className="h-2 bg-muted rounded-full mb-5 overflow-hidden">
         <div
           className={`h-full ${accentBg} rounded-full transition-all duration-500`}
           style={{ width: `${progressPct}%` }}
@@ -141,7 +141,7 @@ export function OnboardingChecklistWidget() {
         {items.map(item => (
           <div
             key={item.id}
-            className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm ${
+            className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm ${
               item.checked ? 'text-muted-foreground' : 'text-foreground'
             }`}
           >

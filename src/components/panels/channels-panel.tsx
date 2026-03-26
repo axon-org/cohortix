@@ -79,6 +79,19 @@ type ActionResult = {
 // Constants
 // ---------------------------------------------------------------------------
 
+const PLATFORM_COLORS: Record<string, { bg: string; fg: string }> = {
+  whatsapp:  { bg: 'bg-[#25D366]', fg: 'text-white' },
+  telegram:  { bg: 'bg-[#0088CC]', fg: 'text-white' },
+  discord:   { bg: 'bg-[#5865F2]', fg: 'text-white' },
+  slack:     { bg: 'bg-[#E01E5A]', fg: 'text-white' },
+  signal:    { bg: 'bg-[#3A76F0]', fg: 'text-white' },
+  imessage:  { bg: 'bg-[#34C759]', fg: 'text-white' },
+  nostr:     { bg: 'bg-[#8B5CF6]', fg: 'text-white' },
+  'google-chat': { bg: 'bg-[#00AC47]', fg: 'text-white' },
+  googlechat:    { bg: 'bg-[#00AC47]', fg: 'text-white' },
+  'ms-teams':    { bg: 'bg-[#6264A7]', fg: 'text-white' },
+}
+
 const PLATFORM_ICONS: Record<string, string> = {
   whatsapp: '\u{1F4F1}',
   telegram: '\u2708',
@@ -152,6 +165,11 @@ function channelIsActive(status: ChannelStatus | undefined, accounts: ChannelAcc
   return accounts.some(a => a.configured || a.running || a.connected)
 }
 
+function channelIsConnected(status: ChannelStatus | undefined, accounts: ChannelAccount[]): boolean {
+  if (status?.connected) return true
+  return accounts.some(a => a.connected)
+}
+
 function asRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === 'object' ? (value as Record<string, unknown>) : null
 }
@@ -188,14 +206,30 @@ function readActionResult(value: unknown): ActionResult | null {
 }
 
 // ---------------------------------------------------------------------------
+// Filter type
+// ---------------------------------------------------------------------------
+
+type ChannelFilter = 'all' | 'connected' | 'disconnected'
+
+// ---------------------------------------------------------------------------
 // Shared sub-components
 // ---------------------------------------------------------------------------
 
 function StatusRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between text-xs py-0.5">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-foreground">{value}</span>
+    <div className="flex justify-between items-center py-0.5">
+      <span className="text-[11px] text-[var(--muted-foreground)]">{label}</span>
+      <span className="text-[11px] font-medium text-[var(--foreground)]">{value}</span>
+    </div>
+  )
+}
+
+function StatsRow({ items }: { items: { label: string; value: string }[] }) {
+  return (
+    <div className="flex items-center gap-4 text-[11px] text-[var(--muted-foreground)]">
+      {items.map((item, i) => (
+        <span key={i}>{item.label}: {item.value}</span>
+      ))}
     </div>
   )
 }
@@ -203,7 +237,7 @@ function StatusRow({ label, value }: { label: string; value: string }) {
 function ErrorCallout({ message }: { message: string | null | undefined }) {
   if (!message) return null
   return (
-    <div className="text-xs text-status-error-fg bg-status-error-bg rounded px-2 py-1.5 mt-2 break-words">
+    <div className="text-[11px] text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mt-3 break-words">
       {message}
     </div>
   )
@@ -211,11 +245,47 @@ function ErrorCallout({ message }: { message: string | null | undefined }) {
 
 function ProbeResult({ probe }: { probe: ChannelStatus['probe'] }) {
   if (!probe) return null
+  const ok = probe.ok
   return (
-    <div className={`text-xs mt-2 px-2 py-1.5 rounded ${probe.ok ? 'text-status-success-fg bg-status-success-bg' : 'text-status-error-fg bg-status-error-bg'}`}>
-      Probe {probe.ok ? 'OK' : 'failed'}
-      {probe.elapsedMs != null && ` - ${probe.elapsedMs}ms`}
-      {probe.error && ` - ${probe.error}`}
+    <div className={`text-[11px] mt-3 px-3 py-2 rounded-lg border ${ok ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-red-700 bg-red-50 border-red-200'}`}>
+      Probe {ok ? 'OK' : 'failed'}
+      {probe.elapsedMs != null && ` \u2014 ${probe.elapsedMs}ms`}
+      {probe.error && ` \u2014 ${probe.error}`}
+    </div>
+  )
+}
+
+function StatusBadge({ connected, running, configured, isActive }: { connected?: boolean; running?: boolean; configured?: boolean; isActive: boolean }) {
+  const t = useTranslations('channels')
+  let badgeClasses = 'bg-[var(--muted)] text-[var(--muted-foreground)] border border-[var(--border)]'
+  let label = t('statusInactive')
+
+  if (isActive) {
+    if (connected) {
+      badgeClasses = 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+      label = t('statusConnected')
+    } else if (running) {
+      badgeClasses = 'bg-amber-50 text-amber-700 border border-amber-200'
+      label = t('statusRunning')
+    } else if (configured) {
+      badgeClasses = 'bg-amber-50 text-amber-700 border border-amber-200'
+      label = t('statusConfigured')
+    }
+  }
+
+  return (
+    <span className={`text-[10px] font-semibold rounded-full px-2.5 py-1 ${badgeClasses}`}>
+      {label}
+    </span>
+  )
+}
+
+function PlatformIcon({ platform }: { platform: string }) {
+  const colors = PLATFORM_COLORS[platform] ?? { bg: 'bg-[#6C5CE7]', fg: 'text-white' }
+  const icon = PLATFORM_ICONS[platform] ?? '\u{1F4E1}'
+  return (
+    <div className={`w-10 h-10 rounded-xl ${colors.bg} flex items-center justify-center text-lg ${colors.fg} shrink-0`}>
+      {icon}
     </div>
   )
 }
@@ -230,39 +300,41 @@ function CardShell({ platform, label, children, status, accounts, onProbe, probi
   probing: boolean
 }) {
   const t = useTranslations('channels')
-  const icon = PLATFORM_ICONS[platform] ?? '\u{1F4E1}'
   const name = label || (PLATFORM_NAMES[platform] ?? platform)
-  const isActive = channelIsActive(status, accounts ?? [])
+  const accts = accounts ?? []
+  const isActive = channelIsActive(status, accts)
+  const isConnected = channelIsConnected(status, accts)
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-lg leading-none">{icon}</span>
-          <span className="text-sm font-medium text-foreground">{name}</span>
+    <div className={`group rounded-xl border bg-[var(--card)] p-4 transition-all duration-150 shadow-sm hover:shadow-md border-[var(--border)] ${!isActive ? 'opacity-75' : ''}`}>
+      {/* Card header: icon + name + status badge */}
+      <div className="flex items-center gap-3 mb-3">
+        <PlatformIcon platform={platform} />
+        <div className="flex-1 min-w-0">
+          <p className="text-[13px] font-semibold text-[var(--foreground)] truncate">{name}</p>
+          <p className="text-[11px] text-[var(--muted-foreground)] capitalize">{platform.replace(/-/g, ' ')}</p>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className={`w-2 h-2 rounded-full ${isActive ? (status?.connected ? 'bg-status-success-solid' : status?.running ? 'bg-status-warning-solid' : 'bg-muted-foreground/50') : 'bg-status-error-solid'}`} />
-          <span className="text-xs text-muted-foreground">
-            {isActive ? (status?.connected ? t('statusConnected') : status?.running ? t('statusRunning') : t('statusConfigured')) : t('statusInactive')}
-          </span>
-        </div>
+        <StatusBadge connected={status?.connected} running={status?.running} configured={status?.configured} isActive={isActive} />
       </div>
+
+      {/* Card body */}
       {children}
-      <Button
-        onClick={onProbe}
-        disabled={probing}
-        variant="outline"
-        size="xs"
-        className="w-full mt-3"
-      >
-        {probing ? (
-          <>
-            <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-            {t('probing')}
-          </>
-        ) : t('probe')}
-      </Button>
+
+      {/* Action row */}
+      <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-[var(--border)]">
+        <button
+          onClick={onProbe}
+          disabled={probing}
+          className="px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors disabled:opacity-50"
+        >
+          {probing ? (
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              {t('probing')}
+            </span>
+          ) : t('probe')}
+        </button>
+      </div>
     </div>
   )
 }
@@ -304,32 +376,35 @@ function WhatsAppCard({ status, accounts, onProbe, probing, onAction, actionBusy
 
   return (
     <CardShell platform="whatsapp" status={status} accounts={accounts} onProbe={onProbe} probing={probing}>
-      <div className="space-y-0.5">
+      <StatsRow items={[
+        { label: 'Last connect', value: relativeTime(status?.lastConnectedAt) },
+        { label: 'Last message', value: relativeTime(status?.lastMessageAt) },
+        { label: 'Auth age', value: formatDuration(status?.authAgeMs) },
+      ]} />
+
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Linked" value={yesNo(status?.linked)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
         <StatusRow label="Connected" value={yesNo(status?.connected)} />
-        <StatusRow label="Last connect" value={relativeTime(status?.lastConnectedAt)} />
-        <StatusRow label="Last message" value={relativeTime(status?.lastMessageAt)} />
-        <StatusRow label="Auth age" value={formatDuration(status?.authAgeMs)} />
       </div>
 
       <ErrorCallout message={status?.lastError} />
 
       {message && (
-        <div className="text-xs text-muted-foreground bg-muted/50 rounded px-2 py-1.5 mt-2">
+        <div className="text-[11px] text-[var(--muted-foreground)] bg-[var(--muted)] rounded-lg px-3 py-2 mt-3">
           {message}
         </div>
       )}
 
       {qrDataUrl && (
-        <div className="flex justify-center mt-3">
+        <div className="flex justify-center mt-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qrDataUrl} alt="WhatsApp QR" className="w-48 h-48 rounded" />
+          <img src={qrDataUrl} alt="WhatsApp QR" className="w-48 h-48 rounded-lg" />
         </div>
       )}
 
-      <div className="flex flex-wrap gap-1.5 mt-3">
+      <div className="flex flex-wrap gap-2 mt-3">
         <Button onClick={() => handleLink(false)} disabled={actionBusy} variant="outline" size="xs">
           {t('showQr')}
         </Button>
@@ -354,13 +429,17 @@ function TelegramCard({ status, accounts, onProbe, probing }: PlatformCardProps)
 
   return (
     <CardShell platform="telegram" status={status} accounts={accounts} onProbe={onProbe} probing={probing}>
-      <div className="space-y-0.5">
+      <StatsRow items={[
+        { label: 'Mode', value: status?.mode ?? 'n/a' },
+        { label: 'Last start', value: relativeTime(status?.lastStartAt) },
+        ...(botUsername ? [{ label: 'Bot', value: `@${botUsername}` }] : []),
+      ]} />
+
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
-        <StatusRow label="Mode" value={status?.mode ?? 'n/a'} />
-        {botUsername && <StatusRow label="Bot" value={`@${botUsername}`} />}
-        <StatusRow label="Last start" value={relativeTime(status?.lastStartAt)} />
       </div>
+
       <ErrorCallout message={status?.lastError} />
       <ProbeResult probe={status?.probe} />
       {accounts.length > 1 && <AccountList accounts={accounts} />}
@@ -373,12 +452,16 @@ function DiscordCard({ status, accounts, onProbe, probing }: PlatformCardProps) 
 
   return (
     <CardShell platform="discord" status={status} accounts={accounts} onProbe={onProbe} probing={probing}>
-      <div className="space-y-0.5">
+      <StatsRow items={[
+        { label: 'Last start', value: relativeTime(status?.lastStartAt) },
+        ...(botUsername ? [{ label: 'Bot', value: botUsername }] : [{ label: 'Bot', value: 'n/a' }]),
+      ]} />
+
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
-        {botUsername && <StatusRow label="Bot" value={botUsername} />}
-        <StatusRow label="Last start" value={relativeTime(status?.lastStartAt)} />
       </div>
+
       <ErrorCallout message={status?.lastError} />
       <ProbeResult probe={status?.probe} />
       {accounts.length > 1 && <AccountList accounts={accounts} />}
@@ -392,13 +475,17 @@ function SlackCard({ status, accounts, onProbe, probing }: PlatformCardProps) {
 
   return (
     <CardShell platform="slack" status={status} accounts={accounts} onProbe={onProbe} probing={probing}>
-      <div className="space-y-0.5">
+      <StatsRow items={[
+        { label: 'Workspace', value: teamName ?? 'n/a' },
+        { label: 'Bot', value: botName ?? 'n/a' },
+        { label: 'Last start', value: relativeTime(status?.lastStartAt) },
+      ]} />
+
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
-        {teamName && <StatusRow label="Workspace" value={teamName} />}
-        {botName && <StatusRow label="Bot" value={botName} />}
-        <StatusRow label="Last start" value={relativeTime(status?.lastStartAt)} />
       </div>
+
       <ErrorCallout message={status?.lastError} />
       <ProbeResult probe={status?.probe} />
       {accounts.length > 1 && <AccountList accounts={accounts} />}
@@ -409,12 +496,16 @@ function SlackCard({ status, accounts, onProbe, probing }: PlatformCardProps) {
 function SignalCard({ status, accounts, onProbe, probing }: PlatformCardProps) {
   return (
     <CardShell platform="signal" status={status} accounts={accounts} onProbe={onProbe} probing={probing}>
-      <div className="space-y-0.5">
+      <StatsRow items={[
+        { label: 'Base URL', value: status?.baseUrl ?? 'n/a' },
+        { label: 'Last start', value: relativeTime(status?.lastStartAt) },
+      ]} />
+
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
-        <StatusRow label="Base URL" value={status?.baseUrl ?? 'n/a'} />
-        <StatusRow label="Last start" value={relativeTime(status?.lastStartAt)} />
       </div>
+
       <ErrorCallout message={status?.lastError} />
       <ProbeResult probe={status?.probe} />
       {accounts.length > 1 && <AccountList accounts={accounts} />}
@@ -479,21 +570,25 @@ function NostrCard({ status, accounts, onProbe, probing, onAction, actionBusy }:
 
   return (
     <CardShell platform="nostr" status={status} accounts={accounts} onProbe={onProbe} probing={probing}>
-      <div className="space-y-0.5">
+      <StatsRow items={[
+        { label: 'Public Key', value: truncatePubkey(status?.publicKey ?? primaryAccount?.publicKey) },
+        { label: 'Last start', value: relativeTime(status?.lastStartAt) },
+      ]} />
+
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
-        <StatusRow label="Public Key" value={truncatePubkey(status?.publicKey ?? primaryAccount?.publicKey)} />
-        <StatusRow label="Last start" value={relativeTime(status?.lastStartAt)} />
       </div>
+
       <ErrorCallout message={status?.lastError} />
 
       {/* Profile Section */}
       {!editingProfile ? (
-        <div className="mt-3 p-2.5 bg-muted/30 rounded text-xs">
-          <div className="flex justify-between items-center mb-1.5">
-            <span className="font-medium text-foreground">{t('profile')}</span>
+        <div className="mt-3 p-3 bg-[var(--muted)]/60 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[11px] font-medium text-[var(--foreground)]">{t('profile')}</span>
             {status?.configured && (
-              <Button onClick={openProfileForm} variant="ghost" size="xs" className="h-5 text-[10px] px-1.5">
+              <Button onClick={openProfileForm} variant="ghost" size="xs" className="h-5 text-[10px] px-2">
                 {t('edit')}
               </Button>
             )}
@@ -506,14 +601,14 @@ function NostrCard({ status, accounts, onProbe, probing, onAction, actionBusy }:
               {profile.nip05 && <StatusRow label="NIP-05" value={profile.nip05} />}
             </div>
           ) : (
-            <span className="text-muted-foreground">{t('noProfileSet')}</span>
+            <span className="text-[11px] text-[var(--muted-foreground)]">{t('noProfileSet')}</span>
           )}
         </div>
       ) : (
-        <div className="mt-3 p-2.5 bg-muted/30 rounded text-xs space-y-2">
-          <div className="font-medium text-foreground">{t('editProfile')}</div>
+        <div className="mt-3 p-3 bg-[var(--muted)]/60 rounded-lg space-y-2">
+          <div className="text-[11px] font-medium text-[var(--foreground)]">{t('editProfile')}</div>
           {profileMessage && (
-            <div className="text-xs text-muted-foreground bg-muted/50 rounded px-2 py-1">{profileMessage}</div>
+            <div className="text-[11px] text-[var(--muted-foreground)] bg-white rounded px-2 py-1">{profileMessage}</div>
           )}
           <ProfileField label={t('username')} value={profileForm.name ?? ''} onChange={v => setProfileForm(p => ({ ...p, name: v }))} disabled={profileSaving} />
           <ProfileField label={t('displayName')} value={profileForm.displayName ?? ''} onChange={v => setProfileForm(p => ({ ...p, displayName: v }))} disabled={profileSaving} />
@@ -527,7 +622,7 @@ function NostrCard({ status, accounts, onProbe, probing, onAction, actionBusy }:
               <ProfileField label={t('lightning')} value={profileForm.lud16 ?? ''} onChange={v => setProfileForm(p => ({ ...p, lud16: v }))} disabled={profileSaving} />
             </>
           )}
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             <Button onClick={handleProfileSave} disabled={profileSaving || actionBusy} variant="default" size="xs">
               {profileSaving ? t('saving') : t('saveAndPublish')}
             </Button>
@@ -552,12 +647,16 @@ function NostrCard({ status, accounts, onProbe, probing, onAction, actionBusy }:
 function GenericChannelCard({ platform, label, status, accounts, onProbe, probing }: PlatformCardProps & { label?: string }) {
   return (
     <CardShell platform={platform} label={label} status={status} accounts={accounts} onProbe={onProbe} probing={probing}>
-      <div className="space-y-0.5">
+      <StatsRow items={[
+        { label: 'Last start', value: relativeTime(status?.lastStartAt) },
+        { label: 'Connected', value: yesNo(status?.connected) },
+      ]} />
+
+      <div className="mt-3 space-y-0.5 border-t border-[var(--border)] pt-3">
         <StatusRow label="Configured" value={yesNo(status?.configured)} />
         <StatusRow label="Running" value={yesNo(status?.running)} />
-        <StatusRow label="Connected" value={yesNo(status?.connected)} />
-        <StatusRow label="Last start" value={relativeTime(status?.lastStartAt)} />
       </div>
+
       <ErrorCallout message={status?.lastError} />
       <ProbeResult probe={status?.probe} />
       {accounts.length > 0 && <AccountList accounts={accounts} />}
@@ -572,16 +671,17 @@ function GenericChannelCard({ platform, label, status, accounts, onProbe, probin
 function ProfileField({ label, value, onChange, disabled, multiline }: {
   label: string; value: string; onChange: (v: string) => void; disabled: boolean; multiline?: boolean
 }) {
+  const baseInputClasses = "w-full bg-white border border-[var(--border)] rounded-lg px-2 py-1 text-[11px] text-[var(--foreground)] focus:outline-none focus:border-[#6C5CE7]"
   return (
     <div>
-      <label className="text-[10px] text-muted-foreground mb-0.5 block">{label}</label>
+      <label className="text-[10px] text-[var(--muted-foreground)] mb-0.5 block">{label}</label>
       {multiline ? (
         <textarea
           value={value}
           onChange={e => onChange(e.target.value)}
           disabled={disabled}
           rows={2}
-          className="w-full bg-background border border-border rounded px-2 py-1 text-xs text-foreground resize-y"
+          className={`${baseInputClasses} resize-y`}
         />
       ) : (
         <input
@@ -589,7 +689,7 @@ function ProfileField({ label, value, onChange, disabled, multiline }: {
           value={value}
           onChange={e => onChange(e.target.value)}
           disabled={disabled}
-          className="w-full bg-background border border-border rounded px-2 py-1 text-xs text-foreground"
+          className={baseInputClasses}
         />
       )}
     </div>
@@ -599,25 +699,78 @@ function ProfileField({ label, value, onChange, disabled, multiline }: {
 function AccountList({ accounts }: { accounts: ChannelAccount[] }) {
   const t = useTranslations('channels')
   return (
-    <div className="mt-3 space-y-2">
-      <div className="text-[10px] text-muted-foreground font-medium">
+    <div className="mt-4 space-y-2">
+      <div className="text-[10px] text-[var(--muted-foreground)] font-medium uppercase tracking-wider">
         {t('accounts', { count: accounts.length })}
       </div>
       {accounts.map(acct => (
-        <div key={acct.accountId} className="p-2 bg-muted/20 rounded text-xs space-y-0.5">
-          <div className="flex justify-between">
-            <span className="font-medium text-foreground">{acct.name || acct.accountId}</span>
-            <span className="text-muted-foreground text-[10px]">{acct.accountId}</span>
+        <div key={acct.accountId} className="p-3 bg-[var(--muted)]/60 rounded-lg space-y-0.5">
+          <div className="flex justify-between items-center">
+            <span className="text-[11px] font-medium text-[var(--foreground)]">{acct.name || acct.accountId}</span>
+            <span className="text-[10px] text-[var(--muted-foreground)]">{acct.accountId}</span>
           </div>
           <StatusRow label="Running" value={yesNo(acct.running)} />
           <StatusRow label="Configured" value={yesNo(acct.configured)} />
           <StatusRow label="Connected" value={yesNo(acct.connected)} />
           {acct.lastInboundAt && <StatusRow label="Last inbound" value={relativeTime(acct.lastInboundAt)} />}
           {acct.lastError && (
-            <div className="text-status-error-fg break-words mt-1">{acct.lastError}</div>
+            <div className="text-[11px] text-red-700 break-words mt-1">{acct.lastError}</div>
           )}
         </div>
       ))}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Section Header
+// ---------------------------------------------------------------------------
+
+function SectionHeader({ label, count }: { label: string; count: number }) {
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <span className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{label}</span>
+      <span className="text-[11px] font-medium text-[var(--muted-foreground)]">{count}</span>
+      <div className="flex-1 h-px bg-[var(--border)]" />
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Filter Tabs
+// ---------------------------------------------------------------------------
+
+function FilterTabs({ active, onChange, counts }: {
+  active: ChannelFilter
+  onChange: (f: ChannelFilter) => void
+  counts: { all: number; connected: number; disconnected: number }
+}) {
+  const filters: { key: ChannelFilter; label: string }[] = [
+    { key: 'all', label: `All` },
+    { key: 'connected', label: `Connected` },
+    { key: 'disconnected', label: `Disconnected` },
+  ]
+
+  return (
+    <div className="inline-flex items-center gap-1 rounded-xl bg-[var(--muted)]/60 p-1 border border-[var(--border)] mb-6">
+      {filters.map(f => {
+        const isActive = active === f.key
+        const count = counts[f.key]
+        return (
+          <button
+            key={f.key}
+            onClick={() => onChange(f.key)}
+            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all ${
+              isActive
+                ? 'bg-white text-[var(--foreground)] shadow-sm'
+                : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+            }`}
+          >
+            {f.label}
+            <span className={`ml-1 text-[11px] ${isActive ? 'opacity-80' : 'opacity-60'}`}>{count}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -648,6 +801,7 @@ export function ChannelsPanel() {
   const [error, setError] = useState<string | null>(null)
   const [probing, setProbing] = useState<string | null>(null)
   const [actionBusy, setActionBusy] = useState(false)
+  const [filter, setFilter] = useState<ChannelFilter>('all')
 
   const fetchChannels = useCallback(async () => {
     try {
@@ -710,17 +864,23 @@ export function ChannelsPanel() {
   // Loading state
   if (loading) {
     return (
-      <div className="m-4">
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-muted-foreground">{t('loadingChannels')}</span>
+      <div className="p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-4 h-4 border-2 border-[var(--foreground)] border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm text-[var(--muted-foreground)]">{t('loadingChannels')}</span>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="rounded-lg border border-border bg-card p-4 animate-pulse">
-              <div className="h-4 bg-muted rounded w-1/2 mb-3" />
-              <div className="h-3 bg-muted rounded w-1/3 mb-2" />
-              <div className="h-3 bg-muted rounded w-1/4" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 animate-pulse">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-[var(--muted)]" />
+                <div>
+                  <div className="h-4 bg-[var(--muted)] rounded w-24 mb-1" />
+                  <div className="h-3 bg-[var(--muted)] rounded w-16" />
+                </div>
+              </div>
+              <div className="h-3 bg-[var(--muted)] rounded w-1/3 mb-2" />
+              <div className="h-3 bg-[var(--muted)] rounded w-1/4" />
             </div>
           ))}
         </div>
@@ -731,8 +891,8 @@ export function ChannelsPanel() {
   // Error state
   if (error) {
     return (
-      <div className="m-4">
-        <div className="bg-destructive/10 text-destructive rounded-lg p-4 text-sm">{error}</div>
+      <div className="p-6">
+        <div className="bg-red-50 text-red-700 border border-red-200 rounded-xl p-4 text-sm">{error}</div>
       </div>
     )
   }
@@ -743,13 +903,27 @@ export function ChannelsPanel() {
   const channelLabels = snapshot?.channelLabels ?? {}
   const gatewayConnected = snapshot?.connected ?? connection.isConnected
 
-  // Sort: active/connected first, then by original order
-  const sortedOrder = [...channelOrder].sort((a, b) => {
-    const aActive = channelIsActive(channels[a], channelAccounts[a] ?? [])
-    const bActive = channelIsActive(channels[b], channelAccounts[b] ?? [])
-    if (aActive !== bActive) return aActive ? -1 : 1
-    return 0
-  })
+  // Partition into connected / disconnected
+  const connectedKeys: string[] = []
+  const disconnectedKeys: string[] = []
+  for (const key of channelOrder) {
+    const status = channels[key]
+    const accts = channelAccounts[key] ?? []
+    if (channelIsConnected(status, accts)) {
+      connectedKeys.push(key)
+    } else {
+      disconnectedKeys.push(key)
+    }
+  }
+
+  const counts = {
+    all: channelOrder.length,
+    connected: connectedKeys.length,
+    disconnected: disconnectedKeys.length,
+  }
+
+  const showConnected = filter === 'all' || filter === 'connected'
+  const showDisconnected = filter === 'all' || filter === 'disconnected'
 
   const renderCard = (key: string) => {
     const status = channels[key]
@@ -786,39 +960,77 @@ export function ChannelsPanel() {
   }
 
   return (
-    <div className="m-4">
+    <div className="p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
-          <div className="flex items-center gap-1.5 mt-1">
-            <span className={`w-2 h-2 rounded-full ${gatewayConnected ? 'bg-status-success-solid' : 'bg-status-error-solid'}`} />
-            <span className="text-xs text-muted-foreground">
-              {gatewayConnected ? t('gatewayConnected') : t('gatewayDisconnected')}
+          <h1 className="text-xl font-bold text-[var(--foreground)] tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-[var(--muted-foreground)] mt-1">
+            {gatewayConnected ? t('gatewayConnected') : t('gatewayDisconnected')}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {/* Gateway status indicator */}
+          <div className="flex items-center gap-1.5">
+            <span className={`w-2 h-2 rounded-full ${gatewayConnected ? 'bg-emerald-500' : 'bg-red-500'}`} />
+            <span className="text-[11px] text-[var(--muted-foreground)]">
+              {gatewayConnected ? 'Online' : 'Offline'}
             </span>
           </div>
+          <button
+            onClick={() => { setLoading(true); fetchChannels() }}
+            className="px-3 py-1.5 rounded-lg text-[12px] font-medium border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
+          >
+            {t('refresh')}
+          </button>
         </div>
-        <Button
-          onClick={() => { setLoading(true); fetchChannels() }}
-          variant="outline"
-          size="sm"
-        >
-          {t('refresh')}
-        </Button>
       </div>
 
+      {/* Filter tabs */}
+      <FilterTabs active={filter} onChange={setFilter} counts={counts} />
+
       {/* Channel cards */}
-      {sortedOrder.length === 0 ? (
+      {channelOrder.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-[var(--muted-foreground)]">
             {gatewayConnected
               ? t('noChannelsConfigured')
               : t('gatewayUnreachable')}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {sortedOrder.map(key => renderCard(key))}
+        <div className="space-y-6">
+          {/* Connected section */}
+          {showConnected && connectedKeys.length > 0 && (
+            <div>
+              <SectionHeader label="Connected" count={connectedKeys.length} />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {connectedKeys.map(key => renderCard(key))}
+              </div>
+            </div>
+          )}
+
+          {/* Disconnected section */}
+          {showDisconnected && disconnectedKeys.length > 0 && (
+            <div>
+              <SectionHeader label="Disconnected" count={disconnectedKeys.length} />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {disconnectedKeys.map(key => renderCard(key))}
+              </div>
+            </div>
+          )}
+
+          {/* Empty state for filtered views */}
+          {filter === 'connected' && connectedKeys.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-sm text-[var(--muted-foreground)]">{t('noChannelsConfigured')}</p>
+            </div>
+          )}
+          {filter === 'disconnected' && disconnectedKeys.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-sm text-[var(--muted-foreground)]">{t('noChannelsConfigured')}</p>
+            </div>
+          )}
         </div>
       )}
     </div>

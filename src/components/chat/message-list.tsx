@@ -130,14 +130,14 @@ export function MessageList() {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center px-6">
-          <div className="w-12 h-12 rounded-lg bg-surface-2 flex items-center justify-center mx-auto mb-3">
-            <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/40">
+          <div className="w-14 h-14 rounded-2xl bg-[#EDE9FD] flex items-center justify-center mx-auto mb-4">
+            <svg width="24" height="24" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#6C5CE7]">
               <path d="M14 10c0 .37-.1.7-.28 1-.53.87-2.2 3-5.72 3-4.42 0-6-3-6-4V4a2 2 0 012-2h8a2 2 0 012 2v6z" />
               <path d="M6 7h.01M10 7h.01" />
             </svg>
           </div>
-          <p className="text-sm text-muted-foreground">Select a conversation</p>
-          <p className="text-xs text-muted-foreground/50 mt-1">or start a new one with an agent</p>
+          <p className="text-[15px] font-semibold text-[#1A1A2E]">Select a conversation</p>
+          <p className="text-[13px] text-[#888899] mt-1">or start a new one with an agent</p>
         </div>
       </div>
     )
@@ -151,14 +151,14 @@ export function MessageList() {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center px-6">
-          <div className="w-12 h-12 rounded-lg bg-surface-2 flex items-center justify-center mx-auto mb-3">
-            <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/40">
+          <div className="w-14 h-14 rounded-2xl bg-[#EDE9FD] flex items-center justify-center mx-auto mb-4">
+            <svg width="24" height="24" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#6C5CE7]">
               <path d="M12 3H4a1 1 0 00-1 1v6l3-2h6a1 1 0 001-1V4a1 1 0 00-1-1z" />
               <path d="M7 11v1a1 1 0 001 1h5l2 2v-6a1 1 0 00-1-1h-1" />
             </svg>
           </div>
-          <p className="text-sm text-muted-foreground">No messages yet</p>
-          <p className="text-xs text-muted-foreground/50 mt-1">Send a message to get started</p>
+          <p className="text-[15px] font-semibold text-[#1A1A2E]">No messages yet</p>
+          <p className="text-[13px] text-[#888899] mt-1">Send a message to get started</p>
         </div>
       </div>
     )
@@ -167,14 +167,14 @@ export function MessageList() {
   const groups = groupMessagesByDate(conversationMessages)
 
   return (
-    <div ref={containerRef} className="relative flex-1 overflow-y-auto px-4 py-3" onScroll={handleScroll}>
+    <div ref={containerRef} className="relative flex-1 overflow-y-auto px-[var(--space-5)] py-[var(--space-4)]" onScroll={handleScroll}>
       {groups.map((group) => (
         <div key={group.date}>
           {/* Date separator */}
-          <div className="flex items-center gap-3 my-4">
-            <div className="flex-1 h-px bg-border/50" />
-            <span className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-wider">{group.date}</span>
-            <div className="flex-1 h-px bg-border/50" />
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-[#E8E8EC]" />
+            <span className="text-[11px] text-[#888899] font-medium uppercase tracking-wider px-2">{group.date}</span>
+            <div className="flex-1 h-px bg-[#E8E8EC]" />
           </div>
 
           {group.messages.map((msg, idx) => (
@@ -222,19 +222,19 @@ export function MessageList() {
 
       {/* Typing indicator */}
       {isSendingMessage && (
-        <div className="flex gap-2 mt-3">
-          <div className="w-7 h-7 rounded-full bg-surface-2 flex items-center justify-center flex-shrink-0">
+        <div className="flex gap-2.5 mt-4">
+          <div className="w-8 h-8 rounded-full bg-[#6C5CE7]/15 flex items-center justify-center flex-shrink-0">
             <div className="flex gap-0.5">
-              <div className="w-1 h-1 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-1 h-1 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-1 h-1 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="w-1 h-1 rounded-full bg-[#6C5CE7]/50 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-1 h-1 rounded-full bg-[#6C5CE7]/50 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-1 h-1 rounded-full bg-[#6C5CE7]/50 animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
-          <div className="bg-surface-2 rounded-lg rounded-tl-sm px-3 py-2">
+          <div className="bg-white border border-[#E8E8EC] rounded-2xl rounded-tl-[4px] px-4 py-3 shadow-[0px_1px_3px_rgba(0,0,0,0.04)]">
             <div className="flex gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#888899]/40 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#888899]/40 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#888899]/40 animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         </div>
@@ -246,7 +246,7 @@ export function MessageList() {
       {showNewMessages && (
         <button
           onClick={scrollToBottom}
-          className="sticky bottom-3 left-1/2 -translate-x-1/2 z-10 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-xs font-medium shadow-lg hover:bg-primary/90 transition-colors flex items-center gap-1.5"
+          className="sticky bottom-[var(--space-3)] left-1/2 -translate-x-1/2 z-10 bg-primary text-primary-foreground px-[var(--space-4)] py-[var(--space-1-5)] rounded-full text-[length:var(--text-sm)] font-[var(--font-medium)] shadow-[var(--shadow-lg)] hover:bg-[hsl(var(--interactive-primary-hover))] transition-colors flex items-center gap-[var(--space-1-5)]"
         >
           New messages
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

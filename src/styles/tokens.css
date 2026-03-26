@@ -222,7 +222,7 @@
   --btn-font-size: var(--text-base);
   --btn-font-weight: var(--font-medium);
 
-  --card-bg: var(--bg-surface);
+  --card-bg: var(--bg-surface-raised);
   --card-bg-hover: var(--bg-subtle);
   --card-border: var(--border-default);
   --card-radius: var(--radius-xl);
@@ -271,7 +271,7 @@
   /* Backward-compatible aliases */
   --background: var(--bg-canvas);
   --foreground: var(--text-primary);
-  --card: var(--card-bg);
+  --card: var(--bg-surface-raised);
   --card-foreground: var(--text-primary);
   --popover: var(--bg-surface-raised);
   --popover-foreground: var(--text-primary);

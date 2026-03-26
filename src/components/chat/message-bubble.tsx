@@ -9,16 +9,16 @@ const AGENT_COLORS: Record<string, { bg: string; text: string; border: string }>
   coordinator: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
   aegis: { bg: 'bg-status-error-bg', text: 'text-status-error-fg', border: 'border-status-error-border' },
   research: { bg: 'bg-status-success-bg', text: 'text-status-success-fg', border: 'border-status-success-border' },
-  design: { bg: 'bg-pink-500/10', text: 'text-pink-400', border: 'border-pink-500/20' },
+  design: { bg: 'bg-status-info-bg', text: 'text-status-info-fg', border: 'border-status-info-border' },
   quant: { bg: 'bg-status-warning-bg', text: 'text-status-warning-fg', border: 'border-status-warning-border' },
-  ops: { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20' },
-  reviewer: { bg: 'bg-teal-500/10', text: 'text-teal-400', border: 'border-teal-500/20' },
-  content: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/20' },
+  ops: { bg: 'bg-status-warning-bg', text: 'text-status-warning-fg', border: 'border-status-warning-border' },
+  reviewer: { bg: 'bg-status-info-bg', text: 'text-status-info-fg', border: 'border-status-info-border' },
+  content: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
   seo: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
-  security: { bg: 'bg-rose-500/10', text: 'text-rose-400', border: 'border-rose-500/20' },
+  security: { bg: 'bg-status-error-bg', text: 'text-status-error-fg', border: 'border-status-error-border' },
   ai: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
-  'frontend-dev': { bg: 'bg-sky-500/10', text: 'text-sky-400', border: 'border-sky-500/20' },
-  'backend-dev': { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20' },
+  'frontend-dev': { bg: 'bg-status-info-bg', text: 'text-status-info-fg', border: 'border-status-info-border' },
+  'backend-dev': { bg: 'bg-status-success-bg', text: 'text-status-success-fg', border: 'border-status-success-border' },
   'solana-dev': { bg: 'bg-status-warning-bg', text: 'text-status-warning-fg', border: 'border-status-warning-border' },
   system: { bg: 'bg-muted/50', text: 'text-muted-foreground', border: 'border-border' },
   human: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
@@ -47,17 +47,31 @@ function renderContent(text: string) {
   return parts.map((part, i) => {
     // Multi-line code block
     if (part.startsWith('```') && part.endsWith('```')) {
-      const code = part.slice(3, -3).replace(/^\w+\n/, '') // strip language hint
+      const inner = part.slice(3, -3)
+      const newlineIdx = inner.indexOf('\n')
+      const lang = newlineIdx > 0 ? inner.slice(0, newlineIdx).trim() : ''
+      const code = newlineIdx > 0 ? inner.slice(newlineIdx + 1) : inner.replace(/^\w+\n/, '')
       return (
-        <pre key={i} className="bg-background/30 rounded-md px-3 py-2 my-1 text-xs font-mono overflow-x-auto whitespace-pre-wrap">
-          {code}
-        </pre>
+        <div key={i} className="my-1.5 rounded-lg border border-[#E8E8EC] overflow-hidden">
+          <div className="flex items-center justify-between bg-[#F4F4F8] px-3 py-1.5 text-[11px] text-[#888899]">
+            <span>{lang || 'code'}</span>
+            <button
+              onClick={() => navigator.clipboard.writeText(code)}
+              className="text-[10px] text-[#888899] hover:text-[#444455] transition-colors"
+            >
+              Copy
+            </button>
+          </div>
+          <pre className="bg-[#1E1E2D] px-3 py-2.5 text-[13px] font-mono text-[#E8E8EC] overflow-x-auto whitespace-pre-wrap">
+            {code}
+          </pre>
+        </div>
       )
     }
     // Inline code
     if (part.startsWith('`') && part.endsWith('`')) {
       return (
-        <code key={i} className="bg-background/20 rounded px-1 py-0.5 text-xs font-mono">
+        <code key={i} className="bg-[#F4F4F8] rounded px-1.5 py-0.5 text-[12px] font-mono text-[#444455]">
           {part.slice(1, -1)}
         </code>
       )
@@ -194,45 +208,49 @@ export function MessageBubble({ message, isHuman, isGrouped }: MessageBubbleProp
   }
 
   return (
-    <div className={`flex gap-2 ${isHuman ? 'flex-row-reverse' : 'flex-row'} ${isGrouped ? 'mt-0.5' : 'mt-3'}`}>
+    <div className={`flex gap-2.5 ${isHuman ? 'flex-row-reverse' : 'flex-row'} ${isGrouped ? 'mt-0.5' : 'mt-4'}`}>
       {/* Avatar */}
       {!isGrouped ? (
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold ${theme.bg} ${theme.text} border ${theme.border}`}>
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold ${
+          isHuman
+            ? 'bg-[#6C5CE7] text-white'
+            : 'bg-[#6C5CE7]/15 text-[#6C5CE7]'
+        }`}>
           {message.from_agent.charAt(0).toUpperCase()}
         </div>
       ) : (
-        <div className="w-7 flex-shrink-0" />
+        <div className="w-8 flex-shrink-0" />
       )}
 
       {/* Content */}
       <div className={`max-w-[80%] min-w-0 ${isHuman ? 'items-end' : 'items-start'}`}>
-        {/* Name + recipient */}
+        {/* Name + timestamp */}
         {!isGrouped && (
-          <div className={`flex items-center gap-1.5 mb-0.5 ${isHuman ? 'flex-row-reverse' : 'flex-row'}`}>
-            <span className={`text-[11px] font-medium ${theme.text}`}>
+          <div className={`flex items-center gap-1.5 mb-1 ${isHuman ? 'flex-row-reverse' : 'flex-row'}`}>
+            <span className={`text-[12px] font-semibold ${isHuman ? 'text-[#1A1A2E]' : 'text-[#1A1A2E]'}`}>
               {message.from_agent}
             </span>
             {message.to_agent && (
-              <span className="text-[10px] text-muted-foreground/50 flex items-center gap-0.5">
+              <span className="text-[10px] text-[#888899] flex items-center gap-0.5">
                 <svg width="8" height="8" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M5 3l6 5-6 5" />
                 </svg>
                 {message.to_agent}
               </span>
             )}
-            <span className="text-[10px] text-muted-foreground/40">
+            <span className="text-[11px] text-[#888899]">
               {formatTime(message.created_at)}
             </span>
           </div>
         )}
 
         {/* Bubble */}
-        <div className={`rounded-lg px-3 py-2 text-sm leading-relaxed ${
+        <div className={`rounded-2xl px-4 py-3 text-[14px] leading-relaxed ${
           isHuman
-            ? 'bg-primary text-primary-foreground rounded-tr-sm'
+            ? 'bg-[#EDE9FD] text-[#1A1A2E] border border-[#D8D2F9] rounded-tr-[4px]'
             : isCommand
-            ? `${theme.bg} border ${theme.border} font-mono text-xs rounded-tl-sm`
-            : `bg-surface-2 text-foreground ${isGrouped ? 'rounded-tl-sm' : 'rounded-tl-sm'}`
+            ? `${theme.bg} border ${theme.border} font-mono text-xs rounded-tl-[4px]`
+            : 'bg-white text-[#444455] border border-[#E8E8EC] shadow-[0px_1px_3px_rgba(0,0,0,0.04)] rounded-tl-[4px]'
         }`}>
           {/* Attachment thumbnails */}
           {message.attachments && message.attachments.length > 0 && (

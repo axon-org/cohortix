@@ -309,10 +309,10 @@ export function ChatWorkspace({ mode = 'embedded', onClose }: ChatWorkspaceProps
   }, [activeConversation, conversations, setConversations])
 
   return (
-    <div className={`flex h-full flex-col bg-card ${focusMode ? 'fixed inset-0 z-50' : ''}`}>
+    <div className={`flex h-full flex-col bg-[hsl(var(--card-bg))] ${focusMode ? 'fixed inset-0 z-50' : ''}`}>
       {/* Header */}
-      <div className={`glass-strong flex h-12 flex-shrink-0 items-center justify-between border-b border-border px-4 ${focusMode ? 'h-10' : ''}`}>
-        <div className="flex items-center gap-3">
+      <div className={`flex h-14 flex-shrink-0 items-center justify-between border-b border-[hsl(var(--border-default))] bg-[hsl(var(--bg-surface-raised))] px-[var(--space-4)] ${focusMode ? 'h-12' : ''}`}>
+        <div className="flex items-center gap-[var(--space-3)]">
           {/* Back button on mobile when in chat view */}
           {isMobile && !showConversations && (
             <Button
@@ -325,14 +325,14 @@ export function ChatWorkspace({ mode = 'embedded', onClose }: ChatWorkspaceProps
               </svg>
             </Button>
           )}
-          <div className="flex items-center gap-2">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+          <div className="flex items-center gap-[var(--space-2)]">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
               <path d="M14 10c0 .37-.1.7-.28 1-.53.87-2.2 3-5.72 3-4.42 0-6-3-6-4V4a2 2 0 012-2h8a2 2 0 012 2v6z" />
               <path d="M6 7h.01M10 7h.01" />
             </svg>
-            <span className="text-sm font-semibold text-foreground">Agent Chat</span>
+            <span className="text-[length:var(--text-md)] font-[var(--font-semibold)] text-foreground">Agent Chat</span>
           </div>
-          <span className="hidden text-xs text-muted-foreground sm:inline">
+          <span className="hidden text-[length:var(--text-xs)] text-muted-foreground sm:inline">
             {agents.filter(a => a.status === 'busy' || a.status === 'idle').length} online
           </span>
         </div>
@@ -389,56 +389,166 @@ export function ChatWorkspace({ mode = 'embedded', onClose }: ChatWorkspaceProps
       <div className="flex flex-1 overflow-hidden">
         {/* Conversations sidebar */}
         {showConversations && !focusMode && (
-          <div className={`${isMobile ? 'w-full' : 'w-56 border-r border-border'} flex-shrink-0`}>
+          <div className={`${isMobile ? 'w-full' : 'w-64 border-r border-[hsl(var(--border-default))]'} flex-shrink-0`}>
             <ConversationList onNewConversation={handleNewConversation} />
           </div>
         )}
 
-        {/* Message area */}
+        {/* Message area — 2-column layout */}
         {(!isMobile || !showConversations) && (
-          <div className="flex min-w-0 flex-1 flex-col">
-            {/* Conversation header */}
-            {activeConversation && (
-              <div className="bg-surface-1 flex flex-shrink-0 items-center gap-2 border-b border-border/50 px-4 py-2">
-                <AgentAvatar
-                  name={(selectedConversation?.name || activeConversation).replace('agent_', '')}
-                  size="sm"
-                />
-                <div className="min-w-0">
-                  <div className="truncate text-sm font-medium text-foreground">
-                    {(selectedConversation?.name || activeConversation).replace('agent_', '')}
+          <div className="flex min-w-0 flex-1 gap-4 p-4 overflow-hidden">
+            {/* LEFT COLUMN — Chat */}
+            <div className="flex-[7] min-w-0 overflow-hidden">
+              <div className="flex flex-col h-full rounded-xl overflow-hidden bg-white border border-[#E8E8EC] shadow-[0px_1px_3px_rgba(0,0,0,0.04)]">
+                {/* Chat header */}
+                {activeConversation && (
+                  <div className="flex items-center justify-between px-5 py-3.5 shrink-0 border-b border-[#E8E8EC]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white bg-[#6C5CE7]">
+                        {((selectedConversation?.name || activeConversation).replace('agent_', '')).charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-semibold text-[#1A1A2E]">
+                            {(selectedConversation?.name || activeConversation).replace('agent_', '')}
+                          </span>
+                          {getConversationStatus(agents, activeConversation) === 'Online' && (
+                            <span className="w-2 h-2 rounded-full bg-[#22C55E]" />
+                          )}
+                        </div>
+                        <p className="text-[11px] text-[#888899]">
+                          {(() => {
+                            const name = activeConversation.replace('agent_', '')
+                            const agent = agents.find(a => a.name.toLowerCase() === name.toLowerCase())
+                            return agent?.role || getConversationStatus(agents, activeConversation)
+                          })()}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-[#EDE9FD] text-[#6C5CE7] border border-[#D8D2F9]">
+                      Claude Sonnet 4
+                    </span>
                   </div>
-                  <div className="text-[10px] text-muted-foreground">
-                    {getConversationStatus(agents, activeConversation)}
-                  </div>
-                </div>
-              </div>
-            )}
+                )}
 
-            {selectedConversation?.source === 'session' && selectedConversation.session ? (
-              <SessionConversationView
-                session={selectedConversation.session}
-                messages={sessionTranscript}
-                loading={sessionTranscriptLoading}
-                error={sessionTranscriptError}
-                onRefreshTranscript={refreshSessionTranscript}
-                onSavePreferences={handleSaveSessionPreferences}
+                {selectedConversation?.source === 'session' && selectedConversation.session ? (
+                  <SessionConversationView
+                    session={selectedConversation.session}
+                    messages={sessionTranscript}
+                    loading={sessionTranscriptLoading}
+                    error={sessionTranscriptError}
+                    onRefreshTranscript={refreshSessionTranscript}
+                    onSavePreferences={handleSaveSessionPreferences}
+                  />
+                ) : (
+                  <>
+                    <MessageList />
+                    <ChatIndicators notifications={notifications} />
+                    <ChatInput
+                      onSend={handleSend}
+                      onAbort={handleAbort}
+                      disabled={!canSendMessage}
+                      agents={agents.map(a => ({ name: a.name, role: a.role }))}
+                      isGenerating={isGenerating}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN — Info Panel */}
+            {!isMobile && activeConversation && !activeConversation.startsWith('session:') && (
+              <ChatInfoPanel
+                agentName={(selectedConversation?.name || activeConversation).replace('agent_', '')}
+                agents={agents}
+                activeConversation={activeConversation}
               />
-            ) : (
-              <>
-                <MessageList />
-                <ChatIndicators notifications={notifications} />
-                <ChatInput
-                  onSend={handleSend}
-                  onAbort={handleAbort}
-                  disabled={!canSendMessage}
-                  agents={agents.map(a => ({ name: a.name, role: a.role }))}
-                  isGenerating={isGenerating}
-                />
-              </>
             )}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+function ChatInfoPanel({
+  agentName,
+  agents,
+  activeConversation,
+}: {
+  agentName: string
+  agents: Array<{ name: string; status: string; role: string }>
+  activeConversation: string
+}) {
+  const status = getConversationStatus(agents, activeConversation)
+  const isOnline = status === 'Online'
+  const agent = agents.find(a => a.name.toLowerCase() === agentName.toLowerCase())
+
+  return (
+    <div className="flex-[3] min-w-0 overflow-y-auto space-y-4">
+      {/* Card 1: Agent Profile */}
+      <div className="rounded-xl p-5 bg-white border border-[#E8E8EC]">
+        <div className="flex flex-col items-center pb-4 mb-4 border-b border-[#E8E8EC]">
+          <div className="w-14 h-14 rounded-full text-xl font-bold text-white flex items-center justify-center mb-3 bg-[#6C5CE7] shadow-[0px_0px_0px_4px_#EDE9FD]">
+            {agentName.charAt(0).toUpperCase()}
+          </div>
+          <h2 className="text-base font-bold text-[#1A1A2E]">{agentName}</h2>
+          <p className="text-xs mt-0.5 text-[#888899]">{agent?.role || 'Agent'}</p>
+          <span className={`mt-2 px-2.5 py-1 rounded-full text-xs font-semibold ${
+            isOnline
+              ? 'bg-[#DCFCE7] text-[#16A34A]'
+              : 'bg-[#F4F4F5] text-[#888899]'
+          }`}>
+            {isOnline ? '● Online' : '● Offline'}
+          </span>
+        </div>
+        <div className="space-y-2.5 text-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-[#888899]">Model</span>
+            <span className="text-[#1A1A2E] font-medium">Claude Sonnet 4</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[#888899]">Active since</span>
+            <span className="text-[#1A1A2E] font-medium">Today</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Card 2: Current Task */}
+      <div className="rounded-xl p-5 bg-white border border-[#E8E8EC]">
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-[#888899]">Current Task</h3>
+        <p className="text-sm font-medium text-[#1A1A2E]">Awaiting instructions</p>
+        <p className="text-xs mb-3 text-[#888899]">No active task assigned</p>
+        <div className="w-full h-2 rounded-full bg-[#EDE9FD]">
+          <div style={{ width: '0%' }} className="h-full rounded-full bg-[#6C5CE7]" />
+        </div>
+      </div>
+
+      {/* Card 3: Recent Files */}
+      <div className="rounded-xl p-5 bg-white border border-[#E8E8EC]">
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-[#888899]">Recent Files</h3>
+        <div className="space-y-2.5 text-sm text-[#888899]">
+          <p className="text-xs">No recent files</p>
+        </div>
+      </div>
+
+      {/* Card 4: Quick Actions */}
+      <div className="rounded-xl p-5 bg-white border border-[#E8E8EC]">
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-[#888899]">Quick Actions</h3>
+        <div className="space-y-2">
+          <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-[#D97706] bg-[#FEF3C7] hover:bg-[#FDE68A] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M8 4v8M4 8h8" /></svg>
+            Pause Agent
+          </button>
+          <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-[#6C5CE7] bg-[#EDE9FD] hover:bg-[#D8D2F9] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 3l10 5-10 5V3z" /></svg>
+            Restart Agent
+          </button>
+          <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-[#444455] bg-[#F4F4F8] hover:bg-[#E8E8EC] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 12h12M2 8h12M2 4h12" /></svg>
+            View Logs
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -569,7 +679,7 @@ function SessionConversationView({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Compact session info bar */}
-      <div className="border-b border-border/50 px-4 py-2 text-xs text-muted-foreground">
+      <div className="border-b border-[hsl(var(--border-default))] px-[var(--space-4)] py-[var(--space-3)] text-[length:var(--text-xs)] text-muted-foreground">
         <div className="flex flex-wrap items-center gap-2">
           {!isGatewaySession && (
             <SessionKindAvatar
@@ -600,12 +710,12 @@ function SessionConversationView({
                 onChange={(e) => setNameDraft(e.target.value)}
                 placeholder="Rename session"
                 maxLength={80}
-                className="h-7 rounded border border-border/60 bg-surface-1 px-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
+                className="h-8 rounded-[var(--radius-md)] border border-[hsl(var(--input-border))] bg-[hsl(var(--input-bg))] px-[var(--space-2)] text-[length:var(--text-xs)] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-[hsl(var(--input-border-focus))]"
               />
               <select
                 value={colorDraft}
                 onChange={(e) => setColorDraft(e.target.value)}
-                className="h-7 rounded border border-border/60 bg-surface-1 px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
+                className="h-8 rounded-[var(--radius-md)] border border-[hsl(var(--input-border))] bg-[hsl(var(--input-bg))] px-[var(--space-2)] text-[length:var(--text-xs)] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-[hsl(var(--input-border-focus))]"
               >
                 <option value="">No color</option>
                 <option value="slate">Slate</option>
@@ -664,9 +774,9 @@ function SessionConversationView({
       </div>
 
       {/* Continue session input */}
-      <div className="border-t border-border/50 px-4 py-2">
-        <div className="flex items-center gap-2">
-          <span className={`font-mono-tight text-xs ${isGatewaySession ? 'text-primary/60' : 'text-status-success-fg/60'}`}>{isGatewaySession ? '>' : '$'}</span>
+      <div className="border-t border-[hsl(var(--border-default))] px-[var(--space-4)] py-[var(--space-3)]">
+        <div className="flex items-center gap-[var(--space-2)]">
+          <span className={`font-mono-tight text-[length:var(--text-xs)] ${isGatewaySession ? 'text-primary/60' : 'text-status-success-fg/60'}`}>{isGatewaySession ? '>' : '$'}</span>
           <input
             value={continuePrompt}
             onChange={(e) => setContinuePrompt(e.target.value)}
@@ -677,7 +787,7 @@ function SessionConversationView({
               }
             }}
             placeholder={isGatewaySession ? 'Send message to this agent session...' : 'Send prompt to this local session...'}
-            className="h-7 flex-1 rounded border border-border/40 bg-surface-1 px-2 font-mono-tight text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/30"
+            className="h-8 flex-1 rounded-[var(--radius-full)] border border-[hsl(var(--input-border))] bg-[hsl(var(--input-bg))] px-[var(--space-3)] font-mono-tight text-[length:var(--text-xs)] text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-[hsl(var(--input-border-focus))]"
           />
           <Button
             onClick={handleContinueSession}
@@ -744,17 +854,17 @@ function AgentAvatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' }
     coordinator: 'bg-primary/20 text-primary',
     aegis: 'bg-status-error-bg text-status-error-fg',
     research: 'bg-status-success-bg text-status-success-fg',
-    ops: 'bg-orange-500/20 text-orange-400',
-    reviewer: 'bg-teal-500/20 text-teal-400',
-    content: 'bg-indigo-500/20 text-indigo-400',
+    ops: 'bg-status-warning-bg text-status-warning-fg',
+    reviewer: 'bg-status-info-bg text-status-info-fg',
+    content: 'bg-primary/20 text-primary',
     human: 'bg-primary/20 text-primary',
   }
 
-  const colorClass = colors[name.toLowerCase()] || 'bg-muted text-muted-foreground'
-  const sizeClass = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs'
+  const colorClass = colors[name.toLowerCase()] || 'bg-[hsl(var(--bg-subtle))] text-muted-foreground'
+  const sizeClass = size === 'sm' ? 'w-7 h-7 text-[10px]' : 'w-9 h-9 text-[length:var(--text-sm)]'
 
   return (
-    <div className={`${sizeClass} ${colorClass} flex flex-shrink-0 items-center justify-center rounded-full font-bold`}>
+    <div className={`${sizeClass} ${colorClass} flex flex-shrink-0 items-center justify-center rounded-full font-[var(--font-bold)]`}>
       {name.charAt(0).toUpperCase()}
     </div>
   )

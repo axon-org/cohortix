@@ -80,49 +80,44 @@ interface StatCardProps {
 }
 
 function StatCard({ title, value, icon, trend, subtitle, color = 'default' }: StatCardProps) {
-  const colorClasses = {
-    default: 'void-panel',
-    success: 'void-panel border-void-mint/30',
-    warning: 'void-panel border-void-amber/30',
-    danger: 'void-panel border-void-crimson/30'
+  const borderClasses = {
+    default: '',
+    success: 'border-status-success-border',
+    warning: 'border-status-warning-border',
+    danger: 'border-status-error-border'
   }
 
   const iconColorClasses = {
-    default: 'text-void-cyan',
-    success: 'text-void-mint',
-    warning: 'text-void-amber',
-    danger: 'text-void-crimson'
+    default: 'bg-primary/10 text-primary',
+    success: 'bg-status-success-bg text-status-success-icon',
+    warning: 'bg-status-warning-bg text-status-warning-icon',
+    danger: 'bg-status-error-bg text-status-error-icon'
   }
 
-  const glowClasses = {
-    default: '',
-    success: 'badge-glow-success',
-    warning: 'badge-glow-warning',
-    danger: 'badge-glow-error'
+  const trendColorClasses = {
+    up: 'text-status-success-fg',
+    down: 'text-status-error-fg',
+    stable: 'text-muted-foreground'
   }
 
   return (
-    <div className={`p-6 ${colorClasses[color]} ${glowClasses[color]}`}>
+    <div className={`p-6 bg-card rounded-[var(--card-radius)] border border-border ${borderClasses[color]}`} style={{ boxShadow: 'var(--card-shadow)' }}>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <div className="flex items-baseline space-x-2">
-            <p className="text-2xl font-bold font-mono text-foreground">{value}</p>
+          <div className="flex items-baseline space-x-2 mt-1.5">
+            <p className="text-[32px] font-bold text-foreground leading-tight">{value}</p>
             {trend && (
-              <span className={`text-sm ${
-                trend === 'up' ? 'text-void-mint' :
-                trend === 'down' ? 'text-void-crimson' :
-                'text-muted-foreground'
-              }`}>
+              <span className={`text-sm ${trendColorClasses[trend]}`}>
                 {trend === 'up' ? '\u2197' : trend === 'down' ? '\u2198' : '\u2192'}
               </span>
             )}
           </div>
           {subtitle && (
-            <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+            <p className="text-xs text-muted-foreground mt-1.5">{subtitle}</p>
           )}
         </div>
-        <div className={`${iconColorClasses[color]}`}>
+        <div className={`w-11 h-11 rounded-[var(--card-radius)] flex items-center justify-center ${iconColorClasses[color]}`}>
           {icon}
         </div>
       </div>
@@ -136,7 +131,7 @@ export function StatsGrid({ stats, systemStats }: StatsGridProps) {
     formatUptime(Date.now() - stats.uptime)
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-[var(--space-6)]">
       <StatCard
         title="Total Sessions"
         value={stats.totalSessions}

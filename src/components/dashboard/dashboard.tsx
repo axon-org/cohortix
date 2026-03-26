@@ -260,30 +260,30 @@ export function Dashboard() {
     subscriptionPrice,
   }
 
+  const today = new Date()
+  const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+  const hour = today.getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+
   return (
-    <div className="p-5 space-y-4">
+    <div className="p-6 lg:p-8 space-y-8">
       <OnboardingChecklistWidget />
-      <section className="rounded-xl border border-border bg-card p-4">
-        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="text-2xs uppercase tracking-[0.12em] text-muted-foreground">Overview</div>
-            <h2 className="text-lg font-semibold text-foreground">
-              {isLocal ? 'Local Agent Runtime' : 'Gateway Control Plane'}
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              {isLocal
-                ? 'Unified visibility for Claude, Codex & Hermes local sessions, host pressure, and operator continuity.'
-                : 'Gateway-first health, session routing, queue pressure, and incident response signals.'}
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-2 min-w-[280px]">
-            <SignalPill label="Mode" value={isLocal ? 'Local' : 'Gateway'} tone="info" />
-            <SignalPill label="Events" value={`${mergedRecentLogs.length} stream`} tone={recentErrorLogs > 0 ? 'warning' : 'success'} />
-            <SignalPill label="Queue" value={String(backlogCount)} tone={backlogCount > 10 ? 'warning' : 'info'} />
-            <SignalPill label="Errors" value={String(errorCount)} tone={errorCount > 0 ? 'warning' : 'success'} />
-          </div>
+
+      {/* Page header */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 className="text-[28px] font-bold text-foreground leading-tight">Overview</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {dateStr} · {greeting}
+          </p>
         </div>
-      </section>
+        <div className="flex items-center gap-2">
+          <SignalPill label="Mode" value={isLocal ? 'Local' : 'Gateway'} tone="info" />
+          <SignalPill label="Events" value={`${mergedRecentLogs.length}`} tone={recentErrorLogs > 0 ? 'warning' : 'success'} />
+          <SignalPill label="Queue" value={String(backlogCount)} tone={backlogCount > 10 ? 'warning' : 'info'} />
+          <SignalPill label="Errors" value={String(errorCount)} tone={errorCount > 0 ? 'warning' : 'success'} />
+        </div>
+      </div>
 
       <WidgetGrid data={dashboardData} />
     </div>

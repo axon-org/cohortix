@@ -96,24 +96,33 @@ export function MetricCard({ label, value, total, subtitle, icon, color }: {
   icon: React.ReactNode
   color: 'blue' | 'green' | 'purple' | 'red'
 }) {
-  const colorMap = {
-    blue: 'bg-status-info-bg text-status-info-fg border-status-info-border',
-    green: 'bg-status-success-bg text-status-success-fg border-status-success-border',
-    purple: 'bg-primary/10 text-primary border-primary/20',
-    red: 'bg-status-error-bg text-status-error-fg border-status-error-border',
+  const iconBgMap = {
+    blue: 'bg-status-info-bg text-status-info-icon',
+    green: 'bg-status-success-bg text-status-success-icon',
+    purple: 'bg-primary/10 text-primary',
+    red: 'bg-status-error-bg text-status-error-icon',
+  }
+
+  const subtitleColorMap = {
+    blue: 'text-status-info-fg',
+    green: 'text-status-success-fg',
+    purple: 'text-primary',
+    red: 'text-status-error-fg',
   }
 
   return (
-    <div className={`rounded-lg border p-3.5 ${colorMap[color]}`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium opacity-100">{label}</span>
-        <div className="w-5 h-5 opacity-100">{icon}</div>
+    <div className="bg-card rounded-[var(--card-radius)] border border-border p-6" style={{ boxShadow: 'var(--card-shadow)' }}>
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-sm font-medium text-muted-foreground">{label}</span>
+        <div className={`w-11 h-11 rounded-[var(--card-radius)] flex items-center justify-center ${iconBgMap[color]}`}>
+          <div className="w-5 h-5">{icon}</div>
+        </div>
       </div>
-      <div className="flex items-baseline gap-1">
-        <span className="text-2xl font-bold font-mono-tight">{value}</span>
-        {total != null && <span className="text-xs opacity-100 font-mono-tight">/ {total}</span>}
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-[32px] font-bold text-foreground leading-tight">{value}</span>
+        {total != null && <span className="text-sm text-muted-foreground font-medium">of {total}</span>}
       </div>
-      {subtitle && <div className="text-2xs opacity-100 font-mono-tight mt-0.5">{subtitle}</div>}
+      {subtitle && <div className={`text-sm mt-1.5 ${subtitleColorMap[color]}`}>{subtitle}</div>}
     </div>
   )
 }
@@ -124,15 +133,15 @@ export function SignalPill({ label, value, tone }: {
   tone: 'success' | 'warning' | 'info'
 }) {
   const toneClass = tone === 'success'
-    ? 'bg-status-success-bg border-status-success-border text-status-success-fg'
+    ? 'bg-status-success-bg text-status-success-fg'
     : tone === 'warning'
-      ? 'bg-status-warning-bg border-status-warning-border text-status-warning-fg'
-      : 'bg-status-info-bg border-status-info-border text-status-info-fg'
+      ? 'bg-status-warning-bg text-status-warning-fg'
+      : 'bg-status-info-bg text-status-info-fg'
 
   return (
-    <div className={`rounded-lg border px-2.5 py-2 ${toneClass}`}>
-      <div className="text-2xs uppercase tracking-wide opacity-100">{label}</div>
-      <div className="text-xs font-semibold font-mono-tight truncate">{value}</div>
+    <div className={`rounded-full px-3 py-1.5 inline-flex items-center gap-1.5 ${toneClass}`}>
+      <span className="text-2xs uppercase tracking-wide font-medium">{label}</span>
+      <span className="text-xs font-semibold font-mono-tight truncate">{value}</span>
     </div>
   )
 }
@@ -176,20 +185,20 @@ export function StatRow({ label, value, alert }: { label: string; value: number 
 
 export function LogRow({ log }: { log: LogLike }) {
   return (
-    <div className="px-4 py-2 hover:bg-secondary/30 transition-smooth">
-      <div className="flex items-start gap-2">
-        <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
+    <div className="px-5 py-3.5 hover:bg-muted/50 transition-smooth">
+      <div className="flex items-start gap-3">
+        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
           log.level === 'error' ? 'bg-status-error-solid' :
           log.level === 'warn' ? 'bg-status-warning-solid' :
           log.level === 'debug' ? 'bg-muted-foreground' :
           'bg-status-info-solid/50'
         }`} />
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-foreground break-words">{log.message.length > 100 ? log.message.slice(0, 100) + '...' : log.message}</p>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="text-2xs text-muted-foreground font-mono-tight">{log.source}</span>
-            <span className="text-2xs text-muted-foreground">·</span>
-            <span className="text-2xs text-muted-foreground">{new Date(log.timestamp).toLocaleTimeString()}</span>
+          <p className="text-sm text-foreground break-words">{log.message.length > 100 ? log.message.slice(0, 100) + '...' : log.message}</p>
+          <div className="flex items-center gap-1.5 mt-1">
+            <span className="text-xs text-muted-foreground font-mono-tight">{log.source}</span>
+            <span className="text-xs text-muted-foreground">·</span>
+            <span className="text-xs text-muted-foreground">{new Date(log.timestamp).toLocaleTimeString()}</span>
           </div>
         </div>
       </div>
@@ -208,14 +217,15 @@ export function QuickAction({ label, desc, tab, icon, onNavigate }: {
     <Button
       variant="outline"
       onClick={() => onNavigate(tab)}
-      className="flex items-center gap-3 p-3 h-auto rounded-lg hover:border-primary/30 hover:bg-primary/5 text-left group justify-start"
+      className="flex items-center gap-3 p-5 h-auto rounded-[var(--card-radius)] hover:border-primary/30 hover:bg-primary/5 text-left group justify-start border-border"
+      style={{ boxShadow: 'var(--card-shadow)' }}
     >
-      <div className="w-8 h-8 rounded-md bg-secondary flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-smooth">
-        <div className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-smooth">{icon}</div>
+      <div className="w-9 h-9 rounded-[var(--radius-lg)] bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-smooth">
+        <div className="w-4 h-4 text-primary transition-smooth">{icon}</div>
       </div>
       <div>
-        <div className="text-xs font-medium text-foreground">{label}</div>
-        <div className="text-2xs text-muted-foreground">{desc}</div>
+        <div className="text-sm font-medium text-foreground">{label}</div>
+        <div className="text-xs text-muted-foreground">{desc}</div>
       </div>
     </Button>
   )

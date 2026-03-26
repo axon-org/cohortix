@@ -87,13 +87,13 @@ interface MentionOption {
 }
 
 const STATUS_COLUMN_KEYS = [
-  { key: 'inbox', titleKey: 'colInbox', color: 'bg-secondary text-foreground' },
-  { key: 'assigned', titleKey: 'colAssigned', color: 'bg-status-info-bg/20 text-status-info-fg' },
-  { key: 'awaiting_owner', titleKey: 'colAwaitingOwner', color: 'bg-status-warning-bg text-status-warning-fg' },
-  { key: 'in_progress', titleKey: 'colInProgress', color: 'bg-status-warning-bg text-status-warning-fg' },
-  { key: 'review', titleKey: 'colReview', color: 'bg-status-info-bg text-primary' },
-  { key: 'quality_review', titleKey: 'colQualityReview', color: 'bg-status-info-bg text-status-info-fg' },
-  { key: 'done', titleKey: 'colDone', color: 'bg-status-success-bg text-status-success-fg' },
+  { key: 'inbox', titleKey: 'colInbox', dotColor: 'bg-slate-400', badgeColor: 'bg-slate-100 text-slate-600' },
+  { key: 'assigned', titleKey: 'colAssigned', dotColor: 'bg-blue-400', badgeColor: 'bg-blue-50 text-blue-700' },
+  { key: 'awaiting_owner', titleKey: 'colAwaitingOwner', dotColor: 'bg-amber-500', badgeColor: 'bg-amber-50 text-amber-700' },
+  { key: 'in_progress', titleKey: 'colInProgress', dotColor: 'bg-amber-400', badgeColor: 'bg-amber-50 text-amber-700' },
+  { key: 'review', titleKey: 'colReview', dotColor: 'bg-violet-400', badgeColor: 'bg-violet-50 text-violet-700' },
+  { key: 'quality_review', titleKey: 'colQualityReview', dotColor: 'bg-violet-300', badgeColor: 'bg-violet-50 text-violet-600' },
+  { key: 'done', titleKey: 'colDone', dotColor: 'bg-emerald-400', badgeColor: 'bg-emerald-50 text-emerald-700' },
 ]
 
 const AWAITING_OWNER_KEYWORDS = [
@@ -154,11 +154,12 @@ function useAgentSessions(agentName: string | undefined) {
   return sessions
 }
 
-const priorityColors: Record<string, string> = {
-  low: 'border-l-green-500',
-  medium: 'border-l-yellow-500',
-  high: 'border-l-orange-500',
-  critical: 'border-l-red-500',
+const priorityPillColors: Record<string, { pill: string; dot: string }> = {
+  low: { pill: 'bg-emerald-50 text-emerald-700 border border-emerald-200', dot: 'bg-emerald-500' },
+  medium: { pill: 'bg-blue-50 text-blue-700 border border-blue-200', dot: 'bg-blue-500' },
+  high: { pill: 'bg-orange-50 text-orange-700 border border-orange-200', dot: 'bg-orange-500' },
+  critical: { pill: 'bg-red-50 text-red-700 border border-red-200', dot: 'bg-red-500' },
+  urgent: { pill: 'bg-red-50 text-red-700 border border-red-200', dot: 'bg-red-500' },
 }
 
 function useMentionTargets() {
@@ -298,7 +299,7 @@ function MentionTextarea({
         className={className}
       />
       {open && filtered.length > 0 && (
-        <div className={`absolute z-[60] w-full bg-surface-1 border border-border rounded-md shadow-xl max-h-56 overflow-y-auto ${
+        <div className={`absolute z-[60] w-full bg-[hsl(var(--bg-surface-raised))] border border-[hsl(var(--border-default))] rounded-[var(--radius-lg)] shadow-[var(--shadow-lg)] max-h-56 overflow-y-auto ${
           openUpwards ? 'bottom-full mb-1' : 'mt-1'
         }`}>
           {filtered.map((option, index) => (
@@ -309,12 +310,12 @@ function MentionTextarea({
                 e.preventDefault()
                 insertMention(option)
               }}
-              className={`w-full text-left px-3 py-2 text-xs border-b last:border-b-0 border-border/40 ${
-                index === activeIndex ? 'bg-primary/20 text-primary' : 'text-foreground hover:bg-surface-2'
+              className={`w-full text-left px-[var(--space-3)] py-[var(--space-2)] text-[var(--text-xs)] border-b last:border-b-0 border-[hsl(var(--border-subtle))] ${
+                index === activeIndex ? 'bg-[hsl(var(--interactive-primary-subtle))] text-[hsl(var(--interactive-primary))]' : 'text-[hsl(var(--text-primary))] hover:bg-[hsl(var(--bg-subtle))]'
               }`}
             >
               <div className="font-mono">@{option.handle}</div>
-              <div className="text-muted-foreground">
+              <div className="text-[hsl(var(--text-muted))]">
                 {option.display} • {option.type}{option.role ? ` • ${option.role}` : ''}
               </div>
             </button>
@@ -358,17 +359,17 @@ function DunkItButton({ taskId, onDunked }: { taskId: number; onDunked: (id: num
       disabled={phase !== 'idle' && phase !== 'error'}
       title={t('dunkIt')}
       style={{
-        padding: '2px 8px',
-        fontSize: '11px',
-        borderRadius: '4px',
+        padding: 'var(--space-0-5) var(--space-2)',
+        fontSize: 'var(--text-xs)',
+        borderRadius: 'var(--radius-sm)',
         border: '1px solid',
         cursor: phase === 'idle' ? 'pointer' : 'default',
         transition: 'all 0.3s ease',
         transform: phase === 'success' ? 'scale(1.15)' : phase === 'dismissing' ? 'scale(0.8) translateY(-10px)' : 'scale(1)',
         opacity: phase === 'dismissing' ? 0 : 1,
-        borderColor: phase === 'success' ? 'rgb(34 197 94 / 0.5)' : phase === 'error' ? 'rgb(239 68 68 / 0.5)' : 'hsl(var(--border))',
-        backgroundColor: phase === 'success' ? 'rgb(34 197 94 / 0.15)' : phase === 'error' ? 'rgb(239 68 68 / 0.15)' : 'transparent',
-        color: phase === 'success' ? 'rgb(34 197 94)' : phase === 'error' ? 'rgb(239 68 68)' : 'inherit',
+        borderColor: phase === 'success' ? 'hsl(var(--status-success-solid) / 0.5)' : phase === 'error' ? 'hsl(var(--status-error-solid) / 0.5)' : 'hsl(var(--border-default))',
+        backgroundColor: phase === 'success' ? 'hsl(var(--status-success-solid) / 0.15)' : phase === 'error' ? 'hsl(var(--status-error-solid) / 0.15)' : 'transparent',
+        color: phase === 'success' ? 'hsl(var(--status-success-solid))' : phase === 'error' ? 'hsl(var(--status-error-solid))' : 'inherit',
       }}
     >
       {phase === 'success' ? '!' : phase === 'error' ? '!!' : phase === 'dismissing' ? '!' : 'Dunk'}
@@ -732,31 +733,31 @@ export function TaskBoardPanel() {
   if (loading) {
     return (
       <div className="h-full flex flex-col" role="status" aria-live="polite">
-        <div className="flex justify-between items-center p-4 border-b border-border flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="h-7 w-28 bg-surface-1 rounded-md animate-pulse" />
-            <div className="h-9 w-36 bg-surface-1 rounded-md animate-pulse" />
+        <div className="flex justify-between items-center px-[var(--space-6)] py-[var(--space-4)] border-b border-[hsl(var(--border-default))] flex-shrink-0 bg-[hsl(var(--bg-surface-raised))]">
+          <div className="flex items-center gap-[var(--space-4)]">
+            <div className="h-7 w-28 bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-md)] animate-pulse" />
+            <div className="h-9 w-36 bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-md)] animate-pulse" />
           </div>
-          <div className="flex gap-2">
-            <div className="h-9 w-20 bg-surface-1 rounded-md animate-pulse" />
-            <div className="h-9 w-24 bg-surface-1 rounded-md animate-pulse" />
+          <div className="flex gap-[var(--space-2)]">
+            <div className="h-9 w-20 bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-md)] animate-pulse" />
+            <div className="h-9 w-24 bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-md)] animate-pulse" />
           </div>
         </div>
-        <div className="flex-1 flex gap-4 p-4 overflow-x-auto">
+        <div className="flex-1 flex gap-[var(--space-4)] p-[var(--space-5)] overflow-x-auto bg-[hsl(var(--bg-canvas))]">
           {Array.from({ length: 4 }).map((_, colIdx) => (
-            <div key={colIdx} className="flex-1 min-w-80 bg-card border border-border rounded-lg flex flex-col">
-              <div className="p-3 rounded-t-lg bg-surface-1 animate-pulse">
-                <div className="h-5 w-24 bg-surface-2 rounded" />
+            <div key={colIdx} className="flex-1 min-w-[18rem] flex flex-col">
+              <div className="px-[var(--space-3)] py-[var(--space-3)] mb-[var(--space-2)] animate-pulse">
+                <div className="h-5 w-24 bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-md)]" />
               </div>
-              <div className="flex-1 p-3 space-y-3">
+              <div className="flex-1 px-[var(--space-1)] space-y-[var(--space-3)]">
                 {Array.from({ length: 3 - colIdx }).map((_, cardIdx) => (
-                  <div key={cardIdx} className="bg-surface-1 rounded-lg p-3 border-l-4 border-border space-y-2 animate-pulse">
-                    <div className="h-4 w-3/4 bg-surface-2 rounded" />
-                    <div className="h-3 w-full bg-surface-2/60 rounded" />
-                    <div className="h-3 w-1/2 bg-surface-2/40 rounded" />
-                    <div className="flex justify-between items-center pt-1">
-                      <div className="h-3 w-20 bg-surface-2/50 rounded" />
-                      <div className="h-3 w-16 bg-surface-2/50 rounded" />
+                  <div key={cardIdx} className="bg-[hsl(var(--card-bg))] rounded-[var(--card-radius)] p-[var(--space-4)] border border-[hsl(var(--card-border))] border-l-[3px] shadow-[var(--card-shadow)] space-y-[var(--space-2)] animate-pulse">
+                    <div className="h-3 w-16 bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-sm)]" />
+                    <div className="h-4 w-3/4 bg-[hsl(var(--bg-subtle))] rounded-[var(--radius-sm)]" />
+                    <div className="h-3 w-full bg-[hsl(var(--bg-subtle)/.6)] rounded-[var(--radius-sm)]" />
+                    <div className="flex justify-between items-center pt-[var(--space-2)] border-t border-[hsl(var(--border-subtle))]">
+                      <div className="h-3 w-20 bg-[hsl(var(--bg-subtle)/.5)] rounded-[var(--radius-sm)]" />
+                      <div className="h-3 w-16 bg-[hsl(var(--bg-subtle)/.5)] rounded-[var(--radius-sm)]" />
                     </div>
                   </div>
                 ))}
@@ -772,9 +773,9 @@ export function TaskBoardPanel() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b border-border flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold text-foreground">{t('title')}</h2>
+      <div className="flex justify-between items-center px-[var(--space-6)] py-[var(--space-4)] border-b border-[hsl(var(--border-default))] flex-shrink-0 bg-[hsl(var(--bg-surface-raised))]">
+        <div className="flex items-center gap-[var(--space-4)]">
+          <h2 className="text-[var(--text-2xl)] font-[var(--font-bold)] text-[hsl(var(--text-primary))]">{t('title')}</h2>
           {gnapStatus?.enabled && (
             <button
               onClick={handleGnapSync}
@@ -797,7 +798,7 @@ export function TaskBoardPanel() {
             <select
               value={projectFilter}
               onChange={(e) => setProjectFilter(e.target.value)}
-              className="h-9 px-3 pr-8 bg-surface-1 text-foreground border border-border rounded-md text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="h-9 px-[var(--space-3)] pr-[var(--space-8)] bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] text-[var(--text-sm)] appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
             >
               <option value="all">{t('allProjects')}</option>
               {projects.map((project) => (
@@ -834,14 +835,14 @@ export function TaskBoardPanel() {
 
       {/* Spawn Form (collapsible) */}
       {showSpawnForm && (
-        <div className="border-b border-border bg-surface-0 p-4">
+        <div className="border-b border-[hsl(var(--border-default))] bg-[hsl(var(--bg-canvas))] p-[var(--space-4)]">
           <div className="grid md:grid-cols-2 gap-4 max-w-4xl">
             <div className="space-y-3">
               <textarea
                 value={spawnFormData.task}
                 onChange={(e) => setSpawnFormData(prev => ({ ...prev, task: e.target.value }))}
                 placeholder={t('spawnTaskPlaceholder')}
-                className="w-full h-20 px-3 py-2 border border-border rounded-md bg-background text-foreground text-sm placeholder-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full h-20 px-[var(--space-3)] py-[var(--space-2)] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] text-[var(--text-sm)] placeholder-[hsl(var(--input-placeholder))] resize-none focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 disabled={isSpawning}
               />
               <div className="flex gap-2">
@@ -850,13 +851,13 @@ export function TaskBoardPanel() {
                   value={spawnFormData.label}
                   onChange={(e) => setSpawnFormData(prev => ({ ...prev, label: e.target.value }))}
                   placeholder={t('spawnLabelPlaceholder')}
-                  className="flex-1 px-3 py-1.5 border border-border rounded-md bg-background text-foreground text-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="flex-1 px-[var(--space-3)] py-[var(--space-1-5)] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] text-[var(--text-sm)] placeholder-[hsl(var(--input-placeholder))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                   disabled={isSpawning}
                 />
                 <select
                   value={spawnFormData.model}
                   onChange={(e) => setSpawnFormData(prev => ({ ...prev, model: e.target.value }))}
-                  className="px-3 py-1.5 border border-border rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="px-[var(--space-3)] py-[var(--space-1-5)] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] text-[var(--text-sm)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                   disabled={isSpawning}
                 >
                   {availableModels.map((model) => (
@@ -869,7 +870,7 @@ export function TaskBoardPanel() {
                   max="3600"
                   value={spawnFormData.timeoutSeconds}
                   onChange={(e) => setSpawnFormData(prev => ({ ...prev, timeoutSeconds: parseInt(e.target.value) || 300 }))}
-                  className="w-20 px-2 py-1.5 border border-border rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-20 px-[var(--space-2)] py-[var(--space-1-5)] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] text-[var(--text-sm)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                   title={t('timeoutSeconds')}
                   disabled={isSpawning}
                 />
@@ -888,7 +889,7 @@ export function TaskBoardPanel() {
                 <div className="text-xs text-muted-foreground text-center py-4">{t('noActiveSpawnRequests')}</div>
               ) : (
                 spawnRequests.slice(0, 5).map((request) => (
-                  <div key={request.id} className="flex items-center justify-between px-3 py-2 border border-border rounded-md text-sm">
+                  <div key={request.id} className="flex items-center justify-between px-[var(--space-3)] py-[var(--space-2)] border border-[hsl(var(--border-default))] rounded-[var(--radius-md)] text-[var(--text-sm)]">
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="font-medium text-foreground truncate">{request.label}</span>
                       <span className={`px-1.5 py-0.5 text-xs rounded-full ${
@@ -911,7 +912,7 @@ export function TaskBoardPanel() {
 
       {/* Error Display */}
       {error && (
-        <div role="alert" className="bg-status-error-bg border border-status-error-border text-status-error-fg p-3 m-4 rounded-lg text-sm flex items-center justify-between">
+        <div role="alert" className="bg-[hsl(var(--status-error-bg))] border border-[hsl(var(--status-error-border))] text-[hsl(var(--status-error-fg))] p-[var(--space-3)] mx-[var(--space-5)] mt-[var(--space-4)] rounded-[var(--radius-lg)] text-[var(--text-sm)] flex items-center justify-between">
           <span>{error}</span>
           <Button
             variant="ghost"
@@ -926,29 +927,38 @@ export function TaskBoardPanel() {
       )}
 
       {/* Kanban Board */}
-      <div className="flex-1 flex gap-4 p-4 overflow-x-auto" role="region" aria-label={t('taskBoard')}>
+      <div className="flex-1 flex gap-4 px-5 py-5 items-start overflow-x-auto bg-[hsl(var(--bg-canvas))]" role="region" aria-label={t('taskBoard')}>
         {statusColumns.map(column => (
           <div
             key={column.key}
             role="region"
             aria-label={t('columnAriaLabel', { title: column.title, count: tasksByStatus[column.key]?.length || 0 })}
-            className="flex-1 min-w-80 bg-surface-0 border border-border/60 rounded-xl flex flex-col transition-colors duration-200 [&.drag-over]:border-primary/40 [&.drag-over]:bg-primary/[0.02]"
-            onDragEnter={(e) => handleDragEnter(e, column.key)}
-            onDragLeave={handleDragLeave}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, column.key)}
+            className="flex flex-col min-w-[272px] w-[272px] flex-shrink-0 h-full"
           >
             {/* Column Header */}
-            <div className={`${column.color} px-4 py-3 rounded-t-xl flex justify-between items-center border-b border-border/30`}>
-              <h3 className="font-semibold text-sm tracking-wide">{column.title}</h3>
-              <span className="text-xs font-mono bg-card/10 px-2 py-0.5 rounded-md min-w-[1.75rem] text-center">
+            <div className="flex items-center gap-2 mb-3 px-1">
+              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${column.dotColor}`} />
+              <h3 className="text-[13px] font-semibold text-[var(--foreground)] tracking-tight">{column.title}</h3>
+              <span className={`ml-1 text-[10px] font-bold rounded-full px-1.5 py-0.5 leading-none ${column.badgeColor}`}>
                 {tasksByStatus[column.key]?.length || 0}
               </span>
+              <button className="ml-auto opacity-40 hover:opacity-80 text-[var(--foreground)]">⋯</button>
             </div>
 
             {/* Column Body */}
-            <div className="flex-1 p-2.5 space-y-2.5 min-h-32 h-full overflow-y-auto">
-              {tasksByStatus[column.key]?.map(task => (
+            <div
+              className="flex-1 rounded-xl p-2 space-y-2.5 overflow-y-auto bg-[var(--muted)]/50 border border-dashed border-[var(--border)] min-h-[120px] transition-colors duration-200 [&.drag-over]:bg-[hsl(var(--interactive-primary)/0.06)]"
+              onDragEnter={(e) => handleDragEnter(e, column.key)}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, column.key)}
+            >
+              {tasksByStatus[column.key]?.map(task => {
+                const pColors = priorityPillColors[task.priority] || priorityPillColors.medium
+                const isDragging = draggedTask?.id === task.id
+                const isOverdue = task.due_date ? task.due_date * 1000 < Date.now() : false
+                const isSoon = task.due_date ? !isOverdue && (task.due_date * 1000 - Date.now()) < 2 * 24 * 60 * 60 * 1000 : false
+                return (
                 <div
                   key={task.id}
                   draggable
@@ -967,37 +977,43 @@ export function TaskBoardPanel() {
                       updateTaskUrl(task.id)
                     }
                   }}
-                  className={`group bg-card rounded-lg p-3 cursor-pointer border border-border/40 shadow-sm hover:shadow-md hover:shadow-black/10 hover:border-border/70 transition-all duration-200 ease-out border-l-4 ${priorityColors[task.priority]} ${
-                    draggedTask?.id === task.id ? 'opacity-40 scale-[0.97] rotate-1' : ''
-                  } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`}
+                  className={`group relative rounded-xl border bg-[var(--card)] p-3.5 cursor-grab active:cursor-grabbing transition-all duration-150 select-none shadow-sm hover:shadow-md hover:-translate-y-0.5 border-[var(--border)] ${
+                    isDragging ? 'shadow-2xl ring-2 ring-[var(--ring)] rotate-2 scale-105 opacity-80' : ''
+                  } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--border-focus))] focus-visible:ring-offset-2`}
                 >
-                  {/* Drag handle + Title row */}
-                  <div className="flex items-start gap-2 mb-2">
-                    {/* Grip handle — visible on hover */}
-                    <svg className="w-3.5 h-3.5 mt-0.5 text-muted-foreground/0 group-hover:text-muted-foreground/40 transition-colors shrink-0 cursor-grab" viewBox="0 0 16 16" fill="currentColor">
-                      <circle cx="5" cy="3" r="1.5" /><circle cx="11" cy="3" r="1.5" />
-                      <circle cx="5" cy="8" r="1.5" /><circle cx="11" cy="8" r="1.5" />
-                      <circle cx="5" cy="13" r="1.5" /><circle cx="11" cy="13" r="1.5" />
+                  {/* Grip handle (hidden, shown on hover) */}
+                  <div className="absolute left-1.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-30">
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+                      <circle cx="5" cy="3" r="1.2" /><circle cx="11" cy="3" r="1.2" />
+                      <circle cx="5" cy="8" r="1.2" /><circle cx="11" cy="8" r="1.2" />
+                      <circle cx="5" cy="13" r="1.2" /><circle cx="11" cy="13" r="1.2" />
                     </svg>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start gap-2">
-                        <h4 className="text-foreground font-medium text-sm leading-tight line-clamp-2">
-                          {task.title}
-                        </h4>
-                        <div className="flex items-center gap-1.5 shrink-0">
+                  </div>
+
+                  {/* Ticket number + menu row */}
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-mono font-semibold text-[var(--muted-foreground)] tracking-wider opacity-70">
+                      {task.ticket_ref || `#${task.id}`}
+                    </span>
+                    <button className="opacity-0 group-hover:opacity-60 hover:!opacity-100 text-[var(--foreground)]" onClick={(e) => e.stopPropagation()}>⋯</button>
+                  </div>
+
+                  {/* Title */}
+                  <p className="text-[13px] font-medium text-[var(--foreground)] leading-snug mb-3 pr-2 line-clamp-2">
+                    {task.title}
+                  </p>
+
+                  {/* Inline badges (recurrence, github, aegis) */}
+                  {(task.metadata?.recurrence?.enabled || task.github_issue_number || task.github_pr_number || task.aegisApproved || detectAwaitingOwner(task)) && (
+                    <div className="flex items-center flex-wrap gap-1 mb-2.5">
                           {task.metadata?.recurrence?.enabled && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-status-info-bg text-primary font-mono" title={task.metadata.recurrence.natural_text || task.metadata.recurrence.cron_expr}>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--muted)] text-[var(--muted-foreground)] font-medium" title={task.metadata.recurrence.natural_text || task.metadata.recurrence.cron_expr}>
                               {t('recurring')}
                             </span>
                           )}
                           {task.metadata?.recurrence?.parent_task_id && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-status-info-bg text-primary/70 font-mono" title={t('spawnedFromTask', { id: task.metadata.recurrence.parent_task_id })}>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--muted)] text-[var(--muted-foreground)] font-medium" title={t('spawnedFromTask', { id: task.metadata.recurrence.parent_task_id })}>
                               {t('spawned')}
-                            </span>
-                          )}
-                          {task.ticket_ref && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/15 text-primary font-mono">
-                              {task.ticket_ref}
                             </span>
                           )}
                           {task.github_issue_number && task.github_repo && (
@@ -1005,7 +1021,7 @@ export function TaskBoardPanel() {
                               href={`https://github.com/${task.github_repo}/issues/${task.github_issue_number}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[10px] px-1.5 py-0.5 rounded bg-[#24292e]/30 text-muted-foreground hover:text-foreground font-mono flex items-center gap-1 transition-colors"
+                              className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--muted)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-mono flex items-center gap-1 transition-colors"
                               onClick={(e) => e.stopPropagation()}
                               title={`GitHub issue #${task.github_issue_number}`}
                             >
@@ -1018,10 +1034,10 @@ export function TaskBoardPanel() {
                               href={`https://github.com/${task.github_repo}/pull/${task.github_pr_number}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className={`text-[10px] px-1.5 py-0.5 rounded font-mono flex items-center gap-1 transition-colors ${
-                                task.github_pr_state === 'merged' ? 'bg-status-info-bg text-primary' :
-                                task.github_pr_state === 'closed' ? 'bg-status-error-bg text-status-error-fg' :
-                                'bg-status-success-bg text-status-success-fg'
+                              className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono flex items-center gap-1 transition-colors ${
+                                task.github_pr_state === 'merged' ? 'bg-violet-50 text-violet-700' :
+                                task.github_pr_state === 'closed' ? 'bg-red-50 text-red-600' :
+                                'bg-emerald-50 text-emerald-700'
                               }`}
                               onClick={(e) => e.stopPropagation()}
                               title={`PR #${task.github_pr_number} (${task.github_pr_state || 'open'})`}
@@ -1031,94 +1047,90 @@ export function TaskBoardPanel() {
                             </a>
                           )}
                           {task.aegisApproved && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-status-success-bg text-status-success-fg border border-status-success-border">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
                               Aegis
                             </span>
                           )}
                           {detectAwaitingOwner(task) && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-status-warning-bg text-status-warning-fg border border-status-warning-border font-mono">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 font-medium">
                               {t('colAwaitingOwner')}
                             </span>
                           )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {task.description && (
-                    <div className="mb-2 ml-5.5 line-clamp-2 overflow-hidden text-xs text-muted-foreground">
-                      <MarkdownRenderer content={task.description} preview />
                     </div>
                   )}
 
-                  {/* Footer: assignee, priority, timestamp */}
-                  <div className="flex items-center justify-between gap-2 ml-5.5 mt-auto pt-2 border-t border-border/20">
-                    <span className="flex items-center gap-1.5 min-w-0 text-xs text-muted-foreground">
-                      {task.assigned_to ? (
-                        <>
-                          <AgentAvatar name={getAgentName(task.assigned_to)} size="xs" />
-                          <span className="truncate max-w-[8rem]">{getAgentName(task.assigned_to)}</span>
-                        </>
-                      ) : (
-                        <span className="text-muted-foreground/50 italic">{t('unassigned')}</span>
-                      )}
-                    </span>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {task.status !== 'done' && (
-                        <DunkItButton taskId={task.id} onDunked={() => fetchData()} />
-                      )}
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
-                        task.priority === 'critical' ? 'bg-status-error-bg text-status-error-fg' :
-                        task.priority === 'high' ? 'bg-status-warning-bg text-status-warning-fg' :
-                        task.priority === 'medium' ? 'bg-status-warning-bg text-status-warning-fg' :
-                        'bg-status-success-bg text-status-success-fg'
-                      }`}>
-                        {t(`priority_${task.priority}` as any)}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground/60">{formatTaskTimestamp(task.created_at)}</span>
-                    </div>
-                  </div>
-
-                  {/* Tags row */}
+                  {/* Tags */}
                   {task.tags && task.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2 ml-5.5">
+                    <div className="flex flex-wrap gap-1 mb-2.5">
                       {task.tags.slice(0, 3).map((tag, index) => (
                         <span
                           key={index}
-                          className={`text-[10px] px-1.5 py-0.5 rounded-full border font-medium ${getTagColor(tag)}`}
+                          className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--muted)] text-[var(--muted-foreground)] font-medium"
                         >
                           {tag}
                         </span>
                       ))}
                       {task.tags.length > 3 && (
-                        <span className="text-muted-foreground/60 text-[10px]">+{task.tags.length - 3}</span>
+                        <span className="text-[10px] text-[var(--muted-foreground)] opacity-60">+{task.tags.length - 3}</span>
                       )}
                     </div>
                   )}
 
-                  {/* Due date — prominent when overdue */}
-                  {task.due_date && (
-                    <div className="mt-1.5 ml-5.5 text-[10px]">
-                      <span className={`inline-flex items-center gap-1 ${
-                        task.due_date * 1000 < Date.now() ? 'text-status-error-fg font-medium' : 'text-muted-foreground/60'
-                      }`}>
-                        {task.due_date * 1000 < Date.now() ? '! ' : ''}{t('due')} {formatTaskTimestamp(task.due_date)}
-                      </span>
+                  {/* Bottom row: priority + due date + assignee avatar */}
+                  <div className="flex items-center justify-between gap-2 mt-1">
+                    {/* Priority pill */}
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold rounded-full px-2 py-0.5 ${pColors.pill}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${pColors.dot}`} />
+                      {t(`priority_${task.priority}` as any)}
+                    </span>
+
+                    <div className="flex items-center gap-1.5 ml-auto">
+                      {task.status !== 'done' && (
+                        <DunkItButton taskId={task.id} onDunked={() => fetchData()} />
+                      )}
+                      {/* Due date */}
+                      {task.due_date && (
+                        <span className={`text-[10px] font-medium rounded-full px-2 py-0.5 ${
+                          isOverdue
+                            ? 'bg-red-50 text-red-600 border border-red-200'
+                            : isSoon
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-[var(--muted)] text-[var(--muted-foreground)] border border-[var(--border)]'
+                        }`}>
+                          {isOverdue ? t('overdue') ?? 'Overdue' : formatTaskTimestamp(task.due_date)}
+                        </span>
+                      )}
+                      {/* Assignee avatar circle */}
+                      {task.assigned_to && (
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0 ring-2 ring-white bg-indigo-500">
+                          {getAgentName(task.assigned_to).slice(0, 2).toUpperCase()}
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
-              ))}
+                )
+              })}
 
               {/* Empty State */}
               {tasksByStatus[column.key]?.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-10 text-muted-foreground/30">
+                <div className="flex flex-col items-center justify-center py-10 text-[var(--muted-foreground)] opacity-30">
                   <svg className="w-8 h-8 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <path d="M9 12h6M12 9v6" strokeLinecap="round" />
                   </svg>
-                  <span className="text-xs">{t('dropTasksHere')}</span>
+                  <span className="text-[12px]">{t('dropTasksHere')}</span>
                 </div>
               )}
+
+              {/* Add task button */}
+              <button
+                className="flex items-center gap-1.5 w-full rounded-lg px-3 py-2 text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors group"
+                onClick={() => setShowCreateModal(true)}
+              >
+                <svg className="w-[13px] h-[13px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                {t('addTask') ?? 'Add task'}
+              </button>
             </div>
           </div>
         ))}
@@ -1373,10 +1385,10 @@ function TaskDetailModal({
   const renderComment = (comment: Comment, depth: number = 0) => {
     const { text, meta } = parseCommentContent(comment.content)
     return (
-      <div key={comment.id} className={`border-l-2 border-border pl-3 ${depth > 0 ? 'ml-4' : ''}`}>
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-foreground/80">{comment.author}</span>
+      <div key={comment.id} className={`border-l-2 border-[hsl(var(--border-default))] pl-[var(--space-3)] ${depth > 0 ? 'ml-[var(--space-4)]' : ''}`}>
+        <div className="flex items-center justify-between text-[var(--text-xs)] text-[hsl(var(--text-muted))]">
+          <div className="flex items-center gap-[var(--space-2)]">
+            <span className="font-[var(--font-medium)] text-[hsl(var(--text-primary)/.8)]">{comment.author}</span>
             {meta && (
               <span className="px-1.5 py-0.5 rounded bg-secondary text-[10px] text-muted-foreground">
                 {meta.model}{meta.tokens ? ` · ${meta.tokens.toLocaleString()} tok` : ''}{meta.durationMs ? ` · ${(meta.durationMs / 1000).toFixed(1)}s` : ''}
@@ -1398,11 +1410,11 @@ function TaskDetailModal({
   const dialogRef = useFocusTrap(onClose)
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="task-detail-title" className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-4">
-            <h3 id="task-detail-title" className="text-xl font-bold text-foreground">{task.title}</h3>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-[var(--space-4)]" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="task-detail-title" className="bg-[hsl(var(--bg-surface-raised))] border border-[hsl(var(--border-default))] rounded-[var(--card-radius)] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[var(--shadow-xl)]">
+        <div className="p-[var(--space-6)]">
+          <div className="flex justify-between items-start mb-[var(--space-4)]">
+            <h3 id="task-detail-title" className="text-[var(--text-xl)] font-[var(--font-bold)] text-[hsl(var(--text-primary))]">{task.title}</h3>
             <div className="flex gap-2">
               <Button variant="ghost" size="sm" onClick={() => onEdit(task)} className="text-primary hover:bg-primary/20">
                 {t('edit')}
@@ -1443,13 +1455,13 @@ function TaskDetailModal({
             </div>
           </div>
           {task.description ? (
-            <div className="mb-4">
+            <div className="mb-[var(--space-4)]">
               <MarkdownRenderer content={task.description} />
             </div>
           ) : (
-            <p className="text-foreground/80 mb-4">{t('noDescription')}</p>
+            <p className="text-[hsl(var(--text-secondary))] mb-[var(--space-4)]">{t('noDescription')}</p>
           )}
-          <div className="flex gap-2 mt-4" role="tablist" aria-label={t('taskDetailTabs')}>
+          <div className="flex gap-[var(--space-2)] mt-[var(--space-4)]" role="tablist" aria-label={t('taskDetailTabs')}>
             {(['details', 'comments', 'quality'] as const).map(tab => (
               <Button
                 key={tab}
@@ -1481,7 +1493,7 @@ function TaskDetailModal({
           </div>
 
           {activeTab === 'details' && (
-            <div id="tabpanel-details" role="tabpanel" aria-label={t('tabDetails')} className="grid grid-cols-2 gap-4 text-sm mt-4">
+            <div id="tabpanel-details" role="tabpanel" aria-label={t('tabDetails')} className="grid grid-cols-2 gap-[var(--space-4)] text-[var(--text-base)] mt-[var(--space-4)]">
               {task.ticket_ref && (
                 <div>
                   <span className="text-muted-foreground">{t('ticket')}:</span>
@@ -1586,9 +1598,9 @@ function TaskDetailModal({
           )}
 
           {activeTab === 'comments' && (
-            <div id="tabpanel-comments" role="tabpanel" aria-label={t('tabComments')} className="mt-6">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-lg font-semibold text-foreground">{t('tabComments')}</h4>
+            <div id="tabpanel-comments" role="tabpanel" aria-label={t('tabComments')} className="mt-[var(--space-6)]">
+            <div className="flex items-center justify-between mb-[var(--space-3)]">
+              <h4 className="text-[var(--text-lg)] font-[var(--font-semibold)] text-[hsl(var(--text-primary))]">{t('tabComments')}</h4>
               <Button variant="link" size="xs" onClick={fetchComments} className="text-status-info-fg hover:text-status-info-fg">
                 {t('refresh')}
               </Button>
@@ -1633,14 +1645,14 @@ function TaskDetailModal({
               </div>
             </form>
 
-            <div className="mt-5 bg-status-info-bg/5 border border-status-info-border/15 rounded-lg p-3 text-xs text-muted-foreground space-y-1">
+            <div className="mt-[var(--space-5)] bg-[hsl(var(--status-info-bg)/.05)] border border-[hsl(var(--status-info-border)/.15)] rounded-[var(--radius-lg)] p-[var(--space-3)] text-[var(--text-xs)] text-[hsl(var(--text-muted))] space-y-[var(--space-1)]">
               <div className="font-medium text-status-info-fg">How notifications work</div>
               <div><strong className="text-foreground">Comments</strong> are persisted on the task and notify all subscribers. Subscribers are auto-added when they: create the task, are assigned to it, comment on it, or are @mentioned.</div>
               <div><strong className="text-foreground">Broadcasts</strong> send a one-time notification to all current subscribers without creating a comment record.</div>
             </div>
 
-            <div className="mt-6 border-t border-border pt-4">
-              <h5 className="text-sm font-medium text-foreground mb-2">{t('broadcastToSubscribers')}</h5>
+            <div className="mt-[var(--space-6)] border-t border-[hsl(var(--border-default))] pt-[var(--space-4)]">
+              <h5 className="text-[var(--text-sm)] font-[var(--font-medium)] text-[hsl(var(--text-primary))] mb-[var(--space-2)]">{t('broadcastToSubscribers')}</h5>
               {broadcastStatus && (
                 <div className="text-xs text-muted-foreground mb-2">{broadcastStatus}</div>
               )}
@@ -1664,8 +1676,8 @@ function TaskDetailModal({
           )}
 
           {activeTab === 'quality' && (
-            <div id="tabpanel-quality" role="tabpanel" aria-label={t('tabQualityReview')} className="mt-6">
-              <h5 className="text-sm font-medium text-foreground mb-2">{t('aegisQualityReview')}</h5>
+            <div id="tabpanel-quality" role="tabpanel" aria-label={t('tabQualityReview')} className="mt-[var(--space-6)]">
+              <h5 className="text-[var(--text-sm)] font-[var(--font-medium)] text-[hsl(var(--text-primary))] mb-[var(--space-2)]">{t('aegisQualityReview')}</h5>
               {reviewError && (
                 <div className="text-xs text-status-error-fg mb-2">{reviewError}</div>
               )}
@@ -1690,13 +1702,13 @@ function TaskDetailModal({
                     type="text"
                     value={reviewer}
                     onChange={(e) => setReviewer(e.target.value)}
-                    className="bg-surface-1 text-foreground border border-border rounded-md px-2 py-1 text-xs"
+                    className="bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-2)] py-[var(--space-1)] text-[var(--text-xs)]"
                     placeholder={t('reviewerPlaceholder')}
                   />
                   <select
                     value={reviewStatus}
                     onChange={(e) => setReviewStatus(e.target.value as 'approved' | 'rejected')}
-                    className="bg-surface-1 text-foreground border border-border rounded-md px-2 py-1 text-xs"
+                    className="bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-2)] py-[var(--space-1)] text-[var(--text-xs)]"
                   >
                     <option value="approved">approved</option>
                     <option value="rejected">rejected</option>
@@ -1705,7 +1717,7 @@ function TaskDetailModal({
                     type="text"
                     value={reviewNotes}
                     onChange={(e) => setReviewNotes(e.target.value)}
-                    className="flex-1 bg-surface-1 text-foreground border border-border rounded-md px-2 py-1 text-xs"
+                    className="flex-1 bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-2)] py-[var(--space-1)] text-[var(--text-xs)]"
                     placeholder={t('reviewNotesPlaceholder')}
                   />
                   <Button type="submit" variant="success" size="xs">
@@ -1717,7 +1729,7 @@ function TaskDetailModal({
           )}
 
           {activeTab === 'session' && task.metadata?.dispatch_session_id && (
-            <div id="tabpanel-session" role="tabpanel" aria-label="Session" className="mt-4">
+            <div id="tabpanel-session" role="tabpanel" aria-label="Session" className="mt-[var(--space-4)]">
               <TaskSessionFeed
                 sessionId={task.metadata.dispatch_session_id}
                 agentName={task.assigned_to}
@@ -1847,21 +1859,21 @@ function ClaudeCodeTasksSection() {
     'text-muted-foreground'
 
   return (
-    <div className="mt-4 border border-border rounded-lg overflow-hidden">
+    <div className="mx-[var(--space-5)] mt-[var(--space-4)] border border-[hsl(var(--border-default))] rounded-[var(--card-radius)] overflow-hidden">
       <button
         onClick={() => setExpanded(prev => !prev)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-card hover:bg-secondary/50 transition-colors text-left"
+        className="w-full flex items-center justify-between px-[var(--space-5)] py-[var(--space-3)] bg-[hsl(var(--bg-surface-raised))] hover:bg-[hsl(var(--bg-subtle))] transition-colors text-left"
       >
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground">{t('claudeCodeTasks')}</span>
+        <div className="flex items-center gap-[var(--space-2)]">
+          <span className="text-[var(--text-sm)] font-[var(--font-medium)] text-[hsl(var(--text-primary))]">{t('claudeCodeTasks')}</span>
           {data.tasks.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-status-info-bg text-primary">{data.tasks.length}</span>
+            <span className="text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-full)] bg-[hsl(var(--status-info-bg))] text-[hsl(var(--interactive-primary))]">{data.tasks.length}</span>
           )}
         </div>
-        <span className="text-muted-foreground text-xs">{expanded ? t('collapse') : t('expand')}</span>
+        <span className="text-[hsl(var(--text-muted))] text-[var(--text-xs)]">{expanded ? t('collapse') : t('expand')}</span>
       </button>
       {expanded && (
-        <div className="p-4 border-t border-border space-y-4">
+        <div className="p-[var(--space-4)] border-t border-[hsl(var(--border-default))] space-y-[var(--space-4)]">
           {!loaded ? (
             <div className="text-sm text-muted-foreground">{t('loading')}</div>
           ) : data.tasks.length === 0 ? (
@@ -1881,9 +1893,9 @@ function ClaudeCodeTasksSection() {
                     </span>
                   )}
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-[var(--space-1)]">
                   {tasks.map((task: any) => (
-                    <div key={task.id} className="flex items-center gap-3 px-3 py-2 rounded bg-surface-1 border border-border text-sm">
+                    <div key={task.id} className="flex items-center gap-[var(--space-3)] px-[var(--space-3)] py-[var(--space-2)] rounded-[var(--radius-md)] bg-[hsl(var(--bg-subtle))] border border-[hsl(var(--border-default))] text-[var(--text-sm)]">
                       <span className={`text-[10px] font-mono ${statusColor(task.status)}`}>{task.status}</span>
                       <span className="text-foreground flex-1 truncate">{task.subject}</span>
                       {task.owner && <span className="text-[10px] text-muted-foreground">{task.owner}</span>}
@@ -1917,21 +1929,21 @@ function HermesCronSection() {
   }, [expanded, loaded])
 
   return (
-    <div className="mt-4 border border-border rounded-lg overflow-hidden">
+    <div className="mx-[var(--space-5)] mt-[var(--space-4)] mb-[var(--space-4)] border border-[hsl(var(--border-default))] rounded-[var(--card-radius)] overflow-hidden">
       <button
         onClick={() => setExpanded(prev => !prev)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-card hover:bg-secondary/50 transition-colors text-left"
+        className="w-full flex items-center justify-between px-[var(--space-5)] py-[var(--space-3)] bg-[hsl(var(--bg-surface-raised))] hover:bg-[hsl(var(--bg-subtle))] transition-colors text-left"
       >
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground">{t('hermesScheduledTasks')}</span>
+        <div className="flex items-center gap-[var(--space-2)]">
+          <span className="text-[var(--text-sm)] font-[var(--font-medium)] text-[hsl(var(--text-primary))]">{t('hermesScheduledTasks')}</span>
           {data.cronJobs.length > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-status-info-bg text-primary">{data.cronJobs.length}</span>
+            <span className="text-[var(--text-xs)] px-[var(--space-1-5)] py-[var(--space-0-5)] rounded-[var(--radius-full)] bg-[hsl(var(--status-info-bg))] text-[hsl(var(--interactive-primary))]">{data.cronJobs.length}</span>
           )}
         </div>
-        <span className="text-muted-foreground text-xs">{expanded ? t('collapse') : t('expand')}</span>
+        <span className="text-[hsl(var(--text-muted))] text-[var(--text-xs)]">{expanded ? t('collapse') : t('expand')}</span>
       </button>
       {expanded && (
-        <div className="p-4 border-t border-border space-y-2">
+        <div className="p-[var(--space-4)] border-t border-[hsl(var(--border-default))] space-y-[var(--space-2)]">
           {!loaded ? (
             <div className="text-sm text-muted-foreground">{t('loading')}</div>
           ) : data.cronJobs.length === 0 ? (
@@ -1941,7 +1953,7 @@ function HermesCronSection() {
             </div>
           ) : (
             data.cronJobs.map((job: any) => (
-              <div key={job.id} className="flex items-center gap-3 px-3 py-2 rounded bg-surface-1 border border-border text-sm">
+              <div key={job.id} className="flex items-center gap-[var(--space-3)] px-[var(--space-3)] py-[var(--space-2)] rounded-[var(--radius-md)] bg-[hsl(var(--bg-subtle))] border border-[hsl(var(--border-default))] text-[var(--text-sm)]">
                 <span className={`text-[10px] font-mono shrink-0 ${job.enabled ? 'text-primary' : 'text-muted-foreground/50'}`}>
                   {job.schedule || t('noSchedule')}
                 </span>
@@ -2058,45 +2070,45 @@ function CreateTaskModal({
   const dialogRef = useFocusTrap(onClose)
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="create-task-title" className="bg-card border border-border rounded-lg max-w-md w-full">
-        <form onSubmit={handleSubmit} className="p-6">
-          <h3 id="create-task-title" className="text-xl font-bold text-foreground mb-4">{t('createNewTask')}</h3>
-          
-          <div className="space-y-4">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-[var(--space-4)]" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="create-task-title" className="bg-[hsl(var(--bg-surface-raised))] border border-[hsl(var(--border-default))] rounded-[var(--card-radius)] max-w-md w-full shadow-[var(--shadow-xl)]">
+        <form onSubmit={handleSubmit} className="p-[var(--space-6)]">
+          <h3 id="create-task-title" className="text-[var(--text-xl)] font-[var(--font-bold)] text-[hsl(var(--text-primary))] mb-[var(--space-4)]">{t('createNewTask')}</h3>
+
+          <div className="space-y-[var(--space-4)]">
             <div>
-              <label htmlFor="create-title" className="block text-sm text-muted-foreground mb-1">{t('fieldTitle')}</label>
+              <label htmlFor="create-title" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldTitle')}</label>
               <input
                 id="create-title"
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 required
               />
             </div>
             
             <div>
-              <label htmlFor="create-description" className="block text-sm text-muted-foreground mb-1">{t('fieldDescription')}</label>
+              <label htmlFor="create-description" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldDescription')}</label>
               <MentionTextarea
                 id="create-description"
                 value={formData.description}
                 onChange={(next) => setFormData(prev => ({ ...prev, description: next }))}
-                className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 rows={3}
                 mentionTargets={mentionTargets}
               />
               <p className="text-[11px] text-muted-foreground mt-1">Tip: type <span className="font-mono">@</span> for mention autocomplete.</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-[var(--space-4)]">
               <div>
-                <label htmlFor="create-priority" className="block text-sm text-muted-foreground mb-1">{t('fieldPriority')}</label>
+                <label htmlFor="create-priority" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldPriority')}</label>
                 <select
                   id="create-priority"
                   value={formData.priority}
                   onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value as Task['priority'] }))}
-                  className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                  className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 >
                   <option value="low">{t('priority_low')}</option>
                   <option value="medium">{t('priority_medium')}</option>
@@ -2106,12 +2118,12 @@ function CreateTaskModal({
               </div>
 
               <div>
-                <label htmlFor="create-project" className="block text-sm text-muted-foreground mb-1">{t('fieldProject')}</label>
+                <label htmlFor="create-project" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldProject')}</label>
                 <select
                   id="create-project"
                   value={formData.project_id}
                   onChange={(e) => setFormData(prev => ({ ...prev, project_id: e.target.value }))}
-                  className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                  className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 >
                   {projects.map(project => (
                     <option key={project.id} value={String(project.id)}>
@@ -2123,12 +2135,12 @@ function CreateTaskModal({
             </div>
 
             <div>
-              <label htmlFor="create-assignee" className="block text-sm text-muted-foreground mb-1">{t('fieldAssignTo')}</label>
+              <label htmlFor="create-assignee" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldAssignTo')}</label>
               <select
                 id="create-assignee"
                 value={formData.assigned_to}
                 onChange={(e) => setFormData(prev => ({ ...prev, assigned_to: e.target.value, target_session: '' }))}
-                className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
               >
                 <option value="">{t('unassigned')}</option>
                 {agents.map(agent => (
@@ -2141,12 +2153,12 @@ function CreateTaskModal({
 
             {formData.assigned_to && agentSessions.length > 0 && (
               <div>
-                <label htmlFor="create-target-session" className="block text-sm text-muted-foreground mb-1">Target Session</label>
+                <label htmlFor="create-target-session" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">Target Session</label>
                 <select
                   id="create-target-session"
                   value={formData.target_session}
                   onChange={(e) => setFormData(prev => ({ ...prev, target_session: e.target.value }))}
-                  className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                  className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 >
                   <option value="">New session (default)</option>
                   {agentSessions.map(s => (
@@ -2160,19 +2172,19 @@ function CreateTaskModal({
             )}
 
             <div>
-              <label htmlFor="create-tags" className="block text-sm text-muted-foreground mb-1">{t('fieldTags')}</label>
+              <label htmlFor="create-tags" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldTags')}</label>
               <input
                 id="create-tags"
                 type="text"
                 value={formData.tags}
                 onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-                className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 placeholder="frontend, urgent, bug"
               />
             </div>
 
             {/* Recurring Schedule */}
-            <div className="border border-border rounded-md p-3 space-y-2">
+            <div className="border border-[hsl(var(--border-default))] rounded-[var(--radius-md)] p-[var(--space-3)] space-y-[var(--space-2)]">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -2211,7 +2223,7 @@ function CreateTaskModal({
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6">
+          <div className="flex gap-[var(--space-3)] mt-[var(--space-6)]">
             <Button type="submit" className="flex-1" disabled={isRecurring && !parsedSchedule}>
               {isRecurring ? t('createRecurringTask') : t('createTask')}
             </Button>
@@ -2294,45 +2306,45 @@ function EditTaskModal({
   const dialogRef = useFocusTrap(onClose)
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="edit-task-title" className="bg-card border border-border rounded-lg max-w-md w-full">
-        <form onSubmit={handleSubmit} className="p-6">
-          <h3 id="edit-task-title" className="text-xl font-bold text-foreground mb-4">{t('editTask')}</h3>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-[var(--space-4)]" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="edit-task-title" className="bg-[hsl(var(--bg-surface-raised))] border border-[hsl(var(--border-default))] rounded-[var(--card-radius)] max-w-md w-full shadow-[var(--shadow-xl)]">
+        <form onSubmit={handleSubmit} className="p-[var(--space-6)]">
+          <h3 id="edit-task-title" className="text-[var(--text-xl)] font-[var(--font-bold)] text-[hsl(var(--text-primary))] mb-[var(--space-4)]">{t('editTask')}</h3>
 
-          <div className="space-y-4">
+          <div className="space-y-[var(--space-4)]">
             <div>
-              <label htmlFor="edit-title" className="block text-sm text-muted-foreground mb-1">{t('fieldTitle')}</label>
+              <label htmlFor="edit-title" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldTitle')}</label>
               <input
                 id="edit-title"
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="edit-description" className="block text-sm text-muted-foreground mb-1">{t('fieldDescription')}</label>
+              <label htmlFor="edit-description" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldDescription')}</label>
               <MentionTextarea
                 id="edit-description"
                 value={formData.description}
                 onChange={(next) => setFormData(prev => ({ ...prev, description: next }))}
-                className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 rows={3}
                 mentionTargets={mentionTargets}
               />
               <p className="text-[11px] text-muted-foreground mt-1">Tip: type <span className="font-mono">@</span> for mention autocomplete.</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-[var(--space-4)]">
               <div>
-                <label htmlFor="edit-status" className="block text-sm text-muted-foreground mb-1">{t('fieldStatus')}</label>
+                <label htmlFor="edit-status" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldStatus')}</label>
                 <select
                   id="edit-status"
                   value={formData.status}
                   onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as Task['status'] }))}
-                  className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                  className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 >
                   <option value="inbox">{t('colInbox')}</option>
                   <option value="assigned">{t('colAssigned')}</option>
@@ -2344,12 +2356,12 @@ function EditTaskModal({
               </div>
 
               <div>
-                <label htmlFor="edit-priority" className="block text-sm text-muted-foreground mb-1">{t('fieldPriority')}</label>
+                <label htmlFor="edit-priority" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldPriority')}</label>
                 <select
                   id="edit-priority"
                   value={formData.priority}
                   onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value as Task['priority'] }))}
-                  className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                  className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 >
                   <option value="low">{t('priority_low')}</option>
                   <option value="medium">{t('priority_medium')}</option>
@@ -2360,12 +2372,12 @@ function EditTaskModal({
             </div>
 
             <div>
-              <label htmlFor="edit-project" className="block text-sm text-muted-foreground mb-1">{t('fieldProject')}</label>
+              <label htmlFor="edit-project" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldProject')}</label>
               <select
                 id="edit-project"
                 value={formData.project_id}
                 onChange={(e) => setFormData(prev => ({ ...prev, project_id: e.target.value }))}
-                className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
               >
                 {projects.map(project => (
                   <option key={project.id} value={String(project.id)}>
@@ -2376,12 +2388,12 @@ function EditTaskModal({
             </div>
 
             <div>
-              <label htmlFor="edit-assignee" className="block text-sm text-muted-foreground mb-1">{t('fieldAssignTo')}</label>
+              <label htmlFor="edit-assignee" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldAssignTo')}</label>
               <select
                 id="edit-assignee"
                 value={formData.assigned_to}
                 onChange={(e) => setFormData(prev => ({ ...prev, assigned_to: e.target.value, target_session: '' }))}
-                className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
               >
                 <option value="">{t('unassigned')}</option>
                 {agents.map(agent => (
@@ -2394,12 +2406,12 @@ function EditTaskModal({
 
             {formData.assigned_to && agentSessions.length > 0 && (
               <div>
-                <label htmlFor="edit-target-session" className="block text-sm text-muted-foreground mb-1">Target Session</label>
+                <label htmlFor="edit-target-session" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">Target Session</label>
                 <select
                   id="edit-target-session"
                   value={formData.target_session}
                   onChange={(e) => setFormData(prev => ({ ...prev, target_session: e.target.value }))}
-                  className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                  className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 >
                   <option value="">New session (default)</option>
                   {agentSessions.map(s => (
@@ -2413,19 +2425,19 @@ function EditTaskModal({
             )}
 
             <div>
-              <label htmlFor="edit-tags" className="block text-sm text-muted-foreground mb-1">{t('fieldTags')}</label>
+              <label htmlFor="edit-tags" className="block text-[var(--text-sm)] text-[hsl(var(--text-muted))] mb-[var(--space-1)]">{t('fieldTags')}</label>
               <input
                 id="edit-tags"
                 type="text"
                 value={formData.tags}
                 onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-                className="w-full bg-surface-1 text-foreground border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="w-full bg-[hsl(var(--input-bg))] text-[hsl(var(--input-text))] border border-[hsl(var(--input-border))] rounded-[var(--input-radius)] px-[var(--space-3)] py-[var(--space-2)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--border-focus))]"
                 placeholder="frontend, urgent, bug"
               />
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6">
+          <div className="flex gap-[var(--space-3)] mt-[var(--space-6)]">
             <Button type="submit" className="flex-1">
               {t('saveChanges')}
             </Button>
