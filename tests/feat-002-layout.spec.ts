@@ -87,24 +87,19 @@ for (const vp of VIEWPORTS) {
 test.describe('Non-visual isolated checks', () => {
   test.use({ storageState: undefined })
 
-  test.beforeEach(async ({ context, page }) => {
-    await context.clearCookies()
-    const token = process.env.E2E_SESSION_TOKEN || '11c3ebf7f3e6d9dc7ed785dc96336ffa55c42ff87357c1a2ef14612582186ca2'
-    await context.addCookies([{
-      name: 'mc-session',
-      value: token,
-      domain: '127.0.0.1',
-      path: '/',
-    }])
-    // Navigate first so we have a window/sessionStorage context, then dismiss onboarding
-    await page.goto('/', { waitUntil: 'domcontentloaded' })
-    // Dismiss onboarding so nav renders (completed+skipped admins get onboarding on fresh sessions)
+  test.beforeEach(async ({ page }) => {
+    // Reuse the login() helper which has built-in retry logic
+    await login(page)
+    // Dismiss onboarding overlay if present (so nav is interactable)
     await page.evaluate(() => {
       try { window.sessionStorage.setItem('mc-onboarding-dismissed', '1') } catch {}
     })
-    await page.reload({ waitUntil: 'networkidle' })
-    await page.waitForLoadState('networkidle')
-    await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 30_000 })
+    // Check if nav appeared; if not, reload once with onboarding dismissed
+    const nav = await page.$('nav[aria-label="Main navigation"]')
+    if (!nav) {
+      await page.reload({ waitUntil: 'domcontentloaded' })
+      await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 30_000 })
+    }
   })
 
 // ═══════════════════════════════════════════════════════════
