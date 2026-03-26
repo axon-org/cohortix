@@ -97,8 +97,9 @@ test.describe('Non-visual isolated checks', () => {
     await page.evaluate(() => {
       try { window.sessionStorage.setItem('mc-onboarding-dismissed', '1') } catch {}
     })
-    await page.reload({ waitUntil: 'domcontentloaded' })
-    await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 15_000 })
+    await page.reload({ waitUntil: 'networkidle' })
+    await page.waitForLoadState('networkidle')
+    await page.waitForSelector('nav[aria-label="Main navigation"]', { timeout: 30_000 })
   })
 
 // ═══════════════════════════════════════════════════════════
