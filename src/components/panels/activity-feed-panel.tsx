@@ -1,11 +1,78 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/ui/loader'
 import { useMissionControl } from '@/store'
 import { useSmartPoll } from '@/lib/use-smart-poll'
+// Inline SVG icon components (project does not use lucide-react)
+function IconClipboardList({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="5" y="1" width="6" height="3" rx="1" />
+      <path d="M10 2h2a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h2" />
+      <path d="M6 7h4M6 10h4M6 13h2" />
+    </svg>
+  )
+}
+function IconActivity({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="1,9 4,6 7,10 10,4 13,7 15,5" />
+    </svg>
+  )
+}
+function IconCircleDot({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+      <circle cx="8" cy="8" r="6" />
+      <circle cx="8" cy="8" r="2" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+function IconMessageSquare({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M14 10a1 1 0 0 1-1 1H5l-3 3V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1z" />
+    </svg>
+  )
+}
+function IconBot({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="6" width="10" height="7" rx="1.5" />
+      <path d="M8 6V3.5M6.5 3.5h3" />
+      <circle cx="5.5" cy="9.5" r="1" fill="currentColor" stroke="none" />
+      <circle cx="10.5" cy="9.5" r="1" fill="currentColor" stroke="none" />
+      <path d="M6 12h4" />
+    </svg>
+  )
+}
+function IconSparkles({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M8 1v3M8 12v3M1 8h3M12 8h3M3.2 3.2l2.1 2.1M10.7 10.7l2.1 2.1M3.2 12.8l2.1-2.1M10.7 5.3l2.1-2.1" />
+    </svg>
+  )
+}
+function IconAtSign({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="8" cy="8" r="3" />
+      <path d="M11 8c0 2.5 1.5 3.5 3 2.5V8a6 6 0 1 0-3 5.2" />
+    </svg>
+  )
+}
+function IconUserPlus({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="6" cy="5" r="3" />
+      <path d="M1 14c0-3 2.2-5 5-5s5 2 5 5M12 7v4M10 9h4" />
+    </svg>
+  )
+}
+type SvgIconComponent = ({ className }: { className?: string }) => React.ReactElement
 
 interface Activity {
   id: number
@@ -37,28 +104,28 @@ interface SessionInfo {
   active: boolean
 }
 
-const activityIcons: Record<string, string> = {
-  task_created: '+',
-  task_updated: '~',
-  task_deleted: 'x',
-  comment_added: '#',
-  agent_created: '@',
-  agent_status_change: '~',
-  standup_generated: '!',
-  mention: '>',
-  assignment: '=',
+const activityIcons: Record<string, SvgIconComponent> = {
+  task_created: IconClipboardList,
+  task_updated: IconActivity,
+  task_deleted: IconCircleDot,
+  comment_added: IconMessageSquare,
+  agent_created: IconBot,
+  agent_status_change: IconSparkles,
+  standup_generated: IconSparkles,
+  mention: IconAtSign,
+  assignment: IconUserPlus,
 }
 
-const activityColors: Record<string, string> = {
-  task_created: 'text-status-success-fg',
-  task_updated: 'text-status-info-fg',
-  task_deleted: 'text-status-error-fg',
-  comment_added: 'text-primary',
-  agent_created: 'text-primary',
-  agent_status_change: 'text-status-warning-fg',
-  standup_generated: 'text-status-warning-fg',
-  mention: 'text-status-error-fg',
-  assignment: 'text-status-info-fg',
+const activityBadgeClasses: Record<string, string> = {
+  task_created: 'bg-status-success-bg text-status-success-fg border-status-success-border',
+  task_updated: 'bg-status-info-bg text-status-info-fg border-status-info-border',
+  task_deleted: 'bg-status-error-bg text-status-error-fg border-status-error-border',
+  comment_added: 'bg-surface-2 text-foreground border-border',
+  agent_created: 'bg-surface-2 text-foreground border-border',
+  agent_status_change: 'bg-status-warning-bg text-status-warning-fg border-status-warning-border',
+  standup_generated: 'bg-status-warning-bg text-status-warning-fg border-status-warning-border',
+  mention: 'bg-status-error-bg text-status-error-fg border-status-error-border',
+  assignment: 'bg-status-info-bg text-status-info-fg border-status-info-border',
 }
 
 function formatRelativeTime(timestamp: number) {
@@ -92,37 +159,34 @@ function groupByDay(activities: Activity[]): Record<string, Activity[]> {
 // ── Activity row (flat feed) ────────────────────
 function ActivityRow({ activity }: { activity: Activity }) {
   const t = useTranslations('activityFeed')
+  const Icon = activityIcons[activity.type] || IconCircleDot
+  const badgeClass = activityBadgeClasses[activity.type] || 'bg-surface-2 text-muted-foreground border-border'
+
   return (
-    <div className="bg-card rounded-lg p-3 border-l-2 border-border hover:bg-surface-1 transition-smooth">
-      <div className="flex items-start gap-3">
+    <div className="bg-card rounded-xl p-5 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+      <div className="flex items-start gap-4">
         <div
-          className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-            activityColors[activity.type]
-              ?.replace('text-', 'bg-')
-              .replace('-400', '-500/15') || 'bg-surface-2'
-          } ${activityColors[activity.type] || 'text-muted-foreground'}`}
+          className={`flex-shrink-0 w-9 h-9 rounded-full border flex items-center justify-center ${badgeClass}`}
         >
-          {activityIcons[activity.type] || '•'}
+          <Icon className="w-4 h-4" aria-hidden="true" />
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
+          <div className="flex items-start justify-between gap-3">
             <div className="flex-1">
-              <p className="text-foreground text-sm">
-                <span className="font-medium text-primary">{activity.actor}</span>{' '}
-                <span className={activityColors[activity.type] || 'text-muted-foreground'}>
-                  {activity.description}
-                </span>
+              <p className="text-sm text-foreground leading-6">
+                <span className="font-semibold text-foreground">{activity.actor}</span>{' '}
+                <span className="text-muted-foreground">{activity.description}</span>
               </p>
 
               {activity.entity && (
-                <div className="mt-2 p-2 bg-surface-1 rounded-md text-xs border border-border/50">
+                <div className="mt-3 p-3 bg-surface-1 rounded-lg text-xs border border-border">
                   {activity.entity.type === 'task' && (
                     <div>
                       <span className="text-muted-foreground">{t('entityTask')}</span>
                       <span className="text-foreground ml-1">{activity.entity.title}</span>
                       {activity.entity.status && (
-                        <span className="ml-2 px-1.5 py-0.5 bg-primary/10 text-primary rounded text-[10px]">
+                        <span className="ml-2 px-1.5 py-0.5 bg-status-info-bg text-status-info-fg rounded-full text-[10px] border border-status-info-border">
                           {activity.entity.status}
                         </span>
                       )}
@@ -133,7 +197,7 @@ function ActivityRow({ activity }: { activity: Activity }) {
                       <span className="text-muted-foreground">{t('entityCommentOn')}</span>
                       <span className="text-foreground ml-1">{activity.entity.task_title}</span>
                       {activity.entity.content_preview && (
-                        <div className="mt-1 text-muted-foreground/70 italic">
+                        <div className="mt-1 text-muted-foreground italic">
                           &quot;{activity.entity.content_preview}...&quot;
                         </div>
                       )}
@@ -144,7 +208,7 @@ function ActivityRow({ activity }: { activity: Activity }) {
                       <span className="text-muted-foreground">{t('entityAgent')}</span>
                       <span className="text-foreground ml-1">{activity.entity.name}</span>
                       {activity.entity.status && (
-                        <span className="ml-2 px-1.5 py-0.5 bg-status-success-bg text-status-success-fg rounded text-[10px]">
+                        <span className="ml-2 px-1.5 py-0.5 bg-status-success-bg text-status-success-fg rounded-full text-[10px] border border-status-success-border">
                           {activity.entity.status}
                         </span>
                       )}
@@ -154,18 +218,18 @@ function ActivityRow({ activity }: { activity: Activity }) {
               )}
 
               {activity.data && Object.keys(activity.data).length > 0 && (
-                <details className="mt-2">
-                  <summary className="text-xs text-muted-foreground/60 cursor-pointer hover:text-muted-foreground">
+                <details className="mt-3">
+                  <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
                     {t('showDetails')}
                   </summary>
-                  <pre className="mt-1 text-xs text-muted-foreground bg-surface-1 p-2 rounded-md overflow-auto max-h-32 border border-border/50">
+                  <pre className="mt-1 text-xs text-muted-foreground bg-surface-1 p-3 rounded-lg overflow-auto max-h-32 border border-border">
                     {JSON.stringify(activity.data, null, 2)}
                   </pre>
                 </details>
               )}
             </div>
 
-            <div className="flex-shrink-0 text-[10px] text-muted-foreground/50">
+            <div className="flex-shrink-0 text-xs text-muted-foreground text-right">
               {formatRelativeTime(activity.created_at)}
             </div>
           </div>
@@ -177,10 +241,13 @@ function ActivityRow({ activity }: { activity: Activity }) {
 
 // ── Timeline row (agent-grouped view) ───────────
 function TimelineRow({ activity }: { activity: Activity }) {
+  const Icon = activityIcons[activity.type] || IconCircleDot
+  const badgeClass = activityBadgeClasses[activity.type] || 'bg-surface-2 text-muted-foreground border-border'
+
   return (
-    <div className="flex items-start gap-2.5 pl-3 py-1.5 hover:bg-secondary/30 rounded-r-lg transition-smooth relative">
+    <div className="flex items-start gap-3 pl-3 py-2 hover:bg-surface-1 rounded-r-xl transition-smooth relative">
       <span
-        className={`absolute -left-[5px] top-3 w-2 h-2 rounded-full bg-card border-2 ${
+        className={`absolute -left-[5px] top-4 w-2 h-2 rounded-full bg-card border-2 ${
           activity.type === 'agent_status_change'
             ? 'border-status-warning-border'
             : activity.type.startsWith('task')
@@ -189,9 +256,9 @@ function TimelineRow({ activity }: { activity: Activity }) {
         }`}
       />
       <span
-        className={`w-5 h-5 rounded bg-secondary flex items-center justify-center text-2xs font-mono font-bold shrink-0 ${activityColors[activity.type] || 'text-muted-foreground'}`}
+        className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 ${badgeClass}`}
       >
-        {activityIcons[activity.type] || '?'}
+        <Icon className="w-3.5 h-3.5" aria-hidden="true" />
       </span>
       <div className="flex-1 min-w-0">
         <p className="text-xs text-foreground">{activity.description}</p>
@@ -334,7 +401,7 @@ export function ActivityFeedPanel() {
       </div>
 
       {/* Filters + Agent Selector */}
-      <div className="p-4 border-b border-border bg-surface-1 flex-shrink-0">
+      <div className="p-4 border-b border-border bg-surface-1/60 flex-shrink-0">
         <div className="flex gap-4 flex-wrap items-end">
           {/* Agent filter */}
           <div>
@@ -347,6 +414,7 @@ export function ActivityFeedPanel() {
                 }}
                 variant={selectedAgent === '' ? 'default' : 'secondary'}
                 size="xs"
+                className="rounded-full"
               >
                 {t('filterAll')}
               </Button>
@@ -359,7 +427,7 @@ export function ActivityFeedPanel() {
                   }}
                   variant={selectedAgent === a.name ? 'default' : 'secondary'}
                   size="xs"
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 rounded-full"
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
@@ -389,7 +457,7 @@ export function ActivityFeedPanel() {
               <option value="">{t('allTypes')}</option>
               {activityTypes.map((type) => (
                 <option key={type} value={type}>
-                  {activityIcons[type] || '•'} {type.replace('_', ' ')}
+                  {type.replace(/_/g, ' ')}
                 </option>
               ))}
             </select>
@@ -434,21 +502,10 @@ export function ActivityFeedPanel() {
             <Loader variant="inline" label={t('loadingActivities')} />
           </div>
         ) : activities.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-32 text-muted-foreground/50">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              className="mb-2"
-            >
-              <path d="M2 4h12M2 8h8M2 12h10" />
-            </svg>
+          <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
+            <IconActivity className="w-6 h-6 mb-2" />
             <p className="text-sm">{t('noActivities')}</p>
-            <p className="text-xs mt-1">
+            <p className="text-xs mt-1 text-center">
               {selectedAgent ? t('noActivityForAgent', { agent: selectedAgent }) : t('tryAdjustingFilters')}
             </p>
           </div>
