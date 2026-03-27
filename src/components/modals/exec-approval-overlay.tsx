@@ -114,26 +114,26 @@ export function ExecApprovalOverlay() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       role="dialog"
       aria-live="polite"
       aria-label="Execution approval required"
     >
-      <div className={`w-[min(540px,95vw)] bg-card border border-border rounded-lg p-5 shadow-2xl border-l-4 ${RISK_BORDER[active.risk]}`}>
+      <div className={`w-full max-w-[540px] bg-card border border-border rounded-xl p-6 shadow-2xl border-l-4 ${RISK_BORDER[active.risk]}`}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="text-sm font-semibold text-foreground">Exec approval needed</div>
+            <div className="text-base font-semibold text-foreground">Exec approval needed</div>
             {remainingText && (
               <div className="text-xs text-muted-foreground mt-0.5">{remainingText}</div>
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${RISK_BADGE[active.risk]}`}>
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${RISK_BADGE[active.risk]}`}>
               {active.risk}
             </span>
             {pending.length > 1 && (
-              <span className="text-xs font-medium text-muted-foreground bg-secondary rounded-full px-2 py-0.5">
+              <span className="text-xs font-medium text-muted-foreground bg-secondary rounded-full px-2.5 py-0.5">
                 {pending.length} pending
               </span>
             )}
@@ -142,20 +142,20 @@ export function ExecApprovalOverlay() {
 
         {/* Command */}
         {active.command && (
-          <pre className="bg-secondary rounded p-3 text-xs font-mono overflow-auto max-h-24 text-foreground mb-3 border border-border">
+          <pre className="bg-surface-1 border border-border rounded-md p-3 font-mono text-xs overflow-auto max-h-24 text-foreground mb-4">
             <code>$ {active.command}</code>
           </pre>
         )}
 
         {/* Tool args (if no command) */}
         {!active.command && active.toolArgs && Object.keys(active.toolArgs).length > 0 && (
-          <pre className="bg-secondary rounded p-3 text-xs font-mono overflow-auto max-h-32 text-foreground mb-3">
+          <pre className="bg-surface-1 border border-border rounded-md p-3 font-mono text-xs overflow-auto max-h-32 text-foreground mb-4">
             {JSON.stringify(active.toolArgs, null, 2)}
           </pre>
         )}
 
         {/* Metadata */}
-        <div className="mb-3">
+        <div className="mb-4 bg-surface-1 border border-border rounded-md px-3 py-2">
           <MetaRow label="Agent" value={active.agentName} />
           <MetaRow label="Session" value={active.sessionId} />
           <MetaRow label="Tool" value={active.toolName} />
@@ -166,14 +166,16 @@ export function ExecApprovalOverlay() {
 
         {/* Error */}
         {error && (
-          <div className="text-xs text-status-error-fg mb-3">{error}</div>
+          <div className="text-xs text-status-error-fg bg-status-error-bg border border-status-error-border rounded-md px-3 py-2 mb-4">
+            {error}
+          </div>
         )}
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pt-2 border-t border-border">
           <Button
             size="sm"
-            className="bg-status-success-solid hover:bg-status-success-solid/90 text-white"
+            className="bg-status-success-solid hover:bg-status-success-solid/90 text-white font-medium"
             disabled={busy}
             onClick={() => handleDecision('allow-once')}
           >
@@ -189,7 +191,7 @@ export function ExecApprovalOverlay() {
           </Button>
           <Button
             size="sm"
-            className="bg-status-error-solid hover:bg-status-error-solid/90 text-white"
+            className="bg-status-error-solid hover:bg-status-error-solid/90 text-white font-medium"
             disabled={busy}
             onClick={() => handleDecision('deny')}
           >

@@ -148,10 +148,11 @@ export function NodesPanel() {
 
   return (
     <div className="m-4">
-      <div className="flex items-center gap-3 mb-4">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-5">
         <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
         <span
-          className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium border ${
+          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${
             connected
               ? 'bg-status-success-bg text-status-success-fg border-status-success-border'
               : 'bg-status-error-bg text-status-error-fg border-status-error-border'
@@ -161,37 +162,43 @@ export function NodesPanel() {
         </span>
       </div>
 
-      {/* Tab bar */}
-      <div className="flex gap-1 mb-4">
-        <Button
-          variant={tab === 'instances' ? 'secondary' : 'ghost'}
-          size="sm"
+      {/* Pill tab bar */}
+      <div className="inline-flex items-center gap-1 bg-secondary rounded-full p-1 mb-5">
+        <button
           onClick={() => setTab('instances')}
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+            tab === 'instances'
+              ? 'bg-card text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
         >
           {t('tabInstances', { count: nodes.length })}
-        </Button>
-        <Button
-          variant={tab === 'devices' ? 'secondary' : 'ghost'}
-          size="sm"
+        </button>
+        <button
           onClick={() => setTab('devices')}
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
+            tab === 'devices'
+              ? 'bg-card text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
         >
           {t('tabDevices', { count: totalDeviceCount })}
           {pendingCount > 0 && (
-            <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-status-warning-bg text-status-warning-fg border border-status-warning-border">
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-status-warning-bg text-status-warning-fg border border-status-warning-border">
               {pendingCount}
             </span>
           )}
-        </Button>
+        </button>
       </div>
 
       {error && (
-        <div className="mb-4 px-3 py-2 rounded-lg bg-status-error-bg border border-status-error-border text-status-error-fg text-sm">
+        <div className="mb-4 px-4 py-3 rounded-xl bg-status-error-bg border border-status-error-border text-status-error-fg text-sm">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="text-muted-foreground text-sm py-8 text-center">{t('loading')}</div>
+        <div className="text-muted-foreground text-sm py-12 text-center">{t('loading')}</div>
       ) : tab === 'instances' ? (
         <InstancesTab nodes={nodes} />
       ) : (
@@ -209,69 +216,68 @@ function InstancesTab({ nodes }: { nodes: PresenceEntry[] }) {
   const t = useTranslations('nodes')
   if (nodes.length === 0) {
     return (
-      <div className="text-muted-foreground text-sm py-8 text-center">
+      <div className="text-muted-foreground text-sm py-12 text-center">
         {t('noInstances')}
       </div>
     )
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-border text-left text-muted-foreground">
-            <th className="pb-2 pr-4 font-medium">{t('colName')}</th>
-            <th className="pb-2 pr-4 font-medium">{t('colClientId')}</th>
-            <th className="pb-2 pr-4 font-medium">{t('colPlatform')}</th>
-            <th className="pb-2 pr-4 font-medium">{t('colVersion')}</th>
-            <th className="pb-2 pr-4 font-medium">{t('colRoles')}</th>
-            <th className="pb-2 pr-4 font-medium">{t('colStatus')}</th>
-            <th className="pb-2 pr-4 font-medium">{t('colConnected')}</th>
-            <th className="pb-2 pr-4 font-medium">{t('colLastActivity')}</th>
-            <th className="pb-2 font-medium">{t('colHostIp')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {nodes.map((node) => (
-            <tr key={node.id} className="border-b border-border/50">
-              <td className="py-2 pr-4 text-foreground font-medium">{node.displayName}</td>
-              <td className="py-2 pr-4 text-muted-foreground font-mono text-xs">
-                {node.clientId?.slice(0, 12)}...
-              </td>
-              <td className="py-2 pr-4 text-muted-foreground">{node.platform}</td>
-              <td className="py-2 pr-4 text-muted-foreground">{node.version}</td>
-              <td className="py-2 pr-4">
-                <div className="flex gap-1 flex-wrap">
-                  {(node.roles || []).map((role) => (
-                    <span
-                      key={role}
-                      className="px-1.5 py-0.5 rounded text-xs bg-secondary text-muted-foreground"
-                    >
-                      {role}
-                    </span>
-                  ))}
-                </div>
-              </td>
-              <td className="py-2 pr-4">
+    <div className="grid gap-3">
+      {nodes.map((node) => (
+        <div
+          key={node.id}
+          className="bg-card rounded-xl p-5 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-semibold text-foreground text-sm">{node.displayName}</span>
                 <span
-                  className={`inline-flex px-2 py-0.5 rounded text-xs font-medium border ${statusColor(node.status)}`}
+                  className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium border ${statusColor(node.status)}`}
                 >
                   {node.status}
                 </span>
-              </td>
-              <td className="py-2 pr-4 text-muted-foreground text-xs">
-                {relativeTime(node.connectedAt)}
-              </td>
-              <td className="py-2 pr-4 text-muted-foreground text-xs">
-                {relativeTime(node.lastActivity)}
-              </td>
-              <td className="py-2 text-muted-foreground text-xs font-mono">
-                {node.host || node.ip || '--'}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </div>
+
+              <div className="flex items-center gap-1.5 mb-3">
+                <span className="px-2 py-0.5 rounded bg-surface-1 border border-border font-mono text-xs text-muted-foreground">
+                  {node.clientId?.slice(0, 12)}…
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span>{node.platform}</span>
+                <span className="text-border">·</span>
+                <span>v{node.version}</span>
+                {(node.host || node.ip) && (
+                  <>
+                    <span className="text-border">·</span>
+                    <span className="font-mono">{node.host || node.ip}</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col items-end gap-2 shrink-0 text-right">
+              <div className="flex gap-1 flex-wrap justify-end">
+                {(node.roles || []).map((role) => (
+                  <span
+                    key={role}
+                    className="px-2 py-0.5 rounded-full text-xs bg-secondary text-muted-foreground"
+                  >
+                    {role}
+                  </span>
+                ))}
+              </div>
+              <div className="text-xs text-muted-foreground space-y-0.5">
+                <div>{t('colConnected')}: {relativeTime(node.connectedAt)}</div>
+                <div>{t('colLastActivity')}: {relativeTime(node.lastActivity)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
@@ -320,11 +326,14 @@ function PendingDevicesSection({
 
   return (
     <div>
-      <h3 className="text-sm font-medium text-status-warning-fg mb-2">
+      <h3 className="text-sm font-semibold text-status-warning-fg mb-3 flex items-center gap-2">
+        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-status-warning-bg border border-status-warning-border text-[10px] font-bold text-status-warning-fg">
+          {devices.length}
+        </span>
         {t('pendingPairingRequests', { count: devices.length })}
       </h3>
       {actionError && (
-        <div className="mb-2 px-3 py-1.5 rounded bg-status-error-bg border border-status-error-border text-status-error-fg text-xs">
+        <div className="mb-3 px-4 py-2 rounded-xl bg-status-error-bg border border-status-error-border text-status-error-fg text-xs">
           {actionError}
         </div>
       )}
@@ -332,31 +341,31 @@ function PendingDevicesSection({
         {devices.map((device) => (
           <div
             key={device.requestId}
-            className="flex items-center justify-between px-3 py-2 rounded-lg bg-status-warning-bg border border-status-warning-border"
+            className="flex items-center justify-between px-4 py-3 rounded-xl bg-status-warning-bg border border-status-warning-border"
           >
-            <div className="flex items-center gap-3">
-              <div>
-                <span className="text-sm font-medium text-foreground">
-                  {device.displayName || device.deviceId}
+            <div>
+              <span className="text-sm font-medium text-foreground">
+                {device.displayName || device.deviceId}
+              </span>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                <span className="font-mono px-1.5 py-0.5 rounded bg-card border border-border">
+                  {device.deviceId?.slice(0, 16)}
                 </span>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="font-mono">{device.deviceId?.slice(0, 16)}</span>
-                  {device.role && (
-                    <span className="px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">
-                      {device.role}
-                    </span>
-                  )}
-                  {device.remoteIp && <span>{device.remoteIp}</span>}
-                  {device.isRepair && (
-                    <span className="px-1.5 py-0.5 rounded bg-status-info-bg/20 text-status-info-fg border border-status-info-border">
-                      repair
-                    </span>
-                  )}
-                  {device.ts && <span>{relativeTime(device.ts)}</span>}
-                </div>
+                {device.role && (
+                  <span className="px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground">
+                    {device.role}
+                  </span>
+                )}
+                {device.remoteIp && <span>{device.remoteIp}</span>}
+                {device.isRepair && (
+                  <span className="px-1.5 py-0.5 rounded-full bg-status-info-bg text-status-info-fg border border-status-info-border">
+                    repair
+                  </span>
+                )}
+                {device.ts && <span>{relativeTime(device.ts)}</span>}
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 shrink-0">
               <Button
                 size="sm"
                 variant="ghost"
@@ -423,7 +432,7 @@ function PairedDevicesSection({
 
   if (devices.length === 0) {
     return (
-      <div className="text-muted-foreground text-sm py-8 text-center">
+      <div className="text-muted-foreground text-sm py-12 text-center">
         {t('noPairedDevices')}
       </div>
     )
@@ -431,177 +440,164 @@ function PairedDevicesSection({
 
   return (
     <div>
-      <h3 className="text-sm font-medium text-muted-foreground mb-2">
+      <h3 className="text-sm font-semibold text-muted-foreground mb-3">
         {t('pairedDevices', { count: devices.length })}
       </h3>
       {actionError && (
-        <div className="mb-2 px-3 py-1.5 rounded bg-status-error-bg border border-status-error-border text-status-error-fg text-xs">
+        <div className="mb-3 px-4 py-2 rounded-xl bg-status-error-bg border border-status-error-border text-status-error-fg text-xs">
           {actionError}
         </div>
       )}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-left text-muted-foreground">
-              <th className="pb-2 pr-4 font-medium">{t('colName')}</th>
-              <th className="pb-2 pr-4 font-medium">{t('colDeviceId')}</th>
-              <th className="pb-2 pr-4 font-medium">{t('colRoles')}</th>
-              <th className="pb-2 pr-4 font-medium">{t('colPaired')}</th>
-              <th className="pb-2 pr-4 font-medium">{t('colLastSeen')}</th>
-              <th className="pb-2 pr-4 font-medium">{t('colTrust')}</th>
-              <th className="pb-2 font-medium">{t('colActions')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {devices.map((device) => {
-              const deviceKey = device.deviceId || device.id
-              const isExpanded = expandedDevice === deviceKey
-              const tokens = device.tokens || []
+      <div className="grid gap-3">
+        {devices.map((device) => {
+          const deviceKey = device.deviceId || device.id
+          const isExpanded = expandedDevice === deviceKey
+          const tokens = device.tokens || []
 
-              return (
-                <tr key={device.id || device.deviceId} className="border-b border-border/50 align-top">
-                  <td className="py-2 pr-4 text-foreground font-medium">
-                    {device.displayName}
-                  </td>
-                  <td className="py-2 pr-4 text-muted-foreground font-mono text-xs">
-                    {(device.deviceId || device.id)?.slice(0, 12)}...
-                  </td>
-                  <td className="py-2 pr-4">
-                    <div className="flex gap-1 flex-wrap">
-                      {(device.roles || []).map((role) => (
-                        <span
-                          key={role}
-                          className="px-1.5 py-0.5 rounded text-xs bg-secondary text-muted-foreground"
-                        >
-                          {role}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="py-2 pr-4 text-muted-foreground text-xs">
-                    {relativeTime(device.pairedAt || device.approvedAtMs || device.createdAtMs || 0)}
-                  </td>
-                  <td className="py-2 pr-4 text-muted-foreground text-xs">
-                    {device.lastSeen ? relativeTime(device.lastSeen) : '--'}
-                  </td>
-                  <td className="py-2 pr-4">
+          return (
+            <div
+              key={device.id || device.deviceId}
+              className="bg-card rounded-xl p-5 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+            >
+              {/* Card header */}
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold text-foreground text-sm">{device.displayName}</span>
                     {device.trusted ? (
-                      <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium border bg-status-success-bg text-status-success-fg border-status-success-border">
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium border bg-status-success-bg text-status-success-fg border-status-success-border">
                         {t('trusted')}
                       </span>
                     ) : (
-                      <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium border bg-muted text-muted-foreground border-border">
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium border bg-muted text-muted-foreground border-border">
                         {t('untrusted')}
                       </span>
                     )}
-                  </td>
-                  <td className="py-2">
-                    <div className="flex flex-col gap-1">
-                      <div className="flex gap-1">
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="px-2 py-0.5 rounded bg-surface-1 border border-border font-mono text-xs text-muted-foreground">
+                      {(device.deviceId || device.id)?.slice(0, 12)}…
+                    </span>
+                    {(device.roles || []).map((role) => (
+                      <span
+                        key={role}
+                        className="px-2 py-0.5 rounded-full text-xs bg-secondary text-muted-foreground"
+                      >
+                        {role}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-xs text-muted-foreground text-right shrink-0 space-y-0.5">
+                  <div>{t('colPaired')}: {relativeTime(device.pairedAt || device.approvedAtMs || device.createdAtMs || 0)}</div>
+                  <div>{t('colLastSeen')}: {device.lastSeen ? relativeTime(device.lastSeen) : '--'}</div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-wrap gap-1.5 pt-3 border-t border-border">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 px-2.5 text-xs"
+                  disabled={actionLoading !== null}
+                  onClick={() => handleRotateToken(deviceKey)}
+                >
+                  {actionLoading === `rotate-${deviceKey}` ? '...' : t('rotateToken')}
+                </Button>
+                {confirmRevoke === deviceKey ? (
+                  <div className="flex gap-1 items-center">
+                    <span className="text-xs text-status-error-fg">{t('revokeConfirm')}</span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 px-2 text-xs text-status-error-fg hover:bg-status-error-bg"
+                      disabled={actionLoading !== null}
+                      onClick={() => handleRevokeToken(deviceKey)}
+                    >
+                      {actionLoading === `revoke-${deviceKey}` ? '...' : t('yes')}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 px-2 text-xs"
+                      onClick={() => setConfirmRevoke(null)}
+                    >
+                      {t('no')}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 px-2.5 text-xs text-status-error-fg hover:bg-status-error-bg"
+                    disabled={actionLoading !== null}
+                    onClick={() => setConfirmRevoke(deviceKey)}
+                  >
+                    {t('revoke')}
+                  </Button>
+                )}
+                {tokens.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 px-2.5 text-xs text-muted-foreground ml-auto"
+                    onClick={() => setExpandedDevice(isExpanded ? null : deviceKey)}
+                  >
+                    {isExpanded ? t('hideTokens') : t('tokens', { count: tokens.length })}
+                  </Button>
+                )}
+              </div>
+
+              {/* Token list */}
+              {isExpanded && tokens.length > 0 && (
+                <div className="mt-3 space-y-1.5">
+                  {tokens.map((token, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-1 border border-border text-xs"
+                    >
+                      <span className="font-medium text-foreground">{token.role}</span>
+                      {token.scopes && token.scopes.length > 0 && (
+                        <span className="text-muted-foreground">
+                          [{token.scopes.join(', ')}]
+                        </span>
+                      )}
+                      {token.lastUsedAtMs && (
+                        <span className="text-muted-foreground">
+                          {t('tokenUsed', { time: relativeTime(token.lastUsedAtMs) })}
+                        </span>
+                      )}
+                      {token.revokedAtMs && (
+                        <span className="text-status-error-fg">{t('revoked')}</span>
+                      )}
+                      <div className="flex gap-1 ml-auto">
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-7 px-2 text-xs"
+                          className="h-5 px-1.5 text-[10px]"
                           disabled={actionLoading !== null}
-                          onClick={() => handleRotateToken(deviceKey)}
+                          onClick={() => handleRotateToken(deviceKey, token.role)}
                         >
-                          {actionLoading === `rotate-${deviceKey}` ? '...' : t('rotateToken')}
+                          {t('rotate')}
                         </Button>
-                        {confirmRevoke === deviceKey ? (
-                          <div className="flex gap-1 items-center">
-                            <span className="text-xs text-status-error-fg">{t('revokeConfirm')}</span>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 px-2 text-xs text-status-error-fg hover:bg-status-error-bg"
-                              disabled={actionLoading !== null}
-                              onClick={() => handleRevokeToken(deviceKey)}
-                            >
-                              {actionLoading === `revoke-${deviceKey}` ? '...' : t('yes')}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 px-2 text-xs"
-                              onClick={() => setConfirmRevoke(null)}
-                            >
-                              {t('no')}
-                            </Button>
-                          </div>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-7 px-2 text-xs text-status-error-fg hover:bg-status-error-bg"
-                            disabled={actionLoading !== null}
-                            onClick={() => setConfirmRevoke(deviceKey)}
-                          >
-                            {t('revoke')}
-                          </Button>
-                        )}
-                        {tokens.length > 0 && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-7 px-2 text-xs text-muted-foreground"
-                            onClick={() => setExpandedDevice(isExpanded ? null : deviceKey)}
-                          >
-                            {isExpanded ? t('hideTokens') : t('tokens', { count: tokens.length })}
-                          </Button>
-                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-5 px-1.5 text-[10px] text-status-error-fg hover:bg-status-error-bg"
+                          disabled={actionLoading !== null || !!token.revokedAtMs}
+                          onClick={() => handleRevokeToken(deviceKey, token.role)}
+                        >
+                          {t('revoke')}
+                        </Button>
                       </div>
-                      {isExpanded && tokens.length > 0 && (
-                        <div className="mt-1 space-y-1">
-                          {tokens.map((token, i) => (
-                            <div
-                              key={i}
-                              className="flex items-center gap-2 px-2 py-1 rounded bg-secondary/50 text-xs"
-                            >
-                              <span className="font-medium text-foreground">{token.role}</span>
-                              {token.scopes && token.scopes.length > 0 && (
-                                <span className="text-muted-foreground">
-                                  [{token.scopes.join(', ')}]
-                                </span>
-                              )}
-                              {token.lastUsedAtMs && (
-                                <span className="text-muted-foreground">
-                                  {t('tokenUsed', { time: relativeTime(token.lastUsedAtMs) })}
-                                </span>
-                              )}
-                              {token.revokedAtMs && (
-                                <span className="text-status-error-fg">{t('revoked')}</span>
-                              )}
-                              <div className="flex gap-1 ml-auto">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-5 px-1.5 text-[10px]"
-                                  disabled={actionLoading !== null}
-                                  onClick={() => handleRotateToken(deviceKey, token.role)}
-                                >
-                                  {t('rotate')}
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-5 px-1.5 text-[10px] text-status-error-fg hover:bg-status-error-bg"
-                                  disabled={actionLoading !== null || !!token.revokedAtMs}
-                                  onClick={() => handleRevokeToken(deviceKey, token.role)}
-                                >
-                                  {t('revoke')}
-                                </Button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
                     </div>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

@@ -86,11 +86,11 @@ export function ExecApprovalPanel() {
   return (
     <div className="m-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold text-foreground">{t('title')}</h2>
           {pendingCount > 0 && (
-            <span className="inline-flex items-center rounded-full bg-status-error-bg px-2.5 py-0.5 text-xs font-medium text-status-error-fg animate-pulse">
+            <span className="inline-flex items-center rounded-full bg-status-error-bg px-2.5 py-0.5 text-xs font-medium text-status-error-fg animate-pulse border border-status-error-border">
               {t('pendingBadge', { count: pendingCount })}
             </span>
           )}
@@ -100,13 +100,13 @@ export function ExecApprovalPanel() {
         </span>
       </div>
 
-      {/* View toggle */}
-      <div className="flex gap-1 mb-4 border-b border-border">
+      {/* Pill view toggle */}
+      <div className="inline-flex items-center gap-1 bg-secondary rounded-full p-1 mb-5">
         <button
           onClick={() => setView('approvals')}
-          className={`px-3 py-1.5 text-sm transition-colors ${
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
             view === 'approvals'
-              ? 'text-foreground border-b-2 border-foreground'
+              ? 'bg-card text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -114,9 +114,9 @@ export function ExecApprovalPanel() {
         </button>
         <button
           onClick={() => setView('allowlist')}
-          className={`px-3 py-1.5 text-sm transition-colors ${
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
             view === 'allowlist'
-              ? 'text-foreground border-b-2 border-foreground'
+              ? 'bg-card text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -126,15 +126,15 @@ export function ExecApprovalPanel() {
 
       {view === 'approvals' ? (
         <>
-          {/* Filter tabs */}
-          <div className="flex gap-1 mb-4">
+          {/* Filter pill tabs */}
+          <div className="inline-flex items-center gap-1 bg-secondary rounded-full p-1 mb-5">
             {(['all', 'pending', 'resolved'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setFilter(tab)}
-                className={`px-2.5 py-1 text-xs rounded capitalize transition-colors ${
+                className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition-all duration-200 ${
                   filter === tab
-                    ? 'bg-secondary text-foreground'
+                    ? 'bg-card text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -282,7 +282,7 @@ function AllowlistEditor({ execApprovals }: { execApprovals: ExecApprovalRequest
   return (
     <div className="space-y-4">
       {error && (
-        <div className="rounded-lg border border-status-error-border bg-status-error-bg p-3 text-sm text-status-error-fg">
+        <div className="rounded-xl border border-status-error-border bg-status-error-bg p-4 text-sm text-status-error-fg">
           {error}
         </div>
       )}
@@ -295,7 +295,7 @@ function AllowlistEditor({ execApprovals }: { execApprovals: ExecApprovalRequest
           onChange={(e) => setNewAgentId(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && addAgent()}
           placeholder="Agent ID (e.g. claude, assistant)"
-          className="flex-1 bg-secondary border border-border rounded px-2.5 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+          className="flex-1 bg-surface-1 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
         />
         <Button size="sm" variant="outline" onClick={addAgent} disabled={!newAgentId.trim()}>
           {t('addAgent')}
@@ -358,11 +358,11 @@ function AgentAllowlistCard({
   }, [previewIndex, patterns, recentCommands])
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-card rounded-xl border border-border p-5 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-sm text-foreground">{agentId}</span>
-          <span className="text-xs text-muted-foreground">
+          <span className="font-semibold text-sm text-foreground">{agentId}</span>
+          <span className="text-xs text-muted-foreground bg-surface-1 border border-border rounded-full px-2 py-0.5">
             {patterns.length} pattern{patterns.length !== 1 ? 's' : ''}
           </span>
         </div>
@@ -372,10 +372,10 @@ function AgentAllowlistCard({
           </Button>
           <button
             onClick={onRemoveAgent}
-            className="text-xs text-muted-foreground hover:text-status-error-fg transition-colors px-1"
+            className="text-xs text-muted-foreground hover:text-status-error-fg transition-colors px-1.5 py-0.5"
             title="Remove agent"
           >
-            x
+            ✕
           </button>
         </div>
       </div>
@@ -395,14 +395,14 @@ function AgentAllowlistCard({
                 onFocus={() => setPreviewIndex(index)}
                 onBlur={() => setPreviewIndex(null)}
                 placeholder="e.g. git *, npm install *, ls"
-                className="flex-1 font-mono bg-secondary border border-border rounded px-2 py-1 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="flex-1 font-mono bg-surface-1 border border-border rounded-md px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
               />
               <button
                 onClick={() => onRemovePattern(index)}
-                className="text-xs text-muted-foreground hover:text-status-error-fg transition-colors px-1.5"
+                className="text-xs text-muted-foreground hover:text-status-error-fg transition-colors px-1.5 py-0.5"
                 title="Remove pattern"
               >
-                x
+                ✕
               </button>
             </div>
           ))}
@@ -411,8 +411,8 @@ function AgentAllowlistCard({
 
       {/* Pattern preview */}
       {previewIndex !== null && patterns[previewIndex]?.pattern && (
-        <div className="mt-2 border-t border-border pt-2">
-          <div className="text-xs text-muted-foreground mb-1">
+        <div className="mt-3 border-t border-border pt-3">
+          <div className="text-xs text-muted-foreground mb-1.5">
             {t('previewMatches', { count: previewMatches.length })}
           </div>
           {previewMatches.length > 0 && (
@@ -449,19 +449,19 @@ function ApprovalCard({
   const isExpired = approval.status === 'expired'
 
   return (
-    <div className={`rounded-lg border border-border bg-card p-4 border-l-4 ${riskBorder}`}>
+    <div className={`bg-card rounded-xl border border-border border-l-4 ${riskBorder} p-5 shadow-sm hover:shadow-md transition-all duration-200`}>
       {/* Header row */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium text-foreground">
+          <span className="font-semibold text-foreground">
             {approval.agentName || approval.sessionId}
           </span>
-          <span className="font-mono text-xs bg-secondary rounded px-1.5 py-0.5 text-muted-foreground">
+          <span className="font-mono text-xs bg-surface-1 border border-border rounded-md px-1.5 py-0.5 text-muted-foreground">
             {approval.toolName}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${riskBadge.bg} ${riskBadge.text}`}>
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${riskBadge.bg} ${riskBadge.text}`}>
             {approval.risk}
           </span>
           <span className="text-xs text-muted-foreground">
@@ -472,21 +472,21 @@ function ApprovalCard({
 
       {/* Command block */}
       {approval.command && (
-        <pre className="bg-secondary rounded p-2 text-xs font-mono overflow-auto max-h-20 text-foreground mb-2 border border-border">
+        <pre className="bg-surface-1 border border-border rounded-md p-3 font-mono text-xs overflow-auto max-h-20 text-foreground mb-3">
           <code>$ {approval.command}</code>
         </pre>
       )}
 
       {/* Tool args */}
       {!approval.command && approval.toolArgs && Object.keys(approval.toolArgs).length > 0 && (
-        <pre className="bg-secondary rounded p-2 text-xs font-mono overflow-auto max-h-32 text-foreground mb-2">
+        <pre className="bg-surface-1 border border-border rounded-md p-3 font-mono text-xs overflow-auto max-h-32 text-foreground mb-3">
           {JSON.stringify(approval.toolArgs, null, 2)}
         </pre>
       )}
 
       {/* Metadata */}
       {(approval.cwd || approval.host || approval.resolvedPath) && (
-        <div className="text-xs text-muted-foreground mb-2 space-y-0.5">
+        <div className="text-xs text-muted-foreground mb-3 space-y-0.5">
           {approval.host && <div>Host: <span className="font-mono text-foreground">{approval.host}</span></div>}
           {approval.cwd && <div>CWD: <span className="font-mono text-foreground">{approval.cwd}</span></div>}
           {approval.resolvedPath && <div>Resolved: <span className="font-mono text-foreground">{approval.resolvedPath}</span></div>}
@@ -494,12 +494,12 @@ function ApprovalCard({
       )}
 
       {/* Action row */}
-      <div className="flex items-center gap-2 mt-3">
+      <div className="flex items-center gap-2 mt-4 pt-3 border-t border-border">
         {isPending ? (
           <>
             <Button
               size="sm"
-              className="bg-status-success-solid hover:bg-status-success-solid text-foreground"
+              className="bg-status-success-solid hover:bg-status-success-solid text-foreground font-medium"
               onClick={() => onAction(approval.id, 'allow-once')}
             >
               {t('allowOnce')}
@@ -513,7 +513,7 @@ function ApprovalCard({
             </Button>
             <Button
               size="sm"
-              className="bg-status-error-solid hover:bg-status-error-solid text-foreground"
+              className="bg-status-error-solid hover:bg-status-error-solid text-foreground font-medium"
               onClick={() => onAction(approval.id, 'deny')}
             >
               {t('deny')}
