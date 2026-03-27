@@ -72,7 +72,16 @@ interface SessionCostEntry {
 
 // ── Helpers ──────────────────────────────────────────
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#ff6b6b']
+const COLORS = [
+  'hsl(var(--interactive-primary))',
+  'hsl(var(--status-success-solid))',
+  'hsl(var(--status-warning-solid))',
+  'hsl(var(--status-error-solid))',
+  'hsl(var(--color-violet-500))',
+  'hsl(var(--status-info-solid))',
+  'hsl(var(--color-cyan-500))',
+  'hsl(var(--status-warning-fg))',
+]
 
 const formatNumber = (num: number) => {
   if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M'
@@ -211,13 +220,13 @@ export function CostTrackerPanel() {
           </div>
           <div className="flex items-center gap-3">
             {/* View tabs */}
-            <div className="flex rounded-lg border border-border overflow-hidden">
+            <div className="flex bg-secondary rounded-full p-1 gap-0.5">
               {(['overview', 'agents', 'sessions', 'tasks'] as const).map(v => (
                 <button
                   key={v}
                   onClick={() => setView(v)}
-                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                    view === v ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground'
+                  className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                    view === v ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {v.charAt(0).toUpperCase() + v.slice(1)}
@@ -324,40 +333,40 @@ function OverviewView({
     <div className="space-y-6">
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-card border border-border rounded-lg p-5">
-          <div className="text-3xl font-bold text-foreground">{formatCost(stats.summary.totalCost)}</div>
-          <div className="text-sm text-muted-foreground">{t('totalCost', { timeframe })}</div>
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
+          <div className="text-3xl font-bold text-primary">{formatCost(stats.summary.totalCost)}</div>
+          <div className="text-sm text-muted-foreground mt-1">{t('totalCost', { timeframe })}</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">{formatNumber(stats.summary.totalTokens)}</div>
-          <div className="text-sm text-muted-foreground">{t('totalTokens')}</div>
+          <div className="text-sm text-muted-foreground mt-1">{t('totalTokens')}</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">{formatNumber(stats.summary.requestCount)}</div>
-          <div className="text-sm text-muted-foreground">{t('apiRequests')}</div>
+          <div className="text-sm text-muted-foreground mt-1">{t('apiRequests')}</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">{agentSummary?.agent_count ?? '-'}</div>
-          <div className="text-sm text-muted-foreground">{t('activeAgents')}</div>
+          <div className="text-sm text-muted-foreground mt-1">{t('activeAgents')}</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">
             {taskData ? `${((1 - taskData.unattributed.totalCost / Math.max(stats.summary.totalCost, 0.0001)) * 100).toFixed(0)}%` : '-'}
           </div>
-          <div className="text-sm text-muted-foreground">{t('taskAttributed')}</div>
+          <div className="text-sm text-muted-foreground mt-1">{t('taskAttributed')}</div>
         </div>
       </div>
 
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Trend chart */}
-        <div className="bg-card border border-border rounded-lg p-6 lg:col-span-2">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">{t('usageTrends')}</h2>
-            <div className="flex rounded-md border border-border overflow-hidden">
+            <div className="flex bg-secondary rounded-full p-0.5 gap-0.5">
               {(['incremental', 'cumulative'] as const).map(m => (
                 <button key={m} onClick={() => setChartMode(m)}
-                  className={`px-2 py-1 text-[10px] font-medium ${chartMode === m ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground'}`}
+                  className={`px-2.5 py-0.5 text-[10px] font-medium rounded-full transition-all ${chartMode === m ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                 >{m === 'incremental' ? t('perTurn') : t('cumulative')}</button>
               ))}
             </div>
@@ -371,8 +380,8 @@ function OverviewView({
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="time" /><YAxis />
                   <Tooltip /><Legend />
-                  <Line type="monotone" dataKey="tokens" stroke="#8884d8" strokeWidth={2} name="Tokens" />
-                  <Line type="monotone" dataKey="requests" stroke="#82ca9d" strokeWidth={2} name="Requests" />
+                  <Line type="monotone" dataKey="tokens" stroke="hsl(var(--interactive-primary))" strokeWidth={2} name="Tokens" />
+                  <Line type="monotone" dataKey="requests" stroke="hsl(var(--status-success-solid))" strokeWidth={2} name="Requests" />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -380,7 +389,7 @@ function OverviewView({
         </div>
 
         {/* Model bar chart */}
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-6">
           <h2 className="text-xl font-semibold mb-4">{t('tokenUsageByModel')}</h2>
           <div className="h-64">
             {modelData.length === 0 ? (
@@ -391,7 +400,7 @@ function OverviewView({
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} interval={0} />
                   <YAxis /><Tooltip formatter={(v, n) => [formatNumber(Number(v)), n]} />
-                  <Bar dataKey="tokens" fill="#8884d8" name="Tokens" />
+                  <Bar dataKey="tokens" fill="hsl(var(--interactive-primary))" name="Tokens" />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -399,7 +408,7 @@ function OverviewView({
         </div>
 
         {/* Cost pie */}
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-6">
           <h2 className="text-xl font-semibold mb-4">{t('costDistributionByModel')}</h2>
           <div className="h-64">
             {pieData.length === 0 ? (
@@ -420,7 +429,7 @@ function OverviewView({
 
       {/* Performance insights */}
       {models.length > 0 && (
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-6">
           <h2 className="text-xl font-semibold mb-4">{t('performanceInsights')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div className="bg-secondary rounded-lg p-4">
@@ -460,7 +469,7 @@ function OverviewView({
       )}
 
       {/* Export */}
-      <div className="bg-card border border-border rounded-lg p-6">
+      <div className="bg-card border border-border rounded-xl shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold">{t('exportData')}</h2>
@@ -503,19 +512,19 @@ function AgentsView({
     <div className="space-y-6">
       {/* Summary row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">{summary.agent_count}</div>
           <div className="text-sm text-muted-foreground">{t('agents')}</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">{formatCost(summary.total_cost)}</div>
           <div className="text-sm text-muted-foreground">{t('totalCostDays', { days: summary.days })}</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">{formatNumber(summary.total_tokens)}</div>
           <div className="text-sm text-muted-foreground">{t('totalTokens')}</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">
             {summary.total_tokens > 0 ? `$${(summary.total_cost / summary.total_tokens * 1000).toFixed(4)}` : '-'}
           </div>
@@ -524,7 +533,7 @@ function AgentsView({
       </div>
 
       {/* Cost bar chart */}
-      <div className="bg-card border border-border rounded-lg p-6">
+      <div className="bg-card border border-border rounded-xl shadow-sm p-6">
         <h2 className="text-xl font-semibold mb-4">{t('perAgentCost')}</h2>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
@@ -535,14 +544,14 @@ function AgentsView({
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" tick={{ fontSize: 11 }} /><YAxis tick={{ fontSize: 11 }} />
               <Tooltip formatter={(v) => formatCost(Number(v))} />
-              <Bar dataKey="cost" fill="#0088FE" name="Cost ($)" />
+              <Bar dataKey="cost" fill="hsl(var(--interactive-primary))" name="Cost ($)" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Agent detail rows */}
-      <div className="bg-card border border-border rounded-lg p-6">
+      <div className="bg-card border border-border rounded-xl shadow-sm p-6">
         <h2 className="text-xl font-semibold mb-4">{t('agentBreakdown')}</h2>
         <div className="space-y-2 max-h-[600px] overflow-y-auto">
           {agents.map(agent => {
@@ -550,7 +559,7 @@ function AgentsView({
             const isExpanded = expandedAgent === agent.agent
             const agentTasks = getAgentTasks(agent.agent)
             return (
-              <div key={agent.agent} className="border border-border rounded-lg overflow-hidden">
+              <div key={agent.agent} className="border border-border rounded-xl overflow-hidden">
                 <Button onClick={() => setExpandedAgent(isExpanded ? null : agent.agent)}
                   variant="ghost" className="w-full p-4 h-auto flex items-center justify-between text-left">
                   <div className="flex items-center gap-3 min-w-0">
@@ -678,11 +687,13 @@ function SessionsView({
     <div className="space-y-4">
       <div className="flex items-center gap-3">
         <span className="text-sm text-muted-foreground">{t('sortBy')}:</span>
-        {(['cost', 'tokens', 'requests', 'recent'] as const).map(s => (
-          <button key={s} onClick={() => setSessionSort(s)}
-            className={`px-2 py-1 text-xs rounded ${sessionSort === s ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}
-          >{s.charAt(0).toUpperCase() + s.slice(1)}</button>
-        ))}
+        <div className="flex bg-secondary rounded-full p-1 gap-0.5">
+          {(['cost', 'tokens', 'requests', 'recent'] as const).map(s => (
+            <button key={s} onClick={() => setSessionSort(s)}
+              className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${sessionSort === s ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+            >{s.charAt(0).toUpperCase() + s.slice(1)}</button>
+          ))}
+        </div>
       </div>
 
       {sorted.length === 0 ? (
@@ -695,7 +706,7 @@ function SessionsView({
           {sorted.map(entry => {
             const sessionInfo = sessions.find((s: any) => s.id === entry.sessionId)
             return (
-              <div key={entry.sessionId} className="bg-card border border-border rounded-lg p-4">
+              <div key={entry.sessionId} className="bg-card border border-border rounded-xl shadow-sm p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="min-w-0">
                     <div className="font-medium text-foreground truncate">
@@ -746,30 +757,30 @@ function TasksView({ taskData, onRefresh }: { taskData: TaskCostsResponse | null
     <div className="space-y-6">
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">{taskData.tasks.length}</div>
           <div className="text-sm text-muted-foreground">{t('tasksWithCosts')}</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">{formatCost(taskData.summary.totalCost)}</div>
           <div className="text-sm text-muted-foreground">{t('attributedCost')}</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-foreground">{formatNumber(taskData.summary.totalTokens)}</div>
           <div className="text-sm text-muted-foreground">{t('attributedTokens')}</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-5">
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
           <div className="text-3xl font-bold text-status-warning-fg">{formatCost(taskData.unattributed.totalCost)}</div>
           <div className="text-sm text-muted-foreground">{t('unattributed')}</div>
         </div>
       </div>
 
       {/* Task list */}
-      <div className="bg-card border border-border rounded-lg p-6">
+      <div className="bg-card border border-border rounded-xl shadow-sm p-6">
         <h2 className="text-xl font-semibold mb-4">{t('tasksByCost')}</h2>
         <div className="space-y-2 max-h-[600px] overflow-y-auto">
           {taskData.tasks.map(task => (
-            <div key={task.taskId} className="border border-border rounded-lg p-4">
+            <div key={task.taskId} className="border border-border rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0 flex-1">
                   <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ${
