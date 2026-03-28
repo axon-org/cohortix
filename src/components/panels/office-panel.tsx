@@ -130,17 +130,17 @@ interface PersistedOfficePrefs {
 }
 
 const statusGlow: Record<string, string> = {
-  idle: 'shadow-[0_0_12px_hsl(var(--void-mint)/0.3)] border-void-mint/60',
-  busy: 'shadow-[0_0_12px_hsl(var(--void-amber)/0.3)] border-void-amber/60',
-  error: 'shadow-[0_0_12px_hsl(var(--void-crimson)/0.3)] border-void-crimson/60',
-  offline: 'shadow-[0_0_8px_hsl(var(--border)/0.2)] border-border/40',
+  idle: 'shadow-[0_0_12px_hsl(var(--status-warning-solid)/0.25)] border-status-warning-border',
+  busy: 'shadow-[0_0_12px_hsl(var(--status-success-solid)/0.25)] border-status-success-border',
+  error: 'shadow-[0_0_12px_hsl(var(--status-error-solid)/0.25)] border-status-error-border',
+  offline: 'shadow-[0_0_8px_hsl(var(--border-default)/0.25)] border-border/60',
 }
 
 const statusDot: Record<string, string> = {
-  idle: 'bg-void-mint',
-  busy: 'bg-void-amber',
-  error: 'bg-void-crimson',
-  offline: 'bg-muted-foreground/40',
+  idle: 'bg-status-warning-solid',
+  busy: 'bg-status-success-solid',
+  error: 'bg-status-error-solid',
+  offline: 'bg-status-neutral-fg',
 }
 
 const statusLabel: Record<string, string> = {
@@ -237,25 +237,25 @@ const MAP_COLS = 24
 const MAP_ROWS = 16
 
 const ROOM_LAYOUT: MapRoom[] = [
-  { id: 'eng', label: 'Engine Bay', x: 16, y: 22, w: 28, h: 22, style: 'bg-[#0c1628]' },
-  { id: 'product', label: 'Bridge', x: 48, y: 22, w: 24, h: 22, style: 'bg-[#0a1a2a]' },
-  { id: 'ops', label: 'Ops Deck', x: 16, y: 49, w: 24, h: 24, style: 'bg-[#10132a]' },
-  { id: 'research', label: 'Lab', x: 44, y: 49, w: 22, h: 24, style: 'bg-[#0d1526]' },
-  { id: 'lounge', label: 'Crew Quarters', x: 70, y: 49, w: 16, h: 24, style: 'bg-[#0c1a1a]' },
+  { id: 'eng', label: 'Engine Bay', x: 16, y: 22, w: 28, h: 22, style: 'bg-secondary/70' },
+  { id: 'product', label: 'Bridge', x: 48, y: 22, w: 24, h: 22, style: 'bg-secondary/65' },
+  { id: 'ops', label: 'Ops Deck', x: 16, y: 49, w: 24, h: 24, style: 'bg-secondary/75' },
+  { id: 'research', label: 'Lab', x: 44, y: 49, w: 22, h: 24, style: 'bg-secondary/70' },
+  { id: 'lounge', label: 'Crew Quarters', x: 70, y: 49, w: 16, h: 24, style: 'bg-secondary/60' },
 ]
 
 const MAP_PROPS: MapProp[] = [
-  { id: 'desk-a', x: 22, y: 30, w: 8, h: 2.8, style: 'bg-[#0f1c30]', border: 'border-void-cyan/25' },
-  { id: 'desk-b', x: 33, y: 30, w: 8, h: 2.8, style: 'bg-[#0f1c30]', border: 'border-void-cyan/25' },
-  { id: 'desk-c', x: 52, y: 30, w: 8, h: 2.8, style: 'bg-[#0f1c30]', border: 'border-void-cyan/25' },
-  { id: 'desk-d', x: 61, y: 30, w: 8, h: 2.8, style: 'bg-[#0f1c30]', border: 'border-void-cyan/25' },
-  { id: 'desk-e', x: 22, y: 58, w: 8, h: 2.8, style: 'bg-[#0f1c30]', border: 'border-void-cyan/25' },
-  { id: 'desk-f', x: 31, y: 58, w: 8, h: 2.8, style: 'bg-[#0f1c30]', border: 'border-void-cyan/25' },
-  { id: 'desk-g', x: 48, y: 58, w: 8, h: 2.8, style: 'bg-[#0f1c30]', border: 'border-void-cyan/25' },
-  { id: 'desk-h', x: 57, y: 58, w: 8, h: 2.8, style: 'bg-[#0f1c30]', border: 'border-void-cyan/25' },
-  { id: 'plant-l', x: 14, y: 47, w: 3, h: 5, style: 'bg-void-mint/30', border: 'border-void-mint/20' },
-  { id: 'plant-r', x: 84, y: 47, w: 3, h: 5, style: 'bg-void-mint/30', border: 'border-void-mint/20' },
-  { id: 'kitchen', x: 72, y: 57, w: 12, h: 10, style: 'bg-[#0c1a1a]', border: 'border-void-mint/20' },
+  { id: 'desk-a', x: 22, y: 30, w: 8, h: 2.8, style: 'bg-secondary/80', border: 'border-status-info-border/60' },
+  { id: 'desk-b', x: 33, y: 30, w: 8, h: 2.8, style: 'bg-secondary/80', border: 'border-status-info-border/60' },
+  { id: 'desk-c', x: 52, y: 30, w: 8, h: 2.8, style: 'bg-secondary/80', border: 'border-status-info-border/60' },
+  { id: 'desk-d', x: 61, y: 30, w: 8, h: 2.8, style: 'bg-secondary/80', border: 'border-status-info-border/60' },
+  { id: 'desk-e', x: 22, y: 58, w: 8, h: 2.8, style: 'bg-secondary/80', border: 'border-status-info-border/60' },
+  { id: 'desk-f', x: 31, y: 58, w: 8, h: 2.8, style: 'bg-secondary/80', border: 'border-status-info-border/60' },
+  { id: 'desk-g', x: 48, y: 58, w: 8, h: 2.8, style: 'bg-secondary/80', border: 'border-status-info-border/60' },
+  { id: 'desk-h', x: 57, y: 58, w: 8, h: 2.8, style: 'bg-secondary/80', border: 'border-status-info-border/60' },
+  { id: 'plant-l', x: 14, y: 47, w: 3, h: 5, style: 'bg-status-success-bg/40', border: 'border-status-success-border/60' },
+  { id: 'plant-r', x: 84, y: 47, w: 3, h: 5, style: 'bg-status-success-bg/40', border: 'border-status-success-border/60' },
+  { id: 'kitchen', x: 72, y: 57, w: 12, h: 10, style: 'bg-secondary/65', border: 'border-status-success-border/50' },
 ]
 
 const LOUNGE_WAYPOINTS = [
@@ -1510,26 +1510,26 @@ export function OfficePanel() {
   }
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="bg-card rounded-xl border border-border shadow-sm p-6 space-y-4">
       <div className="border-b border-border pb-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
             <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
             <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-3 text-xs text-muted-foreground mr-4">
-              {counts.busy > 0 && <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-void-amber" />{t('activeCount', { count: counts.busy })}</span>}
-              {counts.idle > 0 && <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-void-mint" />{t('standbyCount', { count: counts.idle })}</span>}
-              {counts.error > 0 && <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-void-crimson" />{t('alertCount', { count: counts.error })}</span>}
-              {counts.offline > 0 && <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-muted-foreground/40" />{t('offlineCount', { count: counts.offline })}</span>}
+              {counts.busy > 0 && <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-success-solid" />{t('activeCount', { count: counts.busy })}</span>}
+              {counts.idle > 0 && <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-warning-solid" />{t('standbyCount', { count: counts.idle })}</span>}
+              {counts.error > 0 && <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-error-solid" />{t('alertCount', { count: counts.error })}</span>}
+              {counts.offline > 0 && <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-neutral-fg" />{t('offlineCount', { count: counts.offline })}</span>}
             </div>
-            <div className="flex rounded-md overflow-hidden border border-border">
+            <div className="flex items-center gap-1 rounded-full bg-secondary/70 border border-border p-1">
               <Button
                 variant={viewMode === 'office' ? 'default' : 'secondary'}
                 size="sm"
                 onClick={() => setViewMode('office')}
-                className="rounded-none"
+                className="rounded-full px-3"
               >
                 {t('buttonDeck')}
               </Button>
@@ -1537,12 +1537,12 @@ export function OfficePanel() {
                 variant={viewMode === 'org-chart' ? 'default' : 'secondary'}
                 size="sm"
                 onClick={() => setViewMode('org-chart')}
-                className="rounded-none"
+                className="rounded-full px-3"
               >
                 {t('buttonCrewChart')}
               </Button>
             </div>
-            <Button variant="secondary" size="sm" onClick={fetchAgents}>
+            <Button variant="secondary" size="sm" onClick={fetchAgents} className="rounded-full px-4">
               {t('refresh')}
             </Button>
           </div>
@@ -1580,7 +1580,7 @@ export function OfficePanel() {
                   onClick={() => setSidebarFilter(item.key)}
                   className={`h-auto px-2 py-1 text-[10px] font-mono border ${
                     sidebarFilter === item.key
-                      ? 'bg-void-cyan/15 border-void-cyan/30 text-void-cyan'
+                      ? 'bg-status-info-bg border-status-info-border text-status-info-fg'
                       : 'bg-secondary border-border text-muted-foreground hover:bg-muted'
                   }`}
                 >
@@ -1596,7 +1596,7 @@ export function OfficePanel() {
                   onClick={() => setLocalSessionFilter('running')}
                   className={`flex-1 h-auto px-2 py-1 text-[10px] font-mono border ${
                     localSessionFilter === 'running'
-                      ? 'bg-void-cyan/15 border-void-cyan/30 text-void-cyan'
+                      ? 'bg-status-info-bg border-status-info-border text-status-info-fg'
                       : 'bg-secondary border-border text-muted-foreground hover:bg-muted'
                   }`}
                 >
@@ -1608,7 +1608,7 @@ export function OfficePanel() {
                   onClick={() => setLocalSessionFilter('not-running')}
                   className={`flex-1 h-auto px-2 py-1 text-[10px] font-mono border ${
                     localSessionFilter === 'not-running'
-                      ? 'bg-void-amber/15 border-void-amber/30 text-void-amber'
+                      ? 'bg-status-warning-bg border-status-warning-border text-status-warning-fg'
                       : 'bg-secondary border-border text-muted-foreground hover:bg-muted'
                   }`}
                 >
@@ -1743,33 +1743,33 @@ export function OfficePanel() {
               </>
             )}
 
-            <div className="absolute left-[8%] top-[8%] rounded-md bg-card/80 backdrop-blur-sm border border-void-cyan/20 text-void-cyan text-xs px-2 py-1 font-mono z-30">
+            <div className="absolute left-[8%] top-[8%] rounded-full bg-card/90 backdrop-blur-sm border border-border text-status-info-fg text-xs px-3 py-1.5 font-mono z-30 shadow-md">
               {t('mainDeck')}
             </div>
-            <div className="absolute right-3 top-3 z-30 flex items-center gap-1 rounded-md bg-card/80 backdrop-blur-sm border border-border text-foreground/90 px-2 py-1">
-              <Button variant="ghost" size="xs" onClick={() => setMapZoom((z) => Math.max(0.8, Number((z - 0.1).toFixed(2))))} className="h-auto px-1.5 py-0.5 text-xs hover:bg-void-cyan/10">-</Button>
+            <div className="absolute right-3 top-3 z-30 flex items-center gap-1 rounded-full bg-card/90 backdrop-blur-sm border border-border text-foreground px-2 py-1 shadow-md">
+              <Button variant="ghost" size="xs" onClick={() => setMapZoom((z) => Math.max(0.8, Number((z - 0.1).toFixed(2))))} className="h-auto rounded-full px-2 py-1 text-xs hover:bg-secondary">-</Button>
               <span className="text-[11px] font-mono w-10 text-center">{Math.round(mapZoom * 100)}%</span>
-              <Button variant="ghost" size="xs" onClick={() => setMapZoom((z) => Math.min(2.2, Number((z + 0.1).toFixed(2))))} className="h-auto px-1.5 py-0.5 text-xs hover:bg-void-cyan/10">+</Button>
-              <Button variant="ghost" size="xs" onClick={resetMapView} className="h-auto px-1.5 py-0.5 text-[11px] hover:bg-void-cyan/10">{t('resetView')}</Button>
+              <Button variant="ghost" size="xs" onClick={() => setMapZoom((z) => Math.min(2.2, Number((z + 0.1).toFixed(2))))} className="h-auto rounded-full px-2 py-1 text-xs hover:bg-secondary">+</Button>
+              <Button variant="ghost" size="xs" onClick={resetMapView} className="h-auto rounded-full px-2 py-1 text-[11px] hover:bg-secondary">{t('resetView')}</Button>
             </div>
-            <div className="absolute right-3 top-12 z-30 flex items-center gap-1 rounded-md bg-card/80 backdrop-blur-sm border border-border text-foreground/90 px-2 py-1">
+            <div className="absolute right-3 top-12 z-30 flex items-center gap-1 rounded-full bg-card/90 backdrop-blur-sm border border-border text-foreground px-2 py-1 shadow-md">
               {(['dawn', 'day', 'dusk', 'night'] as TimeTheme[]).map((item) => (
                 <Button
                   key={item}
                   variant="ghost"
                   size="xs"
                   onClick={() => setTimeTheme(item)}
-                  className={`h-auto px-1.5 py-0.5 text-[10px] font-mono uppercase ${timeTheme === item ? 'bg-void-cyan/20 text-void-cyan' : 'hover:bg-void-cyan/10 text-muted-foreground'}`}
+                  className={`h-auto rounded-full px-2 py-1 text-[10px] font-mono uppercase ${timeTheme === item ? 'bg-status-info-bg text-status-info-fg' : 'hover:bg-secondary text-muted-foreground'}`}
                 >
                   {item}
                 </Button>
               ))}
             </div>
-            <div className="absolute left-3 top-3 z-30 flex items-center gap-1 rounded-md bg-card/80 backdrop-blur-sm border border-border text-foreground/90 px-2 py-1">
-              <Button variant="ghost" size="xs" onClick={() => setShowSidebar((v) => !v)} className="h-auto px-1.5 py-0.5 text-[10px] font-mono hover:bg-void-cyan/10">{showSidebar ? t('hideCrewButton') : t('showCrewButton')}</Button>
-              <Button variant="ghost" size="xs" onClick={() => setShowMinimap((v) => !v)} className="h-auto px-1.5 py-0.5 text-[10px] font-mono hover:bg-void-cyan/10">{showMinimap ? t('hideRadarButton') : t('showRadarButton')}</Button>
-              <Button variant="ghost" size="xs" onClick={() => setShowEvents((v) => !v)} className="h-auto px-1.5 py-0.5 text-[10px] font-mono hover:bg-void-cyan/10">{showEvents ? t('hideLogButton') : t('showLogButton')}</Button>
-              <Button variant="ghost" size="xs" onClick={resetOfficeLayout} className="h-auto px-1.5 py-0.5 text-[10px] font-mono hover:bg-void-cyan/10">{t('resetLayout')}</Button>
+            <div className="absolute left-3 top-3 z-30 flex items-center gap-1 rounded-full bg-card/90 backdrop-blur-sm border border-border text-foreground px-2 py-1 shadow-md">
+              <Button variant="ghost" size="xs" onClick={() => setShowSidebar((v) => !v)} className="h-auto rounded-full px-2 py-1 text-[10px] font-mono hover:bg-secondary">{showSidebar ? t('hideCrewButton') : t('showCrewButton')}</Button>
+              <Button variant="ghost" size="xs" onClick={() => setShowMinimap((v) => !v)} className="h-auto rounded-full px-2 py-1 text-[10px] font-mono hover:bg-secondary">{showMinimap ? t('hideRadarButton') : t('showRadarButton')}</Button>
+              <Button variant="ghost" size="xs" onClick={() => setShowEvents((v) => !v)} className="h-auto rounded-full px-2 py-1 text-[10px] font-mono hover:bg-secondary">{showEvents ? t('hideLogButton') : t('showLogButton')}</Button>
+              <Button variant="ghost" size="xs" onClick={resetOfficeLayout} className="h-auto rounded-full px-2 py-1 text-[10px] font-mono hover:bg-secondary">{t('resetLayout')}</Button>
             </div>
 
             <div
@@ -1970,7 +1970,7 @@ export function OfficePanel() {
                     className="absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-500 hover:scale-110 h-auto p-0 rounded-none hover:bg-transparent"
                     style={{ left: `${x}%`, top: `${y}%` }}
                   >
-                    <div className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-black/70 border border-border/10 text-foreground text-[11px] px-2 py-0.5 shadow-[0_0_12px_rgba(0,0,0,0.4)]">
+                    <div className="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-xl bg-card p-2 border border-border text-foreground text-[11px] shadow-md">
                       <span className={`inline-block w-2 h-2 rounded-full ${statusDot[agent.status]} mr-1`} />
                       {agent.name}
                     </div>
@@ -2003,8 +2003,8 @@ export function OfficePanel() {
 
                   {agentActionOverrides.has(agent.id) && (
                     <div
-                      className="absolute -translate-x-1/2 text-[9px] px-1.5 py-0.5 rounded bg-black/70 border border-border/15 text-primary"
-                      style={{ left: `${x}%`, top: `calc(${y}% - 24px)` }}
+                      className="absolute -translate-x-1/2 rounded-xl bg-card p-2 border border-border text-[9px] text-primary shadow-md"
+                      style={{ left: `${x}%`, top: `calc(${y}% - 28px)` }}
                     >
                       {agentActionOverrides.get(agent.id)}
                     </div>
@@ -2012,7 +2012,7 @@ export function OfficePanel() {
 
                   {(transitioningAgentIds.has(agent.id) || isMoving) && (
                     <div
-                      className="absolute -translate-x-1/2 text-[9px] text-muted-foreground font-medium px-1.5 py-0.5 rounded bg-black/45 border border-border/10"
+                      className="absolute -translate-x-1/2 rounded-xl bg-card p-2 border border-border text-[9px] text-muted-foreground font-medium shadow-md"
                       style={{ left: `${x}%`, top: `calc(${y}% + 22px)` }}
                     >
                       {t('moving')}
@@ -2031,7 +2031,7 @@ export function OfficePanel() {
 
             {showMinimap && (
             <div
-              className="absolute right-3 bottom-3 z-30 w-44 h-28 rounded-md border border-void-cyan/15 bg-card/85 backdrop-blur-sm p-1.5"
+              className="absolute right-3 bottom-3 z-30 w-44 h-28 rounded-xl border border-border bg-card/90 backdrop-blur-sm p-4 shadow-md"
               onMouseDown={(event) => event.stopPropagation()}
               onClick={(event) => {
                 event.stopPropagation()
@@ -2072,14 +2072,14 @@ export function OfficePanel() {
 
             {showEvents && (
             <div
-              className="absolute left-3 bottom-3 z-30 w-72 rounded-md border border-void-cyan/15 bg-card/88 backdrop-blur-sm p-2.5 space-y-2"
+              className="absolute left-3 bottom-3 z-30 w-72 rounded-xl border border-border bg-card/90 backdrop-blur-sm p-4 space-y-2 shadow-md"
               onWheel={(event) => event.stopPropagation()}
             >
-              <div className="text-[10px] text-void-cyan/60 font-mono uppercase tracking-wider">{t('deckLog')}</div>
+              <div className="text-[10px] text-status-info-fg/80 font-mono uppercase tracking-wider">{t('deckLog')}</div>
               <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-void-amber" />{t('legendActive')}</span>
-                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-void-mint" />{t('legendStandby')}</span>
-                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-void-cyan" />{t('legendOther')}</span>
+                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-success-solid" />{t('legendActive')}</span>
+                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-warning-solid" />{t('legendStandby')}</span>
+                <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-info-solid" />{t('legendOther')}</span>
               </div>
               <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1" onWheel={(event) => event.stopPropagation()}>
                 {officeEvents.length === 0 && (
@@ -2091,10 +2091,10 @@ export function OfficePanel() {
                       <span
                         className={`uppercase font-mono text-[9px] ${
                           event.severity === 'good'
-                            ? 'text-void-mint'
+                            ? 'text-status-success-fg'
                             : event.severity === 'warn'
-                              ? 'text-void-amber'
-                              : 'text-void-cyan'
+                              ? 'text-status-warning-fg'
+                              : 'text-status-info-fg'
                         }`}
                       >
                         {event.kind}
@@ -2106,7 +2106,7 @@ export function OfficePanel() {
                 ))}
               </div>
               {selectedHotspot && (
-                <div className="rounded border border-void-cyan/15 bg-secondary/50 p-2">
+                <div className="rounded-xl border border-border bg-card p-4 shadow-md">
                   <div className="flex items-center justify-between">
                     <div className="text-[11px] font-semibold text-foreground">{selectedHotspot.label}</div>
                     <div className="text-[9px] font-mono uppercase text-void-cyan/60">{selectedHotspot.kind}</div>
@@ -2152,7 +2152,7 @@ export function OfficePanel() {
                 variant={orgSegmentMode === 'category' ? 'default' : 'secondary'}
                 size="sm"
                 onClick={() => setOrgSegmentMode('category')}
-                className="rounded-none"
+                className="rounded-full px-3"
               >
                 {t('segmentCategory')}
               </Button>
@@ -2160,7 +2160,7 @@ export function OfficePanel() {
                 variant={orgSegmentMode === 'role' ? 'default' : 'secondary'}
                 size="sm"
                 onClick={() => setOrgSegmentMode('role')}
-                className="rounded-none"
+                className="rounded-full px-3"
               >
                 {t('segmentRole')}
               </Button>
@@ -2168,7 +2168,7 @@ export function OfficePanel() {
                 variant={orgSegmentMode === 'status' ? 'default' : 'secondary'}
                 size="sm"
                 onClick={() => setOrgSegmentMode('status')}
-                className="rounded-none"
+                className="rounded-full px-3"
               >
                 {t('segmentStatus')}
               </Button>
@@ -2210,10 +2210,10 @@ export function OfficePanel() {
 
       {selectedAgent && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedAgent(null)}>
-          <div className="bg-card border border-border rounded-lg max-w-sm w-full p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-card rounded-xl p-4 border border-border shadow-md max-w-sm w-full" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
-                <div className={`w-14 h-14 rounded-full ${hashColor(selectedAgent.name)} flex items-center justify-center text-foreground font-bold text-lg ring-2 ring-offset-2 ring-offset-card ${selectedAgent.status === 'busy' ? 'ring-yellow-500' : selectedAgent.status === 'idle' ? 'ring-green-500' : selectedAgent.status === 'error' ? 'ring-red-500' : 'ring-gray-600'}`}>
+                <div className={`w-14 h-14 rounded-full ${hashColor(selectedAgent.name)} flex items-center justify-center text-foreground font-bold text-lg ring-2 ring-offset-2 ring-offset-card ${selectedAgent.status === 'busy' ? 'ring-status-success-solid' : selectedAgent.status === 'idle' ? 'ring-status-warning-solid' : selectedAgent.status === 'error' ? 'ring-status-error-solid' : 'ring-status-neutral-fg'}`}>
                   {getInitials(selectedAgent.name)}
                 </div>
                 <div>
@@ -2318,7 +2318,7 @@ export function OfficePanel() {
 
       {showFlightDeckModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4" onClick={() => setShowFlightDeckModal(false)}>
-          <div className="bg-card border border-border rounded-lg max-w-md w-full p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-card rounded-xl p-4 border border-border shadow-md max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-lg font-semibold text-foreground">{t('flightDeckRequired')}</h3>
