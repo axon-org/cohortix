@@ -431,16 +431,23 @@ export function TokenDashboardPanel() {
     }
   })
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d']
+  const COLORS = [
+    'hsl(var(--interactive-primary))',
+    'hsl(var(--status-success-solid))',
+    'hsl(var(--status-warning-solid))',
+    'hsl(var(--status-error-solid))',
+    'hsl(var(--color-violet-500))',
+    'hsl(var(--status-info-solid))',
+  ]
   const PROVIDER_COLORS: Record<string, string> = {
-    Anthropic: '#d97706',
-    OpenAI: '#10b981',
-    Google: '#3b82f6',
-    Mistral: '#f97316',
-    Meta: '#6366f1',
-    DeepSeek: '#06b6d4',
-    Cohere: '#ec4899',
-    Other: '#6b7280',
+    Anthropic: 'hsl(var(--status-warning-solid))',
+    OpenAI: 'hsl(var(--status-success-solid))',
+    Google: 'hsl(var(--status-info-solid))',
+    Mistral: 'hsl(var(--status-warning-fg))',
+    Meta: 'hsl(var(--interactive-primary))',
+    DeepSeek: 'hsl(var(--color-cyan-500))',
+    Cohere: 'hsl(var(--status-error-solid))',
+    Other: 'hsl(var(--color-neutral-400))',
   }
 
   // Enhanced performance metrics
@@ -563,16 +570,16 @@ export function TokenDashboardPanel() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex rounded-lg border border-border overflow-hidden">
+            <div className="flex bg-secondary rounded-full p-1 gap-0.5">
               <button
                 onClick={() => setView('overview')}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors ${view === 'overview' ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground'}`}
+                className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${view === 'overview' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 {t('viewOverview')}
               </button>
               <button
                 onClick={() => setView('sessions')}
-                className={`px-3 py-1.5 text-xs font-medium transition-colors ${view === 'sessions' ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground'}`}
+                className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${view === 'sessions' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 {t('viewSessions')}
               </button>
@@ -665,15 +672,17 @@ export function TokenDashboardPanel() {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">{t('sortByLabel')}</span>
-            {(['cost', 'tokens', 'requests', 'recent'] as const).map(s => (
-              <button
-                key={s}
-                onClick={() => setSessionSort(s)}
-                className={`px-2 py-1 text-xs rounded ${sessionSort === s ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}
-              >
-                {s.charAt(0).toUpperCase() + s.slice(1)}
-              </button>
-            ))}
+            <div className="flex bg-secondary rounded-full p-1 gap-0.5">
+              {(['cost', 'tokens', 'requests', 'recent'] as const).map(s => (
+                <button
+                  key={s}
+                  onClick={() => setSessionSort(s)}
+                  className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${sessionSort === s ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
 
           {sortedSessionCosts.length === 0 ? (
@@ -686,7 +695,7 @@ export function TokenDashboardPanel() {
               {sortedSessionCosts.map((entry) => {
                 const sessionInfo = sessions.find(s => s.id === entry.sessionId)
                 return (
-                  <div key={entry.sessionId} className="bg-card border border-border rounded-lg p-4">
+                  <div key={entry.sessionId} className="bg-card border border-border rounded-xl shadow-sm p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="min-w-0">
                         <div className="font-medium text-foreground truncate">
@@ -727,7 +736,7 @@ export function TokenDashboardPanel() {
         <div className="space-y-6">
           {/* Overview Stats */}
           <div className={`grid grid-cols-1 gap-6 ${cacheStats ? 'md:grid-cols-6' : 'md:grid-cols-4'}`}>
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
               <div className="text-3xl font-bold text-foreground">
                 {formatNumber(filteredUsageStats.summary.totalTokens)}
               </div>
@@ -736,7 +745,7 @@ export function TokenDashboardPanel() {
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
               <div className="text-3xl font-bold text-foreground">
                 {formatCost(filteredUsageStats.summary.totalCost)}
               </div>
@@ -745,7 +754,7 @@ export function TokenDashboardPanel() {
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
               <div className="text-3xl font-bold text-foreground">
                 {formatNumber(filteredUsageStats.summary.requestCount)}
               </div>
@@ -754,7 +763,7 @@ export function TokenDashboardPanel() {
               </div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
               <div className="text-3xl font-bold text-foreground">
                 {formatNumber(filteredUsageStats.summary.avgTokensPerRequest)}
               </div>
@@ -765,7 +774,7 @@ export function TokenDashboardPanel() {
 
             {cacheStats && (
               <>
-                <div className="bg-card border border-border rounded-lg p-6">
+                <div className="bg-card border border-border rounded-xl shadow-sm p-6">
                   <div className="text-3xl font-bold text-primary">
                     {formatNumber(cacheStats.cacheRead)}
                   </div>
@@ -774,7 +783,7 @@ export function TokenDashboardPanel() {
                   </div>
                 </div>
 
-                <div className="bg-card border border-border rounded-lg p-6">
+                <div className="bg-card border border-border rounded-xl shadow-sm p-6">
                   <div className="text-3xl font-bold text-status-warning-fg">
                     {formatNumber(cacheStats.cacheWrite)}
                   </div>
@@ -789,7 +798,7 @@ export function TokenDashboardPanel() {
           {/* Charts Section */}
           <div className="grid lg:grid-cols-2 gap-6">
             {/* Usage Trends Chart */}
-            <div className="bg-card border border-border rounded-lg p-6 lg:col-span-2">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6 lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">{t('usageTrends', { timeframe: selectedTimeframe })}</h2>
                 <div className="flex items-center gap-3">
@@ -798,16 +807,16 @@ export function TokenDashboardPanel() {
                       {t('peakLabel')} <span className="text-foreground font-medium">{peakTrendHour}</span>
                     </span>
                   )}
-                  <div className="flex rounded-md border border-border overflow-hidden">
+                  <div className="flex bg-secondary rounded-full p-0.5 gap-0.5">
                     <button
                       onClick={() => setChartMode('incremental')}
-                      className={`px-2 py-1 text-[10px] font-medium ${chartMode === 'incremental' ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground'}`}
+                      className={`px-2.5 py-0.5 text-[10px] font-medium rounded-full transition-all ${chartMode === 'incremental' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       {t('perTurnButton')}
                     </button>
                     <button
                       onClick={() => setChartMode('cumulative')}
-                      className={`px-2 py-1 text-[10px] font-medium ${chartMode === 'cumulative' ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground hover:text-foreground'}`}
+                      className={`px-2.5 py-0.5 text-[10px] font-medium rounded-full transition-all ${chartMode === 'cumulative' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       {t('cumulativeButton')}
                     </button>
@@ -828,14 +837,14 @@ export function TokenDashboardPanel() {
                     <Line
                       type="monotone"
                       dataKey="tokens"
-                      stroke="#8884d8"
+                      stroke="hsl(var(--interactive-primary))"
                       strokeWidth={2}
                       name={t('chartTokens')}
                     />
                     <Line
                       type="monotone"
                       dataKey="requests"
-                      stroke="#82ca9d"
+                      stroke="hsl(var(--status-success-solid))"
                       strokeWidth={2}
                       name={t('chartRequests')}
                     />
@@ -846,7 +855,7 @@ export function TokenDashboardPanel() {
             </div>
 
             {/* Model Usage Bar Chart */}
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">{t('tokenUsageByModel')}</h2>
               <div className="h-64">
                 {prepareModelChartData().length === 0 ? (
@@ -864,7 +873,7 @@ export function TokenDashboardPanel() {
                     />
                     <YAxis />
                     <Tooltip formatter={(value, name) => [formatNumber(Number(value)), name]} />
-                    <Bar dataKey="tokens" fill="#8884d8" name={t('chartTokens')} />
+                    <Bar dataKey="tokens" fill="hsl(var(--interactive-primary))" name={t('chartTokens')} />
                   </BarChart>
                 </ResponsiveContainer>
                 )}
@@ -872,7 +881,7 @@ export function TokenDashboardPanel() {
             </div>
 
             {/* Cost Distribution Pie Chart */}
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">{t('costDistributionByModel')}</h2>
               <div className="h-64">
                 {preparePieChartData().length === 0 ? (
@@ -902,7 +911,7 @@ export function TokenDashboardPanel() {
             </div>
 
             {/* Cost by Provider Pie Chart */}
-            <div className="bg-card border border-border rounded-lg p-6 lg:col-span-2">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6 lg:col-span-2">
               <h2 className="text-xl font-semibold mb-4">{t('costByProvider')}</h2>
               <div className="h-64">
                 {prepareProviderPieData().length === 0 ? (
@@ -951,7 +960,7 @@ export function TokenDashboardPanel() {
           </div>
 
           {/* Export Section */}
-          <div className="bg-card border border-border rounded-lg p-6">
+          <div className="bg-card border border-border rounded-xl shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">{t('exportData')}</h2>
               <div className="flex space-x-2">
@@ -985,7 +994,7 @@ export function TokenDashboardPanel() {
 
           {/* Performance Insights */}
           {performanceMetrics && (
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">{t('performanceInsights')}</h2>
 
               {/* Alerts */}
@@ -1086,7 +1095,7 @@ export function TokenDashboardPanel() {
           {/* Detailed Statistics */}
           <div className="grid lg:grid-cols-2 gap-6">
             {/* Model Statistics */}
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">{t('modelPerformance')}</h2>
 
               <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -1132,7 +1141,7 @@ export function TokenDashboardPanel() {
             </div>
 
             {/* Session Statistics */}
-            <div className="bg-card border border-border rounded-lg p-6">
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">{t('topSessionsByCost')}</h2>
 
               <div className="space-y-3 max-h-96 overflow-y-auto">
